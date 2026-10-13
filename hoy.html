@@ -4,23 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>¿Qué jugamos hoy? — Juegos de mesa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header>
-    <div id="nav"></div>
-    <h1>🎲 ¿Qué jugamos hoy?</h1>
-    <p class="subtitle">Decime cuántos son y te digo qué podés jugar (de lo que ya tenés)</p>
-    <div class="big-stepper">
-      <button id="player-minus">−</button>
-      <span class="big-number" id="player-number">?</span>
-      <button id="player-plus">+</button>
-    </div>
-    <div class="controls" style="justify-content: center;">
-      <label class="toggle-gusto">
-        <input type="checkbox" id="incluir-deseados" />
-        Incluir Watchlist / Want to buy (no las tengo todavía)
-      </label>
+    <div class="header-inner">
+      <div id="nav"></div>
+      <h1>🎲 ¿Qué jugamos hoy?</h1>
+      <p class="subtitle">Decime cuántos son y te digo qué podés jugar (de lo que ya tenés)</p>
+      <div class="big-stepper">
+        <button id="player-minus">−</button>
+        <span class="big-number" id="player-number">?</span>
+        <button id="player-plus">+</button>
+      </div>
+      <div class="controls controls--center">
+        <label class="toggle-gusto">
+          <input type="checkbox" id="incluir-deseados" />
+          Incluir Watchlist / Want to buy (no las tengo todavía)
+        </label>
+      </div>
     </div>
   </header>
   <div class="result-count" id="result-count"></div>

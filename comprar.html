@@ -4,43 +4,48 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>¿Cuál comprar? — Juegos de mesa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header>
-    <div id="nav"></div>
-    <h1>🛒 ¿Cuál comprar?</h1>
-    <p class="subtitle">Watchlist y Want to buy, filtrados por tipo, duración, complejidad y jugadores</p>
-    <div class="controls">
-      <div class="chip-row" id="estado-chips"></div>
-    </div>
-    <div class="controls" style="margin-top: 6px;">
-      <div class="chip-row" id="tipo-chips"></div>
-    </div>
-    <div class="controls" style="margin-top: 10px;">
-      <div class="slider-row">
-        <label><span>Duración máxima</span><span id="duracion-max-label">180+ min</span></label>
-        <input type="range" id="duracion-max" min="10" max="180" step="5" value="180" />
+    <div class="header-inner">
+      <div id="nav"></div>
+      <h1>🛒 ¿Cuál comprar?</h1>
+      <p class="subtitle">Watchlist y Want to buy, filtrados por tipo, duración, complejidad y jugadores</p>
+      <div class="controls">
+        <div class="chip-row" id="estado-chips"></div>
       </div>
-      <div class="slider-row">
-        <label><span>Complejidad máxima</span><span id="complejidad-max-label">5 (sin límite)</span></label>
-        <input type="range" id="complejidad-max" min="1" max="5" step="0.1" value="5" />
+      <div class="controls">
+        <div class="chip-row" id="tipo-chips"></div>
       </div>
-    </div>
-    <div class="controls" style="margin-top: 10px;">
-      <div class="player-stepper">
-        <button id="player-minus">−</button>
-        <span id="player-label">todos</span>
-        <button id="player-plus">+</button>
-        <button id="player-clear" title="Quitar filtro">✕</button>
+      <div class="controls">
+        <div class="slider-row">
+          <label><span>Duración máxima</span><span id="duracion-max-label">180+ min</span></label>
+          <input type="range" id="duracion-max" min="10" max="180" step="5" value="180" />
+        </div>
+        <div class="slider-row">
+          <label><span>Complejidad máxima</span><span id="complejidad-max-label">5 (sin límite)</span></label>
+          <input type="range" id="complejidad-max" min="1" max="5" step="0.1" value="5" />
+        </div>
       </div>
-      <select id="sort-select">
-        <option value="p_x_r_desc">Orden: Puntaje ajustado (P×r)</option>
-        <option value="puntaje_bgg_desc">Orden: Puntaje BGG</option>
-        <option value="complejidad_asc">Orden: Complejidad (menor primero)</option>
-        <option value="duracion_asc">Orden: Duración (menor primero)</option>
-        <option value="nombre_asc">Orden: Nombre</option>
-      </select>
+      <div class="controls">
+        <div class="player-stepper">
+          <button id="player-minus">−</button>
+          <span id="player-label">todos</span>
+          <button id="player-plus">+</button>
+          <button id="player-clear" title="Quitar filtro">✕</button>
+        </div>
+        <select id="sort-select">
+          <option value="p_x_r_desc">Orden: Puntaje ajustado (P×r)</option>
+          <option value="puntaje_bgg_desc">Orden: Puntaje BGG</option>
+          <option value="complejidad_asc">Orden: Complejidad (menor primero)</option>
+          <option value="duracion_asc">Orden: Duración (menor primero)</option>
+          <option value="nombre_asc">Orden: Nombre</option>
+        </select>
+      </div>
     </div>
   </header>
   <div class="result-count" id="result-count"></div>
