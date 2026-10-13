@@ -23,7 +23,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Combo de dos juegos. Ref. BGG: Chess 7.24 / Checkers 4.95."
+    "notas": "Combo de dos juegos. Ref. BGG: Chess 7.24 / Checkers 4.95.",
+    "bgg_url": null
   },
   {
     "nombre": "Ajedrez / Backgammon (caja rosa)",
@@ -49,7 +50,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Combo; texto de la caja leído a medias, confirmar. Ref. BGG: Backgammon 6.58."
+    "notas": "Combo; texto de la caja leído a medias, confirmar. Ref. BGG: Backgammon 6.58.",
+    "bgg_url": null
   },
   {
     "nombre": "Puzzles Trefl 1000 piezas",
@@ -75,7 +77,8 @@
     "ocasion_ideal": "Tarde tranquila",
     "expansion": "",
     "youtube": "",
-    "notas": "Dos cajas ('Photo Odyssey'). No es juego de mesa, BGG no lo puntúa."
+    "notas": "Dos cajas ('Photo Odyssey'). No es juego de mesa, BGG no lo puntúa.",
+    "bgg_url": null
   },
   {
     "nombre": "Mente Matic (Habano)",
@@ -101,7 +104,8 @@
     "ocasion_ideal": "",
     "expansion": "",
     "youtube": "",
-    "notas": "Juego argentino (Habano). No pude identificarlo: confirmar con la caja."
+    "notas": "Juego argentino (Habano). No pude identificarlo: confirmar con la caja.",
+    "bgg_url": null
   },
   {
     "nombre": "Cruzabell",
@@ -127,7 +131,8 @@
     "ocasion_ideal": "Tarde tranquila",
     "expansion": "",
     "youtube": "",
-    "notas": "Estilo Scrabble (BGG: Scrabble 6.28). Jugadores y edad estimados."
+    "notas": "Estilo Scrabble (BGG: Scrabble 6.28). Jugadores y edad estimados.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Cruzabell"
   },
   {
     "nombre": "Murder at the Manor",
@@ -153,7 +158,8 @@
     "ocasion_ideal": "",
     "expansion": "",
     "youtube": "",
-    "notas": "Puntaje BGG\t1,50       \nreviews BGG 2\nno lo pongo porque agrega ruido en puntaje ajustado por reviews x el bajo nro de reviews."
+    "notas": "Puntaje BGG\t1,50       \nreviews BGG 2\nno lo pongo porque agrega ruido en puntaje ajustado por reviews x el bajo nro de reviews.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Murder%20at%20the%20Manor"
   },
   {
     "nombre": "Gloomhaven",
@@ -179,7 +185,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Gloomhaven"
   },
   {
     "nombre": "Pandemic Legacy: Season 1",
@@ -205,7 +212,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": "Son 12 a 24 sesiones de 45-60 minutos, para 2-4 jugadores."
+    "notas": "Son 12 a 24 sesiones de 45-60 minutos, para 2-4 jugadores.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Pandemic%20Legacy%3A%20Season%201"
   },
   {
     "nombre": "Dune: Imperium",
@@ -231,7 +239,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Dune%3A%20Imperium"
   },
   {
     "nombre": "Terraforming Mars",
@@ -257,7 +266,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Terraforming%20Mars"
   },
   {
     "nombre": "Sky Team",
@@ -283,7 +293,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "Sky Team - Official How To Play - YouTube",
-    "notas": "Ganó el Spiel des Jahres 2024. Solo para 2 jugadores."
+    "notas": "Ganó el Spiel des Jahres 2024. Solo para 2 jugadores.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Sky%20Team"
   },
   {
     "nombre": "Scythe",
@@ -309,7 +320,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Scythe"
   },
   {
     "nombre": "Bomb Busters",
@@ -335,7 +347,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Mejor con 4 (BoardGameBliss). Más de 60 misiones de dificultad creciente."
+    "notas": "Mejor con 4 (BoardGameBliss). Más de 60 misiones de dificultad creciente.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Bomb%20Busters"
   },
   {
     "nombre": "Wingspan",
@@ -361,7 +374,8 @@
     "ocasion_ideal": "Tarde tranquila",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Wingspan"
   },
   {
     "nombre": "Heat: Pedal to the Metal",
@@ -387,7 +401,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": "Online: https://es.boardgamearena.com/gamepanel?game=heat"
+    "notas": "Online: https://es.boardgamearena.com/gamepanel?game=heat",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Heat%3A%20Pedal%20to%20the%20Metal"
   },
   {
     "nombre": "The White Castle",
@@ -413,7 +428,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20White%20Castle"
   },
   {
     "nombre": "Food Chain Magnate",
@@ -439,7 +455,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Food%20Chain%20Magnate"
   },
   {
     "nombre": "Cascadia",
@@ -465,7 +482,8 @@
     "ocasion_ideal": "Tarde tranquila",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Cascadia"
   },
   {
     "nombre": "El Grande",
@@ -491,7 +509,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=El%20Grande"
   },
   {
     "nombre": "Azul",
@@ -517,7 +536,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Azul"
   },
   {
     "nombre": "The Crew: The Quest for Planet Nine",
@@ -543,7 +563,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "https://youtu.be/r4xSAYY_J0g?si=WrSKVE6IiS5g9Tgv",
-    "notas": "No parece muy interesante, es de cartas, bastante normalito, lo podes jugar con una baraja y ya"
+    "notas": "No parece muy interesante, es de cartas, bastante normalito, lo podes jugar con una baraja y ya",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Crew%3A%20The%20Quest%20for%20Planet%20Nine"
   },
   {
     "nombre": "Just One",
@@ -569,7 +590,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Ganó el Spiel des Jahres 2019. Mejor con 6-7 según BGG (vía BoardGameBliss)."
+    "notas": "Ganó el Spiel des Jahres 2019. Mejor con 6-7 según BGG (vía BoardGameBliss).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Just%20One"
   },
   {
     "nombre": "So Clover!",
@@ -595,7 +617,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Complejidad y Best sin verificar en BGG (una fuente que no es BGG dice mejor con 3-4)."
+    "notas": "Complejidad y Best sin verificar en BGG (una fuente que no es BGG dice mejor con 3-4).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=So%20Clover%21"
   },
   {
     "nombre": "Horrified",
@@ -621,7 +644,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "60 min: queda en Watchlist por la regla de menos de 40 min. Complejidad y diseñadores sin verificar. Mejor con 3 (WellPlayed, datos BGG)."
+    "notas": "60 min: queda en Watchlist por la regla de menos de 40 min. Complejidad y diseñadores sin verificar. Mejor con 3 (WellPlayed, datos BGG).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Horrified"
   },
   {
     "nombre": "The Gang",
@@ -647,7 +671,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Gang"
   },
   {
     "nombre": "Código Secreto",
@@ -673,7 +698,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "BGG lo lista como Codenames. Edad: el editor indica 14+, otras fichas 10+."
+    "notas": "BGG lo lista como Codenames. Edad: el editor indica 14+, otras fichas 10+.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Codenames"
   },
   {
     "nombre": "Pandemic",
@@ -699,7 +725,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": "Complejidad 2,4 (Board Game Oracle, 1 decimal). 45 min: queda en Watchlist por la regla de menos de 40 min. Existe versión de dados, Pandemic: The Cure (30 min). Best sin cargar."
+    "notas": "Complejidad 2,4 (Board Game Oracle, 1 decimal). 45 min: queda en Watchlist por la regla de menos de 40 min. Existe versión de dados, Pandemic: The Cure (30 min). Best sin cargar.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Pandemic"
   },
   {
     "nombre": "Skull King",
@@ -725,7 +752,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "BGG actual: 2-8 jugadores (la base de 2022 decía 2-6). 'Best' sin cargar: BoardMatch dice 4-5 y WellPlayed 4-6."
+    "notas": "BGG actual: 2-8 jugadores (la base de 2022 decía 2-6). 'Best' sin cargar: BoardMatch dice 4-5 y WellPlayed 4-6.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Skull%20King"
   },
   {
     "nombre": "The Godfather: Corleone's Empire",
@@ -751,7 +779,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Godfather%3A%20Corleone%27s%20Empire"
   },
   {
     "nombre": "The Resistance: Avalon",
@@ -777,7 +806,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "Casi duplicado de The Resistance: Avalon es su reimplementación con roles especiales (como Merlín). Si se compra uno, Avalon es el más completo."
+    "notas": "Casi duplicado de The Resistance: Avalon es su reimplementación con roles especiales (como Merlín). Si se compra uno, Avalon es el más completo.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Resistance%3A%20Avalon"
   },
   {
     "nombre": "Cyclades",
@@ -803,7 +833,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Cyclades"
   },
   {
     "nombre": "Codenames: Duet",
@@ -829,7 +860,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Duración 15-30 min (cargué el promedio). Sus palabras se mezclan con las del Codenames original. Best sin cargar."
+    "notas": "Duración 15-30 min (cargué el promedio). Sus palabras se mezclan con las del Codenames original. Best sin cargar.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Codenames%3A%20Duet"
   },
   {
     "nombre": "Regicide (Devir)",
@@ -855,7 +887,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Se juega con un mazo de póker estándar."
+    "notas": "Se juega con un mazo de póker estándar.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Regicide"
   },
   {
     "nombre": "Take 5: 30th Anniversary Edition",
@@ -881,7 +914,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Take%205%3A%2030th%20Anniversary%20Edition"
   },
   {
     "nombre": "Lost Cities",
@@ -907,7 +941,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Lost%20Cities"
   },
   {
     "nombre": "The Resistance",
@@ -933,7 +968,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "Juego en el que hay un impostor, digamos: espías infiltrados entre los jugadores. Casi duplicado de Avalon, que lo reimplementa con roles especiales (como Merlín). Si se compra uno, Avalon es el más completo."
+    "notas": "Juego en el que hay un impostor, digamos: espías infiltrados entre los jugadores. Casi duplicado de Avalon, que lo reimplementa con roles especiales (como Merlín). Si se compra uno, Avalon es el más completo.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Resistance"
   },
   {
     "nombre": "Pistas Cruzadas (Cross Clues)",
@@ -959,7 +995,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Mejor con 4 (BoardGameBliss). Partidas de 5-10 min."
+    "notas": "Mejor con 4 (BoardGameBliss). Partidas de 5-10 min.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Cross%20Clues"
   },
   {
     "nombre": "Catan (edición nueva, Devir)",
@@ -985,7 +1022,8 @@
     "ocasion_ideal": "Noche de juegos",
     "expansion": "Ampliación 5-6 jug. (máx. 6)",
     "youtube": "",
-    "notas": "Sin abrir (en celofán). El puntaje BGG es del juego Catan en general, no de esta edición. Con la ampliación 5-6: duración mín. 120 min."
+    "notas": "Sin abrir (en celofán). El puntaje BGG es del juego Catan en general, no de esta edición. Con la ampliación 5-6: duración mín. 120 min.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Catan"
   },
   {
     "nombre": "Scrawl (ToyCo)",
@@ -1011,7 +1049,8 @@
     "ocasion_ideal": "Previa",
     "expansion": "",
     "youtube": "",
-    "notas": "Caja: 4-8 jugadores, 17+ ('juego para adultos')."
+    "notas": "Caja: 4-8 jugadores, 17+ ('juego para adultos').",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Scrawl"
   },
   {
     "nombre": "La Isla Prohibida (Devir)",
@@ -1037,7 +1076,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Caja: 2-4 jugadores, 10+. Es 'Forbidden Island' en BGG."
+    "notas": "Caja: 2-4 jugadores, 10+. Es 'Forbidden Island' en BGG.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Forbidden%20Island"
   },
   {
     "nombre": "The Mind",
@@ -1063,7 +1103,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Lo jugué y me gustó mucho; no lo tengo."
+    "notas": "Lo jugué y me gustó mucho; no lo tengo.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=The%20Mind"
   },
   {
     "nombre": "Fantasma Blitz",
@@ -1089,7 +1130,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "BGG lo lista como 'Ghost Blitz' (2010)."
+    "notas": "BGG lo lista como 'Ghost Blitz' (2010).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Ghost%20Blitz"
   },
   {
     "nombre": "Winter (Devir)",
@@ -1115,7 +1157,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Fuente: ficha de Devir / retailers. Ganó el Cardboard Edison Award 2021."
+    "notas": "Fuente: ficha de Devir / retailers. Ganó el Cardboard Edison Award 2021.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Winter"
   },
   {
     "nombre": "Saboteur (Buró)",
@@ -1141,7 +1184,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "Semi-cooperativo: hay saboteadores secretos."
+    "notas": "Semi-cooperativo: hay saboteadores secretos.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Saboteur"
   },
   {
     "nombre": "Bandida",
@@ -1167,7 +1211,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "Se puede jugar en solitario."
+    "notas": "Se puede jugar en solitario.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Bandida"
   },
   {
     "nombre": "Tomalo vos (Buró)",
@@ -1193,7 +1238,8 @@
     "ocasion_ideal": "Previa",
     "expansion": "",
     "youtube": "",
-    "notas": "Saco puntaje de BGG para no meter ruidpo por pocas reviews. 7,08        32"
+    "notas": "Saco puntaje de BGG para no meter ruidpo por pocas reviews. 7,08        32",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Tomalo%20vos"
   },
   {
     "nombre": "Sequence Classic (Goliath)",
@@ -1219,7 +1265,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "Caja: 2-12 jugadores, 7+."
+    "notas": "Caja: 2-12 jugadores, 7+.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Sequence%20Classic"
   },
   {
     "nombre": "Exploding Kittens",
@@ -1245,7 +1292,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "Imploding Kittens (máx. 6)",
     "youtube": "",
-    "notas": ""
+    "notas": "",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Exploding%20Kittens"
   },
   {
     "nombre": "Misterio (Ruibal)",
@@ -1271,7 +1319,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Caja: 2 a 6 jugadores. Posible match con BGG 'Misterio' (1984, solo 244 votos):"
+    "notas": "Caja: 2 a 6 jugadores. Posible match con BGG 'Misterio' (1984, solo 244 votos):",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Misterio"
   },
   {
     "nombre": "Pictionary (Ruibal)",
@@ -1297,7 +1346,8 @@
     "ocasion_ideal": "Grupo grande",
     "expansion": "",
     "youtube": "",
-    "notas": "Caja: '3 o más jugadores, +12'. El máx. de 12 es un tope práctico estimado."
+    "notas": "Caja: '3 o más jugadores, +12'. El máx. de 12 es un tope práctico estimado.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Pictionary"
   },
   {
     "nombre": "H.D.P. – Hasta Donde Puedas",
@@ -1323,7 +1373,8 @@
     "ocasion_ideal": "Previa",
     "expansion": "",
     "youtube": "",
-    "notas": "Jugadores y edad sin confirmar."
+    "notas": "Jugadores y edad sin confirmar.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=H.D.P.%20%E2%80%93%20Hasta%20Donde%20Puedas"
   },
   {
     "nombre": "Retro Park",
@@ -1349,7 +1400,8 @@
     "ocasion_ideal": "Familia y amigos",
     "expansion": "",
     "youtube": "",
-    "notas": "Datos leídos de la caja: 2-5 jugadores, 7-99 años, 20'. No lo encontré en el ranking de BGG."
+    "notas": "Datos leídos de la caja: 2-5 jugadores, 7-99 años, 20'. No lo encontré en el ranking de BGG.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Retro%20Park"
   },
   {
     "nombre": "Tumblin' Monkeys",
@@ -1375,7 +1427,8 @@
     "ocasion_ideal": "Chicos",
     "expansion": "",
     "youtube": "",
-    "notas": "Jugadores y edad estimados, confirmar en la caja."
+    "notas": "Jugadores y edad estimados, confirmar en la caja.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Tumblin%27%20Monkeys"
   },
   {
     "nombre": "Alcatraz: la fuga imposible (ToyCo)",
@@ -1401,7 +1454,8 @@
     "ocasion_ideal": "",
     "expansion": "",
     "youtube": "",
-    "notas": "Posible match: BGG 'Alcatraz' (1999). Verificar con el link que sea el mismo juego."
+    "notas": "Posible match: BGG 'Alcatraz' (1999). Verificar con el link que sea el mismo juego.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Alcatraz"
   },
   {
     "nombre": "Memotest (Ruibal)",
@@ -1427,7 +1481,8 @@
     "ocasion_ideal": "Chicos",
     "expansion": "",
     "youtube": "",
-    "notas": "Proxy. Caja: 64 fichas, 9 a 99 años. Proxy BGG = 'Memory'. Jugadores estimados."
+    "notas": "Proxy. Caja: 64 fichas, 9 a 99 años. Proxy BGG = 'Memory'. Jugadores estimados.",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Memory"
   },
   {
     "nombre": "Batalla Naval (Ruibal)",
@@ -1453,7 +1508,8 @@
     "ocasion_ideal": "Para 2",
     "expansion": "",
     "youtube": "",
-    "notas": "BGG lo lista como 'Battleship' (el juego original)."
+    "notas": "BGG lo lista como 'Battleship' (el juego original).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Battleship"
   },
   {
     "nombre": "Ludo (Mickey and Kids)",
@@ -1479,6 +1535,7 @@
     "ocasion_ideal": "Chicos",
     "expansion": "",
     "youtube": "",
-    "notas": "Ludo no tiene ficha propia en BGG: proxy = Pachisi (el juego del que deriva)."
+    "notas": "Ludo no tiene ficha propia en BGG: proxy = Pachisi (el juego del que deriva).",
+    "bgg_url": "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=Pachisi"
   }
 ]

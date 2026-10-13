@@ -268,3 +268,96 @@ details p {
   color: var(--muted);
   padding: 40px 10px;
 }
+
+/* Nav entre páginas */
+.top-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.top-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.top-nav a.active {
+  background: var(--chip-bg-active);
+  color: var(--chip-text-active);
+}
+
+.bgg-link {
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: auto;
+}
+
+.bgg-link:hover {
+  text-decoration: underline;
+}
+
+/* Páginas "Hoy jugamos" / "Cuál comprar": stepper grande, sliders */
+.big-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 10px 0 18px;
+}
+
+.big-stepper button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--chip-bg);
+  color: var(--text);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.big-stepper .big-number {
+  font-size: 2.6rem;
+  font-weight: 700;
+  min-width: 60px;
+  text-align: center;
+}
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 220px;
+}
+
+.slider-row label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 18px 16px 8px;
+}
+
+.section-label:first-child {
+  margin-top: 0;
+}

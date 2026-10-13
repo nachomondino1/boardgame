@@ -1,0 +1,92 @@
+let GAMES = [];
+
+const state = {
+  jugadores: null,
+  incluirDeseados: false,
+};
+
+function matchesFilters(g) {
+  if (state.jugadores == null) return false;
+  if (g.jug_min == null || g.jug_max == null) return false;
+  if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+  if (!state.incluirDeseados && g.estado !== "Own") return false;
+  return true;
+}
+
+function render() {
+  const grid = document.getElementById("grid");
+  const count = document.getElementById("result-count");
+  const label = document.getElementById("player-number");
+  label.textContent = state.jugadores == null ? "?" : state.jugadores;
+
+  if (state.jugadores == null) {
+    count.textContent = "";
+    grid.innerHTML = `<div class="empty-state">Elegí cuántos jugadores son hoy ☝️</div>`;
+    return;
+  }
+
+  const posibles = GAMES.filter(matchesFilters);
+  const withScore = posibles.map((g) => ({ g, score: recommendationScore(g, state.jugadores) }));
+  withScore.sort((a, b) => b.score - a.score);
+
+  count.textContent = `${posibles.length} juego${posibles.length === 1 ? "" : "s"} posibles`;
+
+  if (!posibles.length) {
+    const sugerencia = state.incluirDeseados
+      ? "No encontré ningún juego (ni siquiera en tu watchlist) para esa cantidad de jugadores."
+      : "No tenés ningún juego Own para esa cantidad. Probá tildar \"incluir watchlist / want to buy\" para ver qué comprarías.";
+    grid.innerHTML = `<div class="empty-state">${sugerencia}</div>`;
+    return;
+  }
+
+  const topN = Math.min(3, withScore.length);
+  const topScore = withScore[topN - 1].score;
+  // si varios empatan en el puntaje de corte, quedan todos adentro de "recomendados"
+  const recomendadosSet = new Set(withScore.filter((x) => x.score >= topScore).map((x) => x.g.nombre));
+
+  const recomendadosHtml = withScore
+    .filter((x) => recomendadosSet.has(x.g.nombre))
+    .map((x) => cardTemplate(x.g, { jugadores: state.jugadores, recomendado: true }))
+    .join("");
+  const restoHtml = withScore
+    .filter((x) => !recomendadosSet.has(x.g.nombre))
+    .map((x) => cardTemplate(x.g, { jugadores: state.jugadores }))
+    .join("");
+
+  grid.innerHTML = `
+    <div class="section-label">✨ Recomendados</div>
+    <div class="grid">${recomendadosHtml}</div>
+    ${restoHtml ? `<div class="section-label">También podés jugar</div><div class="grid">${restoHtml}</div>` : ""}
+  `;
+}
+
+function setJugadores(n) {
+  state.jugadores = Math.max(1, Math.min(12, n));
+  render();
+}
+
+function setupControls() {
+  document.getElementById("player-minus").addEventListener("click", () => {
+    setJugadores((state.jugadores ?? 3) - 1);
+  });
+  document.getElementById("player-plus").addEventListener("click", () => {
+    setJugadores((state.jugadores ?? 1) + 1);
+  });
+  document.getElementById("incluir-deseados").addEventListener("change", (e) => {
+    state.incluirDeseados = e.target.checked;
+    render();
+  });
+}
+
+document.getElementById("nav").innerHTML = navTemplate("hoy.html");
+
+loadGames()
+  .then((data) => {
+    GAMES = data;
+    setupControls();
+    render();
+  })
+  .catch((err) => {
+    document.getElementById("grid").innerHTML =
+      `<div class="empty-state">No pude cargar data.json: ${escapeHtml(err.message)}</div>`;
+  });

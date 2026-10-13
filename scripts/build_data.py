@@ -10,8 +10,10 @@ nueva que no matchee ninguna regla de HEADER_RULES se ignora en silencio.
 import csv
 import io
 import json
+import re
 import sys
 import unicodedata
+import urllib.parse
 import urllib.request
 
 SPREADSHEET_ID = "1ocu4prKGISdyRu9d1P-pVDx_paZoWTrDFpN8Dm51Yik"
@@ -47,6 +49,34 @@ HEADER_RULES = [
     ("notas", "notas"),
 ]
 
+# BGG cerró el acceso sin auth a su API XML (requests.get -> 401 Unauthorized),
+# asi que no se puede resolver el ID exacto de cada juego en el build. En vez
+# de eso, armamos un link de busqueda de BGG por titulo: no es el permalink
+# exacto, pero lleva directo al juego correcto en la gran mayoria de los casos.
+# BGG_SEARCH_OVERRIDES pisa el termino de busqueda para ediciones locales o
+# proxys cuyo nombre de caja no coincide con el titulo real en BGG (la pista
+# suele estar en la columna Notas del Sheet). BGG_SKIP son juegos sin una
+# ficha razonable en BGG (combos de dos juegos, rompecabezas, etc).
+BGG_SEARCH_OVERRIDES = {
+    "Cruzabell": "Cruzabell",
+    "Código Secreto": "Codenames",
+    "Catan (edición nueva, Devir)": "Catan",
+    "Pistas Cruzadas (Cross Clues)": "Cross Clues",
+    "La Isla Prohibida (Devir)": "Forbidden Island",
+    "Fantasma Blitz": "Ghost Blitz",
+    "Misterio (Ruibal)": "Misterio",
+    "Alcatraz: la fuga imposible (ToyCo)": "Alcatraz",
+    "Memotest (Ruibal)": "Memory",
+    "Batalla Naval (Ruibal)": "Battleship",
+    "Ludo (Mickey and Kids)": "Pachisi",
+}
+BGG_SKIP = {
+    "Ajedrez y damas (Cayro)",
+    "Ajedrez / Backgammon (caja rosa)",
+    "Puzzles Trefl 1000 piezas",
+    "Mente Matic (Habano)",
+}
+
 NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "p_x_r"}
 NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "duracion", "edad_min", "reviews_bgg", "ranking_bgg", "mi_puntaje"}
 TEXT_FIELDS = {"nombre", "modo", "descripcion", "jug_best", "entra_con_expansion", "disenador",
@@ -75,6 +105,15 @@ def to_float(s):
 def to_int(s):
     f = to_float(s)
     return int(f) if f is not None else None
+
+
+def bgg_search_url(nombre):
+    if nombre in BGG_SKIP:
+        return None
+    term = BGG_SEARCH_OVERRIDES.get(nombre)
+    if term is None:
+        term = re.sub(r"\s*\([^)]*\)\s*$", "", nombre).strip()
+    return "https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=" + urllib.parse.quote(term)
 
 
 def fetch_csv_rows():
@@ -121,6 +160,7 @@ def build_games(rows):
                 game[field] = to_int(value)
             else:
                 game[field] = value.strip()
+        game["bgg_url"] = bgg_search_url(game.get("nombre", ""))
         games.append(game)
     return games
 

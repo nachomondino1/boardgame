@@ -1,0 +1,117 @@
+let GAMES = [];
+
+const ESTADOS_COMPRA = ["Watchlist", "Want to buy"];
+
+const state = {
+  estados: new Set(ESTADOS_COMPRA),
+  duracionMax: 180,
+  complejidadMax: 5,
+  jugadores: null,
+  sort: "p_x_r_desc",
+};
+
+function matchesFilters(g) {
+  if (!state.estados.has(g.estado)) return false;
+  if (g.duracion != null && g.duracion > state.duracionMax) return false;
+  if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
+  if (state.jugadores != null) {
+    if (g.jug_min == null || g.jug_max == null) return false;
+    if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+  }
+  return true;
+}
+
+function sortGames(list) {
+  const key = state.sort;
+  const dir = key.endsWith("_asc") ? 1 : -1;
+  const field = key.replace(/_(asc|desc)$/, "");
+  return [...list].sort((a, b) => {
+    const av = a[field];
+    const bv = b[field];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return av < bv ? dir * -1 : av > bv ? dir : 0;
+  });
+}
+
+function render() {
+  const filtered = sortGames(GAMES.filter(matchesFilters));
+  const grid = document.getElementById("grid");
+  const count = document.getElementById("result-count");
+  count.textContent = `${filtered.length} juego${filtered.length === 1 ? "" : "s"}`;
+  grid.innerHTML = filtered.length
+    ? filtered.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
+    : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
+}
+
+function setupControls() {
+  const estadoChips = document.getElementById("estado-chips");
+  ESTADOS_COMPRA.forEach((estado) => {
+    const chip = document.createElement("span");
+    chip.className = "chip active";
+    chip.textContent = estado;
+    chip.addEventListener("click", () => {
+      if (state.estados.has(estado)) {
+        state.estados.delete(estado);
+        chip.classList.remove("active");
+      } else {
+        state.estados.add(estado);
+        chip.classList.add("active");
+      }
+      render();
+    });
+    estadoChips.appendChild(chip);
+  });
+
+  const duracionInput = document.getElementById("duracion-max");
+  const duracionLabel = document.getElementById("duracion-max-label");
+  duracionInput.addEventListener("input", (e) => {
+    state.duracionMax = Number(e.target.value);
+    duracionLabel.textContent = state.duracionMax >= 180 ? "180+ min" : `${state.duracionMax} min`;
+    render();
+  });
+
+  const complejidadInput = document.getElementById("complejidad-max");
+  const complejidadLabel = document.getElementById("complejidad-max-label");
+  complejidadInput.addEventListener("input", (e) => {
+    state.complejidadMax = Number(e.target.value);
+    complejidadLabel.textContent = state.complejidadMax >= 5 ? "5 (sin límite)" : state.complejidadMax.toFixed(1);
+    render();
+  });
+
+  const playerLabel = document.getElementById("player-label");
+  document.getElementById("player-minus").addEventListener("click", () => {
+    state.jugadores = Math.max(1, (state.jugadores ?? 2) - 1);
+    playerLabel.textContent = state.jugadores;
+    render();
+  });
+  document.getElementById("player-plus").addEventListener("click", () => {
+    state.jugadores = Math.min(12, (state.jugadores ?? 1) + 1);
+    playerLabel.textContent = state.jugadores;
+    render();
+  });
+  document.getElementById("player-clear").addEventListener("click", () => {
+    state.jugadores = null;
+    playerLabel.textContent = "todos";
+    render();
+  });
+
+  document.getElementById("sort-select").addEventListener("change", (e) => {
+    state.sort = e.target.value;
+    render();
+  });
+}
+
+document.getElementById("nav").innerHTML = navTemplate("comprar.html");
+
+loadGames()
+  .then((data) => {
+    GAMES = data;
+    setupControls();
+    render();
+  })
+  .catch((err) => {
+    document.getElementById("grid").innerHTML =
+      `<div class="empty-state">No pude cargar data.json: ${escapeHtml(err.message)}</div>`;
+  });

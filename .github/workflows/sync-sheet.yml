@@ -2,7 +2,7 @@ name: Sync data.json desde Google Sheet
 
 on:
   schedule:
-    - cron: "0 12 * * *" # todos los días 12:00 UTC (~09:00 ART)
+    - cron: "0 12 1 * *" # el día 1 de cada mes, 12:00 UTC (~09:00 ART)
   workflow_dispatch: {}
 
 permissions:

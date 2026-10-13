@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>¿Qué jugamos hoy? — Juegos de mesa</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div id="nav"></div>
+    <h1>🎲 ¿Qué jugamos hoy?</h1>
+    <p class="subtitle">Decime cuántos son y te digo qué podés jugar (de lo que ya tenés)</p>
+    <div class="big-stepper">
+      <button id="player-minus">−</button>
+      <span class="big-number" id="player-number">?</span>
+      <button id="player-plus">+</button>
+    </div>
+    <div class="controls" style="justify-content: center;">
+      <label class="toggle-gusto">
+        <input type="checkbox" id="incluir-deseados" />
+        Incluir Watchlist / Want to buy (no las tengo todavía)
+      </label>
+    </div>
+  </header>
+  <div class="result-count" id="result-count"></div>
+  <main>
+    <div id="grid"></div>
+  </main>
+  <script src="shared.js"></script>
+  <script src="hoy.js"></script>
+</body>
+</html>
