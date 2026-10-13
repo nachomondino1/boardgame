@@ -112,6 +112,7 @@ function populateOcasionOptions() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("index.html");
+setupFiltersToggle();
 
 loadGames()
   .then((data) => {

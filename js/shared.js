@@ -118,13 +118,32 @@ function cardTemplate(g, opts) {
   `;
 }
 
+// En mobile, el panel de filtros arranca colapsado (botón "Filtros") para no
+// tapar los resultados con la pantalla entera de controles; en desktop el
+// botón queda oculto por CSS y el panel se ve siempre expandido.
+function setupFiltersToggle() {
+  const toggle = document.getElementById("filters-toggle");
+  const panel = toggle ? toggle.closest(".filters-panel") : null;
+  if (!toggle || !panel) return;
+  toggle.addEventListener("click", () => {
+    const open = panel.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+}
+
 function navTemplate(active) {
   const links = [
     { href: "index.html", label: "Catálogo" },
     { href: "hoy.html", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", label: "¿Cuál comprar?" },
   ];
-  return `<nav class="top-nav">${links
+  const linksHtml = links
     .map((l) => `<a href="${l.href}" class="${l.href === active ? "active" : ""}">${l.label}</a>`)
-    .join("")}</nav>`;
+    .join("");
+  return `
+    <div class="top-nav">
+      <a href="index.html" class="nav-brand">🎲 Juegos de mesa</a>
+      <div class="nav-links">${linksHtml}</div>
+    </div>
+  `;
 }

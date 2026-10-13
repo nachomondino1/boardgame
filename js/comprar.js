@@ -105,6 +105,7 @@ function setupControls() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("comprar.html");
+setupFiltersToggle();
 
 loadGames()
   .then((data) => {
