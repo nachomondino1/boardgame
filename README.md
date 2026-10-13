@@ -20,11 +20,12 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 
 ## Archivos
 
-- `shared.js` — helpers comunes a las 3 páginas (carga de datos, armado de las tarjetas, nav, etc.).
-- `style.css` / `app.js` / `hoy.js` / `comprar.js` — estilos y lógica de cada página.
-- `data.json` — datos de la pestaña "Juegos" del Sheet (`Juegos_de_mesa` en Drive). Se regenera solo, ver abajo.
-- `scripts/build_data.py` — descarga la pestaña "Juegos" como CSV (export público, sin login), regenera `data.json` y arma el link a BGG de cada juego. Mapea columnas por el texto del encabezado, no por posición, así que si agregás una columna nueva al Sheet no rompe nada (esa columna nueva se ignora hasta que se agregue una regla para ella en `HEADER_RULES`).
-- `.github/workflows/sync-sheet.yml` — corre `build_data.py` el día 1 de cada mes a las 12:00 UTC y en cada ejecución manual, y si `data.json` cambió lo commitea y pushea a `main`. Eso dispara un redeploy automático de GitHub Pages. Si agregaste un juego y no querés esperar al mes, lo disparás a mano (ver abajo).
+- `index.html` / `hoy.html` / `comprar.html` — las 3 páginas, en la raíz (las sirve GitHub Pages directo desde ahí).
+- `js/shared.js` — helpers comunes a las 3 páginas (carga de datos, armado de las tarjetas, nav, etc.).
+- `css/style.css` / `js/app.js` / `js/hoy.js` / `js/comprar.js` — estilos y lógica de cada página.
+- `data/data.json` — datos de la pestaña "Juegos" del Sheet (`Juegos_de_mesa` en Drive). Se regenera solo, ver abajo.
+- `scripts/build_data.py` — descarga la pestaña "Juegos" como CSV (export público, sin login), regenera `data/data.json` y arma el link a BGG de cada juego. Mapea columnas por el texto del encabezado, no por posición, así que si agregás una columna nueva al Sheet no rompe nada (esa columna nueva se ignora hasta que se agregue una regla para ella en `HEADER_RULES`).
+- `.github/workflows/sync-sheet.yml` — corre `build_data.py` el día 1 de cada mes a las 12:00 UTC y en cada ejecución manual, y si `data/data.json` cambió lo commitea y pushea a `main`. Eso dispara un redeploy automático de GitHub Pages. Si agregaste un juego y no querés esperar al mes, lo disparás a mano (ver abajo).
 
 ### Links a BGG
 

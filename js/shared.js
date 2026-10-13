@@ -44,7 +44,7 @@ function escapeHtml(str) {
 }
 
 function loadGames() {
-  return fetch("data.json").then((r) => r.json());
+  return fetch("data/data.json").then((r) => r.json());
 }
 
 // Puntaje de "qué tan recomendado" es un juego para jugar HOY con N jugadores.

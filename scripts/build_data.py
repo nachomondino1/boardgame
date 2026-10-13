@@ -20,7 +20,7 @@ SPREADSHEET_ID = "1ocu4prKGISdyRu9d1P-pVDx_paZoWTrDFpN8Dm51Yik"
 GID = "1538311213"  # pestaña "Juegos"
 EXPORT_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=csv&gid={GID}"
 
-OUTPUT_PATH = "data.json"
+OUTPUT_PATH = "data/data.json"
 
 HEADER_RULES = [
     ("juego", "nombre"),
