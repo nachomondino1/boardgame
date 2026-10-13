@@ -5,7 +5,6 @@ const state = {
   jugadores: null,
   estados: new Set(),
   ocasion: "Todas",
-  soloGusto: false,
   sort: "p_x_r_desc",
 };
 
@@ -21,10 +20,6 @@ function matchesFilters(g) {
   }
   if (state.estados.size > 0 && !state.estados.has(g.estado)) return false;
   if (state.ocasion !== "Todas" && g.ocasion_ideal !== state.ocasion) return false;
-  if (state.soloGusto) {
-    if (g.complejidad == null || g.complejidad > 2.5) return false;
-    if (g.duracion == null || g.duracion > 60) return false;
-  }
   return true;
 }
 
@@ -103,10 +98,6 @@ function setupControls() {
     render();
   });
 
-  document.getElementById("gusto-toggle").addEventListener("change", (e) => {
-    state.soloGusto = e.target.checked;
-    render();
-  });
 }
 
 function populateOcasionOptions() {

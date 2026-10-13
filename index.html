@@ -15,34 +15,45 @@
       <div id="nav"></div>
       <h1>🎲 Juegos de mesa</h1>
       <p class="subtitle">Catálogo completo — buscador y filtros</p>
-      <div class="controls">
-        <div class="search-box">
-          <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
+      <div class="filters-panel">
+        <div class="filter-grid">
+          <div class="filter-group filter-group--grow">
+            <label class="filter-label" for="search">Buscar</label>
+            <div class="search-box">
+              <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Jugadores</span>
+            <div class="player-stepper">
+              <button id="player-minus">−</button>
+              <span id="player-label">todos</span>
+              <button id="player-plus">+</button>
+              <button id="player-clear" title="Quitar filtro">✕</button>
+            </div>
+          </div>
+          <div class="filter-group filter-group--grow">
+            <label class="filter-label" for="ocasion-select">Ocasión</label>
+            <select id="ocasion-select">
+              <option value="Todas">Toda ocasión</option>
+            </select>
+          </div>
+          <div class="filter-group filter-group--grow">
+            <label class="filter-label" for="sort-select">Orden</label>
+            <select id="sort-select">
+              <option value="p_x_r_desc">Puntaje ajustado (P×r)</option>
+              <option value="puntaje_bgg_desc">Puntaje BGG</option>
+              <option value="mi_puntaje_desc">Mi puntaje</option>
+              <option value="complejidad_asc">Complejidad (menor primero)</option>
+              <option value="duracion_asc">Duración (menor primero)</option>
+              <option value="nombre_asc">Nombre</option>
+            </select>
+          </div>
+          <div class="filter-group filter-group--full">
+            <span class="filter-label">Estado</span>
+            <div class="chip-row" id="estado-chips"></div>
+          </div>
         </div>
-        <div class="player-stepper">
-          <button id="player-minus">−</button>
-          <span id="player-label">todos</span>
-          <button id="player-plus">+</button>
-          <button id="player-clear" title="Quitar filtro">✕</button>
-        </div>
-        <select id="ocasion-select">
-          <option value="Todas">Toda ocasión</option>
-        </select>
-        <select id="sort-select">
-          <option value="p_x_r_desc">Orden: Puntaje ajustado (P×r)</option>
-          <option value="puntaje_bgg_desc">Orden: Puntaje BGG</option>
-          <option value="mi_puntaje_desc">Orden: Mi puntaje</option>
-          <option value="complejidad_asc">Orden: Complejidad (menor primero)</option>
-          <option value="duracion_asc">Orden: Duración (menor primero)</option>
-          <option value="nombre_asc">Orden: Nombre</option>
-        </select>
-        <label class="toggle-gusto">
-          <input type="checkbox" id="gusto-toggle" />
-          Según mi gusto (≤60 min, complejidad ≤2.5)
-        </label>
-      </div>
-      <div class="controls">
-        <div class="chip-row" id="estado-chips"></div>
       </div>
     </div>
   </header>

@@ -90,24 +90,66 @@ header .subtitle {
   font-size: 0.9rem;
 }
 
-.controls {
+.filters-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px;
+  margin-top: 14px;
+}
+
+.filter-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
+  align-items: flex-end;
+  gap: 16px 20px;
 }
 
-.controls + .controls {
-  margin-top: 12px;
-}
-
-.controls--center {
+.filter-grid--center {
   justify-content: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.filter-group--grow {
+  flex: 1 1 180px;
+}
+
+.filter-group--full {
+  flex: 1 1 100%;
+}
+
+.filter-group--full:not(:first-child) {
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.filter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-2);
+}
+
+.filter-label-value {
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .search-box {
   position: relative;
-  flex: 1 1 220px;
 }
 
 .search-box::before {
@@ -240,7 +282,8 @@ select:focus {
   font-size: 0.85rem;
   color: var(--muted);
   cursor: pointer;
-  padding: 6px 2px;
+  padding: 9px 2px;
+  white-space: nowrap;
 }
 
 .toggle-gusto input[type="checkbox"] {
@@ -501,26 +544,12 @@ details p {
   letter-spacing: -0.02em;
 }
 
-.slider-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1 1 220px;
-}
-
-.slider-row label {
-  font-size: 0.8rem;
-  color: var(--muted);
-  display: flex;
-  justify-content: space-between;
-  font-weight: 500;
-}
-
-.slider-row input[type="range"] {
+.filter-group input[type="range"] {
   width: 100%;
   accent-color: var(--accent);
   height: 4px;
   cursor: pointer;
+  margin: 9px 0;
 }
 
 .section-label {
