@@ -460,7 +460,11 @@ details p {
 /* Nav entre páginas */
 .top-nav {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   gap: 2px;
   background: var(--chip-bg);
   padding: 4px;
@@ -468,7 +472,13 @@ details p {
   margin-bottom: 16px;
 }
 
+.top-nav::-webkit-scrollbar {
+  display: none;
+}
+
 .top-nav a {
+  flex: 0 0 auto;
+  white-space: nowrap;
   text-decoration: none;
   color: var(--muted);
   font-size: 0.83rem;
