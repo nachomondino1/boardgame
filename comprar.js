@@ -1,9 +1,11 @@
 let GAMES = [];
 
 const ESTADOS_COMPRA = ["Watchlist", "Want to buy"];
+const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Ambos", "A confirmar"];
 
 const state = {
   estados: new Set(ESTADOS_COMPRA),
+  tipos: new Set(),
   duracionMax: 180,
   complejidadMax: 5,
   jugadores: null,
@@ -12,6 +14,7 @@ const state = {
 
 function matchesFilters(g) {
   if (!state.estados.has(g.estado)) return false;
+  if (state.tipos.size > 0 && !state.tipos.has(g.modo)) return false;
   if (g.duracion != null && g.duracion > state.duracionMax) return false;
   if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
   if (state.jugadores != null) {
@@ -62,6 +65,24 @@ function setupControls() {
       render();
     });
     estadoChips.appendChild(chip);
+  });
+
+  const tipoChips = document.getElementById("tipo-chips");
+  TIPOS.forEach((tipo) => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = tipo;
+    chip.addEventListener("click", () => {
+      if (state.tipos.has(tipo)) {
+        state.tipos.delete(tipo);
+        chip.classList.remove("active");
+      } else {
+        state.tipos.add(tipo);
+        chip.classList.add("active");
+      }
+      render();
+    });
+    tipoChips.appendChild(chip);
   });
 
   const duracionInput = document.getElementById("duracion-max");
