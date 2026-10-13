@@ -126,6 +126,7 @@ header .subtitle {
 
 .filter-group--full {
   flex: 1 1 100%;
+  min-width: 0;
 }
 
 .filter-group--full:not(:first-child) {
@@ -658,15 +659,42 @@ details p {
     gap: 16px;
   }
 
+  .filters-panel {
+    padding: 14px 16px;
+  }
+
   .filters-panel .filter-grid {
     display: none;
   }
 
   .filters-panel.open .filter-grid {
     display: flex;
-    margin-top: 14px;
-    padding-top: 14px;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 1px solid var(--border);
+  }
+
+  /* Panel expandido: se desactiva el sticky para que no ocupe la pantalla
+     de forma permanente al scrollear. El botón "Filtros" sigue sticky
+     cuando el panel está cerrado. */
+  header:has(.filters-panel.open) {
+    position: static;
+  }
+
+  .filters-panel.open .filter-grid .chip-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .filters-panel.open .filter-grid .chip-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filters-panel.open .filter-grid .chip-row .chip {
+    flex: none;
   }
 
   .filters-toggle {
