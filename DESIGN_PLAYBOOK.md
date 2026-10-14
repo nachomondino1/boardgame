@@ -175,7 +175,19 @@ Reglas (las que sí son firmes):
 - Probar en celular real (no solo achicar el navegador) y en anchos explícitos: **320 / 360 / 375 / 768 / 1280**.
 - Reordenar columnas para que el dato más importante quede primero; no ocultar "lo que sobra por posición".
 - Paddings/gaps −20–30% y un escalón menos de tipografía; **el lenguaje de componentes no cambia** entre mobile y desktop.
-- **Sticky:** la barra de controles y el header de tabla se desactivan (`position: static`) en mobile angosto y en landscape de poco alto (`@media (max-height: 480px)`). El botón "Filtros" chico puede quedar sticky; el panel expandido no.
+- **Filtros sticky en mobile (regla firme):** la barra queda pegada arriba, **colapsada por default**, y **barra + panel abierto nunca pasan del 30% del alto de pantalla**. El panel scrollea por dentro si el contenido no entra.
+
+```css
+@media (max-width: 767px) {
+  .filters-bar   { position: sticky; top: 0; z-index: 20; }
+  .filters-panel { max-height: calc(30vh - 48px);   /* fallback */
+                   max-height: calc(30dvh - 48px);  /* 48px = alto de la barra */
+                   overflow-y: auto; overscroll-behavior: contain; }
+}
+```
+
+- **Verificar con números, no a ojo:** `bar.getBoundingClientRect().height / window.innerHeight <= 0.30` en estado colapsado **y** expandido, a 320×568, 375×667 y en landscape de poco alto.
+- **Otros sticky en mobile:** si hay barra de filtros sticky, el **header deja de ser sticky** (se va con el scroll) para no apilar dos barras fijas. El header de tabla mantiene su regla: desactivado en mobile angosto y en landscape de poco alto (`@media (max-height: 480px)`).
 - Nav/filtros sticky arriba en desktop en páginas largas, con `scroll-margin-top` en las secciones.
 - Verificar overflow con `scrollWidth` / `getBoundingClientRect()`, no solo con el screenshot (hay bugs de 1–2px invisibles).
 
