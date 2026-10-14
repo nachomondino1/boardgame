@@ -375,14 +375,12 @@ main {
 }
 
 .badge-own { background: #2a9d5c2b; color: #1d7a45; }
-.badge-want { background: #e8a2372b; color: #b5791f; }
 .badge-watch { background: #3d5a802b; color: #3d5a80; }
 .badge-descartado { background: #d1495b2b; color: #b23449; }
 .badge-other { background: var(--bg-subtle); color: var(--muted); }
 
 @media (prefers-color-scheme: dark) {
   .badge-own { color: #6fd79b; }
-  .badge-want { color: #f0c178; }
   .badge-watch { color: #a9c6e6; }
   .badge-descartado { color: #f0909c; }
 }
@@ -693,6 +691,15 @@ details p {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--border-soft);
+  }
+
+  .filters-panel.open .filter-grid--center {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-panel.open .filter-grid--center .toggle-gusto {
+    white-space: normal;
   }
 
   /* Panel expandido: se desactiva el sticky para que no ocupe la pantalla

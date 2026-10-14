@@ -39,7 +39,7 @@ function render() {
   if (!posibles.length) {
     const sugerencia = state.incluirDeseados
       ? "No encontré ningún juego (ni siquiera en tu watchlist) para esa cantidad de jugadores."
-      : "No tenés ningún juego Own para esa cantidad. Probá tildar \"incluir watchlist / want to buy\" para ver qué comprarías.";
+      : "No tenés ningún juego Own para esa cantidad. Probá tildar \"incluir watchlist\" para ver qué comprarías.";
     grid.innerHTML = `<div class="empty-state">${sugerencia}</div>`;
     return;
   }
@@ -88,6 +88,7 @@ function setupControls() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("hoy.html");
+setupFiltersToggle();
 
 loadGames()
   .then((data) => {
