@@ -15,7 +15,7 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 ## Páginas
 
 - `index.html` — **Catálogo**: los 57 juegos, buscador, filtros y orden.
-- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), separando "Recomendados" de "También podés jugar". El toggle "incluir Watchlist / Want to buy" extiende la búsqueda a lo que no tenés todavía.
+- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), separando "Recomendados" de "También podés jugar". El toggle "incluir Watchlist / Want to buy" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
 - `comprar.html` — **¿Cuál comprar?**: solo Watchlist + Want to buy, con sliders de duración máxima y complejidad máxima, y el mismo filtro de jugadores.
 
 ## Archivos
@@ -42,13 +42,13 @@ La pestaña "Juegos" se lee vía el endpoint de export de Google Sheets (`.../ex
 ## Qué tiene
 
 - Buscador instantáneo por nombre (Catálogo).
-- Filtro "¿cuántos jugadores somos?" (usa Jug. mín/máx, y marca "Ideal para hoy" si coincide con Jug. Best).
-- Filtros por Estado (Own / Want to buy / Watchlist / Descartado) y Ocasión ideal.
-- Orden por Puntaje ajustado (P×r), Puntaje BGG, Mi puntaje, Complejidad o Duración.
+- Filtro "¿cuántos jugadores somos?" (usa Jug. mín/máx, y marca "Ideal para hoy" si coincide con Jug Best mín/máx).
+- Filtros por Estado (Own / Want to buy / Watchlist / Descartado).
+- Orden por Puntaje ajustado, Puntaje BGG, Mi puntaje, Complejidad o Duración.
 - Toggle "Según mi gusto" (duración ≤60 min, complejidad ≤2.5), tomado de la sección "Mi gusto" de la pestaña Resumen.
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
 - Link directo a BGG en cada tarjeta.
-- "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores = Jug. Best + puntaje personal/BGG).
+- "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores dentro de Jug Best mín/máx + puntaje personal/BGG).
 - "¿Cuál comprar?": Watchlist/Want to buy filtrados por duración, complejidad y jugadores.
 
 ## Pendiente si esto vale la pena

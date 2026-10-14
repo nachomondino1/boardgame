@@ -37,22 +37,21 @@ HEADER_RULES = [
     ("descripcion", "descripcion"),
     ("jug min", "jug_min"),
     ("jug max", "jug_max"),
-    ("jug best", "jug_best"),
-    ("entra con", "entra_con_expansion"),
+    ("jug best min", "jug_best_min"),
+    ("jug best max", "jug_best_max"),
     ("duracion", "duracion"),
     ("edad min", "edad_min"),
+    ("weight", "complejidad"),
     ("complejidad", "complejidad"),
     ("disenador", "disenador"),
     ("puntaje bgg", "puntaje_bgg"),
     ("reviews bgg", "reviews_bgg"),
-    ("p x r", "p_x_r"),
+    ("puntaje ajust bgg", "puntaje_ajust_bgg"),
     ("ranking bgg", "ranking_bgg"),
     ("pros", "pros"),
     ("cons", "cons"),
     ("mi puntaje", "mi_puntaje"),
     ("estado", "estado"),
-    ("ocasion ideal", "ocasion_ideal"),
-    ("expansion", "expansion"),
     ("youtube", "youtube"),
     ("notas", "notas"),
 ]
@@ -89,10 +88,10 @@ BGG_SKIP = {
     "Mente Matic (Habano)",
 }
 
-NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "p_x_r"}
-NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "duracion", "edad_min", "reviews_bgg", "ranking_bgg", "mi_puntaje"}
-TEXT_FIELDS = {"nombre", "modo", "descripcion", "jug_best", "entra_con_expansion", "disenador",
-               "pros", "cons", "estado", "ocasion_ideal", "expansion", "youtube", "notas"}
+NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "puntaje_ajust_bgg"}
+NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "jug_best_min", "jug_best_max", "duracion", "edad_min",
+                       "reviews_bgg", "ranking_bgg", "mi_puntaje"}
+TEXT_FIELDS = {"nombre", "modo", "descripcion", "disenador", "pros", "cons", "estado", "youtube", "notas"}
 
 
 def normalize(s):

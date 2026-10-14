@@ -4,8 +4,7 @@ const state = {
   query: "",
   jugadores: null,
   estados: new Set(),
-  ocasion: "Todas",
-  sort: "p_x_r_desc",
+  sort: "puntaje_ajust_bgg_desc",
 };
 
 const ESTADOS = ["Own", "Want to buy", "Watchlist", "Descartado"];
@@ -19,7 +18,6 @@ function matchesFilters(g) {
     if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
   }
   if (state.estados.size > 0 && !state.estados.has(g.estado)) return false;
-  if (state.ocasion !== "Todas" && g.ocasion_ideal !== state.ocasion) return false;
   return true;
 }
 
@@ -88,27 +86,11 @@ function setupControls() {
     estadoChips.appendChild(chip);
   });
 
-  document.getElementById("ocasion-select").addEventListener("change", (e) => {
-    state.ocasion = e.target.value;
-    render();
-  });
-
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
     render();
   });
 
-}
-
-function populateOcasionOptions() {
-  const select = document.getElementById("ocasion-select");
-  const ocasiones = [...new Set(GAMES.map((g) => g.ocasion_ideal).filter(Boolean))].sort();
-  ocasiones.forEach((o) => {
-    const opt = document.createElement("option");
-    opt.value = o;
-    opt.textContent = o;
-    select.appendChild(opt);
-  });
 }
 
 document.getElementById("nav").innerHTML = navTemplate("index.html");
@@ -117,7 +99,6 @@ setupFiltersToggle();
 loadGames()
   .then((data) => {
     GAMES = data;
-    populateOcasionOptions();
     setupControls();
     render();
   })

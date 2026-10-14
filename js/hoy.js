@@ -3,12 +3,17 @@ let GAMES = [];
 const state = {
   jugadores: null,
   incluirDeseados: false,
+  soloBest: false,
 };
 
 function matchesFilters(g) {
   if (state.jugadores == null) return false;
-  if (g.jug_min == null || g.jug_max == null) return false;
-  if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+  if (state.soloBest) {
+    if (!matchesJugBest(g, state.jugadores)) return false;
+  } else {
+    if (g.jug_min == null || g.jug_max == null) return false;
+    if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+  }
   if (!state.incluirDeseados && g.estado !== "Own") return false;
   return true;
 }
@@ -74,6 +79,10 @@ function setupControls() {
   });
   document.getElementById("incluir-deseados").addEventListener("change", (e) => {
     state.incluirDeseados = e.target.checked;
+    render();
+  });
+  document.getElementById("solo-best").addEventListener("change", (e) => {
+    state.soloBest = e.target.checked;
     render();
   });
 }

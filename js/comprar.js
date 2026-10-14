@@ -7,7 +7,7 @@ const state = {
   duracionMax: 180,
   complejidadMax: 5,
   jugadores: null,
-  sort: "p_x_r_desc",
+  sort: "puntaje_ajust_bgg_desc",
 };
 
 function matchesFilters(g) {

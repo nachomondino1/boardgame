@@ -8,16 +8,18 @@ function normalize(str) {
     .toLowerCase();
 }
 
-function parseJugBest(jugBest, n) {
-  if (!jugBest) return false;
-  const cleaned = jugBest.trim();
-  if (cleaned.includes("-")) {
-    const [a, b] = cleaned.split("-").map((x) => parseInt(x, 10));
-    return n >= a && n <= b;
-  }
-  const nums = cleaned.match(/\d+/g);
-  if (!nums) return false;
-  return nums.map(Number).includes(n);
+function jugBestRange(g) {
+  if (g.jug_best_min == null && g.jug_best_max == null) return null;
+  const lo = g.jug_best_min != null ? g.jug_best_min : g.jug_best_max;
+  const hi = g.jug_best_max != null ? g.jug_best_max : g.jug_best_min;
+  return [lo, hi];
+}
+
+function matchesJugBest(g, n) {
+  if (n == null) return false;
+  const range = jugBestRange(g);
+  if (!range) return false;
+  return n >= range[0] && n <= range[1];
 }
 
 function estadoBadgeClass(estado) {
@@ -52,21 +54,23 @@ function loadGames() {
 // si N es el número ideal de jugadores, y el puntaje personal/BGG como desempate.
 function recommendationScore(g, n) {
   let score = 0;
-  if (n != null && parseJugBest(g.jug_best, n)) score += 3;
+  if (matchesJugBest(g, n)) score += 3;
   if (g.complejidad != null && g.complejidad <= 2.5) score += 1.5;
   if (g.duracion != null && g.duracion <= 60) score += 1;
   if (g.modo && normalize(g.modo).includes("cooperativo")) score += 0.5;
   if (g.mi_puntaje != null) score += g.mi_puntaje / 10;
-  else if (g.p_x_r != null) score += (g.p_x_r / 10) * 0.5;
+  else if (g.puntaje_ajust_bgg != null) score += (g.puntaje_ajust_bgg / 10) * 0.5;
   return score;
 }
 
 function cardTemplate(g, opts) {
   opts = opts || {};
-  const idealHoy = opts.jugadores != null && parseJugBest(g.jug_best, opts.jugadores);
+  const idealHoy = opts.jugadores != null && matchesJugBest(g, opts.jugadores);
   const jugRange = g.jug_min != null && g.jug_max != null
     ? (g.jug_min === g.jug_max ? `${g.jug_min}` : `${g.jug_min}–${g.jug_max}`)
     : "?";
+  const jugBest = jugBestRange(g);
+  const jugBestLabel = jugBest ? (jugBest[0] === jugBest[1] ? `${jugBest[0]}` : `${jugBest[0]}–${jugBest[1]}`) : null;
   const complejidadHtml = g.complejidad != null
     ? `<span class="complexity-pill" style="background:${complexityColor(g.complejidad)}">${g.complejidad.toFixed(1)}</span>`
     : `<span class="tag">complejidad ?</span>`;
@@ -98,17 +102,16 @@ function cardTemplate(g, opts) {
         <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
       </div>
       <div class="stat-row">
-        <span class="stat">👥 ${jugRange}${g.jug_best ? ` (mejor: ${escapeHtml(g.jug_best)})` : ""}</span>
+        <span class="stat">👥 ${jugRange}${jugBestLabel ? ` (mejor: ${jugBestLabel})` : ""}</span>
         <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
         <span class="stat">⚙️ ${complejidadHtml}</span>
       </div>
       <div class="stat-row">
         <span class="stat">BGG: ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</span>
-        <span class="stat">P×r: ${g.p_x_r != null ? g.p_x_r.toFixed(2) : "?"}</span>
+        <span class="stat">Puntaje ajustado: ${g.puntaje_ajust_bgg != null ? g.puntaje_ajust_bgg.toFixed(2) : "?"}</span>
         ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
       </div>
       <div class="stat-row">
-        ${g.ocasion_ideal ? `<span class="tag">${escapeHtml(g.ocasion_ideal)}</span>` : ""}
         ${idealHoy ? `<span class="badge ideal-badge">Ideal para hoy</span>` : ""}
         ${recomendadoBadge}
         ${bggLink}
