@@ -44,25 +44,11 @@ function render() {
     return;
   }
 
-  const topN = Math.min(3, withScore.length);
-  const topScore = withScore[topN - 1].score;
-  // si varios empatan en el puntaje de corte, quedan todos adentro de "recomendados"
-  const recomendadosSet = new Set(withScore.filter((x) => x.score >= topScore).map((x) => x.g.nombre));
-
-  const recomendadosHtml = withScore
-    .filter((x) => recomendadosSet.has(x.g.nombre))
-    .map((x) => cardTemplate(x.g, { jugadores: state.jugadores, recomendado: true }))
-    .join("");
-  const restoHtml = withScore
-    .filter((x) => !recomendadosSet.has(x.g.nombre))
+  const gamesHtml = withScore
     .map((x) => cardTemplate(x.g, { jugadores: state.jugadores }))
     .join("");
 
-  grid.innerHTML = `
-    <div class="section-label">✨ Recomendados</div>
-    <div class="grid">${recomendadosHtml}</div>
-    ${restoHtml ? `<div class="section-label">También podés jugar</div><div class="grid">${restoHtml}</div>` : ""}
-  `;
+  grid.innerHTML = `<div class="grid">${gamesHtml}</div>`;
 }
 
 function setJugadores(n) {

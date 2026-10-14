@@ -385,9 +385,9 @@ main {
   .badge-descartado { color: #f0909c; }
 }
 
-.ideal-badge {
-  background: var(--accent);
-  color: var(--accent-contrast);
+.badge-best {
+  background: #2a9d5c;
+  color: #ffffff;
 }
 
 .stat-row {
@@ -602,19 +602,6 @@ details p {
   height: 4px;
   cursor: pointer;
   margin: 9px 0;
-}
-
-.section-label {
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted-soft);
-  margin: 28px 0 12px;
-}
-
-.section-label:first-child {
-  margin-top: 0;
 }
 
 @media (max-width: 640px) {

@@ -25,7 +25,6 @@ function matchesJugBest(g, n) {
 function estadoBadgeClass(estado) {
   switch (estado) {
     case "Own": return "badge-own";
-    case "Want to buy": return "badge-want";
     case "Watchlist": return "badge-watch";
     case "Descartado": return "badge-descartado";
     default: return "badge-other";
@@ -65,7 +64,7 @@ function recommendationScore(g, n) {
 
 function cardTemplate(g, opts) {
   opts = opts || {};
-  const idealHoy = opts.jugadores != null && matchesJugBest(g, opts.jugadores);
+  const esBest = opts.jugadores != null && matchesJugBest(g, opts.jugadores);
   const jugRange = g.jug_min != null && g.jug_max != null
     ? (g.jug_min === g.jug_max ? `${g.jug_min}` : `${g.jug_min}–${g.jug_max}`)
     : "?";
@@ -88,8 +87,8 @@ function cardTemplate(g, opts) {
     ? `<a class="bgg-link" href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">BGG ↗</a>`
     : "";
 
-  const recomendadoBadge = opts.recomendado
-    ? `<span class="badge ideal-badge">✨ Recomendado</span>`
+  const bestBadge = esBest
+    ? `<span class="badge badge-best">👥 Best con ${opts.jugadores}</span>`
     : "";
 
   return `
@@ -112,8 +111,7 @@ function cardTemplate(g, opts) {
         ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
       </div>
       <div class="stat-row">
-        ${idealHoy ? `<span class="badge ideal-badge">Ideal para hoy</span>` : ""}
-        ${recomendadoBadge}
+        ${bestBadge}
         ${bggLink}
       </div>
       ${detailsHtml}
