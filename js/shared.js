@@ -83,9 +83,9 @@ function cardTemplate(g, opts) {
     ? `<details><summary>Más info</summary>${notesParts.join("")}</details>`
     : "";
 
-  const bggLink = g.bgg_url
-    ? `<a class="bgg-link" href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">BGG ↗</a>`
-    : "";
+  const nombreHtml = g.bgg_url
+    ? `<a class="card-title-link" href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">${escapeHtml(g.nombre)}</a>`
+    : escapeHtml(g.nombre);
 
   const bestBadge = esBest
     ? `<span class="badge badge-best">👥 Best con ${opts.jugadores}</span>`
@@ -95,7 +95,7 @@ function cardTemplate(g, opts) {
     <div class="card">
       <div class="card-title-row">
         <div>
-          <div class="card-title">${escapeHtml(g.nombre)}</div>
+          <div class="card-title">${nombreHtml}</div>
           <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}</div>
         </div>
         <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
@@ -110,10 +110,7 @@ function cardTemplate(g, opts) {
         <span class="stat">Puntaje ajustado: ${g.puntaje_ajust_bgg != null ? g.puntaje_ajust_bgg.toFixed(2) : "?"}</span>
         ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
       </div>
-      <div class="stat-row">
-        ${bestBadge}
-        ${bggLink}
-      </div>
+      ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
       ${detailsHtml}
     </div>
   `;
