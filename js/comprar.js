@@ -7,6 +7,7 @@ const state = {
   duracionMax: 180,
   complejidadMax: 5,
   jugadores: null,
+  soloMejor: false,
   sort: "puntaje_ajust_bgg_desc",
 };
 
@@ -16,8 +17,14 @@ function matchesFilters(g) {
   if (g.duracion != null && g.duracion > state.duracionMax) return false;
   if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
   if (state.jugadores != null) {
-    if (g.jug_min == null || g.jug_max == null) return false;
-    if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+    if (state.soloMejor) {
+      if (g.jug_best_min == null) return false;
+      const bestMax = g.jug_best_max ?? g.jug_best_min;
+      if (state.jugadores < g.jug_best_min || state.jugadores > bestMax) return false;
+    } else {
+      if (g.jug_min == null || g.jug_max == null) return false;
+      if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
+    }
   }
   return true;
 }
@@ -82,19 +89,37 @@ function setupControls() {
   });
 
   const playerLabel = document.getElementById("player-label");
+  const bestOnlyInput = document.getElementById("best-only");
+
+  function syncBestOnlyAvailability() {
+    bestOnlyInput.disabled = state.jugadores == null;
+    if (state.jugadores == null && state.soloMejor) {
+      state.soloMejor = false;
+      bestOnlyInput.checked = false;
+    }
+  }
+
   document.getElementById("player-minus").addEventListener("click", () => {
     state.jugadores = Math.max(1, (state.jugadores ?? 2) - 1);
     playerLabel.textContent = state.jugadores;
+    syncBestOnlyAvailability();
     render();
   });
   document.getElementById("player-plus").addEventListener("click", () => {
     state.jugadores = Math.min(12, (state.jugadores ?? 1) + 1);
     playerLabel.textContent = state.jugadores;
+    syncBestOnlyAvailability();
     render();
   });
   document.getElementById("player-clear").addEventListener("click", () => {
     state.jugadores = null;
     playerLabel.textContent = "todos";
+    syncBestOnlyAvailability();
+    render();
+  });
+
+  bestOnlyInput.addEventListener("change", (e) => {
+    state.soloMejor = e.target.checked;
     render();
   });
 

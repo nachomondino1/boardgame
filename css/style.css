@@ -303,6 +303,20 @@ select:focus {
   cursor: pointer;
 }
 
+.toggle-gusto input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}
+
+.toggle-gusto:has(input:disabled) {
+  color: var(--muted-soft);
+  cursor: not-allowed;
+}
+
+#best-toggle-label {
+  margin-top: 4px;
+  padding: 2px;
+}
+
 .result-count {
   max-width: var(--container);
   margin: 0 auto;
