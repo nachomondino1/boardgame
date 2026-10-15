@@ -559,6 +559,15 @@ details p {
   text-decoration: underline;
 }
 
+.stat-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stat-link:hover {
+  text-decoration: underline;
+}
+
 /* Páginas "Hoy jugamos" / "Cuál comprar": stepper grande, sliders */
 .big-stepper {
   display: flex;

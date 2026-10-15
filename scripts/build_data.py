@@ -31,7 +31,8 @@ NS_PKG_REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 OUTPUT_PATH = "data/data.json"
 
 HEADER_RULES = [
-    ("juego", "nombre"),
+    ("nombre ingles", "nombre_en"),
+    ("nombre espanol", "nombre_es"),
     ("modo", "modo"),
     ("ano", "anio"),
     ("descripcion", "descripcion"),
@@ -52,46 +53,46 @@ HEADER_RULES = [
     ("cons", "cons"),
     ("mi puntaje", "mi_puntaje"),
     ("estado", "estado"),
+    ("link a tienda", "link_tienda"),
+    ("costo", "costo"),
+    ("relacion precio calidad", "precio_calidad"),
     ("youtube", "youtube"),
     ("notas", "notas"),
 ]
 
 # El link a BGG se toma del hyperlink que ya está puesto a mano sobre cada
-# celda de la columna "Juego" en el Sheet (Insertar > Link). La API CSV no
-# expone hyperlinks, asi que para leerlos se descarga el mismo Sheet como
-# .xlsx (que sí los preserva) y se parsean del XML del paquete OOXML.
+# celda de la columna "Nombre ingles" en el Sheet (Insertar > Link). La API
+# CSV no expone hyperlinks, asi que para leerlos se descarga el mismo Sheet
+# como .xlsx (que sí los preserva) y se parsean del XML del paquete OOXML.
 #
 # Si una fila no tiene hyperlink puesto, se cae a un link de busqueda de BGG
-# por titulo: no es el permalink exacto, pero lleva directo al juego correcto
-# en la gran mayoria de los casos. BGG_SEARCH_OVERRIDES pisa el termino de
-# busqueda para esas filas, cuando el nombre de la caja no coincide con el
-# titulo real en BGG (la pista suele estar en la columna Notas del Sheet).
+# por titulo (usando "Nombre ingles", no la traduccion local): no es el
+# permalink exacto, pero lleva directo al juego correcto en la gran mayoria
+# de los casos. BGG_SEARCH_OVERRIDES pisa el termino de busqueda para esas
+# filas, cuando el nombre de la caja no coincide con el titulo real en BGG
+# (la pista suele estar en la columna Notas del Sheet).
 # BGG_SKIP son juegos sin una ficha razonable en BGG (combos de dos juegos,
 # rompecabezas, etc), y gana aunque la fila tenga un hyperlink puesto.
 BGG_SEARCH_OVERRIDES = {
-    "Cruzabell": "Cruzabell",
-    "Código Secreto": "Codenames",
-    "Catan (edición nueva, Devir)": "Catan",
-    "Pistas Cruzadas (Cross Clues)": "Cross Clues",
-    "La Isla Prohibida (Devir)": "Forbidden Island",
     "Fantasma Blitz": "Ghost Blitz",
     "Misterio (Ruibal)": "Misterio",
-    "Alcatraz: la fuga imposible (ToyCo)": "Alcatraz",
+    "Alcatraz: la fuga imposible": "Alcatraz",
     "Memotest (Ruibal)": "Memory",
-    "Batalla Naval (Ruibal)": "Battleship",
+    "Batalla Naval": "Battleship",
     "Ludo (Mickey and Kids)": "Pachisi",
 }
 BGG_SKIP = {
-    "Ajedrez y damas (Cayro)",
+    "Ajedrez y damas",
     "Ajedrez / Backgammon (caja rosa)",
     "Puzzles Trefl 1000 piezas",
     "Mente Matic (Habano)",
 }
 
-NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "puntaje_ajust_bgg"}
+NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "puntaje_ajust_bgg", "precio_calidad"}
 NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "jug_best_min", "jug_best_max", "duracion", "edad_min",
-                       "reviews_bgg", "ranking_bgg", "mi_puntaje"}
-TEXT_FIELDS = {"nombre", "modo", "descripcion", "disenador", "pros", "cons", "estado", "youtube", "notas"}
+                       "reviews_bgg", "ranking_bgg", "mi_puntaje", "costo"}
+TEXT_FIELDS = {"nombre", "nombre_en", "nombre_es", "modo", "descripcion", "disenador", "pros", "cons", "estado",
+               "link_tienda", "youtube", "notas"}
 
 
 def normalize(s):
@@ -203,16 +204,14 @@ def map_header(header_row):
 def build_games(rows, bgg_hyperlinks):
     header_idx = None
     for i, row in enumerate(rows):
-        if row and normalize(row[0]) == "juego":
+        if row and "nombre_en" in map_header(row).values():
             header_idx = i
             break
     if header_idx is None:
-        raise RuntimeError("No encontre la fila de encabezado (columna 'Juego') en el CSV exportado.")
+        raise RuntimeError("No encontre la fila de encabezado (columna 'Nombre ingles') en el CSV exportado.")
 
     field_by_col = map_header(rows[header_idx])
-    if "nombre" not in field_by_col.values():
-        raise RuntimeError("No pude mapear la columna 'Juego' del encabezado.")
-    nombre_col = next(idx for idx, field in field_by_col.items() if field == "nombre")
+    nombre_col = next(idx for idx, field in field_by_col.items() if field == "nombre_en")
     nombre_col_letter = col_letter(nombre_col)
 
     games = []
@@ -228,8 +227,12 @@ def build_games(rows, bgg_hyperlinks):
                 game[field] = to_int(value)
             else:
                 game[field] = value.strip()
+        # "Nombre español" es el nombre de catalogo cuando esta cargado (la
+        # traduccion/edicion local); si esta vacio, el Sheet repite el mismo
+        # nombre en "Nombre ingles" en vez de duplicarlo a mano.
+        game["nombre"] = game.get("nombre_es") or game.get("nombre_en", "")
         exact_url = bgg_hyperlinks.get(f"{nombre_col_letter}{row_num}")
-        game["bgg_url"] = resolve_bgg_url(game.get("nombre", ""), exact_url)
+        game["bgg_url"] = resolve_bgg_url(game.get("nombre_en", ""), exact_url)
         games.append(game)
     return games
 

@@ -14,9 +14,9 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 
 ## Páginas
 
-- `index.html` — **Catálogo**: los 57 juegos, buscador, filtros y orden.
+- `index.html` — **Catálogo**: los juegos del Sheet, buscador, filtros y orden.
 - `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), ordenado por una heurística de qué tan bueno es cada juego para hoy. El toggle "incluir Watchlist" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
-- `comprar.html` — **¿Cuál comprar?**: solo Watchlist, con sliders de duración máxima y complejidad máxima, y el mismo filtro de jugadores.
+- `comprar.html` — **¿Cuál comprar?**: solo Watchlist, con sliders de duración máxima y complejidad máxima, el mismo filtro de jugadores, y (cuando el Sheet los tiene cargados) link a la tienda, costo relevado y relación precio/calidad en cada tarjeta, con opción de ordenar por estos dos últimos.
 
 ## Archivos
 
@@ -29,7 +29,7 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 
 ### Links a BGG
 
-BGG cerró el acceso sin autenticación a su API XML (devuelve 401), así que no se puede resolver el ID exacto de cada juego en el build automático. En cambio, cada juego linkea a una búsqueda de BGG por título (`geeksearch.php?...&q=<nombre>`), que en la práctica cae directo en el juego correcto como primer resultado. Para ediciones locales o proxys (p. ej. "Misterio (Ruibal)" → busca "Misterio", "Memotest (Ruibal)" → busca "Memory"), el término de búsqueda correcto está hardcodeado en `BGG_SEARCH_OVERRIDES` dentro de `scripts/build_data.py`, tomado de las pistas que ya estaban en la columna Notas del Sheet. Los combos/puzzles sin ficha real en BGG (ajedrez+damas, el puzzle de 1000 piezas, etc.) están en `BGG_SKIP` y no muestran link.
+BGG cerró el acceso sin autenticación a su API XML (devuelve 401), así que no se puede resolver el ID exacto de cada juego en el build automático. En cambio, cada juego linkea a una búsqueda de BGG por título, usando la columna "Nombre ingles" del Sheet (no la traducción local) como término (`geeksearch.php?...&q=<nombre>`), que en la práctica cae directo en el juego correcto como primer resultado. Para ediciones locales o proxys (p. ej. "Misterio (Ruibal)" → busca "Misterio", "Memotest (Ruibal)" → busca "Memory"), el término de búsqueda correcto está hardcodeado en `BGG_SEARCH_OVERRIDES` dentro de `scripts/build_data.py`, tomado de las pistas que ya estaban en la columna Notas del Sheet. Los combos/puzzles sin ficha real en BGG (ajedrez+damas, el puzzle de 1000 piezas, etc.) están en `BGG_SKIP` y no muestran link.
 
 ### Sincronizar a mano
 
@@ -47,9 +47,9 @@ La pestaña "Juegos" se lee vía el endpoint de export de Google Sheets (`.../ex
 - Orden por Puntaje ajustado, Puntaje BGG, Mi puntaje, Complejidad o Duración.
 - Toggle "Según mi gusto" (duración ≤60 min, complejidad ≤2.5), tomado de la sección "Mi gusto" de la pestaña Resumen.
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
-- Link directo a BGG en cada tarjeta.
+- Link directo a BGG en el título de cada tarjeta.
 - "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores dentro de Jug Best mín/máx + puntaje personal/BGG).
-- "¿Cuál comprar?": Watchlist filtrada por duración, complejidad y jugadores.
+- "¿Cuál comprar?": Watchlist filtrada por duración, complejidad y jugadores, con link a la tienda, costo relevado y relación precio/calidad cuando están cargados en el Sheet.
 
 ## Pendiente si esto vale la pena
 

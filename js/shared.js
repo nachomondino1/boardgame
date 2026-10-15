@@ -91,6 +91,15 @@ function cardTemplate(g, opts) {
     ? `<span class="badge badge-best">👥 Best con ${opts.jugadores}</span>`
     : "";
 
+  const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda)
+    ? `
+      <div class="stat-row">
+        ${g.costo != null ? `<span class="stat">💰 $${g.costo.toLocaleString("es-AR")}</span>` : ""}
+        ${g.precio_calidad != null ? `<span class="stat">Precio/calidad: ${g.precio_calidad.toFixed(2)}</span>` : ""}
+        ${g.link_tienda ? `<a class="stat stat-link" href="${escapeHtml(g.link_tienda)}" target="_blank" rel="noopener">Tienda ↗</a>` : ""}
+      </div>`
+    : "";
+
   return `
     <div class="card">
       <div class="card-title-row">
@@ -111,6 +120,7 @@ function cardTemplate(g, opts) {
         ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
       </div>
       ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
+      ${compraHtml}
       ${detailsHtml}
     </div>
   `;
