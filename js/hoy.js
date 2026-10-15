@@ -58,10 +58,10 @@ function setJugadores(n) {
 
 function setupControls() {
   document.getElementById("player-minus").addEventListener("click", () => {
-    setJugadores((state.jugadores ?? 3) - 1);
+    setJugadores((state.jugadores ?? 1) - 1);
   });
   document.getElementById("player-plus").addEventListener("click", () => {
-    setJugadores((state.jugadores ?? 1) + 1);
+    setJugadores((state.jugadores ?? 0) + 1);
   });
   document.getElementById("incluir-deseados").addEventListener("change", (e) => {
     state.incluirDeseados = e.target.checked;

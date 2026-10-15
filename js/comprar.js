@@ -100,13 +100,13 @@ function setupControls() {
   }
 
   document.getElementById("player-minus").addEventListener("click", () => {
-    state.jugadores = Math.max(1, (state.jugadores ?? 2) - 1);
+    state.jugadores = Math.max(1, (state.jugadores ?? 1) - 1);
     playerLabel.textContent = state.jugadores;
     syncBestOnlyAvailability();
     render();
   });
   document.getElementById("player-plus").addEventListener("click", () => {
-    state.jugadores = Math.min(12, (state.jugadores ?? 1) + 1);
+    state.jugadores = Math.min(12, (state.jugadores ?? 0) + 1);
     playerLabel.textContent = state.jugadores;
     syncBestOnlyAvailability();
     render();
