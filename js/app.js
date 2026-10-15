@@ -7,7 +7,7 @@ const state = {
   sort: "puntaje_ajust_bgg_desc",
 };
 
-const ESTADOS = ["Own", "Watchlist", "Descartado"];
+const ESTADOS = ["Own", "Watchlist"];
 
 function matchesFilters(g) {
   if (state.query) {

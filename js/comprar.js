@@ -1,6 +1,6 @@
 let GAMES = [];
 
-const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Ambos", "A confirmar"];
+const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Ambos"];
 
 const state = {
   tipos: new Set(),
