@@ -43,7 +43,7 @@ La pestaña "Juegos" se lee vía el endpoint de export de Google Sheets (`.../ex
 
 - Buscador instantáneo por nombre (Catálogo).
 - Filtro "¿cuántos jugadores somos?" (usa Jug. mín/máx, y marca con un tag verde "Best con N" si N coincide con Jug Best mín/máx).
-- Filtros por Estado (Own / Watchlist / Descartado).
+- Filtros por Estado (Own / Watchlist / Prev. owned).
 - Orden por Puntaje ajustado, Puntaje BGG, Mi puntaje, Complejidad o Duración.
 - Toggle "Según mi gusto" (duración ≤60 min, complejidad ≤2.5), tomado de la sección "Mi gusto" de la pestaña Resumen.
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.

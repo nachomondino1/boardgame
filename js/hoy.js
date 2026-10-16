@@ -14,7 +14,8 @@ function matchesFilters(g) {
     if (g.jug_min == null || g.jug_max == null) return false;
     if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
   }
-  if (!state.incluirDeseados && g.estado !== "Own") return false;
+  const estadosPermitidos = state.incluirDeseados ? new Set(["Own", "Watchlist"]) : new Set(["Own"]);
+  if (!estadosPermitidos.has(g.estado)) return false;
   return true;
 }
 
