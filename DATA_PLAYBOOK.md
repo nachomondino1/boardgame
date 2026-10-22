@@ -15,7 +15,7 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 Google Sheet (público "cualquiera con el enlace: lector")
         │  export CSV sin auth (y opcionalmente export .xlsx si hace falta algo que el CSV no trae)
         ▼
-scripts/build_data.py
+02_data_preparation/build_data.py
         │  mapea columnas por texto de encabezado → campos normalizados
         │  parsea tipos (números, texto) + enriquece con lógica propia del dominio
         ▼
@@ -40,13 +40,14 @@ Nadie en el camino del usuario final toca la API de Google: para quien visita el
 - **Mapeo de columnas por texto del encabezado, no por posición/índice.** Agregar o reordenar una columna en el Sheet no rompe el build; una columna nueva sin regla se ignora en silencio (ver "Qué evitar" sobre el costo de ese silencio).
 - **Falla ruidosa ante datos sospechosos.** El script corta con `sys.exit(1)` si parsea muy pocas filas o no encuentra la columna esperada, en vez de commitear un JSON vacío o a medio llenar. Un build que "funciona" pero pisa datos buenos con basura es peor que un build que no corre.
 - **Lógica de enriquecimiento específica del dominio vive en el script, como constantes documentadas**, no desparramada en el frontend. En este proyecto es la resolución de links a BGG (`BGG_SEARCH_OVERRIDES`, `BGG_SKIP`): cada entrada tiene al lado, en un comentario, de dónde salió el override (en este caso, pistas que ya estaban a mano en la columna "Notas" del Sheet).
+- **Enriquecimiento externo con caché por id estable, y el Sheet siempre gana.** `02_data_preparation/enrich_bgg.py` arma `data/cache/bgg/<id>.json` (gitignored, un archivo por juego) y `build_data.py` lo usa solo como **fallback**: completa un campo (`puntaje_bgg`, `complejidad`, etc.) únicamente si el Sheet lo dejó vacío, nunca pisa un valor ya cargado a mano. El paso de enriquecimiento quedó fuera del cron porque la fuente (BGG) exige pasar un challenge de Cloudflare a mano hasta que aprueben el acceso a su API oficial — automatizarlo sería evadir esa protección, algo que se evita a propósito aunque técnicamente se pudiera. Mientras tanto es un comando manual (ver README); el día que BGG apruebe la API, pasa a `--mode api` sin cookies y ahí sí puede sumarse al cron.
 
 ## Cómo adaptarlo a un proyecto nuevo
 
 1. Compartir el Sheet fuente como "Cualquiera con el enlace: Lector" y anotar su `SPREADSHEET_ID` y el `GID` de la pestaña a leer (ambos están en la URL cuando tenés esa pestaña abierta).
 2. Escribir el mapeo de columnas (`HEADER_RULES` o equivalente) en base al **texto** de los headers reales del Sheet, nunca a su posición. Dejar explícito qué pasa con una columna que no matchea ninguna regla (en este proyecto: se ignora).
 3. Separar los campos en numéricos vs. texto, con cuidado si el Sheet usa coma decimal (es-AR/es-ES) — no asumir `parseFloat` directo sobre `"3,5"`.
-4. Si necesitás algo que el export CSV no expone (hyperlinks puestos a mano, formato condicional, etc.), exportar como `.xlsx` y parsear el XML del paquete OOXML. `scripts/build_data.py::fetch_sheet_hyperlinks` es la receta completa (workbook.xml → rels → hoja → `<hyperlinks>`).
+4. Si necesitás algo que el export CSV no expone (hyperlinks puestos a mano, formato condicional, etc.), exportar como `.xlsx` y parsear el XML del paquete OOXML. `02_data_preparation/build_data.py::fetch_sheet_hyperlinks` es la receta completa (workbook.xml → rels → hoja → `<hyperlinks>`).
 5. Hacer que el script sea prolijo ante fallos parciales: si el request a Google falla o devuelve algo inesperado, cortar con un mensaje claro en vez de seguir con datos parciales.
 6. Crear el workflow de GitHub Actions: `schedule` (cron) + `workflow_dispatch` (para forzar el sync a mano sin esperar), `permissions: contents: write`, y commitear **solo si `git diff --cached` tiene algo** — si no, el job no debe ensuciar el historial con commits vacíos.
 7. En el frontend: `<link rel="preload" as="fetch" crossorigin>` del JSON en el `<head>` de cada página que lo necesita (arranca la descarga en paralelo al parseo del HTML), `fetch()` simple en el JS, y un estado de error visible en el DOM si el fetch falla — nunca fallar en silencio dejando la página en blanco.

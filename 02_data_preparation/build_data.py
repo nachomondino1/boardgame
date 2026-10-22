@@ -29,6 +29,15 @@ NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 NS_PKG_REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 
 OUTPUT_PATH = "data/data.json"
+BGG_CACHE_DIR = "data/cache/bgg"
+
+# Campos que, si el Sheet los dejó vacíos, se completan con el caché de BGG
+# (ver scripts/enrich_bgg.py) cuando el juego tiene un link exacto a BGG.
+# El Sheet manda siempre: esto nunca pisa un valor ya cargado a mano.
+BGG_FALLBACK_FIELDS = (
+    "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
+    "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
+)
 
 HEADER_RULES = [
     ("nombre ingles", "nombre_en"),
@@ -190,6 +199,34 @@ def fetch_sheet_hyperlinks(sheet_name):
         return hyperlinks
 
 
+def apply_bgg_fallback(game):
+    """Completa con el caché de BGG (scripts/enrich_bgg.py) los campos que el
+    Sheet dejó vacíos. El Sheet siempre tiene prioridad; esto nunca pisa un
+    valor ya cargado a mano."""
+    bgg_id_match = re.search(r"/boardgame(?:expansion)?/(\d+)", game.get("bgg_url") or "")
+    if not bgg_id_match:
+        return
+    cache_path = f"{BGG_CACHE_DIR}/{bgg_id_match.group(1)}.json"
+    try:
+        with open(cache_path, encoding="utf-8") as f:
+            cached = json.load(f)
+    except FileNotFoundError:
+        return
+
+    for field in BGG_FALLBACK_FIELDS:
+        if game.get(field) is not None:
+            continue
+        value = cached.get(field)
+        if value is None:
+            continue
+        if field in NUMERIC_FIELDS_FLOAT:
+            game[field] = to_float(str(value))
+        elif field in NUMERIC_FIELDS_INT:
+            game[field] = to_int(str(value))
+        else:
+            game[field] = value
+
+
 def map_header(header_row):
     field_by_col = {}
     for idx, cell in enumerate(header_row):
@@ -233,6 +270,7 @@ def build_games(rows, bgg_hyperlinks):
         game["nombre"] = game.get("nombre_es") or game.get("nombre_en", "")
         exact_url = bgg_hyperlinks.get(f"{nombre_col_letter}{row_num}")
         game["bgg_url"] = resolve_bgg_url(game.get("nombre_en", ""), exact_url)
+        apply_bgg_fallback(game)
         games.append(game)
     return games
 
