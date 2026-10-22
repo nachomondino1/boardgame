@@ -6,12 +6,20 @@ Cada ficha de producto trae un atributo data-variants con un JSON embebido
 (precio, stock, disponibilidad) — se parsea eso en vez de clases CSS, que
 cambian más seguido con el tema de la tienda.
 
+La Watchlist puede ser grande (hasta ~1000 candidatos del top N de BGG, no
+solo lo que cargabas a mano), y acá sí se le pega a un request por juego: a
+5s de intervalo, 1000 juegos son ~85 minutos. --limit corta la corrida a los
+primeros N juegos de links.json sin precio todavía, para poder ir relevando
+de a tandas en vez de una corrida larga de una — los resultados de corridas
+anteriores no se pisan, se mergea por nombre.
+
 Uso:
     python3 01_data_understanding/bosque_ludico/resolve_bosque_links.py   # primero, si no corrió
-    python3 01_data_understanding/bosque_ludico/collect_bosque_precios.py
+    python3 01_data_understanding/bosque_ludico/collect_bosque_precios.py [--limit N]
 
 Salida: 01_data_understanding/bosque_ludico/bosque_data.json
 """
+import argparse
 import datetime
 import html
 import json
@@ -66,32 +74,45 @@ def parse_price(page_html, url):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Releva precio/disponibilidad en El Bosque Lúdico para la Watchlist")
+    parser.add_argument("--limit", type=int, default=None,
+                         help="relevar como máximo N juegos (los que todavía no tengan precio guardado)")
+    args = parser.parse_args()
+
     if not LINKS_PATH.exists():
         sys.exit(f"No existe {LINKS_PATH}; corré primero resolve_bosque_links.py")
     links = json.loads(LINKS_PATH.read_text(encoding="utf-8"))
 
-    hoy = datetime.date.today().isoformat()
-    results = []
-    con_link = [l for l in links if l.get("bosque_url")]
+    existing = {}
+    if OUTPUT_PATH.exists():
+        existing = {e["nombre"]: e for e in json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))}
 
-    for i, link in enumerate(con_link):
+    pendientes = [l for l in links if l.get("bosque_url") and l["nombre"] not in existing]
+    if args.limit is not None:
+        pendientes = pendientes[: args.limit]
+    if not pendientes:
+        print("Nada pendiente de relevar (todos ya tienen precio guardado, o ninguno tiene link a la tienda).")
+        return
+
+    hoy = datetime.date.today().isoformat()
+    for i, link in enumerate(pendientes):
         nombre, url = link["nombre"], link["bosque_url"]
-        print(f"[{i + 1}/{len(con_link)}] {nombre}...")
+        print(f"[{i + 1}/{len(pendientes)}] {nombre}...")
         try:
             page_html = http_get(url)
             precio = parse_price(page_html, url)
         except Exception as e:
             print(f"  error: {e}", file=sys.stderr)
-            results.append({"nombre": nombre, "bosque_url": url, "fecha_relevado": hoy, "error": str(e)})
+            existing[nombre] = {"nombre": nombre, "bosque_url": url, "fecha_relevado": hoy, "error": str(e)}
         else:
-            results.append({"nombre": nombre, "bosque_url": url, "fecha_relevado": hoy, **precio})
+            existing[nombre] = {"nombre": nombre, "bosque_url": url, "fecha_relevado": hoy, **precio}
             print(f"  ${precio['precio']} disponible={precio['disponible']}")
 
-        if i < len(con_link) - 1:
+        if i < len(pendientes) - 1:
             time.sleep(CRAWL_DELAY_SECONDS)
 
-    OUTPUT_PATH.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\nGuardado en {OUTPUT_PATH}")
+    OUTPUT_PATH.write_text(json.dumps(list(existing.values()), ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\nGuardado en {OUTPUT_PATH} ({len(existing)} juego(s) en total)")
 
 
 if __name__ == "__main__":

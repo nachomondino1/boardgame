@@ -1,10 +1,11 @@
 """Arma el catálogo central juego -> links externos (BGG + El Bosque Lúdico)
-para los juegos en Watchlist ("juegos.algo": los que no tenés, candidatos a
-comprar), como paso previo a relevar precios.
+para los juegos en Watchlist (lo que no tenés: candidatos de game_universe —
+tu ludoteca + el top N de BGG, ver ../game_universe.py), como paso previo a
+relevar precios.
 
 Unidad de análisis: un juego de la Watchlist. Para cada uno se guarda el
-nombre, el link a BGG (ya resuelto en sheet_source.load_games()) y el link a
-su ficha en El Bosque Lúdico, resuelto acá por nombre.
+nombre, el link a BGG (ya resuelto en game_universe.load_universe()) y el
+link a su ficha en El Bosque Lúdico, resuelto acá por nombre.
 
 Por qué no se usa /search/?q=... de El Bosque Lúdico: su robots.txt bloquea
 "Disallow: /search/" explícitamente. En cambio se descarga una sola vez su
@@ -13,16 +14,21 @@ todas las fichas de producto, y se matchea cada juego contra esos slugs por
 similitud de texto. Esto resuelve el link con un solo request, sin tocar
 ninguna ruta disallowed.
 
-Lee el Sheet directo (vía sheet_source.load_games(), en 01_data_understanding/
-sheet/), no docs/data/data.json: ese archivo es un *output* de
-02_data_preparation, y 01_data_understanding (recolección cruda) nunca
+Lee el universo de juegos directo (vía game_universe.load_universe(), en
+01_data_understanding/), no docs/data/data.json: ese archivo es un *output*
+de 02_data_preparation, y 01_data_understanding (recolección cruda) nunca
 depende de un output de 02 (integración) — solo al revés.
+
+La Watchlist puede ser grande ahora (hasta ~1000 candidatos del top N de
+BGG, no solo lo que cargabas a mano): collect_bosque_precios.py acepta
+--limit para no tener que relevar el precio de todos en una corrida.
 
 Salida: 01_data_understanding/bosque_ludico/links.json
 Siguiente paso: 01_data_understanding/bosque_ludico/collect_bosque_precios.py
 lee ese archivo y releva el precio actual de cada link; 02_data_preparation/
 integrate_data.py integra ese precio en docs/data/data.json como fallback de
-costo/link_tienda (el Sheet sigue mandando si esos campos ya están cargados).
+costo/link_tienda (mi_ludoteca.json sigue mandando si esos campos ya están
+cargados ahí).
 """
 import difflib
 import gzip
@@ -33,8 +39,8 @@ import unicodedata
 import urllib.request
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sheet"))
-from sheet_source import load_games  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from game_universe import load_universe  # noqa: E402
 
 SITEMAP_URL = "https://acdn-us.mitiendanube.com/stores/005/798/114/themes/common/sitemap.xml.gz"
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
@@ -43,11 +49,12 @@ OUTPUT_PATH = Path(__file__).resolve().parent / "links.json"
 
 MATCH_THRESHOLD = 0.8  # fracción de palabras del termino buscado que tienen que aparecer en el slug
 
-# Mismo patrón que BGG_SEARCH_OVERRIDES / BGG_SKIP en sheet_source.py: para
-# ediciones locales o nombres que no matchean bien contra el catálogo de la
-# tienda, se fuerza el término de búsqueda o se marca el juego como sin link.
+# Mismo patrón que BGG_SEARCH_OVERRIDES / BGG_SKIP en ludoteca_source.py:
+# para ediciones locales o nombres que no matchean bien contra el catálogo
+# de la tienda, se fuerza el término de búsqueda o se marca el juego como
+# sin link.
 BOSQUE_SEARCH_OVERRIDES = {
-    # "Nombre del Sheet": "término a buscar en vez de nombre_en",
+    # "Nombre del juego": "término a buscar en vez de nombre_en",
 }
 BOSQUE_SKIP = {
     # juegos que sabemos que la tienda no vende
@@ -63,10 +70,10 @@ def normalize(s):
 
 
 def load_watchlist():
-    games = load_games()
+    games = load_universe()
     watchlist = [g for g in games if (g.get("estado") or "").strip() == "Watchlist"]
     if not watchlist:
-        sys.exit("No encontré juegos con estado Watchlist en el Sheet")
+        sys.exit("No encontré juegos con estado Watchlist (¿corriste bgg/collect_bgg_rankings.py?)")
     return watchlist
 
 

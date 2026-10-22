@@ -1,0 +1,237 @@
+[
+  {
+    "nombre_en": "Ajedrez / Backgammon (caja rosa)",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "notas": "Combo; texto de la caja leído a medias, confirmar. Ref. BGG: Backgammon 6.58."
+  },
+  {
+    "nombre_en": "Ajedrez y damas",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "notas": "Combo de dos juegos. Ref. BGG: Chess 7.24 / Checkers 4.95."
+  },
+  {
+    "nombre_en": "Alcatraz: la fuga imposible",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/1407/alcatraz",
+    "notas": "Posible match: BGG 'Alcatraz' (1999). Verificar con el link que sea el mismo juego."
+  },
+  {
+    "nombre_en": "Bandida",
+    "nombre_es": "Bandida",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/299571/bandida",
+    "notas": "Se puede jugar en solitario.",
+    "mi_puntaje": 5
+  },
+  {
+    "nombre_en": "Batalla Naval",
+    "nombre_es": "Batalla Naval",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/2425/battleship",
+    "notas": "BGG lo lista como 'Battleship' (el juego original)."
+  },
+  {
+    "nombre_en": "Catan",
+    "nombre_es": "Catan",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/13/catan",
+    "notas": "tengo Ampliación 5-6 jug. (máx. 6)",
+    "mi_puntaje": 7
+  },
+  {
+    "nombre_en": "Cross Clues",
+    "nombre_es": "Pistas cruzadas",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/300753/cross-clues",
+    "notas": "Mejor con 4 (BoardGameBliss). Partidas de 5-10 min.",
+    "mi_puntaje": 7
+  },
+  {
+    "nombre_en": "Cruzabell",
+    "nombre_es": "Cruzabell",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "notas": "Estilo Scrabble (BGG: Scrabble 6.28). Jugadores y edad estimados."
+  },
+  {
+    "nombre_en": "Exploding Kittens",
+    "nombre_es": "Exploding Kittens",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/172225/exploding-kittens",
+    "notas": "Tengo ampliacion Imploding Kittens (máx. 6)",
+    "mi_puntaje": 4
+  },
+  {
+    "nombre_en": "Forbidden island",
+    "nombre_es": "Forbidden island",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/65244/forbidden-island",
+    "notas": "Caja: 2-4 jugadores, 10+. Es 'Forbidden Island' en BGG.",
+    "mi_puntaje": 7
+  },
+  {
+    "nombre_en": "H.D.P. – Hasta Donde Puedas",
+    "nombre_es": "H.D.P. – Hasta Donde Puedas",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/256640/hdp-hasta-donde-puedas",
+    "notas": "Jugadores y edad sin confirmar."
+  },
+  {
+    "nombre_en": "Just One",
+    "nombre_es": "Just One",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/254640/just-one",
+    "notas": "Ganó el Spiel des Jahres 2019. Mejor con 6-7 según BGG (vía BoardGameBliss).",
+    "mi_puntaje": 8
+  },
+  {
+    "nombre_en": "Ludo (Mickey and Kids)",
+    "nombre_es": "Ludo (Mickey and Kids)",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "bgg_url": "https://boardgamegeek.com/boardgame/2136/pachisi",
+    "notas": "Ludo no tiene ficha propia en BGG: proxy = Pachisi (el juego del que deriva).\n16/10/2026 se lo regalé a dario de la guardia (para que repertan entre ellos)"
+  },
+  {
+    "nombre_en": "Memotest (Ruibal)",
+    "nombre_es": "Memotest (Ruibal)",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "bgg_url": "https://boardgamegeek.com/boardgame/7688/memory",
+    "notas": "Proxy. Caja: 64 fichas, 9 a 99 años. Proxy BGG = 'Memory'. Jugadores estimados."
+  },
+  {
+    "nombre_en": "Mente Matic (Habano)",
+    "nombre_es": "Mente Matic (Habano)",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "notas": "16/10/2026 se lo regalé a dario de la guardia (para que repertan entre ellos)"
+  },
+  {
+    "nombre_en": "Misterio (Ruibal)",
+    "nombre_es": "Misterio (Ruibal)",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/34444/misterio",
+    "notas": "Caja: 2 a 6 jugadores. Posible match con BGG 'Misterio' (1984, solo 244 votos):"
+  },
+  {
+    "nombre_en": "Murder at the Manor",
+    "nombre_es": "Murder at the Manor",
+    "modo": "A confirmar",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/453845/murder-at-the-manor",
+    "notas": "Puntaje BGG\t1,50       \nreviews BGG 2\nno lo pongo porque agrega ruido en puntaje ajustado por reviews x el bajo nro de reviews."
+  },
+  {
+    "nombre_en": "Pictionary",
+    "nombre_es": "Pictionary",
+    "modo": "Equipos",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/2281/pictionary",
+    "notas": "Caja: '3 o más jugadores, +12'. El máx. de 12 es un tope práctico estimado."
+  },
+  {
+    "nombre_en": "Puzzles Trefl 1000 piezas",
+    "nombre_es": "Puzzles Trefl 1000 piezas",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "notas": "Dos cajas ('Photo Odyssey'). No es juego de mesa, BGG no lo puntúa."
+  },
+  {
+    "nombre_en": "Regicide",
+    "nombre_es": "Regicide",
+    "modo": "Cooperativo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/307002/regicide",
+    "notas": "Se juega con un mazo de póker estándar.",
+    "mi_puntaje": 6
+  },
+  {
+    "nombre_en": "Retro Park",
+    "nombre_es": "Retro Park",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/409750/retro-park",
+    "notas": "Datos leídos de la caja: 2-5 jugadores, 7-99 años, 20'. No lo encontré en el ranking de BGG."
+  },
+  {
+    "nombre_en": "Saboteur",
+    "nombre_es": "Saboteur",
+    "modo": "Ambos",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/9220/saboteur",
+    "notas": "Semi-cooperativo: hay saboteadores secretos.",
+    "mi_puntaje": 6
+  },
+  {
+    "nombre_en": "Scrawl",
+    "nombre_es": "Scrawl",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/202982/scrawl",
+    "notas": "Caja: 4-8 jugadores, 17+ ('juego para adultos').",
+    "mi_puntaje": 7
+  },
+  {
+    "nombre_en": "Sequence Classic",
+    "nombre_es": "Sequence Classic",
+    "modo": "Equipos",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/2375/sequence",
+    "notas": "Caja: 2-12 jugadores, 7+.",
+    "mi_puntaje": 5
+  },
+  {
+    "nombre_en": "The Godfather: Corleone's Empire",
+    "nombre_es": "The Godfather: Corleone's Empire",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/195539/the-godfather-corleones-empire",
+    "pros": "Manual de reglas largo, lo vuelve complejo si no lo jugas seguido.",
+    "mi_puntaje": 7
+  },
+  {
+    "nombre_en": "Tomalo vos",
+    "nombre_es": "Tomalo vos",
+    "modo": "Competitivo",
+    "estado": "Own",
+    "bgg_url": "https://boardgamegeek.com/boardgame/338766/this-game-will-make-you-drink",
+    "notas": "Saco puntaje de BGG para no meter ruidpo por pocas reviews. 7,08        32"
+  },
+  {
+    "nombre_en": "Tumblin' Monkeys",
+    "nombre_es": "Tumblin' Monkeys",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "bgg_url": "https://boardgamegeek.com/boardgame/12826/tumblin-monkeys",
+    "notas": "16/10/2026 se lo regalé a dario de la guardia (para que repertan entre ellos)"
+  },
+  {
+    "nombre_en": "Monopoly",
+    "nombre_es": "Monopoly",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "bgg_url": "https://boardgamegeek.com/boardgame/1406/monopoly",
+    "notas": "16/10/2026 se lo regalé a dario de la guardia (para que repertan entre ellos). Datos de BGG vía mirrors (boardmatch.app, boardgameoracle.com) porque el fetch directo a bgg.com da 403/401. El ranking difiere segun el mirror (30.460 vs 19.276); puntaje_ajust_bgg es una estimacion (estos mirrors no exponen el Geek Rating real de BGG, verificar en bgg.com/boardgame/1406/monopoly si hace falta precision)."
+  },
+  {
+    "nombre_en": "Humpty Dumpty's Wall Game",
+    "nombre_es": "Humpty Dumpty's Wall Game",
+    "modo": "Competitivo",
+    "estado": "Prev. owned",
+    "bgg_url": "https://boardgamegeek.com/boardgame/62854/humpty-dumptys-wall-game",
+    "notas": "16/10/2026 se lo regalé a dario de la guardia (para que repertan entre ellos). No tiene ficha en BGG (juego de destreza infantil, sin tracking). Año y diseñador inciertos: fuentes distintas dan Chad Valley ~2005 (disenador George Robinson) vs. una base coreana que da 2009 (disenador Roger Ford) vs. una replica 3D que menciona 1971 — los deje en blanco en vez de adivinar."
+  }
+]
