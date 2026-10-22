@@ -30,7 +30,7 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 - `01_data_understanding/game_universe.py` — combina tu ludoteca + `bgg_top1000.csv`: cualquier juego del top N que no sea ya tuyo entra como candidato con Estado `"Watchlist"`. `load_universe()` es el punto de entrada que usan tanto `integrate_data.py` como los scripts de Bosque Lúdico. Ver el README de `01_data_understanding/` para el detalle.
 - `02_data_preparation/integrate_data.py` — **solo integra**: `game_universe.load_universe()` (fuente de verdad) + el caché de BGG (`docs/data/cache/bgg/`) + el dataset de precios de Bosque Lúdico (`01_data_understanding/bosque_ludico/bosque_data.json`, si corrió), y escribe `docs/data/data.json`. Tu ludoteca siempre tiene prioridad sobre tus propios juegos; BGG y Bosque Lúdico solo completan los campos que quedaron vacíos.
 - `02_data_preparation/construct_data.py` — corre después, sobre el mismo `docs/data/data.json`: calcula `puntaje_ajust_bgg` y `precio_calidad`, que no vienen de ninguna fuente sino que se derivan de otras columnas ya integradas (ver "Columnas calculadas" abajo).
-- `01_data_understanding/bgg/enrich_bgg.py` — arma `docs/data/cache/bgg/<id>.json` con datos de BGG (puntaje, reviews, ranking, complejidad, diseñador, edad mín., jugadores, duración) por juego. Corre automático (modo `dummy`, ver abajo); el modo `api` oficial sigue bloqueado.
+- `01_data_understanding/bgg/enrich_bgg.py` — arma `docs/data/cache/bgg/<id>.json` con datos de BGG (descripción, puntaje, reviews, ranking, complejidad, diseñador, edad mín., jugadores, duración mín./máx., mecánicas, categorías) por juego. Corre automático (modo `dummy`, ver abajo); el modo `api` oficial sigue bloqueado.
 - `.github/workflows/sync-data.yml` — corre `collect_bgg_rankings.py`, `enrich_bgg.py`, `integrate_data.py` y `construct_data.py` el día 1 de cada mes a las 12:00 UTC y en cada ejecución manual, y si algo cambió lo commitea y pushea a `main`. Eso dispara un redeploy automático de GitHub Pages. Si agregaste un juego y no querés esperar al mes, lo disparás a mano (ver abajo).
 - `01_data_understanding/bosque_ludico/resolve_bosque_links.py` y `collect_bosque_precios.py` — resuelven el link a la ficha de cada juego en Watchlist en [El Bosque Lúdico](https://www.elbosqueludico.com.ar) y relevan su precio actual en `bosque_data.json` (ver el README de la carpeta). Paso manual (el cron no lo corre, por el costo en tiempo/requests); `integrate_data.py` lo toma como fallback de `costo`/`link_tienda` si corrió.
 - `03_modeling/`, `04_evaluation/`, `05_deployment/` — estructura tipo CRISP-DM que le dimos al repo (ver el README de cada carpeta); `03_modeling/`/`04_evaluation/` son placeholders (no hay predicción, del dato integrado se pasa directo a generar lo que consume el sitio).
@@ -54,12 +54,13 @@ y reemplazar el paso del cron (`sync-data.yml`) para que use `--mode api` en vez
 
 ### Columnas calculadas
 
-`puntaje_ajust_bgg` y `precio_calidad` ("Relación precio/calidad") no vienen de ninguna fuente externa: se derivan de otras columnas ya integradas, en `02_data_preparation/construct_data.py`:
+Ninguna de estas cinco viene directo de una fuente: `02_data_preparation/construct_data.py` las deriva de otras columnas ya integradas.
 
-- `puntaje_ajust_bgg = puntaje_bgg - 3 × 1.4 / √reviews_bgg` — penaliza puntajes altos con pocas reviews.
-- `precio_calidad = promedio( -zscore(costo), zscore(puntaje_ajust_bgg) )` — más barato y mejor puntaje ajustado, mejor relación.
-
-Las fórmulas vienen de las que usaba el Sheet original antes de simplificarlo (se leyeron las celdas reales antes de borrar esas columnas, no se reinventaron — ver el docstring de `construct_data.py` para el detalle, incluida una inconsistencia que había entre filas y cuál de las dos variantes quedó como oficial).
+- `puntaje_ajust_bgg = puntaje_bgg - 3 × 1.4 / √reviews_bgg` — penaliza puntajes altos con pocas reviews. La fórmula viene del Sheet original antes de simplificarlo (se leyó la celda real antes de borrar la columna, no se reinventó — ver el docstring de `construct_data.py`, incluida una inconsistencia que había entre filas y cuál de las dos variantes quedó como oficial).
+- `precio_calidad = promedio( -zscore(costo), zscore(puntaje_ajust_bgg) )` — más barato y mejor puntaje ajustado, mejor relación. Mismo origen que la anterior.
+- `duracion` — promedio de `duracion_min`/`duracion_max` (ambos de BGG); si falta uno de los dos, el que haya.
+- `modo` (`Competitivo`/`Cooperativo`/`Equipos`/`Cooperativo y competitivo`) — derivado de las mecánicas/categorías de BGG (`Cooperative Game`, `Team-Based Game`, `Semi-Cooperative Game`) **solo si no está ya cargado a mano** en `mi_ludoteca.json`; sin mecánicas/categorías en el caché, queda en `null` en vez de asumir "Competitivo" a ciegas.
+- `transportable` (`Sí`/`Más o menos`/`No`, qué tan fácil es llevar la caja) — BGG no trackea tamaño de caja en ningún campo; como proxy se usa complejidad + duración (calibrado contra Pistas Cruzadas/La Isla Prohibida/Catan, los únicos tres casos de referencia disponibles). Es una estimación, no un dato medido — sin complejidad o duración, `null`.
 
 ### Sincronizar a mano
 
@@ -81,7 +82,7 @@ python3 02_data_preparation/construct_data.py
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
 - Link directo a BGG en el título de cada tarjeta.
 - "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores dentro de Jug Best mín/máx + puntaje personal/BGG).
-- "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). Los candidatos que todavía no pasaron por `enrich_bgg.py` (bloqueado) no tienen duración/complejidad/jugadores — las tarjetas lo muestran como "?" en vez de ocultarse.
+- "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por tipo (modo), duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). El ~2% de candidatos sin match en el dataset placeholder de BGG no tiene duración/complejidad/jugadores/modo — las tarjetas lo muestran como "?" en vez de ocultarse.
 
 ## Pendiente si esto vale la pena
 
