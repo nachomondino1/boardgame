@@ -1,26 +1,27 @@
-"""Enriquecimiento externo con caché: completa datos de BGG (diseñador, edad
-mín., jugadores, duración, complejidad, puntaje, reviews, ranking) para los
-juegos del universo (game_universe.load_universe(): Sheet + top N de BGG)
-que tienen un link exacto a BGG, y los guarda en docs/data/cache/bgg/<id>.json.
+"""Enriquecimiento externo con caché: completa datos de BGG (descripción,
+diseñador, edad mín., jugadores, jugadores ideal, duración mín./máx.,
+complejidad, puntaje, reviews, ranking) para los juegos del universo
+(game_universe.load_universe(): tu ludoteca + top N de BGG) que tienen un
+link exacto a BGG, y los guarda en docs/data/cache/bgg/<id>.json.
 
 Dos modos:
   - dummy (default, hoy): BGG cerró el acceso sin auth a xmlapi2 (401 hasta
          que aprueben la aplicación registrada) y la página normal exige
          pasar un challenge de Cloudflare — scrapearla está descartado (ver
          DATA_PLAYBOOK.md). En cambio se usa, como placeholder temporal, un
-         dataset público de terceros con un snapshot de BGG (GitHub, sin
-         auth): board_games.csv de sansinghsanjay/predicting_board_games_reviews.
-         **Es de 2016**: un juego con id de BGG que no exista todavía en ese
-         snapshot (cualquier lanzamiento de ~2017 en adelante, que es buena
-         parte del top del ranking actual) simplemente no tiene entrada acá
-         — sin error, sin dato inventado. Corregible a mano por juego si
-         hace falta antes de que BGG apruebe la app.
+         dataset público de terceros con un snapshot de BGG (Hugging Face,
+         sin auth, ~28.000 juegos, actualizado en 2025):
+         games_detailed_info2025.csv de mmpa/board_game_analysis. Trae casi
+         todo lo que trae la API oficial (descripción, diseñador, el poll de
+         "mejor cantidad de jugadores", rank) salvo precio — BGG no lo
+         trackea. Un juego con id de BGG que no exista en ese snapshot
+         simplemente no tiene entrada acá — sin error, sin dato inventado.
   - api  (para cuando BGG apruebe la aplicación): xmlapi2/thing, la vía
          oficial — reemplaza el placeholder dummy sin tocar nada más del
          pipeline en cuanto esté disponible.
 
 02_data_preparation/integrate_data.py lee este caché y completa SOLO los
-campos que el universo dejó vacíos (None) — el Sheet y el top N de BGG
+campos que el universo dejó vacíos (None) — tu ludoteca y el top N de BGG
 siguen siendo la fuente de verdad; esto es un fallback, no un override.
 
 Uso:
@@ -29,7 +30,9 @@ Uso:
     python3 01_data_understanding/bgg/enrich_bgg.py 174430 161936   # ids puntuales
 """
 import argparse
+import ast
 import csv
+import html
 import io
 import json
 import sys
@@ -42,15 +45,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from game_universe import load_universe  # noqa: E402
 
+csv.field_size_limit(10_000_000)  # el dataset placeholder trae descripciones largas en una sola celda
+
 API_URL = "https://boardgamegeek.com/xmlapi2/thing"
 CRAWL_DELAY_SECONDS = 5  # robots.txt de BGG: Crawl-delay: 5
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 
-# Dataset público de terceros, snapshot de BGG ~2016, usado como placeholder
-# hasta que la API oficial esté disponible. Ver docstring del módulo.
+# Dataset público de terceros, snapshot de BGG de 2025, usado como
+# placeholder hasta que la API oficial esté disponible. Ver docstring del
+# módulo. ~110MB — se descarga entero en cada corrida, no hay forma de
+# pedir solo algunos ids.
 DUMMY_DATASET_URL = (
-    "https://raw.githubusercontent.com/sansinghsanjay/"
-    "predicting_board_games_reviews/master/board_games.csv"
+    "https://huggingface.co/datasets/mmpa/board_game_analysis/"
+    "resolve/main/games_detailed_info2025.csv"
 )
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -112,8 +119,12 @@ def parse_api_item(item: ET.Element) -> dict:
             parts = best_result.replace("+", "").split("-")
             best_min, best_max = parts[0], parts[-1]
 
+    desc_el = item.find("description")
+    description = html.unescape(desc_el.text.strip()) if desc_el is not None and desc_el.text else None
+
     return {
         "id": item.get("id"),
+        "descripcion": description,
         "disenador": ", ".join(links) or None,
         "edad_min": text("minage"),
         "jug_min": text("minplayers"),
@@ -121,6 +132,8 @@ def parse_api_item(item: ET.Element) -> dict:
         "jug_best_min": best_min,
         "jug_best_max": best_max,
         "duracion": text("maxplaytime"),
+        "duracion_min": text("minplaytime"),
+        "duracion_max": text("maxplaytime"),
         "complejidad": weight,
         "puntaje_bgg": rating,
         "reviews_bgg": usersrated,
@@ -158,24 +171,66 @@ def fetch_dummy_dataset() -> dict[str, dict]:
     return {row["id"]: row for row in rows if row.get("id")}
 
 
+def _literal(value, default):
+    """Varias columnas del dataset vienen como el repr de Python de una
+    lista/dict (ej. "['Mathias Wigge']"), no JSON. ast.literal_eval es
+    seguro acá (nunca ejecuta código, solo literales) y tolera el formato
+    tal cual lo escribió pandas al exportar."""
+    value = (value or "").strip()
+    if not value:
+        return default
+    try:
+        return ast.literal_eval(value)
+    except (ValueError, SyntaxError):
+        return default
+
+
+def _best_numplayers(suggested_num_players) -> tuple[str | None, str | None]:
+    """Mismo criterio que parse_api_item: entre todas las cantidades de
+    jugadores encuestadas, la que tiene más votos de "Best" gana."""
+    best_result, best_votes = None, -1
+    for entry in suggested_num_players:
+        for result in entry.get("result", []):
+            if result.get("@value") != "Best":
+                continue
+            votes = int(result.get("@numvotes", 0))
+            if votes > best_votes:
+                best_votes, best_result = votes, entry.get("@numplayers")
+    if not best_result:
+        return None, None
+    parts = best_result.replace("+", "").split("-")
+    return parts[0], parts[-1]
+
+
 def parse_dummy_row(row: dict) -> dict:
-    def num(key):
+    def num(key, zero_is_missing=False):
         value = (row.get(key) or "").strip()
-        return value if value else None
+        if not value:
+            return None
+        if zero_is_missing and value == "0":
+            return None  # el dataset usa 0 como "sin dato" en duración/edad, no como valor real
+        return value
+
+    designers = _literal(row.get("boardgamedesigner"), [])
+    best_min, best_max = _best_numplayers(_literal(row.get("suggested_num_players"), []))
+    description = (row.get("description") or "").strip()
 
     return {
         "id": row["id"],
-        "disenador": None,  # no viene en este dataset
-        "edad_min": num("minage"),
+        "descripcion": html.unescape(description) if description else None,
+        "disenador": ", ".join(designers) if designers else None,
+        "edad_min": num("minage", zero_is_missing=True),
         "jug_min": num("minplayers"),
         "jug_max": num("maxplayers"),
-        "jug_best_min": None,  # no viene en este dataset (hace falta el poll de BGG, solo vía api)
-        "jug_best_max": None,
-        "duracion": num("maxplaytime"),
-        "complejidad": num("average_weight"),
-        "puntaje_bgg": num("average_rating"),
-        "reviews_bgg": num("users_rated"),
-        "ranking_bgg": None,  # ya sale de bgg/bgg_top1000.csv para los candidatos
+        "jug_best_min": best_min,
+        "jug_best_max": best_max,
+        "duracion": num("maxplaytime", zero_is_missing=True),
+        "duracion_min": num("minplaytime", zero_is_missing=True),
+        "duracion_max": num("maxplaytime", zero_is_missing=True),
+        "complejidad": num("averageweight"),
+        "puntaje_bgg": num("average"),
+        "reviews_bgg": num("usersrated"),
+        "ranking_bgg": num("Board Game Rank"),
     }
 
 

@@ -29,8 +29,8 @@ BOSQUE_DATA_PATH = ROOT / "01_data_understanding" / "bosque_ludico" / "bosque_da
 # link exacto a BGG. mi_ludoteca.json manda siempre sobre tus propios
 # juegos: esto nunca pisa un valor ya cargado a mano.
 BGG_FALLBACK_FIELDS = (
-    "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
-    "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
+    "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
+    "duracion", "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
 )
 
 
