@@ -28,8 +28,8 @@ NS_MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 NS_PKG_REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
 
-OUTPUT_PATH = "data/data.json"
-BGG_CACHE_DIR = "data/cache/bgg"
+OUTPUT_PATH = "docs/data/data.json"
+BGG_CACHE_DIR = "docs/data/cache/bgg"
 
 # Campos que, si el Sheet los dejó vacíos, se completan con el caché de BGG
 # (ver scripts/enrich_bgg.py) cuando el juego tiene un link exacto a BGG.

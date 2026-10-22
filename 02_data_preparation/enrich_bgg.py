@@ -43,8 +43,8 @@ CRAWL_DELAY_SECONDS = 5  # robots.txt de BGG: Crawl-delay: 5
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_PATH = ROOT / "data" / "data.json"
-CACHE_DIR = ROOT / "data" / "cache" / "bgg"
+DATA_PATH = ROOT / "docs" / "data" / "data.json"
+CACHE_DIR = ROOT / "docs" / "data" / "cache" / "bgg"
 
 
 def extract_id(value: str) -> str | None:

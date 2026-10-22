@@ -1,4 +1,4 @@
 .DS_Store
 __pycache__/
 cookies.json
-data/cache/
+docs/data/cache/

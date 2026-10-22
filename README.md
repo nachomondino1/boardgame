@@ -5,7 +5,7 @@ Prototipo de página estática para buscar y filtrar la colección de juegos de 
 ## Correr local
 
 ```bash
-python3 -m http.server 8765
+cd docs && python3 -m http.server 8765
 ```
 
 Y abrir `http://localhost:8765`.
@@ -20,13 +20,14 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 
 ## Archivos
 
-- `index.html` / `hoy.html` / `comprar.html` — las 3 páginas, en la raíz (las sirve GitHub Pages directo desde ahí).
-- `js/shared.js` — helpers comunes a las 3 páginas (carga de datos, armado de las tarjetas, nav, etc.).
-- `css/style.css` / `js/app.js` / `js/hoy.js` / `js/comprar.js` — estilos y lógica de cada página.
-- `data/data.json` — datos de la pestaña "Juegos" del Sheet (`Juegos_de_mesa` en Drive). Se regenera solo, ver abajo.
-- `02_data_preparation/build_data.py` — descarga la pestaña "Juegos" como CSV (export público, sin login), regenera `data/data.json` y arma el link a BGG de cada juego. Mapea columnas por el texto del encabezado, no por posición, así que si agregás una columna nueva al Sheet no rompe nada (esa columna nueva se ignora hasta que se agregue una regla para ella en `HEADER_RULES`). Para los juegos con link exacto a BGG, completa con `data/cache/bgg/` los campos que el Sheet dejó vacíos (ver "Enriquecer con datos de BGG" abajo) — el Sheet siempre tiene prioridad, esto solo llena huecos.
-- `02_data_preparation/enrich_bgg.py` — arma `data/cache/bgg/<id>.json` con datos de BGG (puntaje, reviews, ranking, complejidad, diseñador, edad mín., jugadores, duración) por juego. Paso manual, no corre en el cron (ver abajo por qué).
-- `.github/workflows/sync-sheet.yml` — corre `build_data.py` el día 1 de cada mes a las 12:00 UTC y en cada ejecución manual, y si `data/data.json` cambió lo commitea y pushea a `main`. Eso dispara un redeploy automático de GitHub Pages. Si agregaste un juego y no querés esperar al mes, lo disparás a mano (ver abajo).
+- `docs/` — el sitio tal cual lo sirve GitHub Pages (**Deploy from branch** `main`, carpeta `/docs`):
+  - `docs/index.html` / `docs/hoy.html` / `docs/comprar.html` — las 3 páginas.
+  - `docs/js/shared.js` — helpers comunes a las 3 páginas (carga de datos, armado de las tarjetas, nav, etc.).
+  - `docs/css/style.css` / `docs/js/app.js` / `docs/js/hoy.js` / `docs/js/comprar.js` — estilos y lógica de cada página.
+  - `docs/data/data.json` — datos de la pestaña "Juegos" del Sheet (`Juegos_de_mesa` en Drive). Se regenera solo, ver abajo.
+- `02_data_preparation/build_data.py` — descarga la pestaña "Juegos" como CSV (export público, sin login), regenera `docs/data/data.json` y arma el link a BGG de cada juego. Mapea columnas por el texto del encabezado, no por posición, así que si agregás una columna nueva al Sheet no rompe nada (esa columna nueva se ignora hasta que se agregue una regla para ella en `HEADER_RULES`). Para los juegos con link exacto a BGG, completa con `docs/data/cache/bgg/` los campos que el Sheet dejó vacíos (ver "Enriquecer con datos de BGG" abajo) — el Sheet siempre tiene prioridad, esto solo llena huecos.
+- `02_data_preparation/enrich_bgg.py` — arma `docs/data/cache/bgg/<id>.json` con datos de BGG (puntaje, reviews, ranking, complejidad, diseñador, edad mín., jugadores, duración) por juego. Paso manual, no corre en el cron (ver abajo por qué).
+- `.github/workflows/sync-sheet.yml` — corre `build_data.py` el día 1 de cada mes a las 12:00 UTC y en cada ejecución manual, y si `docs/data/data.json` cambió lo commitea y pushea a `main`. Eso dispara un redeploy automático de GitHub Pages. Si agregaste un juego y no querés esperar al mes, lo disparás a mano (ver abajo).
 - `01_data_understanding/`, `03_modeling/`, `04_evaluation/`, `05_deployment/` — estructura tipo CRISP-DM que le dimos al repo (ver el README de cada carpeta); `02_data_preparation/` es la única con código hoy, el resto son placeholders o apuntan a dónde vive cada cosa.
 
 ### Links a BGG
@@ -35,20 +36,16 @@ BGG cerró el acceso sin autenticación a su API XML (devuelve 401), así que no
 
 ### Enriquecer con datos de BGG
 
-`02_data_preparation/enrich_bgg.py` completa `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `complejidad`, `disenador`, `edad_min`, `jug_min/max`, `jug_best_min/max` y `duracion` para los juegos que tienen un link **exacto** a BGG (no sirve con el link de búsqueda genérico). No corre en el cron porque BGG todavía no aprobó la aplicación para usar su API oficial (`xmlapi2`, que hoy devuelve 401) y la página normal exige pasar un challenge de Cloudflare a mano — eso no se puede automatizar sin evadir su protección anti-bot, cosa que evitamos a propósito.
+`02_data_preparation/enrich_bgg.py` completa `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `complejidad`, `disenador`, `edad_min`, `jug_min/max`, `jug_best_min/max` y `duracion` para los juegos que tienen un link **exacto** a BGG (no sirve con el link de búsqueda genérico), usando `--mode api` (`xmlapi2/thing`, la vía oficial).
 
-Mientras tanto, modo manual:
+**Bloqueado hasta que BGG apruebe la aplicación registrada:** hoy `xmlapi2` devuelve 401 sin autenticación. El script tiene un `--mode html` pensado como alternativa (reusar en un script las cookies de una sesión de navegador que ya pasó el challenge de Cloudflare a mano), pero **se probó y no funciona**: el `cf_clearance` de Cloudflare queda atado al fingerprint completo de la conexión (TLS/JA3 + stack de headers real del navegador), no solo al valor del cookie — ni `curl` ni `urllib` lo pueden replicar aunque manden el cookie correcto y recién exportado, y Cloudflare devuelve 403 igual. Queda documentado en el código por si en algún momento vale la pena retomarlo de otra forma, pero **no uses `--mode html`, no sirve**.
 
-1. Abrís cualquier página de BGG en tu navegador y pasás el challenge "Verify you are human" vos mismo.
-2. Exportás las cookies de esa sesión a un JSON `{"cf_clearance": "...", ...}` (gitignored, nunca se commitea).
-3. Corrés:
-   ```bash
-   python3 02_data_preparation/enrich_bgg.py --mode html --cookies cookies.json
-   python3 02_data_preparation/build_data.py
-   ```
-   El primer comando arma el caché en `data/cache/bgg/` (gitignored, se puede regenerar siempre); el segundo regenera `data/data.json` usándolo para completar los campos vacíos.
-
-Cuando BGG apruebe la aplicación, el modo pasa a ser `--mode api` (sin cookies, sin challenge) y ese paso se puede sumar al cron sin problema.
+No tiene sentido invertir en evadir ese fingerprinting (sería la misma clase de bypass de bot-detection que resolver el CAPTCHA a mano, solo que con más código) — así que el enriquecimiento queda pausado hasta que BGG apruebe la app. Ahí es correr:
+```bash
+python3 02_data_preparation/enrich_bgg.py --mode api
+python3 02_data_preparation/build_data.py
+```
+y en ese punto el paso puede sumarse al cron sin problema (no requiere cookies ni challenge).
 
 ### Sincronizar a mano
 
