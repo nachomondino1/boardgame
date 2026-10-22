@@ -1,4 +1,4 @@
-// Helpers compartidos por index.html (catálogo), hoy.html y comprar.html.
+// Helpers compartidos por index.html (Mi ludoteca), hoy.html y comprar.html.
 
 function normalize(str) {
   return (str || "")
@@ -141,7 +141,7 @@ function setupFiltersToggle() {
 
 function navTemplate(active) {
   const links = [
-    { href: "index.html", label: "Catálogo" },
+    { href: "index.html", label: "Mi ludoteca" },
     { href: "hoy.html", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", label: "¿Cuál comprar?" },
   ];

@@ -2,3 +2,5 @@
 __pycache__/
 cookies.json
 docs/data/cache/
+01_data_understanding/bosque_ludico/links.json
+01_data_understanding/bosque_ludico/bosque_data.json
