@@ -1,4 +1,8 @@
-"""Regenera data.json a partir de la pestaña "Juegos" del Google Sheet.
+"""Lee la pestaña "Juegos" del Google Sheet "Juegos_de_mesa" y la normaliza a
+una lista de dicts por juego (identidad + Estado + campos cargados a mano).
+Esta es la fuente de verdad de qué juegos existen y qué estado tienen — todo
+lo demás (02_data_preparation/build_data.py, los scripts de Bosque Lúdico en
+esta misma carpeta) parte de acá, nunca al revés.
 
 La planilla es accesible por link (sin login), asi que se descarga como CSV
 via el endpoint de export de Google Sheets, sin credenciales.
@@ -6,10 +10,16 @@ via el endpoint de export de Google Sheets, sin credenciales.
 Las columnas se mapean por el texto de su encabezado (no por posicion), para
 no romperse si se agrega o reordena una columna en el Sheet. Una columna
 nueva que no matchee ninguna regla de HEADER_RULES se ignora en silencio.
+
+Uso como módulo:
+    from sheet_source import load_games
+    games = load_games()  # todos los juegos, cualquier Estado
+
+Uso como script: imprime un resumen por Estado, útil para chequear rápido
+que el Sheet se está leyendo bien sin tener que correr todo build_data.py.
 """
 import csv
 import io
-import json
 import re
 import sys
 import unicodedata
@@ -17,6 +27,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
+from collections import Counter
 
 SPREADSHEET_ID = "1ocu4prKGISdyRu9d1P-pVDx_paZoWTrDFpN8Dm51Yik"
 GID = "1538311213"  # pestaña "Juegos"
@@ -27,17 +38,6 @@ XLSX_EXPORT_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/expo
 NS_MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
 NS_PKG_REL = "{http://schemas.openxmlformats.org/package/2006/relationships}"
-
-OUTPUT_PATH = "docs/data/data.json"
-BGG_CACHE_DIR = "docs/data/cache/bgg"
-
-# Campos que, si el Sheet los dejó vacíos, se completan con el caché de BGG
-# (ver scripts/enrich_bgg.py) cuando el juego tiene un link exacto a BGG.
-# El Sheet manda siempre: esto nunca pisa un valor ya cargado a mano.
-BGG_FALLBACK_FIELDS = (
-    "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
-    "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-)
 
 HEADER_RULES = [
     ("nombre ingles", "nombre_en"),
@@ -150,7 +150,7 @@ def col_letter(idx):
 
 
 def fetch_csv_rows():
-    req = urllib.request.Request(EXPORT_URL, headers={"User-Agent": "Mozilla/5.0 (build_data.py)"})
+    req = urllib.request.Request(EXPORT_URL, headers={"User-Agent": "Mozilla/5.0 (sheet_source.py)"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         raw = resp.read().decode("utf-8")
     return list(csv.reader(io.StringIO(raw)))
@@ -160,7 +160,7 @@ def fetch_sheet_hyperlinks(sheet_name):
     """Devuelve {ref_de_celda: url} con los hyperlinks puestos a mano en la
     hoja `sheet_name` (ej. {"A13": "https://boardgamegeek.com/..."}), leyendo
     el export .xlsx del Sheet (la API CSV no expone hyperlinks)."""
-    req = urllib.request.Request(XLSX_EXPORT_URL, headers={"User-Agent": "Mozilla/5.0 (build_data.py)"})
+    req = urllib.request.Request(XLSX_EXPORT_URL, headers={"User-Agent": "Mozilla/5.0 (sheet_source.py)"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         raw = resp.read()
 
@@ -197,34 +197,6 @@ def fetch_sheet_hyperlinks(sheet_name):
                 if ref and link_rid in rel_targets:
                     hyperlinks[ref] = rel_targets[link_rid]
         return hyperlinks
-
-
-def apply_bgg_fallback(game):
-    """Completa con el caché de BGG (scripts/enrich_bgg.py) los campos que el
-    Sheet dejó vacíos. El Sheet siempre tiene prioridad; esto nunca pisa un
-    valor ya cargado a mano."""
-    bgg_id_match = re.search(r"/boardgame(?:expansion)?/(\d+)", game.get("bgg_url") or "")
-    if not bgg_id_match:
-        return
-    cache_path = f"{BGG_CACHE_DIR}/{bgg_id_match.group(1)}.json"
-    try:
-        with open(cache_path, encoding="utf-8") as f:
-            cached = json.load(f)
-    except FileNotFoundError:
-        return
-
-    for field in BGG_FALLBACK_FIELDS:
-        if game.get(field) is not None:
-            continue
-        value = cached.get(field)
-        if value is None:
-            continue
-        if field in NUMERIC_FIELDS_FLOAT:
-            game[field] = to_float(str(value))
-        elif field in NUMERIC_FIELDS_INT:
-            game[field] = to_int(str(value))
-        else:
-            game[field] = value
 
 
 def map_header(header_row):
@@ -270,12 +242,14 @@ def build_games(rows, bgg_hyperlinks):
         game["nombre"] = game.get("nombre_es") or game.get("nombre_en", "")
         exact_url = bgg_hyperlinks.get(f"{nombre_col_letter}{row_num}")
         game["bgg_url"] = resolve_bgg_url(game.get("nombre_en", ""), exact_url)
-        apply_bgg_fallback(game)
         games.append(game)
     return games
 
 
-def main():
+def load_games():
+    """Punto de entrada único: Sheet -> lista de dicts por juego (cualquier
+    Estado), con bgg_url ya resuelto. No aplica ningún enriquecimiento
+    externo (BGG cache, Bosque Lúdico) — eso es trabajo de 02_data_preparation."""
     rows = fetch_csv_rows()
     try:
         bgg_hyperlinks = fetch_sheet_hyperlinks(SHEET_NAME)
@@ -284,11 +258,16 @@ def main():
         bgg_hyperlinks = {}
     games = build_games(rows, bgg_hyperlinks)
     if len(games) < 10:
-        print(f"Advertencia: solo se parsearon {len(games)} juegos, algo puede estar mal.", file=sys.stderr)
-        sys.exit(1)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(games, f, ensure_ascii=False, indent=2)
-    print(f"OK: {len(games)} juegos escritos en {OUTPUT_PATH}")
+        sys.exit(f"Advertencia: solo se parsearon {len(games)} juegos, algo puede estar mal.")
+    return games
+
+
+def main():
+    games = load_games()
+    counts = Counter(g.get("estado") or "(vacío)" for g in games)
+    print(f"{len(games)} juegos leídos del Sheet:")
+    for estado, n in counts.most_common():
+        print(f"  {estado}: {n}")
 
 
 if __name__ == "__main__":

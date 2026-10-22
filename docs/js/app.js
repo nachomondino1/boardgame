@@ -7,9 +7,11 @@ const state = {
   sort: "puntaje_ajust_bgg_desc",
 };
 
-const ESTADOS = ["Own", "Watchlist", "Prev. owned"];
+const ESTADOS = ["Own", "Prev. owned"];
 
 function matchesFilters(g) {
+  // Mi ludoteca es lo que tenés (o tuviste): Watchlist vive solo en ¿Cuál comprar?
+  if (g.estado !== "Own" && g.estado !== "Prev. owned") return false;
   if (state.query) {
     if (!normalize(g.nombre).includes(normalize(state.query))) return false;
   }

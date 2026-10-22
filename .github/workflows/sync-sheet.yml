@@ -18,8 +18,11 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Regenerar data.json
-        run: python3 02_data_preparation/build_data.py
+      - name: Integrar fuentes
+        run: python3 02_data_preparation/integrate_data.py
+
+      - name: Construir columnas derivadas
+        run: python3 02_data_preparation/construct_data.py
 
       - name: Commitear si hubo cambios
         run: |

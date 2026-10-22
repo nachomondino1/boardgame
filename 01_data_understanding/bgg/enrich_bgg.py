@@ -15,16 +15,16 @@ Dos modos:
          challenge ni evadir la detección de bots: si la sesión expiró,
          el script falla y avisa en vez de reintentar a ciegas.
 
-build_data.py lee este caché y completa SOLO los campos que el Sheet dejó
-vacíos (None) — el Sheet sigue siendo la fuente de verdad; esto es un
-fallback, no un override.
+02_data_preparation/integrate_data.py lee este caché y completa SOLO los
+campos que el Sheet dejó vacíos (None) — el Sheet sigue siendo la fuente de
+verdad; esto es un fallback, no un override.
 
 Uso:
     # arma el caché para todos los juegos de data/data.json con link exacto a BGG
-    python3 scripts/enrich_bgg.py --mode html --cookies cookies.json
+    python3 01_data_understanding/bgg/enrich_bgg.py --mode html --cookies cookies.json
 
     # o para ids puntuales
-    python3 scripts/enrich_bgg.py --mode html --cookies cookies.json 174430 161936
+    python3 01_data_understanding/bgg/enrich_bgg.py --mode html --cookies cookies.json 174430 161936
 """
 import argparse
 import html
@@ -42,7 +42,7 @@ GAME_URL = "https://boardgamegeek.com/boardgame/{id}"
 CRAWL_DELAY_SECONDS = 5  # robots.txt de BGG: Crawl-delay: 5
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_PATH = ROOT / "docs" / "data" / "data.json"
 CACHE_DIR = ROOT / "docs" / "data" / "cache" / "bgg"
 
@@ -233,7 +233,7 @@ def main():
     cookies = load_cookies(args.cookies) if args.cookies else None
     enrich(ids, mode=args.mode, cookies=cookies, force=args.force)
     print(f"\nCaché en {CACHE_DIR} ({len(list(CACHE_DIR.glob('*.json')))} juego(s) en total)")
-    print("Corré scripts/build_data.py para que data.json tome los campos que faltaban.")
+    print("Corré 02_data_preparation/integrate_data.py para que data.json tome los campos que faltaban.")
 
 
 if __name__ == "__main__":
