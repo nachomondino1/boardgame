@@ -41,9 +41,9 @@ BGG cerró el acceso sin autenticación a su API XML (devuelve 401), así que no
 
 ### Enriquecer con datos de BGG
 
-`01_data_understanding/bgg/enrich_bgg.py` completa `jug_min/max`, `duracion`, `complejidad`, `edad_min` (y `puntaje_bgg`/`reviews_bgg` para tus propios juegos, que no los traen de otro lado) para los juegos que tienen un link **exacto** a BGG.
+`01_data_understanding/bgg/enrich_bgg.py` completa `descripcion`, `disenador`, `edad_min`, `jug_min/max`, `jug_best_min/max`, `duracion`/`duracion_min`/`duracion_max`, `complejidad` (y `puntaje_bgg`/`reviews_bgg`/`ranking_bgg` para tus propios juegos, que no los traen de otro lado) para los juegos que tienen un link **exacto** a BGG.
 
-**Hoy corre en `--mode dummy` (default), un placeholder temporal:** la vía oficial (`--mode api`, `xmlapi2/thing`) sigue bloqueada (401 sin auth hasta que BGG apruebe la aplicación registrada), y scrapear la página normal está descartado (Cloudflare la protege con un challenge que no se evade ni con cookies de una sesión ya autenticada — se probó explícito, ver `DATA_PLAYBOOK.md`). En cambio, `--mode dummy` usa un dataset público de terceros con un **snapshot de BGG de 2016** (`sansinghsanjay/predicting_board_games_reviews` en GitHub, sin auth). Cualquier juego lanzado después de ~2016 no tiene match — sin error, sin dato inventado, esos campos quedan en `null` hasta que BGG apruebe la app.
+**Hoy corre en `--mode dummy` (default), un placeholder temporal:** la vía oficial (`--mode api`, `xmlapi2/thing`) sigue bloqueada (401 sin auth hasta que BGG apruebe la aplicación registrada), y scrapear la página normal está descartado (Cloudflare la protege con un challenge que no se evade ni con cookies de una sesión ya autenticada — se probó explícito, ver `DATA_PLAYBOOK.md`). En cambio, `--mode dummy` usa un dataset público de terceros con un **snapshot de BGG de 2025** (`games_detailed_info2025.csv` de `mmpa/board_game_analysis` en Hugging Face, ~28.000 juegos, sin auth) — cubre ~98% del universo actual (999/1020 ids). No trae precio (BGG no lo trackea; Amazon tampoco se consultó — ver "Pendiente" abajo). Un juego que no esté en ese snapshot no tiene match — sin error, sin dato inventado, esos campos quedan en `null` hasta que BGG apruebe la app.
 
 Cuando eso pase, correr:
 ```bash
@@ -87,4 +87,5 @@ python3 02_data_preparation/construct_data.py
 
 - Comparar juegos lado a lado.
 - Filtro/orden adicional en "¿Cuál comprar?" para que ~1000 candidatos sea navegable (hoy no hay paginación ni un piso de puntaje mínimo).
-- Cuando BGG apruebe la app: correr `enrich_bgg.py` sobre los candidatos del top N también, no solo sobre tus juegos — hoy ese script arranca de `docs/data/data.json`, así que ya los alcanza una vez que el universo los incluye.
+- Precio de Amazon (u otra tienda más allá de Bosque Lúdico): no se investigó todavía una fuente sin auth/bot-detection para eso; sería un caso igual al de Bosque Lúdico (`01_data_understanding/<fuente_nueva>/`, resolver link + relevar precio, nunca scrapear Amazon directo sin chequear antes su robots.txt y bot-detection).
+- Cuando BGG apruebe la app: correr `enrich_bgg.py 'un id puntual' --mode api --force` para reemplazar, juego por juego, lo que vino del dataset placeholder por el dato oficial; `--mode api` sin ids corre sobre todo el universo de una.

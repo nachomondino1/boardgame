@@ -63,8 +63,8 @@ BGG_SKIP = {
 # Mismos nombres de campo y tipos que usaba el Sheet, para que
 # integrate_data.py no tenga que distinguir de dónde vino cada juego.
 NUMERIC_FIELDS_FLOAT = {"complejidad", "puntaje_bgg", "puntaje_ajust_bgg", "precio_calidad"}
-NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "jug_best_min", "jug_best_max", "duracion", "edad_min",
-                       "reviews_bgg", "ranking_bgg", "mi_puntaje", "costo"}
+NUMERIC_FIELDS_INT = {"anio", "jug_min", "jug_max", "jug_best_min", "jug_best_max", "duracion", "duracion_min",
+                       "duracion_max", "edad_min", "reviews_bgg", "ranking_bgg", "mi_puntaje", "costo"}
 TEXT_FIELDS = {"nombre", "nombre_en", "nombre_es", "modo", "descripcion", "disenador", "pros", "cons", "estado",
                "link_tienda", "youtube", "notas"}
 
