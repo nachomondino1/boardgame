@@ -1,8 +1,9 @@
 """Enriquecimiento externo con caché: completa datos de BGG (descripción,
 diseñador, edad mín., jugadores, jugadores ideal, duración mín./máx.,
-complejidad, puntaje, reviews, ranking) para los juegos del universo
-(game_universe.load_universe(): tu ludoteca + top N de BGG) que tienen un
-link exacto a BGG, y los guarda en docs/data/cache/bgg/<id>.json.
+complejidad, puntaje, reviews, ranking, mecánicas, categorías) para los
+juegos del universo (game_universe.load_universe(): tu ludoteca + top N de
+BGG) que tienen un link exacto a BGG, y los guarda en
+docs/data/cache/bgg/<id>.json.
 
 Dos modos:
   - dummy (default, hoy): BGG cerró el acceso sin auth a xmlapi2 (401 hasta
@@ -104,6 +105,8 @@ def parse_api_item(item: ET.Element) -> dict:
     weight = stats.find("averageweight").get("value") if stats is not None and stats.find("averageweight") is not None else None
 
     links = [l.get("value") for l in item.findall("link[@type='boardgamedesigner']")]
+    mecanicas = [l.get("value") for l in item.findall("link[@type='boardgamemechanic']")]
+    categorias = [l.get("value") for l in item.findall("link[@type='boardgamecategory']")]
 
     best_min = best_max = None
     poll = item.find("poll[@name='suggested_numplayers']")
@@ -138,6 +141,8 @@ def parse_api_item(item: ET.Element) -> dict:
         "puntaje_bgg": rating,
         "reviews_bgg": usersrated,
         "ranking_bgg": rank,
+        "mecanicas": mecanicas,
+        "categorias": categorias,
     }
 
 
@@ -212,6 +217,8 @@ def parse_dummy_row(row: dict) -> dict:
         return value
 
     designers = _literal(row.get("boardgamedesigner"), [])
+    mecanicas = _literal(row.get("boardgamemechanic"), [])
+    categorias = _literal(row.get("boardgamecategory"), [])
     best_min, best_max = _best_numplayers(_literal(row.get("suggested_num_players"), []))
     description = (row.get("description") or "").strip()
 
@@ -231,6 +238,8 @@ def parse_dummy_row(row: dict) -> dict:
         "puntaje_bgg": num("average"),
         "reviews_bgg": num("usersrated"),
         "ranking_bgg": num("Board Game Rank"),
+        "mecanicas": mecanicas,
+        "categorias": categorias,
     }
 
 

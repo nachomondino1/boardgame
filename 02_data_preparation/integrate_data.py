@@ -31,6 +31,7 @@ BOSQUE_DATA_PATH = ROOT / "01_data_understanding" / "bosque_ludico" / "bosque_da
 BGG_FALLBACK_FIELDS = (
     "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion", "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
+    "mecanicas", "categorias",
 )
 
 
