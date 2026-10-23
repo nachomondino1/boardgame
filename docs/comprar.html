@@ -48,18 +48,6 @@
             </label>
           </div>
           <div class="filter-group filter-group--grow">
-            <label class="filter-label" for="sort-select">Orden</label>
-            <select id="sort-select">
-              <option value="puntaje_ajust_bgg_desc">Puntaje ajustado</option>
-              <option value="puntaje_bgg_desc">Puntaje BGG</option>
-              <option value="precio_calidad_desc">Precio / calidad</option>
-              <option value="costo_asc">Costo (menor primero)</option>
-              <option value="complejidad_asc">Complejidad (menor primero)</option>
-              <option value="duracion_asc">Duración (menor primero)</option>
-              <option value="nombre_asc">Nombre</option>
-            </select>
-          </div>
-          <div class="filter-group filter-group--grow">
             <label class="filter-label" for="duracion-max">Duración máxima <span class="filter-label-value" id="duracion-max-label">180+ min</span></label>
             <input type="range" id="duracion-max" min="10" max="180" step="5" value="180" />
           </div>
@@ -80,7 +68,21 @@
       </div>
     </div>
   </header>
-  <div class="result-count" id="result-count"></div>
+  <div class="result-count-row">
+    <span id="result-count"></span>
+    <label class="sort-control" for="sort-select">
+      <span class="sort-icon" aria-hidden="true">⇅</span>
+      <select id="sort-select">
+        <option value="puntaje_ajust_bgg_desc">Puntaje ajustado</option>
+        <option value="puntaje_bgg_desc">Puntaje BGG</option>
+        <option value="precio_calidad_desc">Precio / calidad</option>
+        <option value="costo_asc">Costo (menor primero)</option>
+        <option value="complejidad_asc">Complejidad (menor primero)</option>
+        <option value="duracion_asc">Duración (menor primero)</option>
+        <option value="nombre_asc">Nombre</option>
+      </select>
+    </label>
+  </div>
   <main>
     <div class="grid" id="grid"></div>
   </main>
