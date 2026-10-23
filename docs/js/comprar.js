@@ -57,28 +57,72 @@ function render() {
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
 }
 
+// Arrastrar un slider dispara un evento "input" por cada pixel: renderizar
+// la grilla entera (hasta ~1000 tarjetas) en cada uno se siente trabado.
+// rAF junta todos los eventos de un mismo frame en un solo render.
+let renderScheduled = false;
+function scheduleRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => {
+    renderScheduled = false;
+    render();
+  });
+}
+
 function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
     render();
   });
 
-  const tipoChips = document.getElementById("tipo-chips");
+  const tipoMultiselect = document.getElementById("tipo-multiselect");
+  const tipoButton = document.getElementById("tipo-button");
+  const tipoButtonLabel = document.getElementById("tipo-button-label");
+  const tipoPanel = document.getElementById("tipo-panel");
+
+  function updateTipoButtonLabel() {
+    if (state.tipos.size === 0) tipoButtonLabel.textContent = "Todos";
+    else if (state.tipos.size === 1) tipoButtonLabel.textContent = [...state.tipos][0];
+    else tipoButtonLabel.textContent = `${state.tipos.size} seleccionados`;
+  }
+
+  function closeTipoPanel() {
+    tipoPanel.hidden = true;
+    tipoMultiselect.classList.remove("open");
+    tipoButton.setAttribute("aria-expanded", "false");
+  }
+
   TIPOS.forEach((tipo) => {
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = tipo;
-    chip.addEventListener("click", () => {
-      if (state.tipos.has(tipo)) {
-        state.tipos.delete(tipo);
-        chip.classList.remove("active");
-      } else {
-        state.tipos.add(tipo);
-        chip.classList.add("active");
-      }
+    const option = document.createElement("label");
+    option.className = "multiselect-option";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = tipo;
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) state.tipos.add(tipo);
+      else state.tipos.delete(tipo);
+      updateTipoButtonLabel();
       render();
     });
-    tipoChips.appendChild(chip);
+    option.appendChild(checkbox);
+    option.appendChild(document.createTextNode(tipo));
+    tipoPanel.appendChild(option);
+  });
+
+  tipoButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = tipoPanel.hidden;
+    tipoPanel.hidden = !willOpen;
+    tipoMultiselect.classList.toggle("open", willOpen);
+    tipoButton.setAttribute("aria-expanded", String(willOpen));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!tipoMultiselect.contains(e.target)) closeTipoPanel();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeTipoPanel();
   });
 
   const duracionInput = document.getElementById("duracion-max");
@@ -86,7 +130,7 @@ function setupControls() {
   duracionInput.addEventListener("input", (e) => {
     state.duracionMax = Number(e.target.value);
     duracionLabel.textContent = state.duracionMax >= 180 ? "180+ min" : `${state.duracionMax} min`;
-    render();
+    scheduleRender();
   });
 
   const complejidadInput = document.getElementById("complejidad-max");
@@ -94,7 +138,7 @@ function setupControls() {
   complejidadInput.addEventListener("input", (e) => {
     state.complejidadMax = Number(e.target.value);
     complejidadLabel.textContent = state.complejidadMax >= 5 ? "5 (sin límite)" : state.complejidadMax.toFixed(1);
-    render();
+    scheduleRender();
   });
 
   const playerLabel = document.getElementById("player-label");

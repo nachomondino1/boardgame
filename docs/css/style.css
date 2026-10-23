@@ -124,6 +124,10 @@ header .subtitle {
   flex: 1 1 180px;
 }
 
+.filter-group--capped {
+  flex: 0 1 220px;
+}
+
 .filter-group--full {
   flex: 1 1 100%;
   min-width: 0;
@@ -132,6 +136,23 @@ header .subtitle {
 .filter-group--full:not(:first-child) {
   padding-top: 14px;
   border-top: 1px solid var(--border-soft);
+}
+
+/* En desktop, garantizar que los filtros entren en una sola fila: en vez
+   de wrappear a una segunda fila cuando no entran, se van achicando todos
+   parejo (flex-shrink) hasta que entran. El piso es 1024px: por debajo de
+   eso (ventana angosta o tablet) ya no entran sin solaparse, así que se
+   deja el wrap normal a dos filas en vez de romper el texto. En mobile el
+   panel ya se oculta detrás del botón "Filtros" (ver media query de abajo). */
+@media (min-width: 1024px) {
+  .filter-grid--nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .filter-grid--nowrap > .filter-group {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 }
 
 .filter-label {
@@ -283,6 +304,78 @@ select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.multiselect {
+  position: relative;
+}
+
+.multiselect-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 36px 9px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.multiselect-button:focus-visible,
+.multiselect.open .multiselect-button {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.multiselect-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  min-width: 100%;
+  width: max-content;
+  max-width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+}
+
+.multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.multiselect-option:hover {
+  background: var(--bg-subtle);
+}
+
+.multiselect-option input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
 }
 
 .toggle-gusto {
