@@ -1,5 +1,5 @@
 .DS_Store
 __pycache__/
 cookies.json
-01_data_understanding/bosque_ludico/links.json
-01_data_understanding/bosque_ludico/bosque_data.json
+01_data_understanding/collect_initial_data/bosque_ludico/links.json
+01_data_understanding/collect_initial_data/bosque_ludico/bosque_data.json

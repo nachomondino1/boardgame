@@ -14,10 +14,10 @@ de a tandas en vez de una corrida larga de una — los resultados de corridas
 anteriores no se pisan, se mergea por nombre.
 
 Uso:
-    python3 01_data_understanding/bosque_ludico/resolve_bosque_links.py   # primero, si no corrió
-    python3 01_data_understanding/bosque_ludico/collect_bosque_precios.py [--limit N]
+    python3 01_data_understanding/collect_initial_data/bosque_ludico/resolve_bosque_links.py   # primero, si no corrió
+    python3 01_data_understanding/collect_initial_data/bosque_ludico/collect_bosque_precios.py [--limit N]
 
-Salida: 01_data_understanding/bosque_ludico/bosque_data.json
+Salida: 01_data_understanding/collect_initial_data/bosque_ludico/bosque_data.json
 """
 import argparse
 import datetime
