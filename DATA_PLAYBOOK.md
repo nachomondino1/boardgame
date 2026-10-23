@@ -2,11 +2,11 @@
 
 Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa), pensada para pegar en un `CLAUDE.md` o en el prompt inicial de un proyecto nuevo que necesite algo parecido: un sitio estático, sin backend propio, cuyo contenido integra varias fuentes (una curada a mano, otras automatizadas).
 
-**Nota sobre el Google Sheet:** este proyecto arrancó con un Sheet como fuente de verdad (la sección "Cómo adaptarlo a un proyecto nuevo" más abajo sigue siendo la guía genérica para eso, vale para otro proyecto que sí lo necesite). Acá se abandonó: una vez que BGG y Bosque Lúdico se automatizaron, lo que quedaba en el Sheet era ~10 columnas de ~30 filas que cambian pocas veces al año — mantener el fetch a la API de Google (CSV + .xlsx para hyperlinks) para eso dejó de valer la pena. Hoy esa fuente es `01_data_understanding/ludoteca/mi_ludoteca.json`, un archivo versionado en el repo que se edita directo. Ver "Cuándo un Sheet deja de valer la pena" en Decisiones clave.
+**Nota sobre el Google Sheet:** este proyecto arrancó con un Sheet como fuente de verdad (la sección "Cómo adaptarlo a un proyecto nuevo" más abajo sigue siendo la guía genérica para eso, vale para otro proyecto que sí lo necesite). Acá se abandonó dos veces: primero el Sheet se reemplazó por un JSON (`mi_ludoteca.json`, ver "Cuándo un Sheet deja de valer la pena" en Decisiones clave), y después ese JSON se fusionó directo dentro de `01_data_understanding/bgg/bgg_data.csv` — el universo de juegos entero (identidad + Estado + datos de BGG) vive hoy en un único CSV, con columnas propias (editadas a mano o pidiéndoselo a Claude) y columnas de BGG (se refrescan solas) conviviendo en la misma fila.
 
 ## Filosofía
 
-- **La fuente de verdad la edita un humano**, no en código ni en un admin panel — hoy un JSON versionado en el repo (`mi_ludoteca.json`); en otro proyecto, o en este al principio, puede ser un Google Sheet. Cero backend, cero base de datos propia.
+- **La fuente de verdad la edita un humano**, no en código ni en un admin panel — hoy un CSV versionado en el repo (`bgg_data.csv`, columnas propias dentro de él); en otro proyecto, o en este al principio, puede ser un Google Sheet o un JSON aparte. Cero backend, cero base de datos propia.
 - **El sitio nunca le pega a una API externa en runtime.** Hay un paso de build async (CI) que junta las fuentes y las convierte en un JSON estático, que es lo que el sitio realmente consume.
 - **Cada sync es un commit.** El JSON vive versionado en el repo, así que un cambio en cualquier fuente se ve como un diff normal de git, y un dato roto se puede `git revert`.
 - **El build es tolerante a cambios en la forma de la fuente curada a mano** (agregar/reordenar columnas o campos) pero intolerante a fallar en silencio (si algo sale muy mal, el script explota en vez de commitear datos vacíos o truncados).
@@ -14,56 +14,54 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 ## Arquitectura / flujo de datos
 
 ```
-mi_ludoteca.json (lo que tenés o tuviste)    GitHub público de un tercero (ranking de BGG)
-  editado a mano en el repo                   beefsack/bgg-ranking-historicals
-        │                                          │  CSV diario, sin auth
-        ▼                                          ▼
-01_data_understanding/ludoteca/        01_data_understanding/bgg/
-  ludoteca_source.py (load_games())      collect_bgg_rankings.py
-  resuelve bgg_url + bgg_id              → bgg/bgg_top1000.csv (versionado,
-        │                                   ya trae bgg_id por fila)
-        └──────────────────┬───────────────────────┘
-                            ▼
-        01_data_understanding/game_universe.py (load_universe())
-          ludoteca (Own/Prev. owned) + candidatos del top N que
-          no sean ya tuyos (dedupe por bgg_id) → Estado "Watchlist"
+01_data_understanding/bgg/collect_bgg_data.py
+  dataset público de terceros, Hugging Face (ver "Decisiones clave")
+  Bootstrap (bgg_data.csv no existe): top N del ranking + ludoteca (una
+  sola vez, para taguear Own/Prev. owned) → el resto queda Watchlist.
+  Refresh (ya existe): re-completa las columnas de BGG de lo que ya está.
+  --add <id o nombre>: suma un juego puntual (así crece el universo).
                             │
-        ┌───────────────────┼────────────────────────────────────┐
-        ▼                                                         ▼
-02_data_preparation/integrate_data.py        01_data_understanding/bosque_ludico/resolve_bosque_links.py
-   integra:                                     + collect_bosque_precios.py
-   universo + caché BGG + dataset Bosque          (juegos Watchlist: link a la
-   Lúdico (ambos solo rellenan huecos,            tienda + precio actual, ver
-   la ludoteca siempre manda sobre lo suyo)       el README de la carpeta)
-        │                                                     │
-        │◄──── docs/data/cache/bgg/<bgg_id>.json ◄── 01_data_understanding/bgg/enrich_bgg.py (modo dummy, automático)
-        │◄──── 01_data_understanding/bosque_ludico/bosque_data.json (manual) ──┘
-        ▼
-02_data_preparation/construct_data.py
-   calcula puntaje_ajust_bgg y precio_calidad
-   (derivadas de otras columnas ya integradas,
-   no vienen de ninguna fuente — ver más abajo)
-        ▼
-data/data.json   (commiteado al repo, fuente de verdad del sitio)
-        ▲
+                            ▼
+      01_data_understanding/bgg/bgg_data.csv   (commiteado, bgg_id primera columna)
+        columnas propias (nombre, estado, modo, mi_puntaje, pros, cons,
+        youtube, notas) + columnas de BGG (descripcion, disenador,
+        edad_min, jug_min/max, jug_best_min/max, duracion_min/max,
+        complejidad, puntaje_bgg, reviews_bgg, ranking_bgg, mecanicas,
+        categorias) — un humano manda sobre las primeras, BGG sobre las
+        segundas, nunca se pisan entre sí.
+                            │
+                            ▼
+      02_data_preparation/construct_data.py
+        calcula duracion, modo, transportable, puntaje_ajust_bgg,
+        precio_calidad (derivadas, no vienen de ninguna fuente — ver
+        README.md "Columnas calculadas")
+                            ▼
+      data/data.json   (commiteado al repo, fuente de verdad del sitio)
+                            ▲
         │  .github/workflows/sync-data.yml: cron mensual + workflow_dispatch manual
-        │  corre collect_bgg_rankings.py + enrich_bgg.py + integrate_data.py + construct_data.py,
-        │  commitea lo que cambió, pushea a main
-        │  (mensaje de commit con "[skip ci]" para no re-triggerear otros workflows)
-        ▼
-push a main → redeploy automático de GitHub Pages
-        ▼
-Frontend vanilla JS: <link rel="preload" href="data/data.json" as="fetch" crossorigin>
-                      + fetch("data/data.json") al cargar la página
+        │  corre collect_bgg_data.py + construct_data.py, commitea lo que
+        │  cambió, pushea a main ("[skip ci]" para no re-triggerear otros workflows)
+                            ▼
+      push a main → redeploy automático de GitHub Pages
+                            ▼
+      Frontend vanilla JS: <link rel="preload" href="data/data.json" as="fetch" crossorigin>
+                            + fetch("data/data.json") al cargar la página
+
+[EN UN FUTURO] 01_data_understanding/bosque_ludico/: resolve_bosque_links.py
++ collect_bosque_precios.py ya funcionan (bgg_data.csv → links.json →
+bosque_data.json, primera columna bgg_id) pero nada los corre activamente
+ni los integra con bgg_data.csv todavía — ver "Qué evitar"/Pendiente.
 ```
 
 Nadie en el camino del usuario final toca ninguna API externa: para quien visita el sitio, `data/data.json` es un archivo estático más, servido por GitHub Pages.
 
-**01 (entender/recolectar) nunca depende de un output de 02 (integrar).** `integrate_data.py` y los scripts de Bosque Lúdico importan `game_universe.load_universe()`, nunca al revés — 02 puede depender de 01, no al contrario. Dentro de 01, una carpeta por fuente (`ludoteca/`, `bgg/`, `bosque_ludico/`), cada una solo sabe de la suya, más `game_universe.py` en la raíz (la única pieza que combina más de una fuente). El sitio sigue consumiendo un único `data.json`: la separación 01/02 es interna del pipeline, no se traduce en más fetches para el frontend.
+**01 (entender/recolectar) nunca depende de un output de 02 (integrar).** `construct_data.py` lee `bgg_data.csv` directo (un output de 01), nunca al revés. Hoy 01 es más simple que antes: una sola fuente activa (`bgg/`), ya no hace falta una capa que combine varias (no existía integración de Bosque Lúdico todavía) — si en el futuro se suma esa segunda fuente, la integración (por nombre) va en `02_data_preparation/`, nunca en 01.
 
-**El universo de candidatos ya no lo cura una persona a mano (la vieja columna Watchlist del Sheet): lo arma automáticamente "top N de un ranking público menos lo que ya tenés".** Esto es deliberado — mantener a mano una lista de "juegos que me interesan" no escala a miles de candidatos, y el ranking de BGG ya hace ese trabajo de curación/orden. El costo es volumen (el "¿Cuál comprar?" del sitio puede mostrar hasta ~1000 tarjetas); los datos por candidato están casi completos (~98%, `enrich_bgg.py` contra un dataset placeholder de 2025 — ver "Decisiones clave"), salvo precio, que sigue dependiendo de Bosque Lúdico corrido a mano.
+**El universo de candidatos ya no lo cura una persona a mano (la vieja columna Watchlist del Sheet): lo arma automáticamente "top N de un ranking público menos lo que ya tenés", con la opción de sumar juegos puntuales con `--add`.** Esto es deliberado — mantener a mano una lista de "juegos que me interesan" no escala a miles de candidatos, y el ranking de BGG ya hace ese trabajo de curación/orden inicial; `--add` cubre el caso puntual ("quiero este juego en el análisis aunque no esté en el top N"). El costo es volumen (el "¿Cuál comprar?" del sitio puede mostrar hasta ~1000 tarjetas); los datos por candidato están casi completos (~98%, contra un dataset placeholder de 2025 — ver "Decisiones clave"), salvo precio, que depende de una integración con Bosque Lúdico que todavía no existe.
 
-**Un identificador compartido por todas las fuentes (`bgg_id`, el id de BGG) en vez de matchear por nombre.** Cada juego del universo lleva `bgg_id` como campo de primera clase, calculado una sola vez (`ludoteca_source.extract_bgg_id` para tu ludoteca, directo de la columna del CSV para los candidatos del top N) y propagado tal cual por el resto del pipeline — `integrate_data.py` lo usa para encontrar el caché de BGG, `game_universe.py` para el dedupe. Antes cada módulo re-derivaba el id con su propia regex sobre `bgg_url`; centralizarlo evita que una de esas copias se desincronice y rompe menos si mañana se agrega una fuente que no tenga URL pero sí el id directo.
+**Identidad + enriquecimiento externo en un único archivo, no en piezas separadas que haya que combinar en cada build.** Versiones anteriores de este pipeline separaban "quién tenés" (un JSON/Sheet aparte) de "qué sabe BGG de cada uno" (un caché por id, regenerado en el build). Fusionarlos en un solo CSV con columnas propias vs. columnas de fuente externa (nunca se pisan entre sí, ver más arriba) simplifica el pipeline a un solo archivo de identidad, al costo de que ese archivo mezcle dato curado y dato automático en la misma fila — aceptable acá porque las columnas están claramente separadas y documentadas, y el archivo entero se versiona (un diff de git muestra tanto "agregué un juego" como "BGG actualizó el rating", pero eso es información real, no ruido).
+
+**Un identificador compartido por todas las fuentes (`bgg_id`, el id de BGG) en vez de matchear por nombre.** Cada fila de `bgg_data.csv` lleva `bgg_id` como primera columna — calculado una sola vez en el bootstrap (`extract_bgg_id` sobre `bgg_url` para la ludoteca, directo de la columna del dataset para los candidatos del top N) y nunca vuelto a derivar. La futura integración con `bosque_data.csv` (por nombre, no por id — Bosque Lúdico no expone un id de BGG) sigue este mismo criterio: `bosque_data.csv` también lleva `bgg_id` como primera columna aunque el join real sea por nombre, para que cualquier análisis posterior pueda cruzar ambos archivos sin tener que volver a resolver el id.
 
 ## Decisiones clave (y por qué)
 
@@ -72,7 +70,7 @@ Nadie en el camino del usuario final toca ninguna API externa: para quien visita
 - **Mapeo de columnas por texto del encabezado, no por posición/índice.** Agregar o reordenar una columna en el Sheet no rompe el build; una columna nueva sin regla se ignora en silencio (ver "Qué evitar" sobre el costo de ese silencio).
 - **Falla ruidosa ante datos sospechosos.** El script corta con `sys.exit(1)` si parsea muy pocas filas o no encuentra la columna esperada, en vez de commitear un JSON vacío o a medio llenar. Un build que "funciona" pero pisa datos buenos con basura es peor que un build que no corre.
 - **Lógica de enriquecimiento específica del dominio vive en el script, como constantes documentadas**, no desparramada en el frontend. En este proyecto es la resolución de links a BGG (`BGG_SEARCH_OVERRIDES`, `BGG_SKIP`): cada entrada tiene al lado, en un comentario, de dónde salió el override (en este caso, pistas que ya estaban a mano en la columna "Notas" del Sheet).
-- **Enriquecimiento externo con caché por id estable, y la fuente curada a mano siempre gana.** `01_data_understanding/bgg/enrich_bgg.py` arma `docs/data/cache/bgg/<bgg_id>.json` (gitignored, un archivo por juego) y `integrate_data.py` lo usa solo como **fallback**: completa un campo (`puntaje_bgg`, `complejidad`, etc.) únicamente si quedó vacío, nunca pisa un valor ya cargado a mano. La vía oficial (`--mode api`, `xmlapi2/thing`) está **bloqueada** hasta que BGG apruebe la aplicación registrada (hoy devuelve 401); mientras tanto corre automático contra un dataset placeholder de terceros (`--mode dummy`, default — ver el bullet de abajo sobre datasets públicos).
+- **Enriquecimiento externo con columnas propias vs. de BGG en el mismo archivo, nunca mezcladas, y las propias siempre ganan.** `01_data_understanding/bgg/collect_bgg_data.py` solo pisa las columnas de BGG de cada fila (`puntaje_bgg`, `complejidad`, etc.); las columnas propias (`nombre`, `estado`, `modo`, `mi_puntaje`, `pros`, `cons`, `notas`) nunca se tocan en un refresh. La vía oficial (`--mode api`, `xmlapi2/thing`) está **bloqueada** hasta que BGG apruebe la aplicación registrada (hoy devuelve 401); mientras tanto corre automático contra un dataset placeholder de terceros (`--mode dummy`, default — ver el bullet de abajo sobre datasets públicos).
 - **Reusar cookies de una sesión de navegador en un script aparte no es una alternativa real cuando el bot-detection correlaciona fingerprint de conexión, no solo el cookie.** Se probó explícitamente contra la página normal de BGG (reusando cookies de una sesión ya autenticada): aunque el `cf_clearance` se exportara recién pasado el challenge, `curl`/`urllib` seguían recibiendo un challenge nuevo (403) — Cloudflare lo ata al TLS/JA3 y al stack de headers real del navegador que lo generó, no solo al valor de la cookie. Antes de asumir que "cookies + requests" alcanza para reusar una sesión ya autenticada contra un anti-bot serio, probarlo con un caso real primero; si falla, no vale la pena perseguir evasión más sofisticada (spoof de fingerprint, etc.) — es la misma línea que no resolver CAPTCHAs, solo que con más ingeniería. Esa vía quedó descartada (no está ni en el código): la opción que sí funciona sin evadir nada es un dataset público de un tercero (ver abajo).
 - **Columnas calculadas que antes eran fórmulas del Sheet se migran leyendo la fórmula real de la celda, nunca reinventándola.** Al sacar `puntaje_ajust_bgg` y `precio_calidad` del Sheet (para que solo queden ahí los datos que no son de BGG/Bosque Lúdico) se usó la API de Sheets (`get_spreadsheet` con `includeGridData` + `fields: ["...userEnteredValue.formulaValue"]`) para leer la fórmula tal cual estaba en varias celdas, no se adivinó "a ojo" mirando los valores. Esto destapó que el Sheet tenía **dos variantes de la misma fórmula conviviendo** (una con una constante hardcodeada en 53 filas, otra que recalculaba un desvío estándar en vivo en 6 filas, más 3 filas con el valor pegado a mano sin fórmula) — una inconsistencia invisible si solo se mira el resultado. Verificar el resultado del script nuevo contra el valor real de varias filas del Sheet (no solo "corre sin error") antes de darlo por bueno.
 - **Ante una fórmula inconsistente entre filas de un Sheet, no elegir una variante en silencio: mostrarle las dos al usuario con el conteo real de filas de cada una y dejar que elija cuál es la oficial.** Es una decisión de negocio (qué constante usar), no una de implementación.
@@ -106,9 +104,9 @@ Para relevar precios de El Bosque Lúdico (`01_data_understanding/bosque_ludico/
 
 ## Separar recolección cruda (01) de transformación final (02), una carpeta por fuente
 
-Cuando se suma una fuente externa nueva (no la fuente curada a mano principal), el script que la recolecta/matchea va en `01_data_understanding/<fuente>/` (estructura CRISP-DM del repo: `ludoteca/`, `bgg/`, `bosque_ludico/`), separado de `02_data_preparation/integrate_data.py` que arma el `data.json` final integrando todas. Generalizable: si una fuente cambia a un ritmo distinto de otra (en este proyecto, el *link* a una ficha de producto es estable pero el *precio* cambia seguido), conviene separarlas en dos scripts/pasos en vez de uno solo que recalcule todo cada vez — así un re-relevamiento de precio no vuelve a pagar el costo de resolver matches.
+Cuando se suma una fuente externa nueva, el script que la recolecta/matchea va en `01_data_understanding/<fuente>/` (estructura CRISP-DM del repo: `bgg/`, `bosque_ludico/`), separado de `02_data_preparation/` que integra/construye. Generalizable: si una fuente cambia a un ritmo distinto de otra (en este proyecto, el *link* a una ficha de producto es estable pero el *precio* cambia seguido), conviene separarlas en dos scripts/pasos en vez de uno solo que recalcule todo cada vez — así un re-relevamiento de precio no vuelve a pagar el costo de resolver matches.
 
-**Nombrar los datasets por la fuente, no por lo que hace el script que los generó:** `bosque_data.json` (no `bosque_ludico_precios.json`), `bgg_data.json` si en algún momento BGG produce un único dataset consolidado en vez de caché por id. El nombre del archivo le dice a quien lo abre de dónde salió el dato sin tener que leer el script; el nombre del script le dice qué hace (`collect_bosque_precios.py`, `resolve_bosque_links.py`). Mismo criterio para el script que solo integra: si lo único que hace es combinar fuentes ya recolectadas, se llama `integrate_data.py` (o similar), no `build_data.py` — "build" es ambiguo sobre si también recolecta.
+**Nombrar los datasets por la fuente, no por lo que hace el script que los generó:** `bosque_data.csv`/`bgg_data.csv` (no `bosque_ludico_precios.json` o similar). El nombre del archivo le dice a quien lo abre de dónde salió el dato sin tener que leer el script; el nombre del script le dice qué hace (`collect_bosque_precios.py`, `collect_bgg_data.py`). Mismo criterio para un script que solo integra fuentes ya recolectadas: se llama `integrate_data.py` (o similar), no `build_data.py` — "build" es ambiguo sobre si también recolecta. (Cuando una sola fuente activa ya trae todo lo que hace falta, como hoy acá, no existe ese script — `construct_data.py` lee la fuente directo; el día que haya una segunda fuente que integrar, ahí sí aparece.)
 
 ## Qué evitar
 
