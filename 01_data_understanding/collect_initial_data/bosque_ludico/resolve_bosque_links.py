@@ -4,7 +4,7 @@ existe. Este script sigue funcionando solo, generando links.json, pero
 nada lo lee todavía — queda listo para cuando se construya esa integración.
 
 Arma el catálogo central juego -> links externos (BGG + El Bosque Lúdico)
-para los juegos en Watchlist de 01_data_understanding/bgg/bgg_data.csv (el
+para los juegos en Watchlist de 01_data_understanding/collect_initial_data/bgg/bgg_data.csv (el
 universo de juegos — ver collect_bgg_data.py), como paso previo a relevar
 precios.
 
@@ -27,9 +27,9 @@ La Watchlist puede ser grande (hasta ~1000 candidatos del top N de BGG):
 collect_bosque_precios.py acepta --limit para no tener que relevar el
 precio de todos en una corrida.
 
-Salida: 01_data_understanding/bosque_ludico/links.json (primera columna
+Salida: 01_data_understanding/collect_initial_data/bosque_ludico/links.json (primera columna
 bgg_id, para integrar fácil el día que exista esa integración).
-Siguiente paso: 01_data_understanding/bosque_ludico/collect_bosque_precios.py
+Siguiente paso: 01_data_understanding/collect_initial_data/bosque_ludico/collect_bosque_precios.py
 lee ese archivo y releva el precio actual de cada link.
 """
 import csv
@@ -72,7 +72,7 @@ def normalize(s):
 
 def load_watchlist():
     if not BGG_DATA_PATH.exists():
-        sys.exit(f"No existe {BGG_DATA_PATH}; corré primero 01_data_understanding/bgg/collect_bgg_data.py")
+        sys.exit(f"No existe {BGG_DATA_PATH}; corré primero 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py")
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
         games = list(csv.DictReader(f))
     watchlist = [g for g in games if (g.get("estado") or "").strip() == "Watchlist"]

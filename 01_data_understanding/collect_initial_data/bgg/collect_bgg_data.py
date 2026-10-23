@@ -37,10 +37,10 @@ juego, en un solo archivo — no hace falta combinar dos datasets distintos.
 `--mode api` reemplaza esto por xmlapi2/thing en cuanto BGG apruebe la app.
 
 Uso:
-    python3 01_data_understanding/bgg/collect_bgg_data.py                  # bootstrap o refresh según corresponda
-    python3 01_data_understanding/bgg/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
-    python3 01_data_understanding/bgg/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
-    python3 01_data_understanding/bgg/collect_bgg_data.py --add "Wingspan" --estado Own
+    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py                  # bootstrap o refresh según corresponda
+    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
+    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
+    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own
 """
 import argparse
 import ast

@@ -2,14 +2,14 @@
 
 Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso es trabajo de `02_data_preparation/`, y 02 puede importar de 01, nunca al revés).
 
-- `bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.csv`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
-- `bosque_ludico/` — **[EN UN FUTURO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
+- `collect_initial_data/bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.csv`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
+- `collect_initial_data/bosque_ludico/` — **[EN UN FUTURO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
 Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futuro, no existen todavía.
 
-## bgg/: el universo de juegos + sus datos de BGG, en un único CSV
+## collect_initial_data/bgg/: el universo de juegos + sus datos de BGG, en un único CSV
 
-`bgg_data.csv` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "bosque_ludico/" abajo).
+`bgg_data.csv` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "collect_initial_data/bosque_ludico/" abajo).
 
 **Columnas propias — `collect_bgg_data.py` nunca las pisa:** `bgg_id`, `nombre`, `estado` (`Own`/`Prev. owned`/`Watchlist`), `bgg_url`, `modo`, `mi_puntaje`, `pros`, `cons`, `youtube`, `notas`.
 **Columnas de BGG — se refrescan en cada corrida:** `anio`, `descripcion`, `disenador`, `edad_min`, `jug_min`/`jug_max`, `jug_best_min`/`jug_best_max`, `duracion_min`/`duracion_max`, `complejidad`, `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `mecanicas`, `categorias` (estas dos últimas, listas separadas por `|`).
@@ -22,8 +22,8 @@ Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futur
 2. **Refresh** (default una vez que `bgg_data.csv` ya existe, sin `--add`): re-descarga el dataset de BGG y actualiza las columnas de BGG de los juegos que **ya** están en el archivo. Nunca agrega ni saca filas — es lo que corre el cron.
 3. **Agregar un juego puntual** (`--add`): así es como se amplía el universo de acá en más — `bgg_data.csv` no se regenera solo con juegos nuevos, se le pide explícitamente.
    ```bash
-   python3 01_data_understanding/bgg/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
-   python3 01_data_understanding/bgg/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
+   python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
+   python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
    ```
 
 ### De dónde sale el dato de BGG
@@ -32,7 +32,7 @@ BGG cerró el acceso sin auth a `xmlapi2` (401 hasta que aprueben la aplicación
 
 Dos quirks del dataset que el script ya filtra, por si hace falta debuggear algo raro: algunos campos vienen como el repr de Python de una lista (p. ej. `boardgamedesigner`), se parsean con `ast.literal_eval` (nunca ejecuta código, solo literales); y `minplaytime`/`maxplaytime`/`minage` usan `0` como sentinel de "sin dato" en vez de dejar la celda vacía — el script lo trata como `null`, no como un valor real.
 
-## bosque_ludico/: [EN UN FUTURO] precio en la tienda
+## collect_initial_data/bosque_ludico/: [EN UN FUTURO] precio en la tienda
 
 **Pausado.** La idea es que algún día `bosque_data.csv` (mismo criterio: `bgg_id` como primera columna) se integre con `bgg_data.csv` haciendo match por nombre, en `02_data_preparation/`. Hoy esa integración no existe — nada corre estos scripts de forma activa ni los wire-ea al resto del pipeline, quedan documentados y funcionando por su cuenta para cuando se retome:
 
@@ -42,7 +42,7 @@ Dos quirks del dataset que el script ya filtra, por si hace falta debuggear algo
 ## Correr todo el pipeline de 01 a mano
 
 ```bash
-python3 01_data_understanding/bgg/collect_bgg_data.py   # refresca bgg_data.csv (o --add para sumar un juego)
+python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py   # refresca bgg_data.csv (o --add para sumar un juego)
 python3 02_data_preparation/construct_data.py            # ver 02_data_preparation/README.md
 ```
 

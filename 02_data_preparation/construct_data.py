@@ -1,4 +1,4 @@
-"""Lee 01_data_understanding/bgg/bgg_data.csv (el universo de juegos +
+"""Lee 01_data_understanding/collect_initial_data/bgg/bgg_data.csv (el universo de juegos +
 datos de BGG, ver collect_bgg_data.py — hoy la única fuente: la integración
 con Bosque Lúdico es trabajo futuro, ver DATA_PLAYBOOK.md), calcula las
 columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
@@ -21,7 +21,7 @@ import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BGG_DATA_PATH = ROOT / "01_data_understanding" / "bgg" / "bgg_data.csv"
+BGG_DATA_PATH = ROOT / "01_data_understanding" / "collect_initial_data" / "bgg" / "bgg_data.csv"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
@@ -36,7 +36,7 @@ def load_games():
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     if not rows:
-        raise SystemExit(f"{BGG_DATA_PATH} está vacío; corré 01_data_understanding/bgg/collect_bgg_data.py primero.")
+        raise SystemExit(f"{BGG_DATA_PATH} está vacío; corré 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py primero.")
 
     games = []
     for row in rows:

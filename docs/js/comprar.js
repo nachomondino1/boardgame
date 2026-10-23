@@ -3,6 +3,7 @@ let GAMES = [];
 const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"];
 
 const state = {
+  query: "",
   tipos: new Set(),
   duracionMax: 180,
   complejidadMax: 5,
@@ -13,6 +14,9 @@ const state = {
 
 function matchesFilters(g) {
   if (g.estado !== "Watchlist") return false;
+  if (state.query) {
+    if (!normalize(g.nombre).includes(normalize(state.query))) return false;
+  }
   if (state.tipos.size > 0 && !state.tipos.has(g.modo)) return false;
   if (g.duracion != null && g.duracion > state.duracionMax) return false;
   if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
@@ -54,6 +58,11 @@ function render() {
 }
 
 function setupControls() {
+  document.getElementById("search").addEventListener("input", (e) => {
+    state.query = e.target.value;
+    render();
+  });
+
   const tipoChips = document.getElementById("tipo-chips");
   TIPOS.forEach((tipo) => {
     const chip = document.createElement("span");
