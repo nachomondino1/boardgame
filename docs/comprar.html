@@ -27,7 +27,7 @@
       <p class="subtitle">Watchlist, filtrados por tipo, duración, complejidad y jugadores</p>
       <div class="filters-panel open">
         <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
-        <div class="filter-grid" id="filter-grid">
+        <div class="filter-grid filter-grid--nowrap" id="filter-grid">
           <div class="filter-group filter-group--grow">
             <label class="filter-label" for="search">Buscar</label>
             <div class="search-box">
@@ -67,9 +67,14 @@
             <label class="filter-label" for="complejidad-max">Complejidad máxima <span class="filter-label-value" id="complejidad-max-label">5 (sin límite)</span></label>
             <input type="range" id="complejidad-max" min="1" max="5" step="0.1" value="5" />
           </div>
-          <div class="filter-group filter-group--full">
-            <span class="filter-label">Tipo</span>
-            <div class="chip-row" id="tipo-chips"></div>
+          <div class="filter-group filter-group--capped">
+            <label class="filter-label" id="tipo-label">Tipo</label>
+            <div class="multiselect" id="tipo-multiselect">
+              <button type="button" class="multiselect-button" id="tipo-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tipo-label">
+                <span id="tipo-button-label">Todos</span>
+              </button>
+              <div class="multiselect-panel" id="tipo-panel" role="listbox" aria-multiselectable="true" hidden></div>
+            </div>
           </div>
         </div>
       </div>
