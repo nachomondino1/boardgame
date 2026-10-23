@@ -27,7 +27,7 @@
       <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
       <div class="filters-panel open">
         <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
-        <div class="filter-grid" id="filter-grid">
+        <div class="filter-grid filter-grid--nowrap" id="filter-grid">
           <div class="filter-group filter-group--grow">
             <label class="filter-label" for="search">Buscar</label>
             <div class="search-box">
@@ -43,18 +43,7 @@
               <button id="player-clear" title="Quitar filtro">✕</button>
             </div>
           </div>
-          <div class="filter-group filter-group--grow">
-            <label class="filter-label" for="sort-select">Orden</label>
-            <select id="sort-select">
-              <option value="puntaje_ajust_bgg_desc">Puntaje ajustado</option>
-              <option value="puntaje_bgg_desc">Puntaje BGG</option>
-              <option value="mi_puntaje_desc">Mi puntaje</option>
-              <option value="complejidad_asc">Complejidad (menor primero)</option>
-              <option value="duracion_asc">Duración (menor primero)</option>
-              <option value="nombre_asc">Nombre</option>
-            </select>
-          </div>
-          <div class="filter-group filter-group--full">
+          <div class="filter-group">
             <span class="filter-label">Estado</span>
             <div class="chip-row" id="estado-chips"></div>
           </div>
@@ -62,7 +51,20 @@
       </div>
     </div>
   </header>
-  <div class="result-count" id="result-count"></div>
+  <div class="result-count-row">
+    <span id="result-count"></span>
+    <label class="sort-control" for="sort-select">
+      <span class="sort-icon" aria-hidden="true">⇅</span>
+      <select id="sort-select">
+        <option value="puntaje_ajust_bgg_desc">Puntaje ajustado</option>
+        <option value="puntaje_bgg_desc">Puntaje BGG</option>
+        <option value="mi_puntaje_desc">Mi puntaje</option>
+        <option value="complejidad_asc">Complejidad (menor primero)</option>
+        <option value="duracion_asc">Duración (menor primero)</option>
+        <option value="nombre_asc">Nombre</option>
+      </select>
+    </label>
+  </div>
   <main>
     <div class="grid" id="grid"></div>
   </main>
