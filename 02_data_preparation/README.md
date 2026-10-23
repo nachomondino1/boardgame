@@ -1,15 +1,14 @@
 # 02 — Data preparation
 
-Dos pasos, en orden, los dos sobre `../docs/data/data.json`:
+Hoy un solo paso real (la integración con una segunda fuente es trabajo futuro — ver `../01_data_understanding/bosque_ludico/`):
 
-1. `integrate_data.py` — **solo integra**, no le pega a ninguna fuente externa: toma `game_universe.load_universe()` (`../01_data_understanding/`, fuente de verdad — Sheet + top N de BGG como candidatos) + el caché de BGG (`../docs/data/cache/bgg/`) + el dataset de precios de Bosque Lúdico (`../01_data_understanding/bosque_ludico/bosque_data.json`, si corrió) y regenera `../docs/data/data.json` (dentro de `docs/` porque ahí vive el sitio que sirve GitHub Pages, ver `../05_deployment/README.md`). El Sheet siempre gana sobre sus propios juegos; BGG y Bosque Lúdico solo completan lo que quedó vacío. Ver `../README.md` y `../DATA_PLAYBOOK.md` para el detalle.
-2. `construct_data.py` — calcula `puntaje_ajust_bgg` y `precio_calidad`, columnas que no vienen de ninguna fuente sino que se construyen a partir de otras ya integradas (`puntaje_bgg`+`reviews_bgg`, y `costo`+`puntaje_ajust_bgg`). Las fórmulas se migraron desde las celdas del Sheet (ver docstring del script) el día que esas dos columnas se sacaron de ahí — el Sheet ya no las tiene.
+- **[EN UN FUTURO] Integración** — cuando `bosque_data.csv` exista, mergear `../01_data_understanding/bgg/bgg_data.csv` con `bosque_data.csv` por nombre de juego. No existe todavía.
+- `construct_data.py` — lee `../01_data_understanding/bgg/bgg_data.csv` directo (hoy es la única fuente — no hay nada que integrar), calcula las columnas derivadas (`duracion`, `modo`, `transportable`, `puntaje_ajust_bgg`, `precio_calidad` — ver el docstring de cada función para el criterio de cada una) y escribe `../docs/data/data.json` (dentro de `docs/` porque ahí vive el sitio que sirve GitHub Pages, ver `../05_deployment/README.md`). Ver `../README.md`, "Columnas calculadas", y `../DATA_PLAYBOOK.md` para el detalle.
 
-La recolección cruda de cada fuente (Sheet, BGG, Bosque Lúdico) vive en `../01_data_understanding/` — ver el README de esa carpeta.
-
-Ambos scripts asumen que se corren desde la raíz del repo, en orden, tal como lo hace `../.github/workflows/sync-sheet.yml`:
+La recolección cruda de cada fuente (BGG, Bosque Lúdico) vive en `../01_data_understanding/` — ver el README de esa carpeta.
 
 ```bash
-python3 02_data_preparation/integrate_data.py
 python3 02_data_preparation/construct_data.py
 ```
+
+`../.github/workflows/sync-data.yml` corre `01_data_understanding/bgg/collect_bgg_data.py` y después esto, en ese orden, el día 1 de cada mes.

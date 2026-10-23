@@ -1,26 +1,60 @@
-"""Calcula columnas derivadas que no vienen de ninguna fuente (ludoteca,
-BGG, Bosque Lúdico) sino que se construyen a partir de otras columnas ya
-integradas. Corre después de integrate_data.py, sobre docs/data/data.json.
+"""Lee 01_data_understanding/bgg/bgg_data.csv (el universo de juegos +
+datos de BGG, ver collect_bgg_data.py — hoy la única fuente: la integración
+con Bosque Lúdico es trabajo futuro, ver DATA_PLAYBOOK.md), calcula las
+columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
 
 puntaje_ajust_bgg y precio_calidad: ver sus docstrings más abajo (vivían
 como fórmulas manuales en el Sheet original, se migraron leyendo la fórmula
-real de la celda antes de sacar esas columnas de ahí).
+real de la celda antes de sacar esas columnas de ahí). precio_calidad
+depende de `costo`, que hoy no sale de ninguna fuente (Bosque Lúdico no
+está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
 duracion, modo y transportable: derivadas de datos de BGG (mecánicas,
-categorías, complejidad, duración mín./máx. — ver enrich_bgg.py), para los
-~1000 candidatos del top N que nunca pasaron por una curación a mano. Nunca
-pisan un valor que ya esté cargado en mi_ludoteca.json: si tu ludoteca ya
-tiene `modo` para un juego tuyo, se respeta tal cual.
+categorías, complejidad, duración mín./máx.). `modo` nunca pisa un valor
+que ya esté cargado a mano en bgg_data.csv (columna propia, ver
+collect_bgg_data.py).
 """
+import csv
 import json
 import math
 import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_PATH = ROOT / "docs" / "data" / "data.json"
+BGG_DATA_PATH = ROOT / "01_data_understanding" / "bgg" / "bgg_data.csv"
+OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
+
+NUMERIC_FLOAT = {"complejidad", "puntaje_bgg"}
+NUMERIC_INT = {"anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
+               "duracion_min", "duracion_max", "reviews_bgg", "ranking_bgg", "mi_puntaje"}
+LIST_FIELDS = {"mecanicas", "categorias"}
+
+
+def load_games():
+    with BGG_DATA_PATH.open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if not rows:
+        raise SystemExit(f"{BGG_DATA_PATH} está vacío; corré 01_data_understanding/bgg/collect_bgg_data.py primero.")
+
+    games = []
+    for row in rows:
+        game = {}
+        for key, value in row.items():
+            value = (value or "").strip()
+            if key in LIST_FIELDS:
+                game[key] = value.split("|") if value else []
+            elif not value:
+                game[key] = None
+            elif key in NUMERIC_FLOAT:
+                game[key] = float(value)
+            elif key in NUMERIC_INT:
+                game[key] = int(float(value))
+            else:
+                game[key] = value
+        games.append(game)
+    return games
 
 
 def compute_puntaje_ajust_bgg(game):
@@ -140,7 +174,7 @@ def compute_transportable(complejidad, duracion):
 
 
 def main():
-    games = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    games = load_games()
 
     for g in games:
         g["duracion"] = compute_duracion(g)
@@ -155,9 +189,9 @@ def main():
         if g["precio_calidad"] is not None:
             g["precio_calidad"] = round(g["precio_calidad"], 2)
 
-    DATA_PATH.write_text(json.dumps(games, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"OK: duracion, modo, transportable, puntaje_ajust_bgg y precio_calidad "
-          f"calculados para {len(games)} juegos en {DATA_PATH}")
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_PATH.write_text(json.dumps(games, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"OK: {len(games)} juegos escritos en {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

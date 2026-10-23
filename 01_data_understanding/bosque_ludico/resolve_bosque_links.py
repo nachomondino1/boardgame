@@ -1,11 +1,16 @@
-"""Arma el catálogo central juego -> links externos (BGG + El Bosque Lúdico)
-para los juegos en Watchlist (lo que no tenés: candidatos de game_universe —
-tu ludoteca + el top N de BGG, ver ../game_universe.py), como paso previo a
-relevar precios.
+"""PAUSADO por ahora (ver DATA_PLAYBOOK.md): el paso de integración que iba
+a consumir esto (bgg_data.csv + bosque_data.csv por nombre) todavía no
+existe. Este script sigue funcionando solo, generando links.json, pero
+nada lo lee todavía — queda listo para cuando se construya esa integración.
+
+Arma el catálogo central juego -> links externos (BGG + El Bosque Lúdico)
+para los juegos en Watchlist de 01_data_understanding/bgg/bgg_data.csv (el
+universo de juegos — ver collect_bgg_data.py), como paso previo a relevar
+precios.
 
 Unidad de análisis: un juego de la Watchlist. Para cada uno se guarda el
-nombre, el link a BGG (ya resuelto en game_universe.load_universe()) y el
-link a su ficha en El Bosque Lúdico, resuelto acá por nombre.
+bgg_id, el nombre, el link a BGG y el link a su ficha en El Bosque Lúdico,
+resuelto acá por nombre.
 
 Por qué no se usa /search/?q=... de El Bosque Lúdico: su robots.txt bloquea
 "Disallow: /search/" explícitamente. En cambio se descarga una sola vez su
@@ -14,23 +19,20 @@ todas las fichas de producto, y se matchea cada juego contra esos slugs por
 similitud de texto. Esto resuelve el link con un solo request, sin tocar
 ninguna ruta disallowed.
 
-Lee el universo de juegos directo (vía game_universe.load_universe(), en
-01_data_understanding/), no docs/data/data.json: ese archivo es un *output*
-de 02_data_preparation, y 01_data_understanding (recolección cruda) nunca
-depende de un output de 02 (integración) — solo al revés.
+Lee bgg_data.csv directo, no docs/data/data.json: ese archivo es un
+*output* de 02_data_preparation, y 01_data_understanding (recolección
+cruda) nunca depende de un output de 02 (integración) — solo al revés.
 
-La Watchlist puede ser grande ahora (hasta ~1000 candidatos del top N de
-BGG, no solo lo que cargabas a mano): collect_bosque_precios.py acepta
---limit para no tener que relevar el precio de todos en una corrida.
+La Watchlist puede ser grande (hasta ~1000 candidatos del top N de BGG):
+collect_bosque_precios.py acepta --limit para no tener que relevar el
+precio de todos en una corrida.
 
-Salida: 01_data_understanding/bosque_ludico/links.json
+Salida: 01_data_understanding/bosque_ludico/links.json (primera columna
+bgg_id, para integrar fácil el día que exista esa integración).
 Siguiente paso: 01_data_understanding/bosque_ludico/collect_bosque_precios.py
-lee ese archivo y releva el precio actual de cada link; 02_data_preparation/
-integrate_data.py integra ese precio en docs/data/data.json como fallback de
-costo/link_tienda (mi_ludoteca.json sigue mandando si esos campos ya están
-cargados ahí).
+lee ese archivo y releva el precio actual de cada link.
 """
-import difflib
+import csv
 import gzip
 import json
 import re
@@ -39,8 +41,7 @@ import unicodedata
 import urllib.request
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from game_universe import load_universe  # noqa: E402
+BGG_DATA_PATH = Path(__file__).resolve().parent.parent / "bgg" / "bgg_data.csv"
 
 SITEMAP_URL = "https://acdn-us.mitiendanube.com/stores/005/798/114/themes/common/sitemap.xml.gz"
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
@@ -49,7 +50,7 @@ OUTPUT_PATH = Path(__file__).resolve().parent / "links.json"
 
 MATCH_THRESHOLD = 0.8  # fracción de palabras del termino buscado que tienen que aparecer en el slug
 
-# Mismo patrón que BGG_SEARCH_OVERRIDES / BGG_SKIP en ludoteca_source.py:
+# Mismo patrón que BGG_SEARCH_OVERRIDES / BGG_SKIP en bgg/collect_bgg_data.py:
 # para ediciones locales o nombres que no matchean bien contra el catálogo
 # de la tienda, se fuerza el término de búsqueda o se marca el juego como
 # sin link.
@@ -70,10 +71,13 @@ def normalize(s):
 
 
 def load_watchlist():
-    games = load_universe()
+    if not BGG_DATA_PATH.exists():
+        sys.exit(f"No existe {BGG_DATA_PATH}; corré primero 01_data_understanding/bgg/collect_bgg_data.py")
+    with BGG_DATA_PATH.open(encoding="utf-8") as f:
+        games = list(csv.DictReader(f))
     watchlist = [g for g in games if (g.get("estado") or "").strip() == "Watchlist"]
     if not watchlist:
-        sys.exit("No encontré juegos con estado Watchlist (¿corriste bgg/collect_bgg_rankings.py?)")
+        sys.exit(f"No encontré juegos con estado Watchlist en {BGG_DATA_PATH}")
     return watchlist
 
 
@@ -141,21 +145,19 @@ def main():
 
     results = []
     for game in watchlist:
-        nombre = game.get("nombre") or game.get("nombre_es") or game.get("nombre_en")
-        nombre_en = game.get("nombre_en")
+        bgg_id = game.get("bgg_id")
+        nombre = game.get("nombre")
 
         if nombre in BOSQUE_SKIP:
             results.append({
-                "nombre": nombre, "nombre_en": nombre_en, "bgg_url": game.get("bgg_url"),
+                "bgg_id": bgg_id, "nombre": nombre, "bgg_url": game.get("bgg_url"),
                 "bosque_url": None, "match_score": None,
             })
             print(f"{nombre}: salteado (BOSQUE_SKIP)")
             continue
 
-        override = BOSQUE_SEARCH_OVERRIDES.get(nombre)
-        terms = [override] if override else [t for t in (nombre_en, nombre) if t]
-        term = terms[0]
-        url, score = best_match(terms, slugs)
+        term = BOSQUE_SEARCH_OVERRIDES.get(nombre) or nombre
+        url, score = best_match([term], slugs)
         if score < MATCH_THRESHOLD:
             url, score = None, None
             print(f"{nombre}: sin match confiable (buscado: {term!r})")
@@ -163,7 +165,7 @@ def main():
             print(f"{nombre}: {url} (score={score:.2f})")
 
         results.append({
-            "nombre": nombre, "nombre_en": nombre_en, "bgg_url": game.get("bgg_url"),
+            "bgg_id": bgg_id, "nombre": nombre, "bgg_url": game.get("bgg_url"),
             "bosque_url": url, "match_score": round(score, 2) if score else None,
         })
 
