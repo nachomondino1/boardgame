@@ -1,7 +1,11 @@
-"""Lee 01_data_understanding/collect_initial_data/bgg/bgg_data.csv (el universo de juegos +
+"""Lee 01_data_understanding/collect_initial_data/bgg/bgg_data.jsonl (el universo de juegos +
 datos de BGG, ver collect_bgg_data.py — hoy la única fuente: la integración
 con Bosque Lúdico es trabajo futuro, ver DATA_PLAYBOOK.md), calcula las
 columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
+
+bgg_data.jsonl es JSON Lines (un objeto por línea, ver el docstring de
+collect_bgg_data.py sobre por qué JSONL y no CSV): mecanicas/categorias ya
+llegan como array, el resto de los campos como string u null.
 
 puntaje_ajust_bgg y precio_calidad: ver sus docstrings más abajo (vivían
 como fórmulas manuales en el Sheet original, se migraron leyendo la fórmula
@@ -11,17 +15,16 @@ está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
 duracion, modo y transportable: derivadas de datos de BGG (mecánicas,
 categorías, complejidad, duración mín./máx.). `modo` nunca pisa un valor
-que ya esté cargado a mano en bgg_data.csv (columna propia, ver
+que ya esté cargado a mano en bgg_data.jsonl (columna propia, ver
 collect_bgg_data.py).
 """
-import csv
 import json
 import math
 import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BGG_DATA_PATH = ROOT / "01_data_understanding" / "collect_initial_data" / "bgg" / "bgg_data.csv"
+BGG_DATA_PATH = ROOT / "01_data_understanding" / "collect_initial_data" / "bgg" / "bgg_data.jsonl"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
@@ -34,7 +37,7 @@ LIST_FIELDS = {"mecanicas", "categorias"}
 
 def load_games():
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
+        rows = [json.loads(line) for line in f if line.strip()]
     if not rows:
         raise SystemExit(f"{BGG_DATA_PATH} está vacío; corré 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py primero.")
 
@@ -42,10 +45,11 @@ def load_games():
     for row in rows:
         game = {}
         for key, value in row.items():
-            value = (value or "").strip()
             if key in LIST_FIELDS:
-                game[key] = value.split("|") if value else []
-            elif not value:
+                game[key] = value if isinstance(value, list) else []
+                continue
+            value = (value or "").strip()
+            if not value:
                 game[key] = None
             elif key in NUMERIC_FLOAT:
                 game[key] = float(value)
