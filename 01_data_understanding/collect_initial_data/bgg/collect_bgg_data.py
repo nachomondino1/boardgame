@@ -1,30 +1,39 @@
-"""Recolección inicial de BGG: un único archivo, bgg_data.csv, que es a la
+"""Recolección inicial de BGG: un único archivo, bgg_data.jsonl, que es a la
 vez el "universo de juegos" (qué juegos existen, con qué estado) y sus datos
 de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas
 separadas (collect_bgg_rankings.py + game_universe.py + enrich_bgg.py).
 
-bgg_id es la primera columna, para poder integrar fácil con lo que salga de
-otras fuentes (ej. bosque_data.csv el día que se automatice — ver el README
-de esta carpeta).
+Formato: JSON Lines, un juego por línea (un objeto JSON por renglón, no un
+array). Se eligió sobre CSV porque `descripcion` trae texto libre de BGG con
+saltos de línea reales adentro, lo que en CSV hacía que una sola fila se
+desparramara en decenas de líneas visuales en el editor — en JSONL un salto
+de línea dentro de un string se escapa (`\\n` literal), así que cada juego
+queda garantizado en una sola línea física, buscable por nombre con Ctrl+F.
 
-Columnas que son tuyas, nunca las toca el enriquecimiento de BGG:
+bgg_id es el primer campo de cada línea, para poder integrar fácil con lo
+que salga de otras fuentes (ej. bosque_data.csv el día que se automatice —
+ver el README de esta carpeta).
+
+Campos que son tuyos, nunca los toca el enriquecimiento de BGG:
     bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, youtube, notas
 El resto (anio, descripcion, disenador, edad_min, jug_min/max,
 jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg, reviews_bgg,
-ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada corrida.
+ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada
+corrida. `mecanicas`/`categorias` se guardan como array JSON (no como string
+separado por "|").
 
 Tres usos:
-  1. Bootstrap (primera vez, bgg_data.csv no existe todavía): arma el
+  1. Bootstrap (primera vez, bgg_data.jsonl no existe todavía): arma el
      universo con el top N del ranking de BGG + tus propios juegos (lee
      ludoteca/mi_ludoteca.json UNA SOLA VEZ para taguear Own/Prev. owned —
      después de este bootstrap ese archivo ya no hace falta, se puede
      borrar). El resto de los juegos del top N quedan en Watchlist.
-  2. Refresh (default si bgg_data.csv ya existe, sin --add): re-descarga el
-     dataset de BGG y actualiza los campos de BGG de los juegos que YA
-     están en bgg_data.csv. Nunca agrega ni saca filas.
+  2. Refresh (default si bgg_data.jsonl ya existe, sin --add): re-descarga
+     el dataset de BGG y actualiza los campos de BGG de los juegos que YA
+     están en bgg_data.jsonl. Nunca agrega ni saca filas.
   3. Agregar un juego puntual (--add): `collect_bgg_data.py --add <id o
      nombre> [--estado Own|"Prev. owned"|Watchlist]`. Así es como se
-     amplía el universo de acá en más — bgg_data.csv no se regenera solo,
+     amplía el universo de acá en más — bgg_data.jsonl no se regenera solo,
      se le pide explícitamente que sume un juego.
 
 De dónde sale el dato de BGG hoy: BGG cerró el acceso sin auth a xmlapi2
@@ -60,10 +69,10 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-csv.field_size_limit(10_000_000)  # el dataset trae descripciones largas en una sola celda
+csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae descripciones largas en una sola celda CSV
 
 HERE = Path(__file__).resolve().parent
-BGG_DATA_PATH = HERE / "bgg_data.csv"
+BGG_DATA_PATH = HERE / "bgg_data.jsonl"
 LUDOTECA_PATH = HERE.parent / "ludoteca" / "mi_ludoteca.json"
 
 DATASET_URL = (
@@ -82,6 +91,7 @@ BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_ma
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
 ALL_FIELDS = OWNED_FIELDS + BGG_FIELDS
+LIST_FIELDS = {"mecanicas", "categorias"}
 
 # Mismo patrón que tenía ludoteca_source.py: para ediciones locales o
 # nombres que no matchean bien contra BGG, se fuerza el término de
@@ -201,8 +211,8 @@ def dataset_row_to_attributes(row):
         "puntaje_bgg": num("average"),
         "reviews_bgg": num("usersrated"),
         "ranking_bgg": num("Board Game Rank"),
-        "mecanicas": "|".join(mecanicas),
-        "categorias": "|".join(categorias),
+        "mecanicas": mecanicas,
+        "categorias": categorias,
     }
 
 
@@ -264,26 +274,26 @@ def fetch_api_attributes(bgg_id):
         "puntaje_bgg": rating,
         "reviews_bgg": usersrated,
         "ranking_bgg": rank,
-        "mecanicas": "|".join(mecanicas),
-        "categorias": "|".join(categorias),
+        "mecanicas": mecanicas,
+        "categorias": categorias,
     }
 
 
 # ---------------------------------------------------------------------------
-# bgg_data.csv: leer / escribir
+# bgg_data.jsonl: leer / escribir (un objeto JSON por línea, ver docstring)
 # ---------------------------------------------------------------------------
 
 def load_existing():
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return [json.loads(line) for line in f if line.strip()]
 
 
-def write_csv(rows):
-    with BGG_DATA_PATH.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=ALL_FIELDS)
-        writer.writeheader()
+def write_jsonl(rows):
+    with BGG_DATA_PATH.open("w", encoding="utf-8") as f:
         for row in rows:
-            writer.writerow({k: row.get(k, "") or "" for k in ALL_FIELDS})
+            ordered = {k: (row.get(k) or ([] if k in LIST_FIELDS else "")) for k in ALL_FIELDS}
+            f.write(json.dumps(ordered, ensure_ascii=False))
+            f.write("\n")
 
 
 # ---------------------------------------------------------------------------
@@ -381,7 +391,7 @@ def find_in_dataset(term, dataset):
 
 
 def set_estado(term, estado, rows):
-    """Cambia el estado de un juego que ya está en bgg_data.csv, por nombre o bgg_id."""
+    """Cambia el estado de un juego que ya está en bgg_data.jsonl, por nombre o bgg_id."""
     term_stripped = term.strip()
     if term_stripped.isdigit():
         matches = [r for r in rows if r.get("bgg_id", "").strip() == term_stripped]
@@ -439,12 +449,12 @@ def enrich(rows, dataset, mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Universo de juegos + datos de BGG en un único bgg_data.csv")
+    parser = argparse.ArgumentParser(description="Universo de juegos + datos de BGG en un único bgg_data.jsonl")
     parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual (por id de BGG o nombre)")
     parser.add_argument("--estado", choices=["Own", "Prev. owned", "Watchlist", "Want to buy"],
                          help="estado del juego agregado con --add (default Watchlist)")
     parser.add_argument("--set-estado", nargs=2, metavar=("NOMBRE_O_ID", "ESTADO"),
-                         help="cambia el estado de un juego que ya está en bgg_data.csv, ej: "
+                         help="cambia el estado de un juego que ya está en bgg_data.jsonl, ej: "
                               "--set-estado \"Sky Team\" \"Want to buy\"")
     parser.add_argument("--top", type=int, default=TOP_N_DEFAULT, help="tamaño del universo en el bootstrap (default 1000)")
     parser.add_argument("--mode", choices=["dummy", "api"], default="dummy",
@@ -461,7 +471,7 @@ def main():
         nombre_o_id, estado = args.set_estado
         rows = load_existing()
         set_estado(nombre_o_id, estado, rows)
-        write_csv(rows)
+        write_jsonl(rows)
         return
 
     dataset = fetch_dataset() if args.mode == "dummy" else {}
@@ -480,7 +490,7 @@ def main():
         print(f"{len(rows)} juego(s) ya en {BGG_DATA_PATH}, refrescando datos de BGG...")
 
     enrich(rows, dataset, args.mode)
-    write_csv(rows)
+    write_jsonl(rows)
     print(f"\nOK: {len(rows)} juego(s) en {BGG_DATA_PATH}")
 
 

@@ -2,14 +2,14 @@
 
 Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso es trabajo de `02_data_preparation/`, y 02 puede importar de 01, nunca al revés).
 
-- `collect_initial_data/bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.csv`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
+- `collect_initial_data/bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.jsonl`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
 - `collect_initial_data/bosque_ludico/` — **[EN UN FUTURO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
 Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futuro, no existen todavía.
 
 ## collect_initial_data/bgg/: el universo de juegos + sus datos de BGG, en un único CSV
 
-`bgg_data.csv` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "collect_initial_data/bosque_ludico/" abajo).
+`bgg_data.jsonl` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "collect_initial_data/bosque_ludico/" abajo).
 
 **Columnas propias — `collect_bgg_data.py` nunca las pisa** (se cargan a mano o con `--set-estado`) **vs. columnas de BGG — se refrescan en cada corrida** (vienen del dataset de terceros o, con `--mode api`, de BGG directo):
 
@@ -38,13 +38,13 @@ Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futur
 | `mecanicas` | BGG | lista separada por `\|` | Mecánicas de juego (ej. Deduction, Cooperative Game). | — |
 | `categorias` | BGG | lista separada por `\|` | Categorías temáticas (ej. Animals, Spies / Secret Agents). | — |
 
-**`bgg_data.csv` se commitea** (no es un derivado regenerable sin pérdida: las columnas propias —sobre todo `mi_puntaje`/`pros`/`cons`/`notas`— las cargaste vos a mano, igual que antes el Sheet).
+**`bgg_data.jsonl` se commitea** (no es un derivado regenerable sin pérdida: las columnas propias —sobre todo `mi_puntaje`/`pros`/`cons`/`notas`— las cargaste vos a mano, igual que antes el Sheet).
 
 ### Cómo se usa, de tres formas
 
-1. **Bootstrap** (la primera vez, cuando `bgg_data.csv` todavía no existe): arma el universo con el top N (1000 por default) del ranking de BGG + tus propios juegos. Esto último lo hace leyendo `ludoteca/mi_ludoteca.json` **una sola vez**, para taguear qué juegos son `Own`/`Prev. owned` (el resto queda `Watchlist`) — después de este bootstrap, `mi_ludoteca.json` ya se puede borrar, no se vuelve a leer nunca más (así quedó: el bootstrap para este repo ya corrió y la carpeta `ludoteca/` no existe más).
-2. **Refresh** (default una vez que `bgg_data.csv` ya existe, sin `--add`): re-descarga el dataset de BGG y actualiza las columnas de BGG de los juegos que **ya** están en el archivo. Nunca agrega ni saca filas — es lo que corre el cron.
-3. **Agregar un juego puntual** (`--add`): así es como se amplía el universo de acá en más — `bgg_data.csv` no se regenera solo con juegos nuevos, se le pide explícitamente.
+1. **Bootstrap** (la primera vez, cuando `bgg_data.jsonl` todavía no existe): arma el universo con el top N (1000 por default) del ranking de BGG + tus propios juegos. Esto último lo hace leyendo `ludoteca/mi_ludoteca.json` **una sola vez**, para taguear qué juegos son `Own`/`Prev. owned` (el resto queda `Watchlist`) — después de este bootstrap, `mi_ludoteca.json` ya se puede borrar, no se vuelve a leer nunca más (así quedó: el bootstrap para este repo ya corrió y la carpeta `ludoteca/` no existe más).
+2. **Refresh** (default una vez que `bgg_data.jsonl` ya existe, sin `--add`): re-descarga el dataset de BGG y actualiza las columnas de BGG de los juegos que **ya** están en el archivo. Nunca agrega ni saca filas — es lo que corre el cron.
+3. **Agregar un juego puntual** (`--add`): así es como se amplía el universo de acá en más — `bgg_data.jsonl` no se regenera solo con juegos nuevos, se le pide explícitamente.
    ```bash
    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
@@ -58,15 +58,15 @@ Dos quirks del dataset que el script ya filtra, por si hace falta debuggear algo
 
 ## collect_initial_data/bosque_ludico/: [EN UN FUTURO] precio en la tienda
 
-**Pausado.** La idea es que algún día `bosque_data.csv` (mismo criterio: `bgg_id` como primera columna) se integre con `bgg_data.csv` haciendo match por nombre, en `02_data_preparation/`. Hoy esa integración no existe — nada corre estos scripts de forma activa ni los wire-ea al resto del pipeline, quedan documentados y funcionando por su cuenta para cuando se retome:
+**Pausado.** La idea es que algún día `bosque_data.csv` (mismo criterio: `bgg_id` como primera columna) se integre con `bgg_data.jsonl` haciendo match por nombre, en `02_data_preparation/`. Hoy esa integración no existe — nada corre estos scripts de forma activa ni los wire-ea al resto del pipeline, quedan documentados y funcionando por su cuenta para cuando se retome:
 
-1. `resolve_bosque_links.py` — lee `bgg_data.csv`, filtra `estado == "Watchlist"`, y matchea cada nombre contra el listado completo de productos de la tienda (su `sitemap.xml.gz`, no `/search/`: ver el por qué en el docstring del script — bloqueado por `robots.txt`). Guarda `links.json` (gitignored): por juego, `bgg_id` + nombre + link a la tienda.
+1. `resolve_bosque_links.py` — lee `bgg_data.jsonl`, filtra `estado == "Watchlist"`, y matchea cada nombre contra el listado completo de productos de la tienda (su `sitemap.xml.gz`, no `/search/`: ver el por qué en el docstring del script — bloqueado por `robots.txt`). Guarda `links.json` (gitignored): por juego, `bgg_id` + nombre + link a la tienda.
 2. `collect_bosque_precios.py` — lee `links.json` y le pega a cada ficha de producto para sacar precio, disponibilidad y stock del momento. Guarda `bosque_data.json` (gitignored). Acepta `--limit N` para relevar de a tandas.
 
 ## Correr todo el pipeline de 01 a mano
 
 ```bash
-python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py   # refresca bgg_data.csv (o --add para sumar un juego)
+python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py   # refresca bgg_data.jsonl (o --add para sumar un juego)
 python3 02_data_preparation/construct_data.py            # ver 02_data_preparation/README.md
 ```
 
