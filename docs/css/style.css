@@ -726,6 +726,10 @@ details p {
     gap: 10px;
   }
 
+  .compare-picker {
+    flex-basis: auto;
+  }
+
   .compare-vs {
     align-self: center;
     padding-bottom: 0;
@@ -739,7 +743,7 @@ details p {
 
   .compare-table th:first-child,
   .compare-table td:first-child {
-    width: 84px;
+    width: 104px;
   }
 }
 
