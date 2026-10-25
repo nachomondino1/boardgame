@@ -17,7 +17,13 @@
 .filter-grid {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  /* flex-start, no flex-end: un grupo con más contenido que el resto (ej.
+     "Jugadores" con el checkbox "Solo si es el mejor número" debajo del
+     stepper) queda más alto, y flex-end empujaba los demás grupos hacia
+     abajo para alinear el fondo — se veían todos "caídos". Con flex-start
+     todos arrancan parejos arriba y el que tiene más contenido simplemente
+     crece hacia abajo sin arrastrar a los demás. */
+  align-items: flex-start;
   gap: 16px 20px;
 }
 

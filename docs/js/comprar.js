@@ -2,6 +2,14 @@ let GAMES = [];
 
 const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"];
 
+// Renderizar hasta ~1000 tarjetas completas (con toda su data-viz interna)
+// en cada cambio de filtro es lo que hacía sentir lento el filtrado,
+// sobre todo en mobile — no el cálculo del filtro en sí (eso es rapidísimo
+// incluso con 1000 juegos), sino construir y pintar cientos de nodos DOM.
+// Solución: paginar (mostrar PAGE_SIZE de entrada, "Mostrar más" para el
+// resto) en vez de todo de una.
+const PAGE_SIZE = 60;
+
 const state = {
   query: "",
   tipos: new Set(),
@@ -11,6 +19,7 @@ const state = {
   soloMejor: false,
   soloQuieroComprar: false,
   sort: "puntaje_ajust_bgg_desc",
+  visibleCount: PAGE_SIZE,
 };
 
 const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy"]);
@@ -58,29 +67,54 @@ function render() {
   const filtered = sortGames(GAMES.filter(matchesFilters));
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
-  count.textContent = `${filtered.length} juego${filtered.length === 1 ? "" : "s"}`;
-  grid.innerHTML = filtered.length
-    ? filtered.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
+  const loadMoreRow = document.getElementById("load-more-row");
+  const visible = filtered.slice(0, state.visibleCount);
+
+  count.textContent = filtered.length
+    ? `${visible.length} de ${filtered.length} juego${filtered.length === 1 ? "" : "s"}`
+    : "0 juegos";
+
+  grid.innerHTML = visible.length
+    ? visible.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
+
+  const restantes = filtered.length - visible.length;
+  loadMoreRow.innerHTML = restantes > 0
+    ? `<button type="button" class="load-more-btn" id="load-more-btn">Mostrar ${Math.min(PAGE_SIZE, restantes)} más (quedan ${restantes})</button>`
+    : "";
+  if (restantes > 0) {
+    document.getElementById("load-more-btn").addEventListener("click", () => {
+      state.visibleCount += PAGE_SIZE;
+      render();
+    });
+  }
 }
 
-// Arrastrar un slider dispara un evento "input" por cada pixel: renderizar
-// la grilla entera (hasta ~1000 tarjetas) en cada uno se siente trabado.
-// rAF junta todos los eventos de un mismo frame en un solo render.
-let renderScheduled = false;
-function scheduleRender() {
-  if (renderScheduled) return;
-  renderScheduled = true;
-  requestAnimationFrame(() => {
-    renderScheduled = false;
-    render();
-  });
+// Cualquier cambio de filtro vuelve a mostrar desde la primera página
+// (si no, "quedan 300 más" de un filtro viejo no tiene sentido con el
+// filtro nuevo aplicado).
+function onFilterChange() {
+  state.visibleCount = PAGE_SIZE;
+  render();
+}
+
+// Un slider dispara un evento "input" por cada pixel arrastrado, y
+// escribir ~1000 juegos filtrados + construir el HTML de hasta PAGE_SIZE
+// tarjetas en cada uno se siente trabado en mobile. En vez de renderizar
+// en cada evento (ni siquiera agrupando por frame con rAF alcanza: arrastrar
+// rápido sigue generando un render por frame), se espera a que el usuario
+// deje de mover el slider (debounce) — la etiqueta del valor sí se
+// actualiza al instante, solo el filtrado/render de la grilla se demora.
+let filterChangeTimer = null;
+function scheduleFilterChange(delayMs = 150) {
+  clearTimeout(filterChangeTimer);
+  filterChangeTimer = setTimeout(onFilterChange, delayMs);
 }
 
 function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
-    render();
+    scheduleFilterChange(200);
   });
 
   const tipoMultiselect = document.getElementById("tipo-multiselect");
@@ -110,7 +144,7 @@ function setupControls() {
       if (checkbox.checked) state.tipos.add(tipo);
       else state.tipos.delete(tipo);
       updateTipoButtonLabel();
-      render();
+      onFilterChange();
     });
     option.appendChild(checkbox);
     option.appendChild(document.createTextNode(tipo));
@@ -137,7 +171,7 @@ function setupControls() {
   duracionInput.addEventListener("input", (e) => {
     state.duracionMax = Number(e.target.value);
     duracionLabel.textContent = state.duracionMax >= 180 ? "180+ min" : `${state.duracionMax} min`;
-    scheduleRender();
+    scheduleFilterChange();
   });
 
   const complejidadInput = document.getElementById("complejidad-max");
@@ -145,7 +179,7 @@ function setupControls() {
   complejidadInput.addEventListener("input", (e) => {
     state.complejidadMax = Number(e.target.value);
     complejidadLabel.textContent = state.complejidadMax >= 5 ? "5 (sin límite)" : state.complejidadMax.toFixed(1);
-    scheduleRender();
+    scheduleFilterChange();
   });
 
   const playerLabel = document.getElementById("player-label");
@@ -163,34 +197,34 @@ function setupControls() {
     state.jugadores = Math.max(1, (state.jugadores ?? 1) - 1);
     playerLabel.textContent = state.jugadores;
     syncBestOnlyAvailability();
-    render();
+    onFilterChange();
   });
   document.getElementById("player-plus").addEventListener("click", () => {
     state.jugadores = Math.min(12, (state.jugadores ?? 0) + 1);
     playerLabel.textContent = state.jugadores;
     syncBestOnlyAvailability();
-    render();
+    onFilterChange();
   });
   document.getElementById("player-clear").addEventListener("click", () => {
     state.jugadores = null;
     playerLabel.textContent = "todos";
     syncBestOnlyAvailability();
-    render();
+    onFilterChange();
   });
 
   bestOnlyInput.addEventListener("change", (e) => {
     state.soloMejor = e.target.checked;
-    render();
+    onFilterChange();
   });
 
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
-    render();
+    onFilterChange();
   });
 
   document.getElementById("quiero-comprar-only").addEventListener("change", (e) => {
     state.soloQuieroComprar = e.target.checked;
-    render();
+    onFilterChange();
   });
 }
 
