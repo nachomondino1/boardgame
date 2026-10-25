@@ -11,8 +11,32 @@ Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futur
 
 `bgg_data.csv` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "collect_initial_data/bosque_ludico/" abajo).
 
-**Columnas propias — `collect_bgg_data.py` nunca las pisa:** `bgg_id`, `nombre`, `estado` (`Own`/`Prev. owned`/`Watchlist`), `bgg_url`, `modo`, `mi_puntaje`, `pros`, `cons`, `youtube`, `notas`.
-**Columnas de BGG — se refrescan en cada corrida:** `anio`, `descripcion`, `disenador`, `edad_min`, `jug_min`/`jug_max`, `jug_best_min`/`jug_best_max`, `duracion_min`/`duracion_max`, `complejidad`, `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `mecanicas`, `categorias` (estas dos últimas, listas separadas por `|`).
+**Columnas propias — `collect_bgg_data.py` nunca las pisa** (se cargan a mano o con `--set-estado`) **vs. columnas de BGG — se refrescan en cada corrida** (vienen del dataset de terceros o, con `--mode api`, de BGG directo):
+
+| Columna | Tipo | Valores típicos | Notas |
+|---|---|---|---|
+| `bgg_id` | propia | id numérico de BGG, o vacío | Clave para cruzar con otras fuentes (ver `bosque_ludico/`). Vacío cuando el juego no tiene ficha en BGG. |
+| `nombre` | propia | texto | Nombre en inglés tal como figura en BGG, no traducido. |
+| `estado` | propia | `Own`, `Prev. owned`, `Watchlist`, `Want to buy`, `Descartado` | `Want to buy` es una shortlist *dentro* de la watchlist (juegos que se quieren comprar pronto, no solo "interesa"). `Descartado` está reservado (badge y CSS ya existen) pero sin uso real todavía. |
+| `bgg_url` | propia | URL a `boardgamegeek.com/boardgame/<id>` | Se arma sola al agregar el juego. |
+| `modo` | propia | `Competitivo`, `Cooperativo`, `Equipos`, `Cooperativo y competitivo`, o vacío | Estos 4 son los que espera el filtro "Tipo" del sitio (`docs/js/comprar.js`); hay alguna fila legacy con variantes sueltas (`Ambos`, `A confirmar`) que convendría normalizar en algún momento. Se completa a mano, nunca se infiere de BGG. |
+| `mi_puntaje` | propia | 1–10, o vacío | Opinión personal — nunca investigar ni inventar, se deja en blanco hasta que el usuario lo cargue. |
+| `pros` / `cons` | propia | texto libre, o vacío | Igual que `mi_puntaje`: a mano. |
+| `youtube` | propia | URL, o vacío | A mano. |
+| `notas` | propia | texto libre | A mano; también el lugar donde se documentan discrepancias entre fuentes o correcciones manuales a columnas de BGG (ver ejemplo de `jug_min`/`complejidad` más abajo). |
+| `anio` | BGG | año | — |
+| `descripcion` | BGG | texto (inglés) | Descripción oficial de la ficha de BGG. |
+| `disenador` | BGG | nombre(s), separados por coma | — |
+| `edad_min` | BGG | entero, o vacío | El dataset usa `0` como sentinel de "sin dato" en vez de vacío; el script ya lo trata como `null`. |
+| `jug_min` / `jug_max` | BGG | rango de jugadores | **Por default es el rango de caja** (`minplayers`/`maxplayers` del dataset), no necesariamente el que la comunidad recomienda. Si discrepan (pasó con Bomb Busters: caja 2–5, "Community" de la ficha de BGG 3–5), **preferir el dato de "Community"** cuando el usuario lo da o se puede chequear en la ficha, y dejar nota en `notas` explicando la corrección — un refresh futuro sin `--mode api` va a volver a pisarlo con el valor del dataset. |
+| `jug_best_min` / `jug_best_max` | BGG | rango "mejor cantidad" | Sale del poll `suggested_num_players` de BGG (voto "Best" con más votos), no es una columna editorial. |
+| `duracion_min` / `duracion_max` | BGG | minutos | Mismo sentinel `0` = sin dato que `edad_min`. |
+| `complejidad` | BGG | 1.0–5.0 | Promedio de "weight" de BGG. El dataset placeholder puede traer un promedio con pocos votos o desactualizado respecto a la ficha actual (mismo caso que `jug_min`/`jug_max`) — preferir el de la ficha de BGG si difiere notoriamente y el usuario lo pasa. |
+| `puntaje_bgg` | BGG | 1.0–10.0 | Promedio BGG (`average`), no el Geek Rating/bayesaverage. |
+| `reviews_bgg` | BGG | entero | Cantidad de votos (`usersrated`). |
+| `ranking_bgg` | BGG | entero | Ranking general, "Board Game Rank". |
+| `mecanicas` | BGG | lista separada por `\|` | — |
+| `categorias` | BGG | lista separada por `\|` | — |
 
 **`bgg_data.csv` se commitea** (no es un derivado regenerable sin pérdida: las columnas propias —sobre todo `mi_puntaje`/`pros`/`cons`/`notas`— las cargaste vos a mano, igual que antes el Sheet).
 
