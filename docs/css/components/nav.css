@@ -98,6 +98,9 @@
      se suman más páginas y esto deja de ser legible, ahí conviene pasar
      a un menú hamburguesa en vez de seguir achicando. */
   .nav-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: 1 1 0;
     min-width: 0;
     text-align: center;
