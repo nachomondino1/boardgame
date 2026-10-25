@@ -225,6 +225,13 @@ def dataset_row_to_attributes(row):
         "descripcion": html.unescape(description) if description else None,
         "disenador": ", ".join(designers) if designers else None,
         "edad_min": num("minage", zero_is_missing=True),
+        # jug_min/jug_max: esto es el rango de CAJA (minplayers/maxplayers),
+        # no el "Community" de la ficha de BGG. Regla fija: priorizar
+        # siempre el dato de Community sobre este cuando se lo tenga (el
+        # dataset placeholder no lo trae, solo se puede chequear a mano en
+        # la ficha o si el usuario lo pasa) — y si se usa este valor de
+        # caja por default, dejar nota en "notas" aclarándolo. Ver
+        # 01_data_understanding/README.md, tabla de columnas.
         "jug_min": num("minplayers"),
         "jug_max": num("maxplayers"),
         "jug_best_min": best_min,
