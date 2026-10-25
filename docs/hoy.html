@@ -55,7 +55,19 @@
       </div>
     </div>
   </header>
-  <div class="result-count" id="result-count"></div>
+  <div class="result-count-row">
+    <span id="result-count"></span>
+    <label class="sort-control" for="sort-select">
+      <span class="sort-icon" aria-hidden="true">⇅</span>
+      <select id="sort-select">
+        <option value="recomendado">Recomendado</option>
+        <option value="puntaje_bgg_desc">Puntaje BGG</option>
+        <option value="duracion_asc">Duración (menor primero)</option>
+        <option value="complejidad_asc">Complejidad (menor primero)</option>
+        <option value="mi_puntaje_desc">Mi puntaje</option>
+      </select>
+    </label>
+  </div>
   <main>
     <div id="grid"></div>
   </main>
