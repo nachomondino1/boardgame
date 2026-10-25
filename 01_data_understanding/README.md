@@ -36,7 +36,6 @@ Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futur
 | `categorias` | BGG | array JSON de texto | Categorías temáticas (ej. Animals, Spies / Secret Agents). | — |
 | `mi_puntaje` | propia | 1–10, o vacío | Tu puntaje personal. | Opinión personal — nunca investigar ni inventar, se deja en blanco hasta que el usuario lo cargue. Casi siempre vacío: solo se completa para juegos `Own`/`Prev. owned` que ya jugaste. |
 | `pros` / `cons` | propia | texto libre, o vacío | Lo que te gusta / no te gusta del juego. | Igual que `mi_puntaje`: a mano, casi siempre vacío. |
-| `youtube` | propia | URL, o vacío | Link a una reseña o playthrough en YouTube. | A mano. |
 | `notas` | propia | texto libre | Comentarios sueltos que no entran en otra columna. | También el lugar donde se documentan discrepancias entre fuentes o correcciones manuales a columnas de BGG (ver ejemplo de `jug_min`/`complejidad` más abajo). |
 | `descripcion` | BGG | texto (inglés) | Descripción oficial del juego, tal como figura en la ficha de BGG. | Es el texto de marketing/reglas de BGG, no un resumen propio — no confundir con `notas`, que es lo que vos escribís. El campo más largo y de longitud más variable de todos, por eso va último. |
 

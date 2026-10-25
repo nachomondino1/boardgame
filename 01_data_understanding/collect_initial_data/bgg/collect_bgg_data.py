@@ -15,7 +15,7 @@ que salga de otras fuentes (ej. bosque_data.csv el día que se automatice —
 ver el README de esta carpeta).
 
 Campos que son tuyos, nunca los toca el enriquecimiento de BGG:
-    bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, youtube, notas
+    bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, notas
 El resto (anio, descripcion, disenador, edad_min, jug_min/max,
 jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg, reviews_bgg,
 ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada
@@ -26,7 +26,7 @@ El orden de los campos DENTRO de cada línea (ver ALL_FIELDS) no es ese
 agrupamiento propias/BGG: primero van los campos cortos/estructurados
 (texto fijo o numéricos, de longitud parecida entre juegos), y al final
 los de texto libre o longitud muy variable (`mi_puntaje`, `pros`, `cons`,
-`youtube`, `notas`, `descripcion`) — así, aunque esos últimos difieran
+`notas`, `descripcion`) — así, aunque esos últimos difieran
 mucho en longitud de una fila a otra, no corren de lugar a los campos
 estructurados que los preceden, y es más fácil ubicar a ojo un campo dado
 el nombre de columna al editar el `.jsonl` a mano.
@@ -95,7 +95,7 @@ USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.m
 TOP_N_DEFAULT = 1000
 
 # Columnas propias (nunca las pisa el enriquecimiento) vs. las que vienen de BGG.
-OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "pros", "cons", "youtube", "notas"]
+OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "pros", "cons", "notas"]
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
@@ -113,7 +113,7 @@ ALL_FIELDS = [
     "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
     "disenador", "mecanicas", "categorias",
-    "mi_puntaje", "pros", "cons", "youtube", "notas", "descripcion",
+    "mi_puntaje", "pros", "cons", "notas", "descripcion",
 ]
 LIST_FIELDS = {"mecanicas", "categorias"}
 
@@ -361,7 +361,6 @@ def load_ludoteca_once():
             "mi_puntaje": entry.get("mi_puntaje") or "",
             "pros": entry.get("pros") or "",
             "cons": entry.get("cons") or "",
-            "youtube": entry.get("youtube") or "",
             "notas": entry.get("notas") or "",
         })
     return own
