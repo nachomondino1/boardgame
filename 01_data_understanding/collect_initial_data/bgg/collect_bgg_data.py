@@ -41,6 +41,7 @@ Uso:
     python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
     python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
     python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own
+    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --set-estado "Sky Team" "Want to buy"  # cambia el estado de un juego ya existente
 """
 import argparse
 import ast
@@ -379,6 +380,33 @@ def find_in_dataset(term, dataset):
     return next(r for r in dataset.values() if r.get("name") == best_name)
 
 
+def set_estado(term, estado, rows):
+    """Cambia el estado de un juego que ya está en bgg_data.csv, por nombre o bgg_id."""
+    term_stripped = term.strip()
+    if term_stripped.isdigit():
+        matches = [r for r in rows if r.get("bgg_id", "").strip() == term_stripped]
+    else:
+        norm_term = normalize(term_stripped)
+        matches = [r for r in rows if normalize(r.get("nombre", "")) == norm_term]
+        if not matches:
+            names = [r.get("nombre", "") for r in rows]
+            close = difflib.get_close_matches(term_stripped, names, n=5, cutoff=0.6)
+            if not close:
+                sys.exit(f"No encontré ningún juego parecido a \"{term}\" en {BGG_DATA_PATH}.")
+            if len(close) > 1:
+                sys.exit("Más de un juego parecido, sé más específico:\n  " + "\n  ".join(close))
+            matches = [r for r in rows if r.get("nombre") == close[0]]
+
+    if not matches:
+        sys.exit(f"No encontré \"{term}\" en {BGG_DATA_PATH}.")
+    if len(matches) > 1:
+        sys.exit(f"Más de un juego se llama \"{term}\", usá el bgg_id.")
+
+    row = matches[0]
+    print(f"{row['nombre']}: estado {row.get('estado') or '(vacío)'} -> {estado}")
+    row["estado"] = estado
+
+
 def add_game(term, estado, dataset):
     row = find_in_dataset(term, dataset)
     new_row = {
@@ -413,8 +441,11 @@ def enrich(rows, dataset, mode):
 def main():
     parser = argparse.ArgumentParser(description="Universo de juegos + datos de BGG en un único bgg_data.csv")
     parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual (por id de BGG o nombre)")
-    parser.add_argument("--estado", choices=["Own", "Prev. owned", "Watchlist"],
+    parser.add_argument("--estado", choices=["Own", "Prev. owned", "Watchlist", "Want to buy"],
                          help="estado del juego agregado con --add (default Watchlist)")
+    parser.add_argument("--set-estado", nargs=2, metavar=("NOMBRE_O_ID", "ESTADO"),
+                         help="cambia el estado de un juego que ya está en bgg_data.csv, ej: "
+                              "--set-estado \"Sky Team\" \"Want to buy\"")
     parser.add_argument("--top", type=int, default=TOP_N_DEFAULT, help="tamaño del universo en el bootstrap (default 1000)")
     parser.add_argument("--mode", choices=["dummy", "api"], default="dummy",
                          help="dummy = dataset placeholder de terceros (default, hoy); "
@@ -423,6 +454,15 @@ def main():
 
     if args.estado and not args.add:
         parser.error("--estado solo tiene sentido junto con --add")
+
+    if args.set_estado:
+        if not BGG_DATA_PATH.exists():
+            parser.error(f"No existe {BGG_DATA_PATH} todavía.")
+        nombre_o_id, estado = args.set_estado
+        rows = load_existing()
+        set_estado(nombre_o_id, estado, rows)
+        write_csv(rows)
+        return
 
     dataset = fetch_dataset() if args.mode == "dummy" else {}
 

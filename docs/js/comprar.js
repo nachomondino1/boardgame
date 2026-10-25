@@ -9,11 +9,18 @@ const state = {
   complejidadMax: 5,
   jugadores: null,
   soloMejor: false,
+  soloQuieroComprar: false,
   sort: "puntaje_ajust_bgg_desc",
 };
 
+const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy"]);
+
 function matchesFilters(g) {
-  if (g.estado !== "Watchlist") return false;
+  if (state.soloQuieroComprar) {
+    if (g.estado !== "Want to buy") return false;
+  } else if (!ESTADOS_COMPRA.has(g.estado)) {
+    return false;
+  }
   if (state.query) {
     if (!normalize(g.nombre).includes(normalize(state.query))) return false;
   }
@@ -178,6 +185,11 @@ function setupControls() {
 
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
+    render();
+  });
+
+  document.getElementById("quiero-comprar-only").addEventListener("change", (e) => {
+    state.soloQuieroComprar = e.target.checked;
     render();
   });
 }
