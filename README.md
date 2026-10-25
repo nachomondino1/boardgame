@@ -72,12 +72,12 @@ python3 02_data_preparation/construct_data.py
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
 - Link directo a BGG en el título de cada tarjeta.
 - "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores dentro de Jug Best mín/máx + puntaje personal/BGG).
-- "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por tipo (modo), duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). El ~2% de candidatos sin match en el dataset placeholder de BGG no tiene duración/complejidad/jugadores/modo — las tarjetas lo muestran como "?" en vez de ocultarse.
+- "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por tipo (modo), duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). El ~2% de candidatos sin match en el dataset placeholder de BGG no tiene duración/complejidad/jugadores/modo — las tarjetas lo muestran como "?" en vez de ocultarse. Link fijo a [Cazagangas](https://www.cazagangas.com.ar) para ver precios en Argentina (no es una integración, solo un link a la home). Resultados paginados (60 a la vez, "Mostrar más") y los sliders/el buscador debounced — renderizar hasta ~1000 tarjetas en cada cambio de filtro se sentía lento, sobre todo en mobile.
 
 ## Pendiente si esto vale la pena
 
 - Comparar juegos lado a lado.
-- Filtro/orden adicional en "¿Cuál comprar?" para que ~1000 candidatos sea navegable (hoy no hay paginación ni un piso de puntaje mínimo).
+- Piso de puntaje mínimo en "¿Cuál comprar?" (hoy existe paginación — "Mostrar más", 60 a la vez — pero no un filtro para sacar directamente los candidatos peor puntuados).
 - Integrar `bosque_data.csv` con `bgg_data.jsonl` por nombre de juego (`02_data_preparation/`), para que `costo`/`link_tienda`/`precio_calidad` dejen de ser `null`. Los scripts de recolección ya existen y funcionan (`01_data_understanding/collect_initial_data/bosque_ludico/`), falta el paso de integración.
 - Precio de Amazon (u otra tienda más allá de Bosque Lúdico): no se investigó todavía una fuente sin auth/bot-detection para eso; sería un caso igual al de Bosque Lúdico, nunca scrapear Amazon directo sin chequear antes su robots.txt y bot-detection.
 - Cuando BGG apruebe la app: `collect_bgg_data.py --mode api` reemplaza el placeholder sin tocar nada más del pipeline.
