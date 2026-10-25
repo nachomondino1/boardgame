@@ -133,6 +133,10 @@ header .subtitle {
   min-width: 0;
 }
 
+.filter-group--checkbox {
+  justify-content: flex-end;
+}
+
 .filter-group--full:not(:first-child) {
   padding-top: 14px;
   border-top: 1px solid var(--border-soft);
