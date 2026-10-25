@@ -1,0 +1,64 @@
+/* Estilos propios de hoy.html (no se usan en ninguna otra página). */
+
+.big-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 14px 0 22px;
+}
+
+.big-stepper button {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.big-stepper button:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow-md);
+}
+
+.big-stepper button:active {
+  transform: scale(0.94);
+}
+
+.big-stepper button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.big-stepper .big-number {
+  font-size: 2.6rem;
+  font-weight: 800;
+  min-width: 68px;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.filter-grid--center {
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .big-stepper {
+    gap: 16px;
+  }
+
+  .filters-panel.open .filter-grid--center {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-panel.open .filter-grid--center .toggle-gusto {
+    white-space: normal;
+  }
+}
