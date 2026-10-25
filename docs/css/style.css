@@ -90,6 +90,16 @@ header .subtitle {
   font-size: 0.9rem;
 }
 
+/* Buscador fuera de "Filtros": a diferencia de jugadores/duración/tipo,
+   el buscador casi siempre se usa para ir a un juego puntual, no para
+   acotar el listado — y en mobile tiene que quedar visible sin
+   necesidad de desplegar el panel de filtros. max-width lo mantiene
+   compacto en desktop en vez de una barra que ocupe todo el ancho. */
+.header-search {
+  max-width: 420px;
+  margin: 10px 0 0;
+}
+
 .filters-panel {
   background: var(--surface);
   border: 1px solid var(--border-soft);
