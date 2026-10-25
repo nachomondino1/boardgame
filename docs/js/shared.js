@@ -145,6 +145,7 @@ function navTemplate(active) {
     { href: "index.html", label: "Mi ludoteca" },
     { href: "hoy.html", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", label: "¿Cuál comprar?" },
+    { href: "comparar.html", label: "Comparar" },
   ];
   const linksHtml = links
     .map((l) => `<a href="${l.href}" class="${l.href === active ? "active" : ""}">${l.label}</a>`)

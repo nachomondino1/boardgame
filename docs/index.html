@@ -13,7 +13,13 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" /></noscript>
 
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/components/base.css" />
+  <link rel="stylesheet" href="css/components/nav.css" />
+  <link rel="stylesheet" href="css/components/header.css" />
+  <link rel="stylesheet" href="css/components/filters.css" />
+  <link rel="stylesheet" href="css/components/results-bar.css" />
+  <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/pages/index.css" />
   <link rel="preload" href="data/data.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
@@ -23,17 +29,20 @@
   <div id="nav"></div>
   <header>
     <div class="header-inner">
-      <h1>📚 Mi ludoteca</h1>
-      <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
+      <div class="header-top">
+        <div class="header-titles">
+          <h1>📚 Mi ludoteca</h1>
+          <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
+        </div>
+        <div class="header-search">
+          <div class="search-box">
+            <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
+          </div>
+        </div>
+      </div>
       <div class="filters-panel open">
         <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
         <div class="filter-grid filter-grid--nowrap" id="filter-grid">
-          <div class="filter-group filter-group--grow">
-            <label class="filter-label" for="search">Buscar</label>
-            <div class="search-box">
-              <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
-            </div>
-          </div>
           <div class="filter-group">
             <span class="filter-label">Jugadores</span>
             <div class="player-stepper">

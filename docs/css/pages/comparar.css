@@ -1,0 +1,130 @@
+/* Estilos propios de comparar.html (no se usan en ninguna otra página). */
+
+.compare-pickers {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.compare-picker {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.compare-picker input[type="text"] {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.compare-picker input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.compare-vs {
+  color: var(--muted-soft);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding-bottom: 11px;
+}
+
+.compare-table {
+  table-layout: fixed;
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Columna de etiquetas con ancho fijo, las dos columnas de juego se
+   reparten el resto siempre por mitades (table-layout: fixed), para que
+   un texto largo (ej. mecánicas) haga wrap en vez de ensanchar una
+   columna más que la otra. */
+.compare-table th:first-child,
+.compare-table td:first-child {
+  width: 140px;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-soft);
+  overflow-wrap: break-word;
+}
+
+.compare-table thead th {
+  background: var(--bg-subtle);
+  vertical-align: top;
+}
+
+.compare-table tbody th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.compare-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.compare-name--empty {
+  font-weight: 500;
+  color: var(--muted-soft);
+}
+
+.compare-cell--empty {
+  color: var(--muted-soft);
+}
+
+.compare-cell--winner {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .compare-pickers {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .compare-picker {
+    flex-basis: auto;
+  }
+
+  .compare-vs {
+    align-self: center;
+    padding-bottom: 0;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+  }
+
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    width: 104px;
+  }
+}

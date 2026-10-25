@@ -20,7 +20,11 @@ Cómo me gusta diseñar mis webs. Unifica los playbooks de **buitres-stats** (B)
 
 ## 2. Base técnica
 
-- Para sitios chicos: HTML/CSS/JS vanilla, sin build step, un solo `style.css`. Si el proyecto ya es React/Next, los tokens y reglas de este documento aplican igual (el playbook es de diseño, no de stack).
+- Para sitios chicos: HTML/CSS/JS vanilla, sin build step. Si el proyecto ya es React/Next, los tokens y reglas de este documento aplican igual (el playbook es de diseño, no de stack).
+- **CSS: un archivo por componente/sección compartido (`base`, `nav`, `header`, `filters`, `cards`, etc.) + un archivo por página con sus reglas propias.** Un solo `style.css` gigante funciona al principio, pero con 3+ páginas mezcla todo (tokens, header, nav, filtros, cards, badges, inputs) en un bloque — cuesta saber qué se puede tocar sin romper otra página, y para ubicar una regla hay que recordar en qué parte del archivo quedó. Dos niveles de corte:
+  1. **Por página**: si una clase la usa una sola página (ej. la tabla de un comparador, el stepper grande de una sola pantalla, el multiselect de un filtro que solo existe ahí), va en `css/pages/<página>.css`.
+  2. **Por componente/sección**, para lo que usan 2+ páginas: no un `style.css` único sino un archivo por pieza de UI reconocible en `css/components/` — `base.css` (tokens + reset + layout genérico como `main`), `nav.css`, `header.css`, `filters.css`, `results-bar.css` (fila "N resultados" + orden), `cards.css` (grilla + badges), etc. Cada HTML carga primero los `css/components/*.css` que usa y al final su propio `css/pages/<página>.css`. Las dos carpetas (`components/`, `pages/`) separadas, no todo suelto en `css/`.
+  No hace falta anticipar el corte por componente desde el día 1 — vale arrancar con `style.css` único y partirlo así cuando ya pesa/cuesta navegarlo (en este proyecto fue con 4 páginas).
 - **Todo es variable CSS en `:root`.** Nunca colores, radios o sombras hardcodeados en las reglas.
 - **Dark mode automático** vía `@media (prefers-color-scheme: dark)`, reescribiendo los mismos tokens (sin inventar tokens nuevos). Sin toggle manual por default.
 - **Emoji del dominio como logo** (favicon como SVG inline en data-uri + `<h1>`). Emoji en vez de librerías de íconos cuando cumplen la función.
@@ -203,6 +207,7 @@ Reglas (las que sí son firmes):
 - **Sticky en header de tabla:** `overflow-x: auto` fuerza `overflow-y: auto` y el sticky se pega al contenedor, no al viewport. Patrón correcto: la tabla vive en su propio scroll-container (`overflow: auto; max-height: Nvh`) y `th { position: sticky; top: 0 }` referencia a ese contenedor.
 - Selector `.filter-group label` se filtra a labels anidados (checkboxes de un dropdown hijo). Usar `>` cuando el estilo es solo para el label directo.
 - En media queries mobile, `width: 100%` en hijos no hace nada si el padre sigue en `flex-direction: row`; hace falta `column` en el mismo query.
+- **`flex: 1 1 <Npx>` con flex-basis en píxeles, si el padre cambia a `flex-direction: column` en mobile, ese `Npx` pasa a ser alto, no ancho** (el flex-basis sigue el eje principal, que rota con la dirección) — infla el elemento a esa altura y deja un hueco en blanco enorme. Pasó dos veces (nav de páginas, buscador del header). Al agregar `flex-direction: column` en un media query, revisar todos los hijos directos con flex-basis numérico y resetearlos a `flex-basis: auto` (o `flex: 0 1 auto`) en el mismo query.
 
 ## 11. Identidad visual y micro-visualizaciones
 

@@ -1,0 +1,83 @@
+/* Header de cada página: título + subtítulo + buscador. */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 18px 0 16px;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+}
+
+.header-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+header h1 {
+  margin: 4px 0 4px;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+header .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Título/subtítulo + buscador en la misma fila en desktop (el buscador
+   no es un filtro más, ver .header-search más abajo); en mobile pasan
+   a apilarse, el buscador siempre después del título. */
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.header-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Buscador fuera de "Filtros": a diferencia de jugadores/duración/tipo,
+   el buscador casi siempre se usa para ir a un juego puntual, no para
+   acotar el listado — y en mobile tiene que quedar visible sin
+   necesidad de desplegar el panel de filtros. max-width lo mantiene
+   compacto en vez de una barra que ocupe todo el ancho. */
+.header-search {
+  flex: 1 1 320px;
+  max-width: 360px;
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .header-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .header-search {
+    flex: 0 1 auto;
+    max-width: none;
+    margin-top: 0;
+  }
+}
