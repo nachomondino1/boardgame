@@ -5,7 +5,19 @@ Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso 
 - `collect_initial_data/bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.jsonl`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
 - `collect_initial_data/bosque_ludico/` — **[EN UN FUTURO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
+- `verify_data_quality.py` — chequeos de integridad sobre `bgg_data.jsonl` (bgg_id único, estado/modo válidos, min ≤ max, rangos numéricos, etc.), no modifica nada, solo reporta. Ver más abajo.
+
 Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futuro, no existen todavía.
+
+## verify_data_quality.py: Verify Data Quality (CRISP-DM)
+
+Corre standalone sobre `bgg_data.jsonl`, en cualquier momento (después de un `--add`, una corrección manual, o un refresh):
+
+```bash
+python3 01_data_understanding/verify_data_quality.py
+```
+
+Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que convendría arreglar — ej. `bgg_id` repetido, un min mayor que su max, un `estado` que no es ninguno de los válidos) o `WARNING` (exit code 0: algo para revisar pero no necesariamente un error — ej. un `modo` con una variante legacy, o dos juegos con el mismo nombre pero `bgg_id` distinto, que puede ser una edición/reimplementación legítima o un duplicado real cargado por error). No corrige nada solo: si encuentra un duplicado real, hay que sacarlo a mano (o pedírselo a Claude).
 
 ## collect_initial_data/bgg/: el universo de juegos + sus datos de BGG, en un único CSV
 
