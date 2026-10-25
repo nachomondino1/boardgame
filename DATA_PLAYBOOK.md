@@ -24,7 +24,7 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
                             ▼
       01_data_understanding/collect_initial_data/bgg/bgg_data.jsonl   (commiteado, bgg_id primera columna)
         columnas propias (nombre, estado, modo, mi_puntaje, pros, cons,
-        youtube, notas) + columnas de BGG (descripcion, disenador,
+        notas) + columnas de BGG (descripcion, disenador,
         edad_min, jug_min/max, jug_best_min/max, duracion_min/max,
         complejidad, puntaje_bgg, reviews_bgg, ranking_bgg, mecanicas,
         categorias) — un humano manda sobre las primeras, BGG sobre las

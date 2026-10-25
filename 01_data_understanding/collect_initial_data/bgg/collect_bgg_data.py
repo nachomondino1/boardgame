@@ -15,12 +15,21 @@ que salga de otras fuentes (ej. bosque_data.csv el día que se automatice —
 ver el README de esta carpeta).
 
 Campos que son tuyos, nunca los toca el enriquecimiento de BGG:
-    bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, youtube, notas
+    bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, notas
 El resto (anio, descripcion, disenador, edad_min, jug_min/max,
 jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg, reviews_bgg,
 ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada
 corrida. `mecanicas`/`categorias` se guardan como array JSON (no como string
 separado por "|").
+
+El orden de los campos DENTRO de cada línea (ver ALL_FIELDS) no es ese
+agrupamiento propias/BGG: primero van los campos cortos/estructurados
+(texto fijo o numéricos, de longitud parecida entre juegos), y al final
+los de texto libre o longitud muy variable (`mi_puntaje`, `pros`, `cons`,
+`notas`, `descripcion`) — así, aunque esos últimos difieran
+mucho en longitud de una fila a otra, no corren de lugar a los campos
+estructurados que los preceden, y es más fácil ubicar a ojo un campo dado
+el nombre de columna al editar el `.jsonl` a mano.
 
 Tres usos:
   1. Bootstrap (primera vez, bgg_data.jsonl no existe todavía): arma el
@@ -86,11 +95,26 @@ USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.m
 TOP_N_DEFAULT = 1000
 
 # Columnas propias (nunca las pisa el enriquecimiento) vs. las que vienen de BGG.
-OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "pros", "cons", "youtube", "notas"]
+OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "pros", "cons", "notas"]
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
-ALL_FIELDS = OWNED_FIELDS + BGG_FIELDS
+
+# Orden de escritura en bgg_data.jsonl: NO es OWNED_FIELDS + BGG_FIELDS tal
+# cual (ese orden mezcla campos cortos con texto libre en el medio de la
+# línea). Para poder ubicar a ojo un campo dado el nombre de columna sin
+# contar caracteres, primero van los campos cortos/estructurados (texto fijo
+# o numéricos, siempre de longitud parecida) y al final los de texto libre o
+# longitud muy variable (reseña personal, texto de BGG) — así, aunque esos
+# últimos campos difieran mucho en longitud de una fila a otra, nunca
+# corren de lugar a los campos estructurados que los preceden.
+ALL_FIELDS = [
+    "bgg_id", "nombre", "estado", "bgg_url", "modo",
+    "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
+    "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
+    "disenador", "mecanicas", "categorias",
+    "mi_puntaje", "pros", "cons", "notas", "descripcion",
+]
 LIST_FIELDS = {"mecanicas", "categorias"}
 
 # Mismo patrón que tenía ludoteca_source.py: para ediciones locales o
@@ -201,6 +225,13 @@ def dataset_row_to_attributes(row):
         "descripcion": html.unescape(description) if description else None,
         "disenador": ", ".join(designers) if designers else None,
         "edad_min": num("minage", zero_is_missing=True),
+        # jug_min/jug_max: esto es el rango de CAJA (minplayers/maxplayers),
+        # no el "Community" de la ficha de BGG. Regla fija: priorizar
+        # siempre el dato de Community sobre este cuando se lo tenga (el
+        # dataset placeholder no lo trae, solo se puede chequear a mano en
+        # la ficha o si el usuario lo pasa) — y si se usa este valor de
+        # caja por default, dejar nota en "notas" aclarándolo. Ver
+        # 01_data_understanding/README.md, tabla de columnas.
         "jug_min": num("minplayers"),
         "jug_max": num("maxplayers"),
         "jug_best_min": best_min,
@@ -330,7 +361,6 @@ def load_ludoteca_once():
             "mi_puntaje": entry.get("mi_puntaje") or "",
             "pros": entry.get("pros") or "",
             "cons": entry.get("cons") or "",
-            "youtube": entry.get("youtube") or "",
             "notas": entry.get("notas") or "",
         })
     return own

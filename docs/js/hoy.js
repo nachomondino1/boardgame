@@ -4,7 +4,29 @@ const state = {
   jugadores: null,
   incluirDeseados: false,
   soloBest: false,
+  sort: "recomendado",
 };
+
+// "Recomendado" usa recommendationScore (shared.js); el resto ordena por
+// el campo del juego directo, como en ¿Cuál comprar?.
+function sortPosibles(posibles) {
+  if (state.sort === "recomendado") {
+    return posibles
+      .map((g) => ({ g, score: recommendationScore(g, state.jugadores) }))
+      .sort((a, b) => b.score - a.score)
+      .map((x) => x.g);
+  }
+  const dir = state.sort.endsWith("_asc") ? 1 : -1;
+  const field = state.sort.replace(/_(asc|desc)$/, "");
+  return [...posibles].sort((a, b) => {
+    const av = a[field];
+    const bv = b[field];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return av < bv ? dir * -1 : av > bv ? dir : 0;
+  });
+}
 
 function matchesFilters(g) {
   if (state.jugadores == null) return false;
@@ -32,8 +54,6 @@ function render() {
   }
 
   const posibles = GAMES.filter(matchesFilters);
-  const withScore = posibles.map((g) => ({ g, score: recommendationScore(g, state.jugadores) }));
-  withScore.sort((a, b) => b.score - a.score);
 
   count.textContent = `${posibles.length} juego${posibles.length === 1 ? "" : "s"} posibles`;
 
@@ -45,8 +65,8 @@ function render() {
     return;
   }
 
-  const gamesHtml = withScore
-    .map((x) => cardTemplate(x.g, { jugadores: state.jugadores }))
+  const gamesHtml = sortPosibles(posibles)
+    .map((g) => cardTemplate(g, { jugadores: state.jugadores }))
     .join("");
 
   grid.innerHTML = `<div class="grid">${gamesHtml}</div>`;
@@ -70,6 +90,10 @@ function setupControls() {
   });
   document.getElementById("solo-best").addEventListener("change", (e) => {
     state.soloBest = e.target.checked;
+    render();
+  });
+  document.getElementById("sort-select").addEventListener("change", (e) => {
+    state.sort = e.target.value;
     render();
   });
 }

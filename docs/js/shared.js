@@ -142,13 +142,13 @@ function setupFiltersToggle() {
 
 function navTemplate(active) {
   const links = [
-    { href: "index.html", label: "Mi ludoteca" },
-    { href: "hoy.html", label: "¿Qué jugamos hoy?" },
-    { href: "comprar.html", label: "¿Cuál comprar?" },
-    { href: "comparar.html", label: "Comparar" },
+    { href: "index.html", emoji: "📚", label: "Mi ludoteca" },
+    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
+    { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },
+    { href: "comparar.html", emoji: "⚔️", label: "Comparar" },
   ];
   const linksHtml = links
-    .map((l) => `<a href="${l.href}" class="${l.href === active ? "active" : ""}">${l.label}</a>`)
+    .map((l) => `<a href="${l.href}" class="${l.href === active ? "active" : ""}">${l.emoji} ${l.label}</a>`)
     .join("");
   return `
     <div class="top-nav">
