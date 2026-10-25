@@ -925,12 +925,22 @@ details p {
     background: none;
     padding: 0;
     gap: 0;
+    overflow-x: visible;
   }
 
+  /* Las 4 páginas tienen que entrar sin scroll horizontal: en vez de
+     truncar u ocultar texto, se deja wrappear a dos líneas (con letra
+     más chica) en vez de un solo renglón que no entra. Si en el futuro
+     se suman más páginas y esto deja de ser legible, ahí conviene pasar
+     a un menú hamburguesa en vez de seguir achicando. */
   .nav-links a {
     flex: 1 1 0;
+    min-width: 0;
     text-align: center;
-    padding: 9px 6px;
+    white-space: normal;
+    line-height: 1.15;
+    font-size: 0.72rem;
+    padding: 6px 4px;
   }
 
   .grid {
