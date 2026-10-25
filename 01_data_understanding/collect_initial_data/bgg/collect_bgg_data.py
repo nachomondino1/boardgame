@@ -22,6 +22,15 @@ ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada
 corrida. `mecanicas`/`categorias` se guardan como array JSON (no como string
 separado por "|").
 
+El orden de los campos DENTRO de cada línea (ver ALL_FIELDS) no es ese
+agrupamiento propias/BGG: primero van los campos cortos/estructurados
+(texto fijo o numéricos, de longitud parecida entre juegos), y al final
+los de texto libre o longitud muy variable (`mi_puntaje`, `pros`, `cons`,
+`youtube`, `notas`, `descripcion`) — así, aunque esos últimos difieran
+mucho en longitud de una fila a otra, no corren de lugar a los campos
+estructurados que los preceden, y es más fácil ubicar a ojo un campo dado
+el nombre de columna al editar el `.jsonl` a mano.
+
 Tres usos:
   1. Bootstrap (primera vez, bgg_data.jsonl no existe todavía): arma el
      universo con el top N del ranking de BGG + tus propios juegos (lee
@@ -90,7 +99,22 @@ OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
-ALL_FIELDS = OWNED_FIELDS + BGG_FIELDS
+
+# Orden de escritura en bgg_data.jsonl: NO es OWNED_FIELDS + BGG_FIELDS tal
+# cual (ese orden mezcla campos cortos con texto libre en el medio de la
+# línea). Para poder ubicar a ojo un campo dado el nombre de columna sin
+# contar caracteres, primero van los campos cortos/estructurados (texto fijo
+# o numéricos, siempre de longitud parecida) y al final los de texto libre o
+# longitud muy variable (reseña personal, texto de BGG) — así, aunque esos
+# últimos campos difieran mucho en longitud de una fila a otra, nunca
+# corren de lugar a los campos estructurados que los preceden.
+ALL_FIELDS = [
+    "bgg_id", "nombre", "estado", "bgg_url", "modo",
+    "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
+    "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
+    "disenador", "mecanicas", "categorias",
+    "mi_puntaje", "pros", "cons", "youtube", "notas", "descripcion",
+]
 LIST_FIELDS = {"mecanicas", "categorias"}
 
 # Mismo patrón que tenía ludoteca_source.py: para ediciones locales o
