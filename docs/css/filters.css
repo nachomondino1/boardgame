@@ -1,0 +1,246 @@
+/* Panel de filtros: contenedor, grid, labels, buscador de texto,
+   stepper de jugadores, toggles — y el botón que lo colapsa en mobile. */
+
+.filters-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+  padding: 16px 18px;
+  margin-top: 14px;
+}
+
+.filters-toggle {
+  display: none;
+}
+
+.filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.filter-group--full {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.filter-group--full:not(:first-child) {
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* En desktop, garantizar que los filtros entren en una sola fila: en vez
+   de wrappear a una segunda fila cuando no entran, se van achicando todos
+   parejo (flex-shrink) hasta que entran. El piso es 1024px: por debajo de
+   eso (ventana angosta o tablet) ya no entran sin solaparse, así que se
+   deja el wrap normal a dos filas en vez de romper el texto. En mobile el
+   panel ya se oculta detrás del botón "Filtros" (ver media query de abajo). */
+@media (min-width: 1024px) {
+  .filter-grid--nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .filter-grid--nowrap > .filter-group {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.filter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-soft);
+}
+
+.filter-label-value {
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box::before {
+  content: "🔍";
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.82rem;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.search-box input[type="text"] {
+  width: 100%;
+  padding: 11px 14px 11px 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-box input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.player-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: var(--shadow-xs);
+}
+
+.player-stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.player-stepper button:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.player-stepper button:active {
+  transform: scale(0.92);
+}
+
+.player-stepper button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.player-stepper span {
+  min-width: 64px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.toggle-gusto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 9px 2px;
+  white-space: nowrap;
+}
+
+.toggle-gusto input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.toggle-gusto input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}
+
+.toggle-gusto:has(input:disabled) {
+  color: var(--muted-soft);
+  cursor: not-allowed;
+}
+
+#best-toggle-label {
+  margin-top: 4px;
+  padding: 2px;
+}
+
+@media (max-width: 640px) {
+  .filters-panel {
+    padding: 14px 16px;
+  }
+
+  .filters-panel .filter-grid {
+    display: none;
+  }
+
+  .filters-panel.open .filter-grid {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  /* Panel expandido: se desactiva el sticky para que no ocupe la pantalla
+     de forma permanente al scrollear. El botón "Filtros" sigue sticky
+     cuando el panel está cerrado. */
+  header:has(.filters-panel.open) {
+    position: static;
+  }
+
+  .filters-toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .filters-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .filters-toggle::after {
+    content: "";
+    width: 11px;
+    height: 11px;
+    flex: none;
+    background: var(--select-chevron);
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: transform 0.15s ease;
+  }
+
+  .filters-panel.open .filters-toggle::after {
+    transform: rotate(180deg);
+  }
+}

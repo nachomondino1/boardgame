@@ -1,0 +1,185 @@
+/* Grilla de tarjetas de juego, badges de estado, y el <details>
+   "Más info". Usado por las 3 páginas que listan juegos. */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1.04rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.card-sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.badge-own { background: #2a9d5c2b; color: #1d7a45; }
+.badge-watch { background: #3d5a802b; color: #3d5a80; }
+.badge-buy { background: #e8961b2b; color: #b2700e; }
+.badge-descartado { background: #d1495b2b; color: #b23449; }
+.badge-other { background: var(--bg-subtle); color: var(--muted); }
+
+@media (prefers-color-scheme: dark) {
+  .badge-own { color: #6fd79b; }
+  .badge-watch { color: #a9c6e6; }
+  .badge-buy { color: #f0b860; }
+  .badge-descartado { color: #f0909c; }
+}
+
+.badge-best {
+  background: #2a9d5c;
+  color: #ffffff;
+}
+
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.complexity-pill {
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.74rem;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--bg-subtle);
+  color: var(--muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+details {
+  font-size: 0.82rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border-soft);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  list-style: none;
+}
+
+details summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::before {
+  content: "+ ";
+  font-weight: 700;
+}
+
+details[open] summary::before {
+  content: "− ";
+}
+
+details p {
+  margin: 6px 0 0;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 64px 20px;
+  font-size: 0.95rem;
+}
+
+.card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-title-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.stat-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stat-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 15px 16px;
+  }
+}

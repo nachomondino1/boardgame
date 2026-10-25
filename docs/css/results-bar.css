@@ -1,0 +1,52 @@
+/* Fila de "N juegos" + orden, entre el header y la grilla de tarjetas. */
+
+.result-count {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 16px 24px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.result-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 16px 24px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sort-icon {
+  font-size: 0.95rem;
+  color: var(--muted-soft);
+}
+
+.sort-control select {
+  padding: 6px 30px 6px 10px;
+  font-size: 0.82rem;
+  background-size: 14px;
+  background-position: right 8px center;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .result-count,
+  .result-count-row {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
