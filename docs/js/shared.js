@@ -26,6 +26,7 @@ function estadoBadgeClass(estado) {
   switch (estado) {
     case "Own": return "badge-own";
     case "Watchlist": return "badge-watch";
+    case "Want to buy": return "badge-buy";
     case "Descartado": return "badge-descartado";
     default: return "badge-other";
   }

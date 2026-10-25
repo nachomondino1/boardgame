@@ -517,12 +517,14 @@ main {
 
 .badge-own { background: #2a9d5c2b; color: #1d7a45; }
 .badge-watch { background: #3d5a802b; color: #3d5a80; }
+.badge-buy { background: #e8961b2b; color: #b2700e; }
 .badge-descartado { background: #d1495b2b; color: #b23449; }
 .badge-other { background: var(--bg-subtle); color: var(--muted); }
 
 @media (prefers-color-scheme: dark) {
   .badge-own { color: #6fd79b; }
   .badge-watch { color: #a9c6e6; }
+  .badge-buy { color: #f0b860; }
   .badge-descartado { color: #f0909c; }
 }
 
