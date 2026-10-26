@@ -1,9 +1,10 @@
 """Verify Data Quality (CRISP-DM, fase Data Understanding): chequeos sobre
-data/01_data_understanding/mis_datos.jsonl (lo que cargás a mano),
-universo_juegos.jsonl (el catálogo de identidad) y bgg_data.jsonl (el
-caché de BGG) que no dependen de ningún otro paso del pipeline — corre
-standalone, antes o después de search_new_game.py/modify_values.py o
-de una edición a mano de mis_datos.jsonl.
+data/01_data_understanding/ludoteca.jsonl (lo que cargás a mano, solo para
+los juegos que curaste — ver su propio docstring en search_new_game.py),
+universo_juegos.jsonl (el catálogo completo) y bgg_data.jsonl (el caché de
+BGG) que no dependen de ningún otro paso del pipeline — corre standalone,
+antes o después de search_new_game.py/modify_values.py o de una edición a
+mano de ludoteca.jsonl.
 
 No modifica nada: solo reporta. Pensado para correr a mano después de
 cargar juegos nuevos o corregir datos, y eventualmente como paso de CI
@@ -22,25 +23,29 @@ sys.path.insert(0, str(COLLECT_DIR))
 from bgg_common import UNIVERSO_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
 
 DATA_DIR = HERE.parent / "data" / "01_data_understanding"
-MIS_DATOS_PATH = DATA_DIR / "mis_datos.jsonl"
+LUDOTECA_PATH = DATA_DIR / "ludoteca.jsonl"
 UNIVERSO_PATH = DATA_DIR / "universo_juegos.jsonl"
 BGG_DATA_PATH = DATA_DIR / "bgg_data.jsonl"
 
-MIS_DATOS_FIELDS = ["bgg_id", "nombre", "estado", "modo", "transportable", "mi_puntaje", "pros", "cons", "notas"]
+LUDOTECA_FIELDS = ["bgg_id", "nombre", "estado", "transportable", "mi_puntaje", "pros", "cons", "notas"]
 
+# "Watchlist" es válido como valor EXPLÍCITO acá (un juego que no posees
+# pero sobre el que ya tenés notas/transportable cargado), aunque el
+# default para un juego sin fila en absoluto (ver integrate_data.py) sea
+# justamente "Watchlist" — la diferencia es "lo pensé y es Watchlist" vs.
+# "nunca lo curé".
 ESTADOS_VALIDOS = {"Own", "Prev. owned", "Watchlist", "Want to buy", "Descartado"}
-# "Ambos" y "A confirmar" son variantes legacy conocidas (ver README) — se
-# marcan como warning, no error, hasta que se decida normalizarlas.
-MODOS_VALIDOS = {"Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"}
 # campo: (min, max). complejidad/puntaje_bgg viven en bgg_data.jsonl,
-# mi_puntaje en mis_datos.jsonl — ver dónde se usa cada uno más abajo.
+# mi_puntaje en ludoteca.jsonl — ver dónde se usa cada uno más abajo.
 NUMERIC_RANGES_BGG = {"complejidad": (1, 5), "puntaje_bgg": (1, 10)}
-NUMERIC_RANGES_MIS_DATOS = {"mi_puntaje": (1, 10)}
+NUMERIC_RANGES_LUDOTECA = {"mi_puntaje": (1, 10)}
 
 
-def load_jsonl(path):
+def load_jsonl(path, required=True):
     if not path.exists():
-        sys.exit(f"No existe {path}.")
+        if required:
+            sys.exit(f"No existe {path}.")
+        return []
     rows = []
     with path.open(encoding="utf-8") as f:
         for i, line in enumerate(f, start=1):
@@ -131,25 +136,15 @@ def check_nombre_duplicado(rows, path):
 
 
 def check_estado(rows):
-    """Vacío es WARNING, no ERROR: search_new_game.py --add crea una fila
-    stub (bgg_id/nombre nomás) a propósito, esperando que completes el
-    resto a mano — no es un dato roto, es un pendiente."""
+    """Una fila en ludoteca.jsonl existe porque alguien la curó a
+    propósito (ver search_new_game.py --estado) — a diferencia de antes,
+    no hay un estado "pendiente" válido: si la fila está, `estado` tiene
+    que ser uno de los válidos."""
     problems = []
     for row in rows:
         estado = row.get("estado")
-        if estado == "":
-            problems.append(("WARNING", f'{nombre_de(row)}: estado vacío, pendiente de completar a mano'))
-        elif estado not in ESTADOS_VALIDOS:
+        if estado not in ESTADOS_VALIDOS:
             problems.append(("ERROR", f'{nombre_de(row)}: estado "{estado}" no es uno de {sorted(ESTADOS_VALIDOS)}'))
-    return problems
-
-
-def check_modo(rows):
-    problems = []
-    for row in rows:
-        modo = row.get("modo")
-        if modo and modo not in MODOS_VALIDOS:
-            problems.append(("WARNING", f'{nombre_de(row)}: modo "{modo}" no es uno de los valores canónicos {sorted(MODOS_VALIDOS)}'))
     return problems
 
 
@@ -218,15 +213,17 @@ def check_bgg_id_sin_cache(universo_rows, bgg_ids_en_cache):
     return problems
 
 
-def check_mis_datos_en_universo(mis_datos_rows, universo_rows):
-    """Un juego de mis_datos.jsonl que no aparece en universo_juegos.jsonl
+def check_ludoteca_en_universo(ludoteca_rows, universo_rows):
+    """Un juego de ludoteca.jsonl que no aparece en universo_juegos.jsonl
     (ni por bgg_id ni por nombre) no va a tener bgg_url/link_cazagangas/
     datos de BGG en data.json — probablemente falta correr
-    search_new_game.py --add para ese juego."""
+    search_new_game.py --add para ese juego. A diferencia de antes, NO hay
+    chequeo en el sentido inverso (universo sin fila en ludoteca): eso es
+    el caso normal, no un pendiente — ver integrate_data.py, ESTADO_DEFAULT."""
     ids = {(r.get("bgg_id") or "").strip() for r in universo_rows if r.get("bgg_id")}
     nombres = {r.get("nombre") for r in universo_rows}
     problems = []
-    for row in mis_datos_rows:
+    for row in ludoteca_rows:
         bgg_id = (row.get("bgg_id") or "").strip()
         if bgg_id and bgg_id in ids:
             continue
@@ -236,47 +233,26 @@ def check_mis_datos_en_universo(mis_datos_rows, universo_rows):
     return problems
 
 
-def check_universo_sin_mis_datos(universo_rows, mis_datos_rows):
-    """La contracara de check_mis_datos_en_universo: un juego de
-    universo_juegos.jsonl que todavía no tiene fila en mis_datos.jsonl no
-    va a tener estado/modo/tu opinión en data.json. search_new_game.py
-    --add ya crea la fila stub automático; esto atrapa el resto (juegos
-    cargados a mano, o de antes de que existiera el stub automático)."""
-    ids = {(r.get("bgg_id") or "").strip() for r in mis_datos_rows if r.get("bgg_id")}
-    nombres = {r.get("nombre") for r in mis_datos_rows}
-    problems = []
-    for row in universo_rows:
-        bgg_id = (row.get("bgg_id") or "").strip()
-        if bgg_id and bgg_id in ids:
-            continue
-        if row.get("nombre") in nombres:
-            continue
-        problems.append(("WARNING", f'{nombre_de(row)}: no está en mis_datos.jsonl todavía (ni por bgg_id ni por nombre)'))
-    return problems
-
-
 def main():
-    mis_datos_rows = load_jsonl(MIS_DATOS_PATH)
+    ludoteca_rows = load_jsonl(LUDOTECA_PATH, required=False)
     universo_rows = load_jsonl(UNIVERSO_PATH)
     bgg_rows = load_jsonl(BGG_DATA_PATH)
-    print(f"Verificando {len(mis_datos_rows)} juego(s) en {MIS_DATOS_PATH}, "
+    print(f"Verificando {len(ludoteca_rows)} juego(s) curado(s) en {LUDOTECA_PATH}, "
           f"{len(universo_rows)} en {UNIVERSO_PATH} "
           f"y {len(bgg_rows)} fila(s) en {BGG_DATA_PATH}...\n")
 
     all_problems = []
-    all_problems += check_schema(mis_datos_rows, MIS_DATOS_FIELDS, MIS_DATOS_PATH)
+    all_problems += check_schema(ludoteca_rows, LUDOTECA_FIELDS, LUDOTECA_PATH)
     all_problems += check_schema(universo_rows, UNIVERSO_FIELDS, UNIVERSO_PATH)
     all_problems += check_schema(bgg_rows, BGG_CACHE_FIELDS, BGG_DATA_PATH)
-    all_problems += check_bgg_id_unico(mis_datos_rows, MIS_DATOS_PATH)
+    all_problems += check_bgg_id_unico(ludoteca_rows, LUDOTECA_PATH)
     all_problems += check_bgg_id_unico(universo_rows, UNIVERSO_PATH)
-    all_problems += check_nombre_duplicado(mis_datos_rows, MIS_DATOS_PATH)
+    all_problems += check_nombre_duplicado(ludoteca_rows, LUDOTECA_PATH)
     all_problems += check_nombre_duplicado(universo_rows, UNIVERSO_PATH)
-    all_problems += check_estado(mis_datos_rows)
-    all_problems += check_modo(mis_datos_rows)
-    all_problems += check_rangos_numericos(mis_datos_rows, NUMERIC_RANGES_MIS_DATOS)
+    all_problems += check_estado(ludoteca_rows)
+    all_problems += check_rangos_numericos(ludoteca_rows, NUMERIC_RANGES_LUDOTECA)
     all_problems += check_bgg_url_coincide_con_bgg_id(universo_rows)
-    all_problems += check_mis_datos_en_universo(mis_datos_rows, universo_rows)
-    all_problems += check_universo_sin_mis_datos(universo_rows, mis_datos_rows)
+    all_problems += check_ludoteca_en_universo(ludoteca_rows, universo_rows)
     all_problems += check_rangos_min_max(bgg_rows)
     all_problems += check_rangos_numericos(bgg_rows, NUMERIC_RANGES_BGG)
     all_problems += check_list_fields(bgg_rows)

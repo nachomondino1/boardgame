@@ -56,6 +56,36 @@ BGG_CACHE_FIELDS = [
 ]
 LIST_FIELDS = {"mecanicas", "categorias"}
 
+# Tags de BGG (mecánicas o categorías, da igual de cuál de las dos venga)
+# que señalan modos de juego no competitivos de forma razonablemente
+# confiable. "Semi-Cooperative Game" es el tag que usa BGG para juegos con
+# un objetivo compartido pero intereses individuales en tensión (ej.
+# traidor oculto) — el calce más cercano a "Cooperativo y competitivo".
+# Usado tanto acá (search_new_game.py, para prellenar el stub de
+# mis_datos.jsonl) como en 02_data_preparation/construct_data.py (para
+# derivar `modo` en el build si todavía no está cargado a mano) — una sola
+# definición, nunca duplicada.
+MECANICA_SEMI_COOP = "Semi-Cooperative Game"
+MECANICA_EQUIPOS = "Team-Based Game"
+MECANICA_COOP = "Cooperative Game"
+
+
+def infer_modo(mecanicas, categorias):
+    """Devuelve un modo sugerido a partir de mecánicas/categorías de BGG,
+    o None si no hay ninguna (no hay base para decidir, no hay que asumir
+    "Competitivo" a ciegas). Quien llama decide si eso pisa o no un valor
+    ya cargado a mano — acá no se mira mis_datos.jsonl para nada."""
+    tags = set(mecanicas or []) | set(categorias or [])
+    if not tags:
+        return None
+    if MECANICA_SEMI_COOP in tags:
+        return "Cooperativo y competitivo"
+    if MECANICA_EQUIPOS in tags:
+        return "Equipos"
+    if MECANICA_COOP in tags:
+        return "Cooperativo"
+    return "Competitivo"  # tenemos mecánicas/categorías y ninguna es de las de arriba
+
 
 def normalize(s):
     s = (s or "").strip().lower()
