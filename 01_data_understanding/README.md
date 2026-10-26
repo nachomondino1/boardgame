@@ -2,7 +2,7 @@
 
 Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso es trabajo de `02_data_preparation/`, y 02 puede importar de 01, nunca al revés).
 
-- `collect_initial_data/bgg/` — el universo de juegos completo. `collect_bgg_data.py` produce `bgg_data.jsonl`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
+- `collect_initial_data/collect_bgg_data.py` — el universo de juegos completo. Produce `../data/bgg_data.jsonl`: identidad + Estado + todos los datos de BGG, en un solo archivo, `bgg_id` como primera columna. Ver más abajo.
 - `collect_initial_data/bosque_ludico/` — **[EN UN FUTURO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
 - `verify_data_quality.py` — chequeos de integridad sobre `bgg_data.jsonl` (bgg_id único, estado/modo válidos, min ≤ max, rangos numéricos, etc.), no modifica nada, solo reporta. Ver más abajo.
@@ -19,7 +19,7 @@ python3 01_data_understanding/verify_data_quality.py
 
 Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que convendría arreglar — ej. `bgg_id` repetido, un min mayor que su max, un `estado` que no es ninguno de los válidos) o `WARNING` (exit code 0: algo para revisar pero no necesariamente un error — ej. un `modo` con una variante legacy, o dos juegos con el mismo nombre pero `bgg_id` distinto, que puede ser una edición/reimplementación legítima o un duplicado real cargado por error). No corrige nada solo: si encuentra un duplicado real, hay que sacarlo a mano (o pedírselo a Claude).
 
-## collect_initial_data/bgg/: el universo de juegos + sus datos de BGG, en un único CSV
+## collect_initial_data/collect_bgg_data.py: el universo de juegos + sus datos de BGG, en un único CSV
 
 `bgg_data.jsonl` es a la vez el "universo de juegos" (qué juegos existen, con qué Estado) y sus datos de BGG (rating, duración, etc.) — reemplaza lo que antes eran tres piezas separadas (un ranking, un merge con la ludoteca, y un caché de enriquecimiento por id). `bgg_id` es la primera columna, para poder integrar fácil con lo que salga de otras fuentes el día que eso exista (ver "collect_initial_data/bosque_ludico/" abajo).
 
@@ -60,8 +60,8 @@ Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que conven
 2. **Refresh** (default una vez que `bgg_data.jsonl` ya existe, sin `--add`): re-descarga el dataset de BGG y actualiza las columnas de BGG de los juegos que **ya** están en el archivo. Nunca agrega ni saca filas — es lo que corre el cron.
 3. **Agregar un juego puntual** (`--add`): así es como se amplía el universo de acá en más — `bgg_data.jsonl` no se regenera solo con juegos nuevos, se le pide explícitamente.
    ```bash
-   python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
-   python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
+   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
+   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
    ```
 
 ### De dónde sale el dato de BGG
@@ -80,7 +80,7 @@ Dos quirks del dataset que el script ya filtra, por si hace falta debuggear algo
 ## Correr todo el pipeline de 01 a mano
 
 ```bash
-python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py   # refresca bgg_data.jsonl (o --add para sumar un juego)
+python3 01_data_understanding/collect_initial_data/collect_bgg_data.py   # refresca bgg_data.jsonl (o --add para sumar un juego)
 python3 02_data_preparation/construct_data.py            # ver 02_data_preparation/README.md
 ```
 

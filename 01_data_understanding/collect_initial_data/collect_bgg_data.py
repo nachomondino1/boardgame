@@ -60,11 +60,11 @@ juego, en un solo archivo — no hace falta combinar dos datasets distintos.
 `--mode api` reemplaza esto por xmlapi2/thing en cuanto BGG apruebe la app.
 
 Uso:
-    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py                  # bootstrap o refresh según corresponda
-    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
-    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
-    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --add "Wingspan" --estado Own
-    python3 01_data_understanding/collect_initial_data/bgg/collect_bgg_data.py --set-estado "Sky Team" "Want to buy"  # cambia el estado de un juego ya existente
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py                  # bootstrap o refresh según corresponda
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan" --estado Own
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --set-estado "Sky Team" "Want to buy"  # cambia el estado de un juego ya existente
 """
 import argparse
 import ast
@@ -86,8 +86,9 @@ from pathlib import Path
 csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae descripciones largas en una sola celda CSV
 
 HERE = Path(__file__).resolve().parent
-BGG_DATA_PATH = HERE / "bgg_data.jsonl"
-LUDOTECA_PATH = HERE.parent / "ludoteca" / "mi_ludoteca.json"
+ROOT = HERE.parent.parent
+BGG_DATA_PATH = ROOT / "data" / "bgg_data.jsonl"
+LUDOTECA_PATH = HERE / "ludoteca" / "mi_ludoteca.json"
 
 DATASET_URL = (
     "https://huggingface.co/datasets/mmpa/board_game_analysis/"
