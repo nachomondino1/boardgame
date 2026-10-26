@@ -3,7 +3,7 @@ let GAMES = [];
 const state = {
   query: "",
   jugadores: null,
-  estados: new Set(),
+  estados: new Set(["Own"]),
   sort: "puntaje_ajust_bgg_desc",
 };
 
@@ -75,6 +75,7 @@ function setupControls() {
     const chip = document.createElement("span");
     chip.className = "chip";
     chip.textContent = estado;
+    if (state.estados.has(estado)) chip.classList.add("active");
     chip.addEventListener("click", () => {
       if (state.estados.has(estado)) {
         state.estados.delete(estado);

@@ -13,10 +13,13 @@ real de la celda antes de sacar esas columnas de ahí). precio_calidad
 depende de `costo`, que hoy no sale de ninguna fuente (Bosque Lúdico no
 está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
-duracion, modo y transportable: derivadas de datos de BGG (mecánicas,
-categorías, complejidad, duración mín./máx.). `modo` nunca pisa un valor
-que ya esté cargado a mano en bgg_data.jsonl (columna propia, ver
-collect_bgg_data.py).
+duracion y modo: derivadas de datos de BGG (mecánicas, categorías,
+duración mín./máx.). `modo` nunca pisa un valor que ya esté cargado a mano
+en bgg_data.jsonl (columna propia, ver collect_bgg_data.py).
+
+`transportable` es 100% manual (columna propia, ver collect_bgg_data.py):
+BGG no trackea tamaño de caja en ningún campo, así que acá no se deriva de
+nada, solo pasa de largo el valor que ya viene en bgg_data.jsonl.
 """
 import json
 import math
@@ -151,39 +154,12 @@ def compute_modo(game):
     return "Competitivo"  # tenemos mecánicas/categorías y ninguna es de las de arriba
 
 
-# BGG no trackea tamaño/peso de caja en ningún campo (ni este dataset ni la
-# API oficial lo traen) — no hay una variable que lo mida directo. Como
-# proxy se usa complejidad + duración: más reglas y partidas más largas
-# tienden a traer más componentes y cajas más grandes. Los umbrales se
-# calibraron a mano contra 3 casos de referencia que ya estaban cargados en
-# mi_ludoteca.json: Pistas Cruzadas (Sí, 1.08/8min), La Isla Prohibida (Más
-# o menos, 1.74/30min) y Catan (No, 2.29/90min promedio).
-TRANSPORTABLE_SI_COMPLEJIDAD_MAX = 1.5
-TRANSPORTABLE_SI_DURACION_MAX = 30
-TRANSPORTABLE_NO_COMPLEJIDAD_MIN = 2.5
-TRANSPORTABLE_NO_DURACION_MIN = 90
-
-
-def compute_transportable(complejidad, duracion):
-    """Sí/Más o menos/No según el proxy complejidad+duración (ver arriba).
-    Es una estimación, no un dato medido: sin complejidad o sin duración no
-    hay base para estimar nada, así que queda en None antes que adivinar."""
-    if complejidad is None or duracion is None:
-        return None
-    if complejidad <= TRANSPORTABLE_SI_COMPLEJIDAD_MAX and duracion <= TRANSPORTABLE_SI_DURACION_MAX:
-        return "Sí"
-    if complejidad >= TRANSPORTABLE_NO_COMPLEJIDAD_MIN or duracion >= TRANSPORTABLE_NO_DURACION_MIN:
-        return "No"
-    return "Más o menos"
-
-
 def main():
     games = load_games()
 
     for g in games:
         g["duracion"] = compute_duracion(g)
         g["modo"] = compute_modo(g)
-        g["transportable"] = compute_transportable(g.get("complejidad"), g["duracion"])
         g["puntaje_ajust_bgg"] = compute_puntaje_ajust_bgg(g)
     compute_precio_calidad(games)  # usa puntaje_ajust_bgg sin redondear, como hacía el Sheet
 
