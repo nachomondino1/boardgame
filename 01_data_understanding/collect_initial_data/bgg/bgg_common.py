@@ -141,6 +141,12 @@ def _literal(value, default):
 
 
 def _best_numplayers(suggested_num_players):
+    """El dataset trae una lista de entries, salvo cuando el juego solo
+    tiene un rango de jugadores posible: ahí viene un único dict pelado
+    en vez de una lista de un elemento (ej. "Traditional Card Games",
+    bgg_id 21804) — normalizar acá antes de iterar."""
+    if isinstance(suggested_num_players, dict):
+        suggested_num_players = [suggested_num_players]
     best_result, best_votes = None, -1
     for entry in suggested_num_players:
         for result in entry.get("result", []):
@@ -178,14 +184,19 @@ def dataset_row_to_attributes(row):
         # jug_min/jug_max: rango de CAJA (minplayers/maxplayers), no el
         # "Community" de la ficha de BGG — priorizar siempre Community
         # cuando se lo tenga a mano (ver modify_values.py).
-        "jug_min": num("minplayers"),
-        "jug_max": num("maxplayers"),
+        # 0 = sin dato (mismo sentinel que duracion/edad), no "no soporta
+        # jugadores" — visible en la cola larga (juegos sin ficha completa).
+        "jug_min": num("minplayers", zero_is_missing=True),
+        "jug_max": num("maxplayers", zero_is_missing=True),
         "jug_best_min": best_min,
         "jug_best_max": best_max,
         "duracion_min": num("minplaytime", zero_is_missing=True),
         "duracion_max": num("maxplaytime", zero_is_missing=True),
-        "complejidad": num("averageweight"),
-        "puntaje_bgg": num("average"),
+        # 0.0 = sin votos todavía (mismo sentinel que edad_min/duracion),
+        # no un peso/puntaje real — aparece en la larga cola de juegos sin
+        # reviews, invisible mientras solo se procesaba el top N.
+        "complejidad": num("averageweight", zero_is_missing=True),
+        "puntaje_bgg": num("average", zero_is_missing=True),
         "reviews_bgg": num("usersrated"),
         "ranking_bgg": num("Board Game Rank"),
         "mecanicas": mecanicas,

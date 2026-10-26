@@ -104,7 +104,6 @@ function cardTemplate(g, opts) {
   if (g.pros) notesParts.push(`<p><strong>Pros:</strong> ${escapeHtml(g.pros)}</p>`);
   if (g.cons) notesParts.push(`<p><strong>Contras:</strong> ${escapeHtml(g.cons)}</p>`);
   if (g.notas) notesParts.push(`<p><strong>Notas:</strong> ${escapeHtml(g.notas)}</p>`);
-  if (g.descripcion) notesParts.push(`<p>${escapeHtml(g.descripcion)}</p>`);
   const detailsHtml = notesParts.length
     ? `<details><summary>Más info</summary>${notesParts.join("")}</details>`
     : "";
