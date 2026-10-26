@@ -14,36 +14,45 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 ## Arquitectura / flujo de datos
 
 ```
-data/01_data_understanding/mis_datos.jsonl   (commiteado, EL universo de juegos: tuyo, a mano)
-  bgg_id, nombre, estado, bgg_url, modo, transportable, mi_puntaje, pros,
-  cons, notas — ningún script lo pisa salvo que se lo pidas explícito
-  (--add, --set-estado en collect_bgg_data.py). Si se borra, se pierde tu
-  trabajo: no es regenerable de ninguna fuente externa.
+data/01_data_understanding/universo_juegos.jsonl   (commiteado, catálogo de identidad)
+  bgg_id, nombre, bgg_url, link_cazagangas — "qué juegos conoce este
+  repo", sin opinión tuya sobre ellos. Agregar un juego nuevo es: sumar
+  una fila acá (a mano, o con collect_bgg_data.py --add <id o nombre>,
+  que resuelve bgg_id/nombre/bgg_url solo — vos cargás link_cazagangas).
                             │
                             ▼  (bgg_id de cada fila)
 01_data_understanding/collect_initial_data/collect_bgg_data.py
   dataset público de terceros, Hugging Face (ver "Decisiones clave")
-  Bootstrap (mis_datos.jsonl no existe): top N del ranking + ludoteca (una
-  sola vez, para taguear Own/Prev. owned) → el resto queda Watchlist.
+  Bootstrap (universo_juegos.jsonl no existe): top N del ranking +
+  ludoteca (una sola vez, identidad nomás, sin estado).
   Refresh (default): reconstruye bgg_data.jsonl entero a partir de los
-  bgg_id que ya están en mis_datos.jsonl — nunca toca mis_datos.jsonl.
-  --add <id o nombre>: suma un juego a mis_datos.jsonl (así crece el universo).
+  bgg_id que ya están en universo_juegos.jsonl — nunca lo toca.
+  --add <id o nombre>: suma una fila a universo_juegos.jsonl.
                             │
                             ▼
       data/01_data_understanding/bgg_data.jsonl   (commiteado, caché 100% regenerable de BGG:
         anio, descripcion, disenador, edad_min, jug_min/max, jug_best_min/max,
         duracion_min/max, complejidad, puntaje_bgg, reviews_bgg, ranking_bgg,
         mecanicas, categorias — si se borra, el próximo refresh la reconstruye
-        sola, a diferencia de mis_datos.jsonl)
-                            │
-      data/01_data_understanding/grupos.json ─────┤  (curado a mano, ver "Agrupar variantes/expansiones")
+        sola, a diferencia de universo_juegos.jsonl/mis_datos.jsonl)
+
+data/01_data_understanding/mis_datos.jsonl   (commiteado, 100% manual, lo cargás vos)
+  bgg_id, nombre, estado, modo, transportable, mi_puntaje, pros, cons,
+  notas — ningún script lo escribe ni lo lee más que integrate_data.py.
+  Si se borra, se pierde tu trabajo: no es regenerable de ninguna fuente.
+
+      data/01_data_understanding/grupos.json ─────┐  (curado a mano, ver "Agrupar variantes/expansiones")
       data/01_data_understanding/cazagangas_data.jsonl ─┤  (check_cazagangas_links.py, manual — ver más abajo)
+                            │
+      mis_datos.jsonl + universo_juegos.jsonl + bgg_data.jsonl + grupos.json
+      + cazagangas_data.jsonl
                             ▼
       02_data_preparation/integrate_data.py
-        base = mis_datos.jsonl; suma bgg_data.jsonl por bgg_id, y
-        grupos.json/cazagangas_data.jsonl por nombre — sin tipar ni
-        calcular nada (eso es trabajo de construct_data.py). Las tres son
-        opcionales: si no existen, esos campos quedan en null
+        base = mis_datos.jsonl; suma universo_juegos.jsonl/bgg_data.jsonl
+        por bgg_id (nombre como fallback), y grupos.json/cazagangas_data.jsonl
+        por nombre — sin tipar ni calcular nada (eso es trabajo de
+        construct_data.py). Las últimas cuatro son opcionales: si no
+        existen, esos campos quedan en null
                             ▼
       data/02_data_preparation/integrated_data.jsonl   (intermedio del build, gitignored:
         se regenera siempre de archivos ya commiteados, no se edita a mano)
@@ -51,8 +60,8 @@ data/01_data_understanding/mis_datos.jsonl   (commiteado, EL universo de juegos:
       02_data_preparation/construct_data.py
         calcula duracion, modo, puntaje_ajust_bgg, precio_calidad
         (derivadas, no vienen de ninguna fuente — ver README.md
-        "Columnas calculadas"); transportable/grupo/link_cazagangas/
-        cazagangas_status pasan de largo tal cual (ya vienen resueltos)
+        "Columnas calculadas"); transportable/bgg_url/link_cazagangas/
+        grupo/cazagangas_status pasan de largo tal cual (ya vienen resueltos)
                             ▼
       docs/data/data.json   (commiteado al repo, fuente de verdad del sitio)
                             ▲
@@ -144,6 +153,8 @@ Efecto colateral en `collect_bgg_data.py`: `--set-estado` deja de tocar el datas
 
 **Generalizable: cuando un archivo mezcla "lo que edita un humano" con "lo que regenera un script", separarlos en cuanto el segundo volumen empiece a justificar su propio archivo** (acá, agregar `check_cazagangas_links.py`/`grupos.json` como nuevas fuentes a integrar hizo evidente el patrón: por qué sí separar esas dos en archivos propios, y la fuente de BGG mezclada en el mismo archivo que lo manual, no). No hace falta hacerlo desde el día 1 — mientras una sola fuente automatizada exista y el archivo sea chico, la separación es ceremonia de más; se vuelve la opción correcta cuando el archivo mezclado empieza a ser un riesgo real de perder algo irreemplazable.
 
+**Segunda vuelta de tuerca: separar "identidad" (bgg_id, nombre, bgg_url, link_cazagangas) de "tu opinión" (estado, modo, transportable, mi_puntaje, pros, cons, notas), aunque las dos sean manuales/semi-manuales.** `mis_datos.jsonl` seguía mezclando dos cosas de naturaleza distinta: identidad del juego (qué es, dónde está — bgg_url, y después link_cazagangas) y tu relación con él (qué pensás, en qué estado está). La señal para separar de nuevo: `check_cazagangas_links.py` necesitaba saber la URL de Cazagangas de cada juego para verificarla, y esa URL no tiene nada que ver con si el juego está en tu Watchlist o no — forzar a ese script a leer `mis_datos.jsonl` (con estado adentro) solo para sacar `nombre` lo acoplaba a un archivo que es 100% tuyo sin necesidad. `data/01_data_understanding/universo_juegos.jsonl` (`bgg_id`, `nombre`, `bgg_url`, `link_cazagangas`) pasa a ser el catálogo de identidad — lo que collect_bgg_data.py y check_cazagangas_links.py necesitan para saber qué buscar, sin tocar nunca `mis_datos.jsonl`. `mis_datos.jsonl` se achica a solo tu opinión/estado (sigue con `bgg_id` y `nombre` para que un humano pueda abrirlo y entender cada fila sin cruzar con otro archivo, y como fallback de join cuando `bgg_id` está vacío). Agregar un juego nuevo pasa a ser dos pasos independientes: sumarlo a `universo_juegos.jsonl` (identidad, por `--add` o a mano) y, aparte, cuando quieras, agregarlo a `mis_datos.jsonl` con el estado que corresponda — ninguno de los dos pasos depende del otro.
+
 ## Agrupar variantes/expansiones del mismo sistema de juego (`data/01_data_understanding/grupos.json`)
 
 En "¿Cuál comprar?" varias cajas de un mismo sistema (ej. las 7 de Unmatched, las 5 de Ticket to Ride) saturaban la grilla. No hay forma confiable de detectar esto automático: ni el prefijo antes de `:` del nombre ni la "family" de BGG alcanzan, porque agrupan por **marca/tema**, no por si es el mismo diseño — "Star Wars: Rebellion" y "Star Wars: X-Wing" comparten prefijo y BGG family pero son juegos completamente distintos; "Roll Through the Ages" y "Through the Ages" comparten casi el nombre entero y son de autores distintos. Mismo problema con `boardgameimplementation`/`boardgameexpansion` de BGG: están pensados para expansiones "de verdad" (reglas que se suman a un juego base), no para "mismo motor, otra caja standalone" (que es el caso típico acá: Unmatched, Ticket to Ride, Century, Azul).
@@ -156,11 +167,9 @@ Al sumar un juego nuevo que sea "otra caja del mismo sistema" de algo que ya est
 
 ## Link a una tienda sin resolver nada: construir la URL por convención y verificar el código HTTP real una sola vez (`data/01_data_understanding/cazagangas_data.jsonl`)
 
-A diferencia de El Bosque Lúdico (que necesita matchear por texto contra un sitemap, ver "Resolver un link a producto..." más arriba), Cazagangas publica sus fichas en una URL 100% predecible a partir del nombre (`/juego/<slug>`, slug = nombre normalizado). Eso significa que no hace falta "resolver" nada por búsqueda/similitud: alcanza con armar la URL por convención (mismo algoritmo en `check_cazagangas_links.py` del lado Python y en `cardTemplate`/antes `cazagangasUrl` del lado JS — si se cambia el slugify de un lado, cambiarlo del otro).
+A diferencia de El Bosque Lúdico (que necesita matchear por texto contra un sitemap, ver "Resolver un link a producto..." más arriba), Cazagangas publica sus fichas en una URL predecible a partir del nombre (`/juego/<slug>`). Primera versión: el frontend armaba ese slug al vuelo y mostraba el link igual, a ver qué pasaba ("si no existe, da 404 y lo veo yo"). Segunda versión: `check_cazagangas_links.py` generaba el mismo slug del lado Python y lo verificaba con un `HEAD` real. **Versión actual (esta): ni el frontend ni `check_cazagangas_links.py` generan ninguna URL — `link_cazagangas` se carga a mano en `data/01_data_understanding/universo_juegos.jsonl`** (junto a `bgg_id`/`nombre`/`bgg_url`, ver "Las columnas que no vienen de BGG viven en su propio archivo"), y `check_cazagangas_links.py` solo le pega un `HEAD` a lo que ya está cargado ahí, guardando el código HTTP (`200`/`404`/`error`) en `data/01_data_understanding/cazagangas_data.jsonl`. Sacar el slugify evita mantener el mismo algoritmo sincronizado en dos lugares (antes Python + JS) y evita adivinar: si el link está mal, se corrige una vez en `universo_juegos.jsonl`, no en la lógica de armado. El frontend sigue sin adivinar nada: `shared.js` solo muestra el link cuando `cazagangas_status === "200"`.
 
-El problema real no es encontrar la URL, es que **"armarla" no garantiza que esa ficha exista** (el juego puede no estar en el catálogo, o el slug real diferir en algo puntual). Primera versión: el frontend armaba el link al vuelo y lo mostraba igual, a ver qué pasaba ("si no existe, da 404 y lo veo yo"). Segunda versión (esta): `check_cazagangas_links.py` le pega un `HEAD` real a cada URL armada y guarda el código HTTP (`200`/`404`/`error`) en `data/01_data_understanding/cazagangas_data.jsonl` — el frontend deja de adivinar: `shared.js` solo muestra el link cuando `cazagangas_status === "200"`. **Separar "construir la URL" (barato, sin red, se puede hacer en el cliente o en el build) de "verificar que existe" (red, tiene que resolverse una vez del lado del build, nunca en cada visita) es el patrón general** para cualquier link armado por convención a un sitio de terceros.
-
-Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~1000 candidatos en Watchlist/Want to buy): corre con `--limit` para ir de a tandas y mergea por nombre contra corridas anteriores, sin perder lo ya chequeado. A diferencia de Bosque Lúdico, esto **no está pausado**: es una fuente activa, su output se commitea (no va en `.gitignore`) y `integrate_data.py` la lee en cada build — pero el chequeo en sí (`check_cazagangas_links.py`) no corre en el cron de `sync-data.yml`, se corre a mano cuando hace falta refrescar, por el mismo motivo que Bosque Lúdico: ~1000 requests de red a un tercero es demasiado para colgarlo de un cron automático sin supervisión.
+Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~1000 candidatos, los que tengan `link_cazagangas` cargado en `universo_juegos.jsonl` — ya no filtra por estado, porque ese campo ni vive en el mismo archivo): corre con `--limit` para ir de a tandas y mergea por nombre contra corridas anteriores, sin perder lo ya chequeado. A diferencia de Bosque Lúdico, esto **no está pausado**: es una fuente activa, su output se commitea (no va en `.gitignore`) y `integrate_data.py` la lee en cada build — pero el chequeo en sí (`check_cazagangas_links.py`) no corre en el cron de `sync-data.yml`, se corre a mano cuando hace falta refrescar, por el mismo motivo que Bosque Lúdico: ~1000 requests de red a un tercero es demasiado para colgarlo de un cron automático sin supervisión.
 
 ## Qué evitar
 

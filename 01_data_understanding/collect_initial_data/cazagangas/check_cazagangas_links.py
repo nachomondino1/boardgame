@@ -1,37 +1,32 @@
-"""Chequea si el link a Cazagangas de cada juego de la Watchlist existe de
-verdad: el frontend (docs/js/shared.js, antes de esto) armaba el link a
-partir del nombre del juego (slug best-effort) sin saber si esa página
-existe en la tienda. Esto resuelve esa duda una sola vez acá, en vez de que
-el navegador de cada visita tenga que adivinar.
-
-Arma la misma URL que armaba el frontend (`https://www.cazagangas.com.ar/
-juego/<slug>`, slug = nombre normalizado: sin tildes, en minúscula, todo lo
-que no sea [a-z0-9] se vuelve "-") y le pega un HEAD (fallback GET si el
-servidor no soporta HEAD) para guardar el código HTTP real.
+"""Verifica el link a Cazagangas de cada juego de
+data/01_data_understanding/universo_juegos.jsonl que ya tenga uno cargado:
+no arma ninguna URL (eso ya no es trabajo de este script — el link lo
+cargás vos a mano en universo_juegos.jsonl, ver collect_bgg_data.py --add),
+solo le pega un HEAD real (fallback GET si el servidor no soporta HEAD)
+para guardar el código HTTP.
 
 robots.txt de Cazagangas permite crawling general (`User-agent: *` sin
 Disallow; solo bloquea a AhrefsBot/SemrushBot, que no somos). No hay
 Crawl-delay explícito; se usa 2s entre requests, más corto que el de
 El Bosque Lúdico (5s) porque acá es un HEAD liviano, no una página entera.
 
-Alcance: juegos en Watchlist o Want to buy (lo único que linkea a
-Cazagangas hoy es ¿Cuál comprar?, ver docs/comprar.html) — ampliar el
-alcance si en algún momento el link se muestra en otra página.
+Alcance: todo universo_juegos.jsonl con `link_cazagangas` no vacío — no
+filtra por estado (ese campo ya ni vive en el mismo archivo, ver
+mis_datos.jsonl). Si un juego no tiene link cargado todavía, no hay nada
+que chequear para él, no es un error.
 
 Uso:
     python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py [--limit N] [--refresh]
 
---limit N: chequea como máximo N juegos pendientes (para ir de a tandas, la
-Watchlist puede ser grande). --refresh: re-chequea también los que ya
+--limit N: chequea como máximo N juegos pendientes (para ir de a tandas, el
+catálogo puede ser grande). --refresh: re-chequea también los que ya
 tienen un resultado guardado (por default se saltean, para no re-pegarle a
 links que ya sabemos que andan o no).
 
-Alcance de los candidatos: sale de data/01_data_understanding/mis_datos.jsonl
-(estado/nombre son columnas tuyas, no de BGG — ver DATA_PLAYBOOK.md, "Las
-columnas que no vienen de BGG viven en su propio archivo").
-
 Salida: data/01_data_understanding/cazagangas_data.jsonl (bgg_id primera
 columna; integrate_data.py lo matchea por nombre, igual que grupos.json).
+No repite `link_cazagangas` acá — esa URL vive en una sola parte,
+universo_juegos.jsonl.
 
 [PENDIENTE] Hoy solo confirma que el link existe (código HTTP). En algún
 momento esto se amplía a scraper real: precio, stock/disponibilidad y en
@@ -42,40 +37,28 @@ varias tiendas por juego, no es un único vendedor) — ver README.md,
 import argparse
 import datetime
 import json
-import re
 import sys
 import time
-import unicodedata
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-MIS_DATOS_PATH = ROOT / "data" / "01_data_understanding" / "mis_datos.jsonl"
+UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
 OUTPUT_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
 
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 CRAWL_DELAY_SECONDS = 2
-ESTADOS_RELEVANTES = {"Watchlist", "Want to buy"}
-
-
-def slugify(nombre):
-    """Mismo algoritmo que cazagangasUrl() en docs/js/shared.js — si se
-    toca uno, tocar el otro."""
-    s = unicodedata.normalize("NFD", (nombre or "").lower())
-    s = "".join(c for c in s if unicodedata.category(c) != "Mn")
-    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
-    return s
 
 
 def load_candidatos():
-    if not MIS_DATOS_PATH.exists():
-        sys.exit(f"No existe {MIS_DATOS_PATH}; corré primero collect_bgg_data.py")
-    with MIS_DATOS_PATH.open(encoding="utf-8") as f:
-        games = [json.loads(line) for line in f if line.strip()]
-    candidatos = [g for g in games if (g.get("estado") or "").strip() in ESTADOS_RELEVANTES]
+    if not UNIVERSO_PATH.exists():
+        sys.exit(f"No existe {UNIVERSO_PATH}; corré primero collect_bgg_data.py")
+    with UNIVERSO_PATH.open(encoding="utf-8") as f:
+        juegos = [json.loads(line) for line in f if line.strip()]
+    candidatos = [g for g in juegos if (g.get("link_cazagangas") or "").strip()]
     if not candidatos:
-        sys.exit(f"No encontré juegos en {sorted(ESTADOS_RELEVANTES)} en {MIS_DATOS_PATH}")
+        sys.exit(f"Ningún juego en {UNIVERSO_PATH} tiene link_cazagangas cargado todavía.")
     return candidatos
 
 
@@ -109,7 +92,7 @@ def check_status(url, retries=3):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Chequea si el link a Cazagangas de cada juego de la Watchlist existe")
+    parser = argparse.ArgumentParser(description="Verifica los links a Cazagangas cargados en universo_juegos.jsonl")
     parser.add_argument("--limit", type=int, default=None,
                          help="chequear como máximo N juegos pendientes")
     parser.add_argument("--refresh", action="store_true",
@@ -133,18 +116,13 @@ def main():
     hoy = datetime.date.today().isoformat()
     for i, game in enumerate(pendientes):
         nombre = game["nombre"]
-        slug = slugify(nombre)
-        url = f"https://www.cazagangas.com.ar/juego/{slug}" if slug else None
-        if url is None:
-            status = "error"
-        else:
-            status = check_status(url)
+        url = game["link_cazagangas"]
+        status = check_status(url)
         print(f"[{i + 1}/{len(pendientes)}] {nombre}: {url} -> {status}")
 
         existing[nombre] = {
             "bgg_id": game.get("bgg_id"),
             "nombre": nombre,
-            "link_cazagangas": url,
             "status_http": status,
             "fecha_chequeado": hoy,
         }
