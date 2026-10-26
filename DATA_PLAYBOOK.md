@@ -17,29 +17,53 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 data/01_data_understanding/universo_juegos.jsonl   (commiteado, catálogo de identidad)
   bgg_id, nombre, bgg_url, link_cazagangas — "qué juegos conoce este
   repo", sin opinión tuya sobre ellos. Agregar un juego nuevo es: sumar
-  una fila acá (a mano, o con collect_bgg_data.py --add <id o nombre>,
-  que resuelve bgg_id/nombre/bgg_url solo — vos cargás link_cazagangas).
+  una fila acá (a mano, o con search_new_game.py --add <id o nombre>,
+  que resuelve bgg_id/nombre/bgg_url Y arma+verifica link_cazagangas
+  solo — ver más abajo).
                             │
-                            ▼  (bgg_id de cada fila)
-01_data_understanding/collect_initial_data/collect_bgg_data.py
+                            ▼  (bgg_id/nombre de cada fila)
+01_data_understanding/collect_initial_data/
+  search_new_game.py vive acá, un nivel arriba de bgg/ y cazagangas/,
+  porque orquesta las dos carpetas — no es parte de ninguna.
+  collect_initial_data/bgg/ (bgg_common.py + 3 scripts)
   dataset público de terceros, Hugging Face (ver "Decisiones clave")
-  Bootstrap (universo_juegos.jsonl no existe): top N del ranking +
-  ludoteca (una sola vez, identidad nomás, sin estado).
-  Refresh (default): reconstruye bgg_data.jsonl entero a partir de los
-  bgg_id que ya están en universo_juegos.jsonl — nunca lo toca.
-  --add <id o nombre>: suma una fila a universo_juegos.jsonl.
+  initialize_bgg_data.py: bootstrap único (universo_juegos.jsonl no
+  existe todavía) — top N del ranking + ludoteca, identidad nomás.
+  search_new_game.py (uso normal, lo que corre el cron sin --add):
+  agrega a bgg_data.jsonl solo los bgg_id de universo_juegos.jsonl que
+  todavía no tienen fila — nunca reescribe una fila existente.
+  --add <id o nombre> (un juego a la vez, nunca en el cron): además de
+  sumar la fila a universo_juegos.jsonl, en la misma corrida arma un
+  slug best-effort para Cazagangas y lo verifica con un HEAD real
+  (collect_initial_data/cazagangas/cazagangas_common.py) — si da 200,
+  carga link_cazagangas + fila en cazagangas_data.jsonl solo; si no,
+  deja link_cazagangas vacío para cargar a mano — y agrega una fila
+  stub a mis_datos.jsonl (bgg_id/nombre nomás, el resto vacío
+  esperando tu criterio).
+  modify_values.py / extract_new_fields.py: edición manual de campos
+  puntuales / columnas nuevas sobre filas ya existentes — mismo
+  principio de upsert, nunca reescritura completa.
                             │
                             ▼
-      data/01_data_understanding/bgg_data.jsonl   (commiteado, caché 100% regenerable de BGG:
+      data/01_data_understanding/bgg_data.jsonl   (commiteado, caché de BGG:
         anio, descripcion, disenador, edad_min, jug_min/max, jug_best_min/max,
         duracion_min/max, complejidad, puntaje_bgg, reviews_bgg, ranking_bgg,
-        mecanicas, categorias — si se borra, el próximo refresh la reconstruye
-        sola, a diferencia de universo_juegos.jsonl/mis_datos.jsonl)
+        mecanicas, categorias — una fila que falta es regenerable
+        (search_new_game.py la completa); una fila que ya existe nunca se
+        reescribe sola, así una corrección manual no se pierde)
+
+data/01_data_understanding/cazagangas_data.jsonl   (commiteado, status HTTP verificado)
+  bgg_id, nombre, status_http, fecha_chequeado — una fila por juego con
+  link_cazagangas cargado. check_cazagangas_links.py re-verifica en
+  lote lo ya cargado (manual, --limit N); search_new_game.py --add
+  resuelve y verifica el de un juego nuevo en el momento de agregarlo.
 
 data/01_data_understanding/mis_datos.jsonl   (commiteado, 100% manual, lo cargás vos)
   bgg_id, nombre, estado, modo, transportable, mi_puntaje, pros, cons,
-  notas — ningún script lo escribe ni lo lee más que integrate_data.py.
-  Si se borra, se pierde tu trabajo: no es regenerable de ninguna fuente.
+  notas — tu criterio, nunca inferido. search_new_game.py --add es la
+  única excepción que lo escribe, y solo para crear la fila stub
+  (bgg_id/nombre) de un juego nuevo; integrate_data.py lo lee. Si se
+  borra, se pierde tu trabajo: no es regenerable de ninguna fuente.
 
       data/01_data_understanding/grupos.json ─────┐  (curado a mano, ver "Agrupar variantes/expansiones")
       data/01_data_understanding/cazagangas_data.jsonl ─┤  (check_cazagangas_links.py, manual — ver más abajo)
@@ -66,7 +90,7 @@ data/01_data_understanding/mis_datos.jsonl   (commiteado, 100% manual, lo cargá
       docs/data/data.json   (commiteado al repo, fuente de verdad del sitio)
                             ▲
         │  .github/workflows/sync-data.yml: cron mensual + workflow_dispatch manual
-        │  corre collect_bgg_data.py + integrate_data.py + construct_data.py,
+        │  corre search_new_game.py + integrate_data.py + construct_data.py,
         │  commitea lo que cambió, pushea a main ("[skip ci]" para no
         │  re-triggerear otros workflows)
                             ▼
@@ -103,7 +127,8 @@ Nadie en el camino del usuario final toca ninguna API externa: para quien visita
 - **Mapeo de columnas por texto del encabezado, no por posición/índice.** Agregar o reordenar una columna en el Sheet no rompe el build; una columna nueva sin regla se ignora en silencio (ver "Qué evitar" sobre el costo de ese silencio).
 - **Falla ruidosa ante datos sospechosos.** El script corta con `sys.exit(1)` si parsea muy pocas filas o no encuentra la columna esperada, en vez de commitear un JSON vacío o a medio llenar. Un build que "funciona" pero pisa datos buenos con basura es peor que un build que no corre.
 - **Lógica de enriquecimiento específica del dominio vive en el script, como constantes documentadas**, no desparramada en el frontend. En este proyecto es la resolución de links a BGG (`BGG_SEARCH_OVERRIDES`, `BGG_SKIP`): cada entrada tiene al lado, en un comentario, de dónde salió el override (en este caso, pistas que ya estaban a mano en la columna "Notas" del Sheet).
-- **Enriquecimiento externo con columnas propias vs. de BGG, nunca mezcladas, y las propias siempre ganan.** `01_data_understanding/collect_initial_data/collect_bgg_data.py` solo refresca `data/01_data_understanding/bgg_data.jsonl` (`puntaje_bgg`, `complejidad`, etc.); las columnas propias (`nombre`, `estado`, `modo`, `transportable`, `mi_puntaje`, `pros`, `cons`, `notas`) viven en `data/01_data_understanding/mis_datos.jsonl`, un archivo que un refresh ni abre para escribir — separadas en dos archivos, no solo por convención dentro de uno (ver "Las columnas que no vienen de BGG viven en su propio archivo" más abajo, con el por qué del cambio). La vía oficial (`--mode api`, `xmlapi2/thing`) está **bloqueada** hasta que BGG apruebe la aplicación registrada (hoy devuelve 401); mientras tanto corre automático contra un dataset placeholder de terceros (`--mode dummy`, default — ver el bullet de abajo sobre datasets públicos).
+- **Enriquecimiento externo con columnas propias vs. de BGG, nunca mezcladas, y las propias siempre ganan.** Sin `--add`, `01_data_understanding/collect_initial_data/search_new_game.py` solo completa `data/01_data_understanding/bgg_data.jsonl` (`puntaje_bgg`, `complejidad`, etc.) para los `bgg_id` que todavía no tienen fila; las columnas propias (`nombre`, `estado`, `modo`, `transportable`, `mi_puntaje`, `pros`, `cons`, `notas`) viven en `data/01_data_understanding/mis_datos.jsonl`, un archivo que ninguno de los scripts de BGG abre para escribir — separadas en dos archivos, no solo por convención dentro de uno (ver "Las columnas que no vienen de BGG viven en su propio archivo" más abajo, con el por qué del cambio). La vía oficial (`--mode api`, `xmlapi2/thing`) está **bloqueada** hasta que BGG apruebe la aplicación registrada (hoy devuelve 401); mientras tanto corre automático contra un dataset placeholder de terceros (`--mode dummy`, default — ver el bullet de abajo sobre datasets públicos).
+- **Un caché "100% regenerable" deja de serlo en cuanto alguien lo edita a mano — separar "regenerar desde cero" de "completar lo que falta".** `bgg_data.jsonl` se documentó originalmente como "se reescribe entero en cada corrida, si se borra se reconstruye sola" (ver más abajo, "Las columnas que no vienen de BGG..."), razonamiento válido mientras nadie tocara una fila individual. En la práctica el usuario empezó a corregir a mano campos puntuales (ej. `jug_min`/`jug_max` con el dato de "Community" de la ficha en vez del de caja que trae el dataset placeholder), y el `refresh` mensual del cron se los pisaba sin aviso en la siguiente corrida — el dataset de origen (snapshot 2025 de Hugging Face) nunca se entera de esa corrección. La separación que lo resuelve: un script de bootstrap que sí reescribe todo (se corre una sola vez, `initialize_bgg_data.py`) vs. un script de uso normal que solo hace upsert — agrega filas para los `bgg_id` que faltan, nunca reescribe una fila que ya existe (`search_new_game.py`, que reemplazó al "refresh"; `modify_values.py`/`extract_new_fields.py` para ediciones puntuales). La señal para aplicar este patrón en otro proyecto: en cuanto un caché que se regenera automático empieza a recibir correcciones manuales de verdad (no solo en teoría), "regenerar todo" deja de ser seguro y hace falta separar "traer lo que falta" de "reconstruir desde cero".
 - **Reusar cookies de una sesión de navegador en un script aparte no es una alternativa real cuando el bot-detection correlaciona fingerprint de conexión, no solo el cookie.** Se probó explícitamente contra la página normal de BGG (reusando cookies de una sesión ya autenticada): aunque el `cf_clearance` se exportara recién pasado el challenge, `curl`/`urllib` seguían recibiendo un challenge nuevo (403) — Cloudflare lo ata al TLS/JA3 y al stack de headers real del navegador que lo generó, no solo al valor de la cookie. Antes de asumir que "cookies + requests" alcanza para reusar una sesión ya autenticada contra un anti-bot serio, probarlo con un caso real primero; si falla, no vale la pena perseguir evasión más sofisticada (spoof de fingerprint, etc.) — es la misma línea que no resolver CAPTCHAs, solo que con más ingeniería. Esa vía quedó descartada (no está ni en el código): la opción que sí funciona sin evadir nada es un dataset público de un tercero (ver abajo).
 - **Columnas calculadas que antes eran fórmulas del Sheet se migran leyendo la fórmula real de la celda, nunca reinventándola.** Al sacar `puntaje_ajust_bgg` y `precio_calidad` del Sheet (para que solo queden ahí los datos que no son de BGG/Bosque Lúdico) se usó la API de Sheets (`get_spreadsheet` con `includeGridData` + `fields: ["...userEnteredValue.formulaValue"]`) para leer la fórmula tal cual estaba en varias celdas, no se adivinó "a ojo" mirando los valores. Esto destapó que el Sheet tenía **dos variantes de la misma fórmula conviviendo** (una con una constante hardcodeada en 53 filas, otra que recalculaba un desvío estándar en vivo en 6 filas, más 3 filas con el valor pegado a mano sin fórmula) — una inconsistencia invisible si solo se mira el resultado. Verificar el resultado del script nuevo contra el valor real de varias filas del Sheet (no solo "corre sin error") antes de darlo por bueno.
 - **Ante una fórmula inconsistente entre filas de un Sheet, no elegir una variante en silencio: mostrarle las dos al usuario con el conteo real de filas de cada una y dejar que elija cuál es la oficial.** Es una decisión de negocio (qué constante usar), no una de implementación.
@@ -139,7 +164,7 @@ Para relevar precios de El Bosque Lúdico (`01_data_understanding/collect_initia
 
 **El código (recolectar, transformar) y los datos que ese código lee/escribe viven en lugares distintos del repo.** `/data` en la raíz es *solo* datasets (`.jsonl`, `.csv`, lo que sea) — nunca un `.py`. El código que los produce/consume vive en la estructura CRISP-DM de siempre: recolección cruda en `01_data_understanding/collect_initial_data/`, transformación/integración en `02_data_preparation/`. Esto es deliberado y separado de la regla de abajo: un script no se muda de carpeta porque el dataset que produce se mudó — `construct_data.py` sigue en `02_data_preparation/` aunque lea y escriba en `/data`.
 
-**Un script de recolección va en su propia subcarpeta dentro de `collect_initial_data/` solo si tiene más de un archivo** (varios scripts, overrides, salidas intermedias — como `bosque_ludico/`, que tiene `resolve_bosque_links.py` + `collect_bosque_precios.py` + sus salidas gitignoreadas). Una fuente con un solo script (`collect_bgg_data.py`) va directo dentro de `collect_initial_data/`, sin subcarpeta propia — una carpeta para un solo archivo es anidamiento que no paga su costo. Generalizable más allá de esto: si una fuente cambia a un ritmo distinto de otra (en este proyecto, el *link* a una ficha de producto es estable pero el *precio* cambia seguido), conviene separar en dos scripts/pasos en vez de uno solo que recalcule todo cada vez — así un re-relevamiento de precio no vuelve a pagar el costo de resolver matches.
+**Un script de recolección va en su propia subcarpeta dentro de `collect_initial_data/` solo si tiene más de un archivo** (varios scripts, overrides, salidas intermedias — como `bosque_ludico/`, `cazagangas/` (`cazagangas_common.py` + `check_cazagangas_links.py`), y `bgg/` (`bgg_common.py` + `initialize_bgg_data.py`/`modify_values.py`/`extract_new_fields.py`): fue una sola fuente, `collect_bgg_data.py`, hasta que separar "bootstrap" de "editar un campo" de "sumar una columna" se volvió necesario para que un refresh dejara de pisar ediciones manuales, ver más abajo). Una fuente con un solo script va directo dentro de `collect_initial_data/`, sin subcarpeta propia — una carpeta para un solo archivo es anidamiento que no paga su costo. **Un script que orquesta varias fuentes (no pertenece a ninguna) va un nivel arriba, al lado de las carpetas que orquesta, nunca adentro de una de ellas** — `search_new_game.py` agrega un juego a `bgg/` + `cazagangas/` + `mis_datos.jsonl` en un solo `--add`, así que vive directo en `collect_initial_data/`, aunque internamente importe `bgg_common.py` y `cazagangas_common.py` como librerías. Generalizable más allá de esto: si una fuente cambia a un ritmo distinto de otra (en este proyecto, el *link* a una ficha de producto es estable pero el *precio* cambia seguido), conviene separar en dos scripts/pasos en vez de uno solo que recalcule todo cada vez — así un re-relevamiento de precio no vuelve a pagar el costo de resolver matches.
 
 **Nombrar los datasets por la fuente, no por lo que hace el script que los generó:** `data/bosque_data.csv`/`data/01_data_understanding/bgg_data.jsonl`/`data/01_data_understanding/cazagangas_data.jsonl` (no `bosque_ludico_precios.json` o similar). El nombre del archivo le dice a quien lo abre de dónde salió el dato sin tener que leer el script; el nombre del script le dice qué hace (`collect_bosque_precios.py`, `collect_bgg_data.py`, `check_cazagangas_links.py`). Un script que solo integra fuentes ya recolectadas se llama `integrate_data.py` (no `build_data.py` — "build" es ambiguo sobre si también recolecta): acá empezó a existir recién cuando hubo una segunda fuente real que integrar (`grupos.json`, después `cazagangas_data.jsonl`) — con una sola fuente activa no hacía falta, `construct_data.py` la leía directo.
 

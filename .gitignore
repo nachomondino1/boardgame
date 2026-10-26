@@ -2,7 +2,6 @@
 __pycache__/
 cookies.json
 # Pausado, no se usa por ahora (ver DATA_PLAYBOOK.md) — sacado del repo temporalmente.
-01_data_understanding/collect_initial_data/bosque_ludico/
 # Intermedio del build (integrate_data.py): se regenera siempre a partir de
 # archivos ya commiteados (bgg_data.jsonl, grupos.json, cazagangas_data.jsonl),
 # nunca se edita a mano — no hace falta versionarlo.

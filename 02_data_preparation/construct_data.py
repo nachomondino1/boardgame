@@ -4,7 +4,7 @@ ya mergeados — correr ese script antes si alguna fuente cambió), calcula
 las columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
 
 integrated_data.jsonl es JSON Lines (un objeto por línea, ver el docstring
-de collect_bgg_data.py sobre por qué JSONL y no CSV): mecanicas/categorias
+de bgg_common.py sobre por qué JSONL y no CSV): mecanicas/categorias
 ya llegan como array, el resto de los campos como string u null.
 
 puntaje_ajust_bgg y precio_calidad: ver sus docstrings más abajo (vivían
@@ -15,9 +15,9 @@ está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
 duracion y modo: derivadas de datos de BGG (mecánicas, categorías,
 duración mín./máx.). `modo` nunca pisa un valor que ya esté cargado a mano
-en mis_datos.jsonl (columna propia, ver collect_bgg_data.py).
+en mis_datos.jsonl (columna propia, ver bgg_common.py).
 
-`transportable` es 100% manual (columna propia, ver collect_bgg_data.py):
+`transportable` es 100% manual (columna propia, ver bgg_common.py):
 BGG no trackea tamaño de caja en ningún campo, así que acá no se deriva de
 nada, solo pasa de largo el valor que ya viene en mis_datos.jsonl.
 
