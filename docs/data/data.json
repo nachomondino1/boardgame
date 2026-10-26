@@ -48604,5 +48604,46 @@
     "modo": "Competitivo",
     "puntaje_ajust_bgg": 7.43,
     "precio_calidad": null
+  },
+  {
+    "bgg_id": "417197",
+    "nombre": "Rebirth",
+    "bgg_url": "https://boardgamegeek.com/boardgame/417197",
+    "link_cazagangas": "https://www.cazagangas.com.ar/juego/rebirth",
+    "estado": "Watchlist",
+    "transportable": null,
+    "mi_puntaje": null,
+    "pros": null,
+    "cons": null,
+    "notas": null,
+    "anio": 2024,
+    "edad_min": 10,
+    "jug_min": 2,
+    "jug_max": 4,
+    "jug_best_min": 3,
+    "jug_best_max": 3,
+    "duracion_min": 45,
+    "duracion_max": 60,
+    "complejidad": 2.0192,
+    "puntaje_bgg": 7.77848,
+    "reviews_bgg": 1334,
+    "ranking_bgg": 1629,
+    "disenador": "Reiner Knizia",
+    "mecanicas": [
+      "Tile Placement"
+    ],
+    "categorias": [
+      "Environmental",
+      "Fantasy",
+      "Farming",
+      "Science Fiction"
+    ],
+    "descripcion": "Following a series of calamities that left civilization in shambles, societies around the world are being rebuilt anew in harmony with nature. Scotland lies in ruins and the ancient clans have taken it upon themselves to restore the land. As clan leaders you will compete for strategic control of the land by rebuilding its prestigious castles.\n\nRebirth is a new, tile-laying game from Reiner Knizia. The game revitalizes this classic genre by combining Knizia’s elegant mechanics with Mighty Boards’ evocative world building. The result is a eurogame with smooth gameplay, set in a lush and hopeful future.\n\nEach turn, players draw a tile from their supply and place it strategically on the board. These tiles represent your clan’s contribution to rebuilding the land. Rebirth rewards strategic foresight and clever tactical play, with tougher decisions emerging over the course of the game.\n\n—description from the publisher",
+    "grupo": null,
+    "cazagangas_status": "200",
+    "duracion": 52,
+    "modo": "Competitivo",
+    "puntaje_ajust_bgg": 7.66,
+    "precio_calidad": null
   }
 ]
