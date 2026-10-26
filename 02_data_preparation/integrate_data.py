@@ -152,6 +152,7 @@ def main():
 
         integrated.append(row)
 
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)  # gitignored, no existe en un checkout limpio de CI
     OUTPUT_PATH.write_text(
         "\n".join(json.dumps(row, ensure_ascii=False) for row in integrated) + "\n",
         encoding="utf-8",
