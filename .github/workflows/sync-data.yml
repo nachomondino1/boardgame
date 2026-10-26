@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Refrescar caché de BGG (bgg_data.jsonl, a partir de universo_juegos.jsonl)
-        run: python3 01_data_understanding/collect_initial_data/collect_bgg_data.py
+      - name: Sumar a bgg_data.jsonl los juegos de universo_juegos.jsonl que todavía no tienen datos de BGG
+        run: python3 01_data_understanding/collect_initial_data/search_new_game.py
 
       - name: Integrar fuentes (mis_datos.jsonl + universo_juegos.jsonl + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl)
         run: python3 02_data_preparation/integrate_data.py

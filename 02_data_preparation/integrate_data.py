@@ -8,7 +8,7 @@ juego exista o no en el resto de las fuentes) y se le suman, por join:
   (con `nombre` como fallback para los pocos juegos sin bgg_id — ver
   DATA_PLAYBOOK.md). Se suman `bgg_url` y `link_cazagangas`.
 - data/01_data_understanding/bgg_data.jsonl — caché de BGG (ver
-  collect_bgg_data.py), join por `bgg_id`. Un juego sin bgg_id (o sin
+  search_new_game.py), join por `bgg_id`. Un juego sin bgg_id (o sin
   match todavía) no tiene fila acá: sus columnas de BGG quedan en `null`,
   no es un error.
 - data/01_data_understanding/grupos.json — curado a mano, juego -> nombre
@@ -51,7 +51,7 @@ OUTPUT_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
 UNIVERSO_FIELDS = ["bgg_url", "link_cazagangas"]
 
 # Campos de bgg_data.jsonl que se suman a cada juego (bgg_id es la clave de
-# join, no se repite). Si se le agrega una columna nueva a collect_bgg_data.py,
+# join, no se repite). Si se le agrega una columna nueva a bgg_common.py,
 # agregarla acá también.
 BGG_CACHE_FIELDS = [
     "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
@@ -70,7 +70,7 @@ def load_jsonl(path):
 
 def load_universo_indices():
     """(bgg_id -> fila, nombre -> fila) de universo_juegos.jsonl. `({}, {})`
-    si el archivo no existe todavía (corré collect_bgg_data.py primero)."""
+    si el archivo no existe todavía (corré initialize_bgg_data.py primero)."""
     rows = load_jsonl(UNIVERSO_PATH)
     por_id = {r["bgg_id"]: r for r in rows if r.get("bgg_id")}
     por_nombre = {r["nombre"]: r for r in rows}
@@ -79,7 +79,7 @@ def load_universo_indices():
 
 def load_bgg_cache_index():
     """bgg_id -> fila de bgg_data.jsonl. `{}` si el archivo no existe
-    todavía (corré collect_bgg_data.py primero)."""
+    todavía (corré initialize_bgg_data.py primero)."""
     rows = load_jsonl(BGG_DATA_PATH)
     return {r["bgg_id"]: r for r in rows if r.get("bgg_id")}
 

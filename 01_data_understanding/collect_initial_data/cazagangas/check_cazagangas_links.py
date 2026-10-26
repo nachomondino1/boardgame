@@ -1,9 +1,9 @@
 """Verifica el link a Cazagangas de cada juego de
 data/01_data_understanding/universo_juegos.jsonl que ya tenga uno cargado:
-no arma ninguna URL (eso ya no es trabajo de este script — el link lo
-cargás vos a mano en universo_juegos.jsonl, ver collect_bgg_data.py --add),
-solo le pega un HEAD real (fallback GET si el servidor no soporta HEAD)
-para guardar el código HTTP.
+no arma ninguna URL nueva acá (eso lo hace search_new_game.py --add, al
+agregar un juego — ver cazagangas_common.resolver_link), solo le pega un
+HEAD real (fallback GET si el servidor no soporta HEAD) a lo que ya está
+cargado, para guardar/refrescar el código HTTP.
 
 robots.txt de Cazagangas permite crawling general (`User-agent: *` sin
 Disallow; solo bloquea a AhrefsBot/SemrushBot, que no somos). No hay
@@ -37,58 +37,20 @@ varias tiendas por juego, no es un único vendedor) — ver README.md,
 import argparse
 import datetime
 import json
-import sys
 import time
-import urllib.error
-import urllib.request
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
-OUTPUT_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
-
-USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
-CRAWL_DELAY_SECONDS = 2
+from cazagangas_common import UNIVERSO_PATH, OUTPUT_PATH, CRAWL_DELAY_SECONDS, check_status, load_cazagangas_cache
 
 
 def load_candidatos():
     if not UNIVERSO_PATH.exists():
-        sys.exit(f"No existe {UNIVERSO_PATH}; corré primero collect_bgg_data.py")
+        raise SystemExit(f"No existe {UNIVERSO_PATH}; corré primero initialize_bgg_data.py")
     with UNIVERSO_PATH.open(encoding="utf-8") as f:
         juegos = [json.loads(line) for line in f if line.strip()]
     candidatos = [g for g in juegos if (g.get("link_cazagangas") or "").strip()]
     if not candidatos:
-        sys.exit(f"Ningún juego en {UNIVERSO_PATH} tiene link_cazagangas cargado todavía.")
+        raise SystemExit(f"Ningún juego en {UNIVERSO_PATH} tiene link_cazagangas cargado todavía.")
     return candidatos
-
-
-def check_status(url, retries=3):
-    """HEAD primero (liviano); si el servidor no lo soporta (405/501),
-    reintenta con GET. Devuelve el código HTTP como string, o "error" si la
-    request no llegó a completarse (timeout, DNS, etc. — no confundir con
-    un 404 real, que sí es una respuesta válida: el juego no está)."""
-    for method in ("HEAD", "GET"):
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method=method)
-        delay = CRAWL_DELAY_SECONDS
-        for attempt in range(1, retries + 1):
-            try:
-                with urllib.request.urlopen(req, timeout=15) as resp:
-                    return str(resp.status)
-            except urllib.error.HTTPError as e:
-                if e.code in (405, 501) and method == "HEAD":
-                    break  # probar GET
-                if e.code in (429, 503) and attempt < retries:
-                    time.sleep(delay)
-                    delay *= 2
-                    continue
-                return str(e.code)
-            except Exception:
-                if attempt < retries:
-                    time.sleep(delay)
-                    delay *= 2
-                    continue
-                return "error"
-    return "error"
 
 
 def main():
@@ -100,11 +62,7 @@ def main():
     args = parser.parse_args()
 
     candidatos = load_candidatos()
-
-    existing = {}
-    if OUTPUT_PATH.exists():
-        with OUTPUT_PATH.open(encoding="utf-8") as f:
-            existing = {json.loads(line)["nombre"]: json.loads(line) for line in f if line.strip()}
+    existing = load_cazagangas_cache()
 
     pendientes = candidatos if args.refresh else [g for g in candidatos if g["nombre"] not in existing]
     if args.limit is not None:

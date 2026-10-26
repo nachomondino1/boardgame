@@ -2,7 +2,7 @@
 data/01_data_understanding/mis_datos.jsonl (lo que cargás a mano),
 universo_juegos.jsonl (el catálogo de identidad) y bgg_data.jsonl (el
 caché de BGG) que no dependen de ningún otro paso del pipeline — corre
-standalone, antes o después de un refresh/--add de collect_bgg_data.py o
+standalone, antes o después de search_new_game.py/modify_values.py o
 de una edición a mano de mis_datos.jsonl.
 
 No modifica nada: solo reporta. Pensado para correr a mano después de
@@ -17,9 +17,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-COLLECT_DIR = HERE / "collect_initial_data"
+COLLECT_DIR = HERE / "collect_initial_data" / "bgg"
 sys.path.insert(0, str(COLLECT_DIR))
-from collect_bgg_data import UNIVERSO_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
+from bgg_common import UNIVERSO_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
 
 DATA_DIR = HERE.parent / "data" / "01_data_understanding"
 MIS_DATOS_PATH = DATA_DIR / "mis_datos.jsonl"
@@ -131,10 +131,15 @@ def check_nombre_duplicado(rows, path):
 
 
 def check_estado(rows):
+    """Vacío es WARNING, no ERROR: search_new_game.py --add crea una fila
+    stub (bgg_id/nombre nomás) a propósito, esperando que completes el
+    resto a mano — no es un dato roto, es un pendiente."""
     problems = []
     for row in rows:
         estado = row.get("estado")
-        if estado not in ESTADOS_VALIDOS:
+        if estado == "":
+            problems.append(("WARNING", f'{nombre_de(row)}: estado vacío, pendiente de completar a mano'))
+        elif estado not in ESTADOS_VALIDOS:
             problems.append(("ERROR", f'{nombre_de(row)}: estado "{estado}" no es uno de {sorted(ESTADOS_VALIDOS)}'))
     return problems
 
@@ -179,7 +184,7 @@ def check_rangos_numericos(rows, ranges):
 
 def check_list_fields(bgg_rows):
     """mecanicas/categorias se guardan como array JSON (ver docstring de
-    collect_bgg_data.py) — si alguna fila quedó con un string suelto
+    bgg_common.py) — si alguna fila quedó con un string suelto
     (regresión al formato CSV viejo, o una edición a mano rota), se nota."""
     problems = []
     for row in bgg_rows:
@@ -202,7 +207,7 @@ def check_bgg_url_coincide_con_bgg_id(universo_rows):
 
 def check_bgg_id_sin_cache(universo_rows, bgg_ids_en_cache):
     """Un juego con bgg_id en universo_juegos.jsonl pero sin fila en
-    bgg_data.jsonl: o no corrió collect_bgg_data.py todavía después de
+    bgg_data.jsonl: o no corrió search_new_game.py todavía después de
     cargarlo, o ese bgg_id no tiene match en el dataset de origen (puede
     pasar, no es necesariamente un error — se marca warning para revisar)."""
     problems = []
@@ -217,7 +222,7 @@ def check_mis_datos_en_universo(mis_datos_rows, universo_rows):
     """Un juego de mis_datos.jsonl que no aparece en universo_juegos.jsonl
     (ni por bgg_id ni por nombre) no va a tener bgg_url/link_cazagangas/
     datos de BGG en data.json — probablemente falta correr
-    collect_bgg_data.py --add para ese juego."""
+    search_new_game.py --add para ese juego."""
     ids = {(r.get("bgg_id") or "").strip() for r in universo_rows if r.get("bgg_id")}
     nombres = {r.get("nombre") for r in universo_rows}
     problems = []
@@ -228,6 +233,25 @@ def check_mis_datos_en_universo(mis_datos_rows, universo_rows):
         if row.get("nombre") in nombres:
             continue
         problems.append(("WARNING", f'{nombre_de(row)}: no está en universo_juegos.jsonl todavía (ni por bgg_id ni por nombre)'))
+    return problems
+
+
+def check_universo_sin_mis_datos(universo_rows, mis_datos_rows):
+    """La contracara de check_mis_datos_en_universo: un juego de
+    universo_juegos.jsonl que todavía no tiene fila en mis_datos.jsonl no
+    va a tener estado/modo/tu opinión en data.json. search_new_game.py
+    --add ya crea la fila stub automático; esto atrapa el resto (juegos
+    cargados a mano, o de antes de que existiera el stub automático)."""
+    ids = {(r.get("bgg_id") or "").strip() for r in mis_datos_rows if r.get("bgg_id")}
+    nombres = {r.get("nombre") for r in mis_datos_rows}
+    problems = []
+    for row in universo_rows:
+        bgg_id = (row.get("bgg_id") or "").strip()
+        if bgg_id and bgg_id in ids:
+            continue
+        if row.get("nombre") in nombres:
+            continue
+        problems.append(("WARNING", f'{nombre_de(row)}: no está en mis_datos.jsonl todavía (ni por bgg_id ni por nombre)'))
     return problems
 
 
@@ -252,6 +276,7 @@ def main():
     all_problems += check_rangos_numericos(mis_datos_rows, NUMERIC_RANGES_MIS_DATOS)
     all_problems += check_bgg_url_coincide_con_bgg_id(universo_rows)
     all_problems += check_mis_datos_en_universo(mis_datos_rows, universo_rows)
+    all_problems += check_universo_sin_mis_datos(universo_rows, mis_datos_rows)
     all_problems += check_rangos_min_max(bgg_rows)
     all_problems += check_rangos_numericos(bgg_rows, NUMERIC_RANGES_BGG)
     all_problems += check_list_fields(bgg_rows)
