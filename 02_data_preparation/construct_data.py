@@ -1,5 +1,5 @@
-"""Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: mis_datos.jsonl
-+ universo_juegos.jsonl + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl
+"""Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: universo_juegos.jsonl
+(base) + ludoteca.jsonl + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl
 ya mergeados — correr ese script antes si alguna fuente cambió), calcula
 las columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
 
@@ -13,13 +13,19 @@ real de la celda antes de sacar esas columnas de ahí). precio_calidad
 depende de `costo`, que hoy no sale de ninguna fuente (Bosque Lúdico no
 está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
-duracion y modo: derivadas de datos de BGG (mecánicas, categorías,
-duración mín./máx.). `modo` nunca pisa un valor que ya esté cargado a mano
-en mis_datos.jsonl (columna propia, ver bgg_common.py).
+duracion y modo: derivadas 100% de datos de BGG (mecánicas, categorías,
+duración mín./máx. — infer_modo en bgg_common.py). `modo` no vive en
+ninguna fuente curada a mano (no tiene sentido guardar en ludoteca.jsonl
+lo mismo que ya se deriva acá en cada build).
+
+`estado` es 100% de integrate_data.py: "Watchlist" por default, o lo que
+diga ludoteca.jsonl para el juego — acá no se recalcula, solo pasa de
+largo (igual que `transportable`).
 
 `transportable` es 100% manual (columna propia, ver bgg_common.py):
 BGG no trackea tamaño de caja en ningún campo, así que acá no se deriva de
-nada, solo pasa de largo el valor que ya viene en mis_datos.jsonl.
+nada para los juegos sin dato — solo pasa de largo el valor que ya viene
+de ludoteca.jsonl (o `None` si el juego no está curado ahí).
 
 `grupo`, `link_cazagangas`, `cazagangas_status` ya vienen resueltos por
 integrate_data.py — acá solo pasan de largo (igual que `transportable`),
@@ -28,11 +34,16 @@ no se recalculan.
 import json
 import math
 import statistics
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 INTEGRATED_DATA_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
+
+# 02 puede importar de 01 (nunca al revés, ver DATA_PLAYBOOK.md).
+sys.path.insert(0, str(ROOT / "01_data_understanding" / "collect_initial_data" / "bgg"))
+from bgg_common import infer_modo  # noqa: E402
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
 
@@ -130,34 +141,12 @@ def compute_duracion(game):
     return game.get("duracion")
 
 
-# Tags de BGG (mecánicas o categorías, da igual de cuál de las dos venga)
-# que señalan modos de juego no competitivos de forma razonablemente
-# confiable. "Semi-Cooperative Game" es el tag que usa BGG para juegos con
-# un objetivo compartido pero intereses individuales en tensión (ej.
-# traidor oculto) — el calce más cercano a "Cooperativo y competitivo".
-MECANICA_SEMI_COOP = "Semi-Cooperative Game"
-MECANICA_EQUIPOS = "Team-Based Game"
-MECANICA_COOP = "Cooperative Game"
-
-
 def compute_modo(game):
-    """Deriva `modo` de las mecánicas/categorías de BGG cuando no está ya
-    cargado a mano (mi_ludoteca.json manda). Sin mecánicas/categorías en el
-    caché (juego no enriquecido todavía, o BGG no las trae), no hay base
-    para decidir: queda en None en vez de asumir "Competitivo" a ciegas."""
-    if game.get("modo"):
-        return game["modo"]
-
-    tags = set(game.get("mecanicas") or []) | set(game.get("categorias") or [])
-    if not tags:
-        return None
-    if MECANICA_SEMI_COOP in tags:
-        return "Cooperativo y competitivo"
-    if MECANICA_EQUIPOS in tags:
-        return "Equipos"
-    if MECANICA_COOP in tags:
-        return "Cooperativo"
-    return "Competitivo"  # tenemos mecánicas/categorías y ninguna es de las de arriba
+    """Deriva `modo` de las mecánicas/categorías de BGG (infer_modo, en
+    bgg_common.py). Sin mecánicas/categorías en el caché (juego no
+    enriquecido todavía, o BGG no las trae), infer_modo devuelve None en
+    vez de asumir "Competitivo" a ciegas."""
+    return infer_modo(game.get("mecanicas"), game.get("categorias"))
 
 
 def main():
