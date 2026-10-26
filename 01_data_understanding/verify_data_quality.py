@@ -1,6 +1,8 @@
 """Verify Data Quality (CRISP-DM, fase Data Understanding): chequeos sobre
-bgg_data.jsonl que no dependen de ningún otro paso del pipeline — corre
-standalone, antes o después de un refresh/--add de collect_bgg_data.py.
+data/mis_datos.jsonl (el universo + lo que cargás a mano) y data/bgg_data.jsonl
+(el caché de BGG) que no dependen de ningún otro paso del pipeline — corre
+standalone, antes o después de un refresh/--add/--set-estado de
+collect_bgg_data.py.
 
 No modifica nada: solo reporta. Pensado para correr a mano después de
 cargar juegos nuevos o corregir datos, y eventualmente como paso de CI
@@ -16,27 +18,26 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 COLLECT_DIR = HERE / "collect_initial_data"
 sys.path.insert(0, str(COLLECT_DIR))
-from collect_bgg_data import ALL_FIELDS, LIST_FIELDS  # noqa: E402
+from collect_bgg_data import MIS_DATOS_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
 
+MIS_DATOS_PATH = HERE.parent / "data" / "mis_datos.jsonl"
 BGG_DATA_PATH = HERE.parent / "data" / "bgg_data.jsonl"
 
 ESTADOS_VALIDOS = {"Own", "Prev. owned", "Watchlist", "Want to buy", "Descartado"}
 # "Ambos" y "A confirmar" son variantes legacy conocidas (ver README) — se
 # marcan como warning, no error, hasta que se decida normalizarlas.
 MODOS_VALIDOS = {"Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"}
-NUMERIC_RANGES = {
-    # campo: (min, max)
-    "complejidad": (1, 5),
-    "puntaje_bgg": (1, 10),
-    "mi_puntaje": (1, 10),
-}
+# campo: (min, max). complejidad/puntaje_bgg viven en bgg_data.jsonl,
+# mi_puntaje en mis_datos.jsonl — ver dónde se usa cada uno más abajo.
+NUMERIC_RANGES_BGG = {"complejidad": (1, 5), "puntaje_bgg": (1, 10)}
+NUMERIC_RANGES_MIS_DATOS = {"mi_puntaje": (1, 10)}
 
 
-def load_rows():
-    if not BGG_DATA_PATH.exists():
-        sys.exit(f"No existe {BGG_DATA_PATH}.")
+def load_jsonl(path):
+    if not path.exists():
+        sys.exit(f"No existe {path}.")
     rows = []
-    with BGG_DATA_PATH.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8") as f:
         for i, line in enumerate(f, start=1):
             line = line.strip()
             if not line:
@@ -44,7 +45,7 @@ def load_rows():
             try:
                 rows.append(json.loads(line))
             except json.JSONDecodeError as e:
-                sys.exit(f"Línea {i} de {BGG_DATA_PATH} no es JSON válido: {e}")
+                sys.exit(f"Línea {i} de {path} no es JSON válido: {e}")
     return rows
 
 
@@ -52,31 +53,40 @@ def nombre_de(row):
     return row.get("nombre") or "(sin nombre)"
 
 
+def _as_float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Cada check devuelve una lista de (nivel, mensaje). nivel es "ERROR" o
 # "WARNING" — ERROR hace fallar la corrida (exit code != 0), WARNING no.
 # ---------------------------------------------------------------------------
 
-def check_schema(rows):
+def check_schema(rows, expected_fields, path):
     """Cada fila tiene exactamente las columnas esperadas (ni de más ni de
     menos) — detecta un campo renombrado/tipeado mal o un campo viejo que
     quedó pegado tras un cambio de esquema."""
     problems = []
-    expected = set(ALL_FIELDS)
+    expected = set(expected_fields)
     for row in rows:
         actual = set(row.keys())
         faltantes = expected - actual
         de_mas = actual - expected
+        label = row.get("nombre") or row.get("bgg_id") or "(fila sin nombre ni bgg_id)"
         if faltantes:
-            problems.append(("ERROR", f"{nombre_de(row)}: faltan columnas {sorted(faltantes)}"))
+            problems.append(("ERROR", f"{path.name}: {label}: faltan columnas {sorted(faltantes)}"))
         if de_mas:
-            problems.append(("ERROR", f"{nombre_de(row)}: columnas no esperadas {sorted(de_mas)}"))
+            problems.append(("ERROR", f"{path.name}: {label}: columnas no esperadas {sorted(de_mas)}"))
     return problems
 
 
 def check_bgg_id_unico(rows):
-    """bgg_id es el identificador del juego en BGG: si se repite, son dos
-    filas para el mismo juego (duplicado real, no una coincidencia)."""
+    """bgg_id es el identificador del juego en BGG: si se repite en
+    mis_datos.jsonl, son dos filas para el mismo juego (duplicado real, no
+    una coincidencia)."""
     problems = []
     vistos = {}
     for row in rows:
@@ -134,14 +144,7 @@ def check_modo(rows):
     return problems
 
 
-def _as_float(value):
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def check_rangos_min_max(rows):
+def check_rangos_min_max(bgg_rows):
     """jug_min/jug_max, jug_best_min/jug_best_max, duracion_min/duracion_max:
     el mínimo no puede ser mayor que el máximo."""
     problems = []
@@ -150,37 +153,36 @@ def check_rangos_min_max(rows):
         ("jug_best_min", "jug_best_max"),
         ("duracion_min", "duracion_max"),
     ]
-    for row in rows:
+    for row in bgg_rows:
         for lo_key, hi_key in pares:
             lo = _as_float(row.get(lo_key))
             hi = _as_float(row.get(hi_key))
             if lo is not None and hi is not None and lo > hi:
-                problems.append(("ERROR", f"{nombre_de(row)}: {lo_key}={lo} > {hi_key}={hi}"))
+                problems.append(("ERROR", f"bgg_id {row.get('bgg_id')}: {lo_key}={lo} > {hi_key}={hi}"))
     return problems
 
 
-def check_rangos_numericos(rows):
-    """complejidad, puntaje_bgg y mi_puntaje tienen que caer dentro del
-    rango que usa BGG/el sitio, no cualquier número."""
+def check_rangos_numericos(rows, ranges):
     problems = []
     for row in rows:
-        for campo, (lo, hi) in NUMERIC_RANGES.items():
+        for campo, (lo, hi) in ranges.items():
             valor = _as_float(row.get(campo))
             if valor is not None and not (lo <= valor <= hi):
-                problems.append(("ERROR", f"{nombre_de(row)}: {campo}={valor} fuera de [{lo}, {hi}]"))
+                label = row.get("nombre") or f"bgg_id {row.get('bgg_id')}"
+                problems.append(("ERROR", f"{label}: {campo}={valor} fuera de [{lo}, {hi}]"))
     return problems
 
 
-def check_list_fields(rows):
+def check_list_fields(bgg_rows):
     """mecanicas/categorias se guardan como array JSON (ver docstring de
     collect_bgg_data.py) — si alguna fila quedó con un string suelto
     (regresión al formato CSV viejo, o una edición a mano rota), se nota."""
     problems = []
-    for row in rows:
+    for row in bgg_rows:
         for campo in LIST_FIELDS:
             valor = row.get(campo)
             if valor is not None and not isinstance(valor, list):
-                problems.append(("ERROR", f"{nombre_de(row)}: {campo} no es una lista ({type(valor).__name__})"))
+                problems.append(("ERROR", f"bgg_id {row.get('bgg_id')}: {campo} no es una lista ({type(valor).__name__})"))
     return problems
 
 
@@ -194,26 +196,38 @@ def check_bgg_url_coincide_con_bgg_id(rows):
     return problems
 
 
-CHECKS = [
-    check_schema,
-    check_bgg_id_unico,
-    check_nombre_duplicado,
-    check_estado,
-    check_modo,
-    check_rangos_min_max,
-    check_rangos_numericos,
-    check_list_fields,
-    check_bgg_url_coincide_con_bgg_id,
-]
+def check_bgg_id_sin_cache(mis_datos_rows, bgg_ids_en_cache):
+    """Un juego con bgg_id en mis_datos.jsonl pero sin fila en
+    bgg_data.jsonl: o no corrió collect_bgg_data.py todavía después de
+    cargarlo, o ese bgg_id no tiene match en el dataset de origen (puede
+    pasar, no es necesariamente un error — se marca warning para revisar)."""
+    problems = []
+    for row in mis_datos_rows:
+        bgg_id = (row.get("bgg_id") or "").strip()
+        if bgg_id and bgg_id not in bgg_ids_en_cache:
+            problems.append(("WARNING", f"{nombre_de(row)}: bgg_id {bgg_id} no tiene datos en bgg_data.jsonl todavía"))
+    return problems
 
 
 def main():
-    rows = load_rows()
-    print(f"Verificando {len(rows)} juego(s) en {BGG_DATA_PATH}...\n")
+    mis_datos_rows = load_jsonl(MIS_DATOS_PATH)
+    bgg_rows = load_jsonl(BGG_DATA_PATH)
+    print(f"Verificando {len(mis_datos_rows)} juego(s) en {MIS_DATOS_PATH} "
+          f"y {len(bgg_rows)} fila(s) en {BGG_DATA_PATH}...\n")
 
     all_problems = []
-    for check in CHECKS:
-        all_problems.extend(check(rows))
+    all_problems += check_schema(mis_datos_rows, MIS_DATOS_FIELDS, MIS_DATOS_PATH)
+    all_problems += check_schema(bgg_rows, BGG_CACHE_FIELDS, BGG_DATA_PATH)
+    all_problems += check_bgg_id_unico(mis_datos_rows)
+    all_problems += check_nombre_duplicado(mis_datos_rows)
+    all_problems += check_estado(mis_datos_rows)
+    all_problems += check_modo(mis_datos_rows)
+    all_problems += check_bgg_url_coincide_con_bgg_id(mis_datos_rows)
+    all_problems += check_rangos_numericos(mis_datos_rows, NUMERIC_RANGES_MIS_DATOS)
+    all_problems += check_rangos_min_max(bgg_rows)
+    all_problems += check_rangos_numericos(bgg_rows, NUMERIC_RANGES_BGG)
+    all_problems += check_list_fields(bgg_rows)
+    all_problems += check_bgg_id_sin_cache(mis_datos_rows, {r["bgg_id"] for r in bgg_rows})
 
     errores = [p for p in all_problems if p[0] == "ERROR"]
     warnings = [p for p in all_problems if p[0] == "WARNING"]

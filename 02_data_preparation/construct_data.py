@@ -1,11 +1,11 @@
-"""Lee data/bgg_data.jsonl (el universo de juegos +
-datos de BGG, ver collect_bgg_data.py — hoy la única fuente: la integración
-con Bosque Lúdico es trabajo futuro, ver DATA_PLAYBOOK.md), calcula las
-columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
+"""Lee data/integrated_data.jsonl (salida de integrate_data.py: mis_datos.jsonl
++ bgg_data.jsonl + grupos.json + cazagangas_data.jsonl ya mergeados — correr
+ese script antes si alguna fuente cambió), calcula las columnas derivadas y
+escribe docs/data/data.json, lo que consume el sitio.
 
-bgg_data.jsonl es JSON Lines (un objeto por línea, ver el docstring de
-collect_bgg_data.py sobre por qué JSONL y no CSV): mecanicas/categorias ya
-llegan como array, el resto de los campos como string u null.
+integrated_data.jsonl es JSON Lines (un objeto por línea, ver el docstring
+de collect_bgg_data.py sobre por qué JSONL y no CSV): mecanicas/categorias
+ya llegan como array, el resto de los campos como string u null.
 
 puntaje_ajust_bgg y precio_calidad: ver sus docstrings más abajo (vivían
 como fórmulas manuales en el Sheet original, se migraron leyendo la fórmula
@@ -15,18 +15,15 @@ está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
 duracion y modo: derivadas de datos de BGG (mecánicas, categorías,
 duración mín./máx.). `modo` nunca pisa un valor que ya esté cargado a mano
-en bgg_data.jsonl (columna propia, ver collect_bgg_data.py).
+en mis_datos.jsonl (columna propia, ver collect_bgg_data.py).
 
 `transportable` es 100% manual (columna propia, ver collect_bgg_data.py):
 BGG no trackea tamaño de caja en ningún campo, así que acá no se deriva de
-nada, solo pasa de largo el valor que ya viene en bgg_data.jsonl.
+nada, solo pasa de largo el valor que ya viene en mis_datos.jsonl.
 
-`grupo`: agrega el campo `grupo` (nombre del grupo, o `null`) leyendo
-data/grupos.json — lista curada a mano de juegos que son el mismo sistema
-de juego con otra caja/expansión standalone (ver ese archivo y
-DATA_PLAYBOOK.md, "Agrupar variantes/expansiones del mismo sistema de
-juego"). El frontend usa este campo para colapsar esas cajas en una sola
-tarjeta en vez de tener que pedir un segundo archivo aparte.
+`grupo`, `link_cazagangas`, `cazagangas_status` ya vienen resueltos por
+integrate_data.py — acá solo pasan de largo (igual que `transportable`),
+no se recalculan.
 """
 import json
 import math
@@ -34,8 +31,7 @@ import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BGG_DATA_PATH = ROOT / "data" / "bgg_data.jsonl"
-GRUPOS_PATH = ROOT / "data" / "grupos.json"
+INTEGRATED_DATA_PATH = ROOT / "data" / "integrated_data.jsonl"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
@@ -47,10 +43,12 @@ LIST_FIELDS = {"mecanicas", "categorias"}
 
 
 def load_games():
-    with BGG_DATA_PATH.open(encoding="utf-8") as f:
+    if not INTEGRATED_DATA_PATH.exists():
+        raise SystemExit(f"No existe {INTEGRATED_DATA_PATH}; corré 02_data_preparation/integrate_data.py primero.")
+    with INTEGRATED_DATA_PATH.open(encoding="utf-8") as f:
         rows = [json.loads(line) for line in f if line.strip()]
     if not rows:
-        raise SystemExit(f"{BGG_DATA_PATH} está vacío; corré 01_data_understanding/collect_initial_data/collect_bgg_data.py primero.")
+        raise SystemExit(f"{INTEGRATED_DATA_PATH} está vacío; corré 02_data_preparation/integrate_data.py primero.")
 
     games = []
     for row in rows:
@@ -142,20 +140,6 @@ MECANICA_EQUIPOS = "Team-Based Game"
 MECANICA_COOP = "Cooperative Game"
 
 
-def load_grupo_index():
-    """nombre de juego -> nombre de grupo, leyendo data/grupos.json. Si el
-    archivo no existe o está vacío, ningún juego queda agrupado (no es un
-    error: grupos.json es un curado manual opcional)."""
-    if not GRUPOS_PATH.exists():
-        return {}
-    data = json.loads(GRUPOS_PATH.read_text(encoding="utf-8"))
-    index = {}
-    for grupo in data.get("grupos", []):
-        for nombre in grupo["juegos"]:
-            index[nombre] = grupo["nombre"]
-    return index
-
-
 def compute_modo(game):
     """Deriva `modo` de las mecánicas/categorías de BGG cuando no está ya
     cargado a mano (mi_ludoteca.json manda). Sin mecánicas/categorías en el
@@ -178,13 +162,11 @@ def compute_modo(game):
 
 def main():
     games = load_games()
-    grupo_index = load_grupo_index()
 
     for g in games:
         g["duracion"] = compute_duracion(g)
         g["modo"] = compute_modo(g)
         g["puntaje_ajust_bgg"] = compute_puntaje_ajust_bgg(g)
-        g["grupo"] = grupo_index.get(g["nombre"])
     compute_precio_calidad(games)  # usa puntaje_ajust_bgg sin redondear, como hacía el Sheet
 
     for g in games:

@@ -1,14 +1,15 @@
 # 02 — Data preparation
 
-Hoy un solo paso real (la integración con una segunda fuente es trabajo futuro — ver `../01_data_understanding/collect_initial_data/bosque_ludico/`):
+Dos pasos, en orden (ver `../DATA_PLAYBOOK.md`, diagrama de arquitectura):
 
-- **[EN UN FUTURO] Integración** — cuando `bosque_data.csv` exista, mergear `../data/bgg_data.jsonl` con `bosque_data.csv` por nombre de juego. No existe todavía.
-- `construct_data.py` — lee `../data/bgg_data.jsonl` directo (hoy es la única fuente — no hay nada que integrar), calcula las columnas derivadas (`duracion`, `modo`, `transportable`, `puntaje_ajust_bgg`, `precio_calidad` — ver el docstring de cada función para el criterio de cada una) y escribe `../docs/data/data.json` (dentro de `docs/` porque ahí vive el sitio que sirve GitHub Pages, ver `../05_deployment/README.md`). Ver `../README.md`, "Columnas calculadas", y `../DATA_PLAYBOOK.md` para el detalle.
+- `integrate_data.py` — base `../data/mis_datos.jsonl` (el universo), suma `../data/bgg_data.jsonl` por `bgg_id` y `../data/grupos.json` + `../data/cazagangas_data.jsonl` por nombre de juego, todo en un solo archivo (`../data/integrated_data.jsonl`, gitignored: es un intermedio del build, siempre regenerable desde archivos ya commiteados). Solo integra (join), no tipa ni calcula nada — eso es trabajo de `construct_data.py`. `bgg_data.jsonl`/`grupos.json`/`cazagangas_data.jsonl` son opcionales: si no existen, los campos que aportan quedan en `null` para todos (un juego sin match en BGG simplemente no tiene fila en `bgg_data.jsonl`, no es un error).
+- `construct_data.py` — lee `../data/integrated_data.jsonl`, calcula las columnas derivadas (`duracion`, `modo`, `transportable`, `puntaje_ajust_bgg`, `precio_calidad` — ver el docstring de cada función para el criterio de cada una) y escribe `../docs/data/data.json` (dentro de `docs/` porque ahí vive el sitio que sirve GitHub Pages, ver `../05_deployment/README.md`). `grupo`/`link_cazagangas`/`cazagangas_status` ya vienen resueltos de `integrate_data.py`, acá solo pasan de largo. Ver `../README.md`, "Columnas calculadas", y `../DATA_PLAYBOOK.md` para el detalle.
 
-La recolección cruda de cada fuente (BGG, Bosque Lúdico) vive en `../01_data_understanding/` — ver el README de esa carpeta.
+La recolección cruda de cada fuente (BGG, Cazagangas, Bosque Lúdico) vive en `../01_data_understanding/` — ver el README de esa carpeta.
 
 ```bash
+python3 02_data_preparation/integrate_data.py
 python3 02_data_preparation/construct_data.py
 ```
 
-`../.github/workflows/sync-data.yml` corre `01_data_understanding/collect_initial_data/collect_bgg_data.py` y después esto, en ese orden, el día 1 de cada mes.
+`../.github/workflows/sync-data.yml` corre `01_data_understanding/collect_initial_data/collect_bgg_data.py` y después estos dos, en ese orden, el día 1 de cada mes. El chequeo de links de Cazagangas (`check_cazagangas_links.py`) no corre acá — es manual, ver `../01_data_understanding/README.md`.
