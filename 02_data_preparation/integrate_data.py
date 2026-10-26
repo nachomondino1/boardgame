@@ -1,15 +1,15 @@
 """Integra las fuentes crudas de data/ en un único archivo, antes de que
 construct_data.py calcule las columnas derivadas. La base es
-data/mis_datos.jsonl (el universo: todo lo que cargás vos a mano, un juego
+data/01_data_understanding/mis_datos.jsonl (el universo: todo lo que cargás vos a mano, un juego
 exista o no en BGG) y se le suman, por join:
 
-- data/bgg_data.jsonl — caché de BGG (ver collect_bgg_data.py), join por
+- data/01_data_understanding/bgg_data.jsonl — caché de BGG (ver collect_bgg_data.py), join por
   `bgg_id`. Un juego sin bgg_id (o sin match todavía) no tiene fila acá:
   sus columnas de BGG quedan en `null`, no es un error.
-- data/grupos.json — curado a mano, juego -> nombre de grupo (ver
+- data/01_data_understanding/grupos.json — curado a mano, juego -> nombre de grupo (ver
   DATA_PLAYBOOK.md, "Agrupar variantes/expansiones del mismo sistema de
   juego"), join por `nombre`. Se suma como el campo `grupo`.
-- data/cazagangas_data.jsonl — resultado de check_cazagangas_links.py
+- data/01_data_understanding/cazagangas_data.jsonl — resultado de check_cazagangas_links.py
   (link a Cazagangas + código HTTP real), join por `nombre`. Se suma como
   `link_cazagangas` y `cazagangas_status`.
 
@@ -26,7 +26,7 @@ columnas derivadas, a partir de esta salida.
 Uso:
     python3 02_data_preparation/integrate_data.py
 
-Salida: data/integrated_data.jsonl (campos de mis_datos.jsonl + los de
+Salida: data/02_data_preparation/integrated_data.jsonl (campos de mis_datos.jsonl + los de
 bgg_data.jsonl, más `grupo`, `link_cazagangas`, `cazagangas_status` al
 final de cada fila).
 """
@@ -34,11 +34,11 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MIS_DATOS_PATH = ROOT / "data" / "mis_datos.jsonl"
-BGG_DATA_PATH = ROOT / "data" / "bgg_data.jsonl"
-GRUPOS_PATH = ROOT / "data" / "grupos.json"
-CAZAGANGAS_DATA_PATH = ROOT / "data" / "cazagangas_data.jsonl"
-OUTPUT_PATH = ROOT / "data" / "integrated_data.jsonl"
+MIS_DATOS_PATH = ROOT / "data" / "01_data_understanding" / "mis_datos.jsonl"
+BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
+GRUPOS_PATH = ROOT / "data" / "01_data_understanding" / "grupos.json"
+CAZAGANGAS_DATA_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
+OUTPUT_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
 
 # Campos de bgg_data.jsonl que se suman a cada juego (bgg_id es la clave de
 # join, no se repite). Si se le agrega una columna nueva a collect_bgg_data.py,

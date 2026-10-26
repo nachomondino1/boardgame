@@ -1,4 +1,4 @@
-"""Lee data/integrated_data.jsonl (salida de integrate_data.py: mis_datos.jsonl
+"""Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: mis_datos.jsonl
 + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl ya mergeados — correr
 ese script antes si alguna fuente cambió), calcula las columnas derivadas y
 escribe docs/data/data.json, lo que consume el sitio.
@@ -31,7 +31,7 @@ import statistics
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-INTEGRATED_DATA_PATH = ROOT / "data" / "integrated_data.jsonl"
+INTEGRATED_DATA_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring

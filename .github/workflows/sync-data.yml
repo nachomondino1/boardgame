@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/data.json data/bgg_data.jsonl data/mis_datos.jsonl
+          git add docs/data/data.json data/01_data_understanding/bgg_data.jsonl data/01_data_understanding/mis_datos.jsonl
           if git diff --cached --quiet; then
             echo "Sin cambios"
           else

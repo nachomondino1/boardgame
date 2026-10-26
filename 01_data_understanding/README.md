@@ -3,7 +3,7 @@
 Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso es trabajo de `02_data_preparation/`, y 02 puede importar de 01, nunca al revés).
 
 - `collect_initial_data/collect_bgg_data.py` — produce dos archivos de `../data/`: `mis_datos.jsonl` (EL universo de juegos: identidad + Estado + todo lo que cargás a mano) y `bgg_data.jsonl` (caché 100% regenerable de datos de BGG, join por `bgg_id`). Ver más abajo.
-- `collect_initial_data/cazagangas/check_cazagangas_links.py` — chequea si el link a la ficha de cada juego en [Cazagangas](https://www.cazagangas.com.ar) existe de verdad (código HTTP real, no un slug armado a ciegas). Produce `../data/cazagangas_data.jsonl`. A diferencia de Bosque Lúdico, esta fuente sí se integra activamente (ver `02_data_preparation/integrate_data.py`) — lo único que no corre solo es el chequeo de red en sí (manual, por volumen).
+- `collect_initial_data/cazagangas/check_cazagangas_links.py` — chequea si el link a la ficha de cada juego en [Cazagangas](https://www.cazagangas.com.ar) existe de verdad (código HTTP real, no un slug armado a ciegas). Produce `../data/01_data_understanding/cazagangas_data.jsonl`. A diferencia de Bosque Lúdico, esta fuente sí se integra activamente (ver `02_data_preparation/integrate_data.py`) — lo único que no corre solo es el chequeo de red en sí (manual, por volumen).
 - `collect_initial_data/bosque_ludico/` — **[PAUSADO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
 - `verify_data_quality.py` — chequeos de integridad sobre `mis_datos.jsonl` y `bgg_data.jsonl` (bgg_id único, estado/modo válidos, min ≤ max, rangos numéricos, etc.), no modifica nada, solo reporta. Ver más abajo.
@@ -24,14 +24,14 @@ Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que conven
 
 Dos archivos, cada uno con una sola fuente de verdad (ver `DATA_PLAYBOOK.md`, "Las columnas que no vienen de BGG viven en su propio archivo"):
 
-- **`../data/mis_datos.jsonl`** — identidad + Estado + todo lo que cargás a mano. `collect_bgg_data.py` **nunca** lo pisa salvo que se lo pidas explícito (`--add`, `--set-estado`): un refresh normal ni lo abre para escribir. Si se borra, se pierde tu trabajo — no es regenerable de ninguna fuente externa.
-- **`../data/bgg_data.jsonl`** — caché de BGG (rating, duración, etc.), un juego por línea para cada `bgg_id` no vacío de `mis_datos.jsonl`. Se reescribe entero en cada refresh. Si se borra, el próximo refresh la reconstruye sola — no se pierde nada.
+- **`../data/01_data_understanding/mis_datos.jsonl`** — identidad + Estado + todo lo que cargás a mano. `collect_bgg_data.py` **nunca** lo pisa salvo que se lo pidas explícito (`--add`, `--set-estado`): un refresh normal ni lo abre para escribir. Si se borra, se pierde tu trabajo — no es regenerable de ninguna fuente externa.
+- **`../data/01_data_understanding/bgg_data.jsonl`** — caché de BGG (rating, duración, etc.), un juego por línea para cada `bgg_id` no vacío de `mis_datos.jsonl`. Se reescribe entero en cada refresh. Si se borra, el próximo refresh la reconstruye sola — no se pierde nada.
 
 `bgg_id` es la primera columna de ambos, para poder integrar fácil (ver `02_data_preparation/integrate_data.py`).
 
 **El orden de las filas de cada tabla de abajo es el orden real de los campos dentro de cada línea** (`MIS_DATOS_FIELDS`/`BGG_CACHE_FIELDS` en `collect_bgg_data.py`): primero los campos cortos/estructurados (longitud parecida entre juegos), al final los de texto libre o longitud muy variable — así, al editar un `.jsonl` a mano, un campo largo en un juego puntual no hace más difícil ubicar los campos que lo preceden en otra fila.
 
-### `data/mis_datos.jsonl`
+### `data/01_data_understanding/mis_datos.jsonl`
 
 | Columna | Valores típicos | Descripción | Notas |
 |---|---|---|---|
@@ -45,7 +45,7 @@ Dos archivos, cada uno con una sola fuente de verdad (ver `DATA_PLAYBOOK.md`, "L
 | `pros` / `cons` | texto libre, o vacío | Lo que te gusta / no te gusta del juego. | Igual que `mi_puntaje`: a mano, casi siempre vacío. |
 | `notas` | texto libre | Comentarios sueltos que no entran en otra columna. | También el lugar donde se documentan discrepancias entre fuentes o correcciones manuales a columnas de BGG (ver ejemplo de `jug_min`/`complejidad` abajo). |
 
-### `data/bgg_data.jsonl`
+### `data/01_data_understanding/bgg_data.jsonl`
 
 | Columna | Valores típicos | Descripción | Notas |
 |---|---|---|---|

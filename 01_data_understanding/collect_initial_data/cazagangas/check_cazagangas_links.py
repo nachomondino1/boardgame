@@ -26,12 +26,18 @@ Watchlist puede ser grande). --refresh: re-chequea también los que ya
 tienen un resultado guardado (por default se saltean, para no re-pegarle a
 links que ya sabemos que andan o no).
 
-Alcance de los candidatos: sale de data/mis_datos.jsonl (estado/nombre son
-columnas tuyas, no de BGG — ver DATA_PLAYBOOK.md, "Las columnas que no
-vienen de BGG viven en su propio archivo").
+Alcance de los candidatos: sale de data/01_data_understanding/mis_datos.jsonl
+(estado/nombre son columnas tuyas, no de BGG — ver DATA_PLAYBOOK.md, "Las
+columnas que no vienen de BGG viven en su propio archivo").
 
-Salida: data/cazagangas_data.jsonl (bgg_id primera columna; integrate_data.py
-lo matchea por nombre, igual que grupos.json).
+Salida: data/01_data_understanding/cazagangas_data.jsonl (bgg_id primera
+columna; integrate_data.py lo matchea por nombre, igual que grupos.json).
+
+[PENDIENTE] Hoy solo confirma que el link existe (código HTTP). En algún
+momento esto se amplía a scraper real: precio, stock/disponibilidad y en
+qué tienda(s) de Argentina se puede comprar cada juego (Cazagangas agrega
+varias tiendas por juego, no es un único vendedor) — ver README.md,
+"Pendiente si esto vale la pena".
 """
 import argparse
 import datetime
@@ -45,8 +51,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-MIS_DATOS_PATH = ROOT / "data" / "mis_datos.jsonl"
-OUTPUT_PATH = ROOT / "data" / "cazagangas_data.jsonl"
+MIS_DATOS_PATH = ROOT / "data" / "01_data_understanding" / "mis_datos.jsonl"
+OUTPUT_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
 
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 CRAWL_DELAY_SECONDS = 2

@@ -2,12 +2,12 @@
 DATA_PLAYBOOK.md, "Las columnas que no vienen de BGG viven en su propio
 archivo"):
 
-- data/mis_datos.jsonl — EL UNIVERSO de juegos (qué juegos existen, con qué
+- data/01_data_understanding/mis_datos.jsonl — EL UNIVERSO de juegos (qué juegos existen, con qué
   Estado) + todo lo que cargás vos a mano: bgg_id, nombre, estado, bgg_url,
   modo, transportable, mi_puntaje, pros, cons, notas. Este script NUNCA pisa
   estas columnas salvo que vos se lo pidas explícito (--add, --set-estado):
   un refresh normal no las toca.
-- data/bgg_data.jsonl — caché 100% regenerable de datos de BGG (rating,
+- data/01_data_understanding/bgg_data.jsonl — caché 100% regenerable de datos de BGG (rating,
   duración, etc.) para cada bgg_id de mis_datos.jsonl. Se reescribe entero
   en cada corrida; si se borra, se reconstruye solo con el próximo refresh,
   no se pierde nada (a diferencia de mis_datos.jsonl, que si se borra se
@@ -25,7 +25,7 @@ caja, si el juego entra en una mochila/bolso para llevarlo a otro lado.
 Carga 100% manual — BGG no tiene este dato, así que nunca se completa solo
 ni se investiga, se deja vacío hasta que el usuario lo carga.
 
-El resto de data/bgg_data.jsonl (anio, descripcion, disenador, edad_min,
+El resto de data/01_data_understanding/bgg_data.jsonl (anio, descripcion, disenador, edad_min,
 jug_min/max, jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg,
 reviews_bgg, ranking_bgg, mecanicas, categorias) sale de BGG y se refresca
 en cada corrida. `mecanicas`/`categorias` se guardan como array JSON (no
@@ -84,8 +84,8 @@ csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae des
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-MIS_DATOS_PATH = ROOT / "data" / "mis_datos.jsonl"
-BGG_DATA_PATH = ROOT / "data" / "bgg_data.jsonl"
+MIS_DATOS_PATH = ROOT / "data" / "01_data_understanding" / "mis_datos.jsonl"
+BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
 LUDOTECA_PATH = HERE / "ludoteca" / "mi_ludoteca.json"
 
 DATASET_URL = (
@@ -98,10 +98,10 @@ USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.m
 
 TOP_N_DEFAULT = 1000
 
-# data/mis_datos.jsonl: tuyas, este script nunca las pisa salvo que se lo
+# data/01_data_understanding/mis_datos.jsonl: tuyas, este script nunca las pisa salvo que se lo
 # pidas explícito (--add/--set-estado).
 MIS_DATOS_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "transportable", "mi_puntaje", "pros", "cons", "notas"]
-# data/bgg_data.jsonl: 100% de BGG, se refresca entero en cada corrida.
+# data/01_data_understanding/bgg_data.jsonl: 100% de BGG, se refresca entero en cada corrida.
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
@@ -494,7 +494,7 @@ def build_bgg_cache(mis_datos_rows, dataset, mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Universo de juegos (data/mis_datos.jsonl) + caché de BGG (data/bgg_data.jsonl)")
+    parser = argparse.ArgumentParser(description="Universo de juegos (data/01_data_understanding/mis_datos.jsonl) + caché de BGG (data/01_data_understanding/bgg_data.jsonl)")
     parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual (por id de BGG o nombre)")
     parser.add_argument("--estado", choices=["Own", "Prev. owned", "Watchlist", "Want to buy"],
                          help="estado del juego agregado con --add (default Watchlist)")

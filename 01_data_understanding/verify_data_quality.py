@@ -1,5 +1,5 @@
 """Verify Data Quality (CRISP-DM, fase Data Understanding): chequeos sobre
-data/mis_datos.jsonl (el universo + lo que cargás a mano) y data/bgg_data.jsonl
+data/01_data_understanding/mis_datos.jsonl (el universo + lo que cargás a mano) y data/01_data_understanding/bgg_data.jsonl
 (el caché de BGG) que no dependen de ningún otro paso del pipeline — corre
 standalone, antes o después de un refresh/--add/--set-estado de
 collect_bgg_data.py.
@@ -20,8 +20,8 @@ COLLECT_DIR = HERE / "collect_initial_data"
 sys.path.insert(0, str(COLLECT_DIR))
 from collect_bgg_data import MIS_DATOS_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
 
-MIS_DATOS_PATH = HERE.parent / "data" / "mis_datos.jsonl"
-BGG_DATA_PATH = HERE.parent / "data" / "bgg_data.jsonl"
+MIS_DATOS_PATH = HERE.parent / "data" / "01_data_understanding" / "mis_datos.jsonl"
+BGG_DATA_PATH = HERE.parent / "data" / "01_data_understanding" / "bgg_data.jsonl"
 
 ESTADOS_VALIDOS = {"Own", "Prev. owned", "Watchlist", "Want to buy", "Descartado"}
 # "Ambos" y "A confirmar" son variantes legacy conocidas (ver README) — se
