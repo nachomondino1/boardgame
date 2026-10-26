@@ -1,5 +1,4 @@
 let GAMES = [];
-let GRUPO_INDEX = new Map();
 
 const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"];
 
@@ -66,7 +65,7 @@ function sortGames(list) {
 
 function render() {
   const filtered = sortGames(GAMES.filter(matchesFilters));
-  const grouped = collapseGrupos(filtered, GRUPO_INDEX);
+  const grouped = collapseGrupos(filtered);
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
   const loadMoreRow = document.getElementById("load-more-row");
@@ -242,10 +241,9 @@ function setupControls() {
 document.getElementById("nav").innerHTML = navTemplate("comprar.html");
 setupFiltersToggle();
 
-Promise.all([loadGames(), loadGrupos()])
-  .then(([data, grupos]) => {
+loadGames()
+  .then((data) => {
     GAMES = data;
-    GRUPO_INDEX = buildGrupoIndex(grupos);
     setupControls();
     render();
   })
