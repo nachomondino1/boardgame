@@ -341,7 +341,7 @@
       "Comic Book / Strip",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Exploding Kittens",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -864,7 +864,7 @@
       "Fantasy",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Saboteur",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -1279,7 +1279,7 @@
       "Environmental",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Cascadia",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -1407,7 +1407,7 @@
       "Spies / Secret Agents",
       "Word Game"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": "404",
     "duracion": 15,
     "modo": "Equipos",
@@ -1449,7 +1449,7 @@
       "Medieval",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -1954,7 +1954,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Too Many Bones",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -2297,7 +2297,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Too Many Bones",
     "cazagangas_status": "200",
     "duracion": 120,
     "modo": "Cooperativo",
@@ -2495,7 +2495,7 @@
       "Card Game",
       "Civilization"
     ],
-    "grupo": null,
+    "grupo": "Imperium",
     "cazagangas_status": null,
     "duracion": 100,
     "modo": "Competitivo",
@@ -2963,7 +2963,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Gloomhaven",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Cooperativo",
@@ -3193,7 +3193,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "War of the Ring (ediciones)",
     "cazagangas_status": "404",
     "duracion": 165,
     "modo": "Equipos",
@@ -3637,7 +3637,7 @@
       "Fantasy",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Aeon's End",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -3683,7 +3683,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Shadows of Brimstone",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -3774,7 +3774,7 @@
       "Fantasy",
       "Mythology"
     ],
-    "grupo": null,
+    "grupo": "Sleeping Gods",
     "cazagangas_status": null,
     "duracion": 330,
     "modo": "Cooperativo",
@@ -4110,7 +4110,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Black Rose Wars",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -4709,7 +4709,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Gloomhaven",
     "cazagangas_status": "404",
     "duracion": 75,
     "modo": "Cooperativo",
@@ -4881,7 +4881,7 @@
       "Dice",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Hoplomachus",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -5280,7 +5280,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Too Many Bones",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Cooperativo",
@@ -5415,7 +5415,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Sword & Sorcery",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -5560,7 +5560,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Equipos",
@@ -5700,7 +5700,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Nemesis",
     "cazagangas_status": "200",
     "duracion": 135,
     "modo": "Cooperativo y competitivo",
@@ -6441,7 +6441,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Nemesis",
     "cazagangas_status": "200",
     "duracion": 135,
     "modo": "Cooperativo y competitivo",
@@ -6797,7 +6797,7 @@
       "Mythology",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -6891,7 +6891,7 @@
       "Fighting",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -7077,7 +7077,7 @@
       "Political",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Twilight Struggle",
     "cazagangas_status": "200",
     "duracion": 150,
     "modo": "Competitivo",
@@ -7305,7 +7305,7 @@
       "Fighting",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Equipos",
@@ -7444,7 +7444,7 @@
       "Murder / Mystery",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Sherlock Holmes Consulting Detective",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -7673,7 +7673,7 @@
       "Fighting",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -7998,7 +7998,7 @@
       "Fighting",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Mindbug",
     "cazagangas_status": "200",
     "duracion": 20,
     "modo": "Competitivo",
@@ -8389,7 +8389,7 @@
       "Fighting",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Sleeping Gods",
     "cazagangas_status": "200",
     "duracion": 630,
     "modo": "Cooperativo",
@@ -9791,7 +9791,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: The Deckbuilding Game",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -10362,7 +10362,7 @@
       "Fantasy",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Aeon's End",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -10854,7 +10854,7 @@
       "Fighting",
       "Sports"
     ],
-    "grupo": null,
+    "grupo": "Hoplomachus",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -11272,7 +11272,7 @@
       "Fighting",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -11857,7 +11857,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: X-Wing",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -11994,7 +11994,7 @@
       "Miniatures",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Zombicide",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -12084,7 +12084,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Summoner Wars",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -12226,7 +12226,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -14754,7 +14754,7 @@
       "Miniatures",
       "Racing"
     ],
-    "grupo": null,
+    "grupo": "Thunder Road",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -15876,7 +15876,7 @@
       "Miniatures",
       "Renaissance"
     ],
-    "grupo": null,
+    "grupo": "Black Rose Wars",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Competitivo",
@@ -15917,7 +15917,7 @@
       "Murder / Mystery",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 422,
     "modo": "Cooperativo",
@@ -16105,7 +16105,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -16252,7 +16252,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Undaunted",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Competitivo",
@@ -16904,7 +16904,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Conflict of Heroes",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -16990,7 +16990,7 @@
       "Murder / Mystery",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Chronicles of Crime",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Cooperativo",
@@ -17318,7 +17318,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Pathfinder Adventure Card Game",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -17852,7 +17852,7 @@
     "categorias": [
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Detective",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Equipos",
@@ -18130,7 +18130,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Sword & Sorcery",
     "cazagangas_status": "200",
     "duracion": 75,
     "modo": "Cooperativo",
@@ -18842,7 +18842,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: The Deckbuilding Game",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -18928,7 +18928,7 @@
       "Humor",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "MicroMacro: Crime City",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -19022,7 +19022,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Arcadia Quest",
     "cazagangas_status": "404",
     "duracion": 90,
     "modo": "Competitivo",
@@ -19192,7 +19192,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Warfighter",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -19341,7 +19341,7 @@
       "Puzzle",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "HEXplore It",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -19660,7 +19660,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -20332,7 +20332,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -20875,7 +20875,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "KeyForge",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -21058,7 +21058,7 @@
       "Card Game",
       "Medieval"
     ],
-    "grupo": null,
+    "grupo": "Dominion",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Competitivo",
@@ -21100,7 +21100,7 @@
       "Fighting",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "BattleCON",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -21423,7 +21423,7 @@
       "Fantasy",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Legends of Andor",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Cooperativo",
@@ -21513,7 +21513,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "BattleCON",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Equipos",
@@ -21692,7 +21692,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -21932,7 +21932,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Warhammer Quest",
     "cazagangas_status": null,
     "duracion": 150,
     "modo": "Cooperativo",
@@ -22110,7 +22110,7 @@
       "Card Game",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Air, Land, & Sea",
     "cazagangas_status": "200",
     "duracion": 22,
     "modo": "Competitivo",
@@ -22691,7 +22691,7 @@
       "Movies / TV / Radio theme",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Legendary",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -23009,7 +23009,7 @@
       "Dice",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Fleet: The Dice Game",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -23279,7 +23279,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -23323,7 +23323,7 @@
       "Puzzle",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Sherlock Holmes Consulting Detective",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -23406,7 +23406,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -23630,7 +23630,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "War of the Ring (ediciones)",
     "cazagangas_status": "200",
     "duracion": 120,
     "modo": "Competitivo",
@@ -23679,7 +23679,7 @@
       "Exploration",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "The 7th Continent",
     "cazagangas_status": "200",
     "duracion": 502,
     "modo": "Cooperativo",
@@ -24653,7 +24653,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Equipos",
@@ -24736,7 +24736,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -24926,7 +24926,7 @@
       "Puzzle",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "HEXplore It",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -25314,7 +25314,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Legendary Encounters",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Equipos",
@@ -25974,7 +25974,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -26103,7 +26103,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Equipos",
@@ -26144,7 +26144,7 @@
       "Party Game",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Telestrations",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -26234,7 +26234,7 @@
       "Environmental",
       "Industry / Manufacturing"
     ],
-    "grupo": null,
+    "grupo": "The Manhattan Project",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Competitivo",
@@ -27307,7 +27307,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: X-Wing",
     "cazagangas_status": "404",
     "duracion": 38,
     "modo": "Competitivo",
@@ -28079,7 +28079,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -28166,7 +28166,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Warhammer Underworlds",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -28206,7 +28206,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone Advance",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -28333,7 +28333,7 @@
       "Napoleonic",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Field Commander",
     "cazagangas_status": null,
     "duracion": 180,
     "modo": "Competitivo",
@@ -28375,7 +28375,7 @@
       "Medieval",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Chronicles of Crime",
     "cazagangas_status": "404",
     "duracion": 75,
     "modo": "Cooperativo",
@@ -28821,7 +28821,7 @@
       "Exploration",
       "Racing"
     ],
-    "grupo": null,
+    "grupo": "The Quest for El Dorado",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Competitivo",
@@ -29040,7 +29040,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Conflict of Heroes",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -29358,7 +29358,7 @@
       "Card Game",
       "Medieval"
     ],
-    "grupo": null,
+    "grupo": "Dominion",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Competitivo",
@@ -29671,7 +29671,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -29763,7 +29763,7 @@
       "Modern Warfare",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Warfighter",
     "cazagangas_status": null,
     "duracion": 105,
     "modo": "Cooperativo",
@@ -29891,7 +29891,7 @@
     "categorias": [
       "Card Game"
     ],
-    "grupo": null,
+    "grupo": "Caper",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -30854,7 +30854,7 @@
       "Murder / Mystery",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Chronicles of Crime",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Cooperativo",
@@ -30896,7 +30896,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Legendary Encounters",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Cooperativo",
@@ -31033,7 +31033,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Gloomhaven",
     "cazagangas_status": null,
     "duracion": 25,
     "modo": "Competitivo",
@@ -31208,7 +31208,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Pathfinder Adventure Card Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -32448,7 +32448,7 @@
       "Adventure",
       "Exploration"
     ],
-    "grupo": null,
+    "grupo": "The Quest for El Dorado",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -32495,7 +32495,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -32534,7 +32534,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Mindbug",
     "cazagangas_status": "404",
     "duracion": 20,
     "modo": "Competitivo",
@@ -32579,7 +32579,7 @@
       "Dice",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Set a Watch",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -33208,7 +33208,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Heroscape Master Set",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -33506,7 +33506,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -33546,7 +33546,7 @@
       "Dice",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Fleet: The Dice Game",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -33771,7 +33771,7 @@
       "Fighting",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "BattleCON",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -33957,7 +33957,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Detective",
     "cazagangas_status": "404",
     "duracion": 150,
     "modo": "Cooperativo",
@@ -34263,7 +34263,7 @@
       "Print & Play",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "HITSTER",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -34342,7 +34342,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -34573,7 +34573,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: X-Wing",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -34891,7 +34891,7 @@
       "Fighting",
       "Horror"
     ],
-    "grupo": null,
+    "grupo": "Spire's End",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -34979,7 +34979,7 @@
       "Miniatures",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Horrified",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Cooperativo",
@@ -35410,7 +35410,7 @@
       "Political",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Twilight Struggle",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -36024,7 +36024,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Warhammer Underworlds",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -36525,7 +36525,7 @@
       "Miniatures",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Last Night on Earth",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Equipos",
@@ -37406,7 +37406,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Arcadia Quest",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -37663,7 +37663,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Call to Adventure",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -38269,7 +38269,7 @@
       "Trains",
       "Transportation"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -39063,7 +39063,7 @@
       "Sports",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Hoplomachus",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -39900,7 +39900,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -40022,7 +40022,7 @@
       "Comic Book / Strip",
       "Economic"
     ],
-    "grupo": null,
+    "grupo": "Splendor",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -40475,7 +40475,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Chronicles of Crime",
     "cazagangas_status": "200",
     "duracion": 75,
     "modo": "Cooperativo",
@@ -41350,7 +41350,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -41528,7 +41528,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Horrified",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -41654,7 +41654,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Summoner Wars",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -42421,7 +42421,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dice Throne",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -43156,7 +43156,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Spire's End",
     "cazagangas_status": null,
     "duracion": 105,
     "modo": "Cooperativo",
@@ -43293,7 +43293,7 @@
       "Fighting",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Unmatched",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -43745,7 +43745,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "Legendary",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo y competitivo",
@@ -44241,7 +44241,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "Legendary",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Cooperativo y competitivo",
@@ -44809,7 +44809,7 @@
     "categorias": [
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Century",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -45079,7 +45079,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Legendary",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -45266,7 +45266,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Command",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -46373,7 +46373,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -46692,7 +46692,7 @@
       "Party Game",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "The Resistance",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Equipos",
@@ -46927,7 +46927,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Heroscape Master Set",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -46971,7 +46971,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Warhammer Quest",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -47055,7 +47055,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -47783,7 +47783,7 @@
       "Dice",
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Railroad Ink",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -47825,7 +47825,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Summoner Wars",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -47958,7 +47958,7 @@
       "Medieval",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 40,
     "modo": "Competitivo",
@@ -48041,7 +48041,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Conflict of Heroes",
     "cazagangas_status": "200",
     "duracion": 120,
     "modo": "Competitivo",
@@ -48458,7 +48458,7 @@
       "Music",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "HITSTER",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -49081,7 +49081,7 @@
       "Exploration",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "The 7th Continent",
     "cazagangas_status": null,
     "duracion": 502,
     "modo": "Cooperativo",
@@ -49719,7 +49719,7 @@
       "Movies / TV / Radio theme",
       "Mythology"
     ],
-    "grupo": null,
+    "grupo": "Disney Villainous",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Competitivo",
@@ -49973,7 +49973,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Summoner Wars",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Competitivo",
@@ -50198,7 +50198,7 @@
       "Spies / Secret Agents",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Competitivo",
@@ -50243,7 +50243,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Horrified",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -50476,7 +50476,7 @@
     "categorias": [
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Tidal Blades",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Competitivo",
@@ -50705,7 +50705,7 @@
       "Prehistoric",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Evolution",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -51612,7 +51612,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Command",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -51744,7 +51744,7 @@
       "Print & Play",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Air, Land, & Sea",
     "cazagangas_status": "404",
     "duracion": 20,
     "modo": "Competitivo",
@@ -51990,7 +51990,7 @@
       "Fantasy",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -52173,7 +52173,7 @@
       "Racing",
       "Sports"
     ],
-    "grupo": null,
+    "grupo": "Rallyman",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Competitivo",
@@ -52701,7 +52701,7 @@
       "Miniatures",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Heroscape Master Set",
     "cazagangas_status": "404",
     "duracion": 90,
     "modo": "Competitivo",
@@ -53215,7 +53215,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Mayhem",
     "cazagangas_status": null,
     "duracion": 10,
     "modo": "Competitivo",
@@ -54033,7 +54033,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "KeyForge",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -54178,7 +54178,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Pathfinder Adventure Card Game",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Cooperativo",
@@ -55180,7 +55180,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: Destiny",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Competitivo",
@@ -55730,7 +55730,7 @@
       "Fantasy",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Disney Villainous",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Competitivo",
@@ -56613,7 +56613,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -56655,7 +56655,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Legendary Encounters",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -56697,7 +56697,7 @@
       "Economic",
       "Renaissance"
     ],
-    "grupo": null,
+    "grupo": "Splendor",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -56868,7 +56868,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Warhammer Quest",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -57467,7 +57467,7 @@
       "Card Game",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Dixit",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -57553,7 +57553,7 @@
       "Fantasy",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -58559,7 +58559,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Command",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -58906,7 +58906,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "DC Deck-Building Game",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -59220,7 +59220,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 112,
     "modo": "Competitivo",
@@ -59476,7 +59476,7 @@
       "Humor",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Dixit",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -59567,7 +59567,7 @@
       "Humor",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Dixit",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -60347,7 +60347,7 @@
       "Card Game",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Hostage Negotiator",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -60593,7 +60593,7 @@
       "Party Game",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Telestrations",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -60761,7 +60761,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Command",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -61115,7 +61115,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -62873,7 +62873,7 @@
       "Movies / TV / Radio theme",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Harry Potter: Hogwarts Battle",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Cooperativo",
@@ -62960,7 +62960,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -63880,7 +63880,7 @@
       "Ancient",
       "Mythology"
     ],
-    "grupo": null,
+    "grupo": "Santorini",
     "cazagangas_status": "200",
     "duracion": 20,
     "modo": "Equipos",
@@ -65180,7 +65180,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -65223,7 +65223,7 @@
     "categorias": [
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Century",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -65398,7 +65398,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -66903,7 +66903,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Betrayal at House on the Hill",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Equipos",
@@ -67049,7 +67049,7 @@
       "Puzzle",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Cascadia",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -67788,7 +67788,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -67917,7 +67917,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -67997,7 +67997,7 @@
       "Comic Book / Strip",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Marvel Villainous",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -68430,7 +68430,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -68513,7 +68513,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone Advance",
     "cazagangas_status": "200",
     "duracion": 45,
     "modo": "Competitivo",
@@ -68592,7 +68592,7 @@
       "Dice",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Marvel Dice Masters",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -68727,7 +68727,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Adventure Games",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Cooperativo",
@@ -68908,7 +68908,7 @@
       "Industry / Manufacturing",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "The Manhattan Project",
     "cazagangas_status": "200",
     "duracion": 120,
     "modo": "Competitivo",
@@ -69030,7 +69030,7 @@
       "Cooperative Game"
     ],
     "categorias": [],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 135,
     "modo": "Cooperativo",
@@ -69729,7 +69729,7 @@
       "Horror",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 180,
     "modo": "Cooperativo",
@@ -71306,7 +71306,7 @@
     "categorias": [
       "Farming"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -72150,7 +72150,7 @@
       "Horror",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "One Night Ultimate Werewolf",
     "cazagangas_status": "200",
     "duracion": 10,
     "modo": "Competitivo",
@@ -72607,7 +72607,7 @@
       "Miniatures",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Command",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -72988,7 +72988,7 @@
       "Wargame",
       "World War I"
     ],
-    "grupo": null,
+    "grupo": "Wings of War",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -73172,7 +73172,7 @@
       "Fighting",
       "Pirates"
     ],
-    "grupo": null,
+    "grupo": "Pathfinder Adventure Card Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -73344,7 +73344,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -74423,7 +74423,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -74983,7 +74983,7 @@
       "Science Fiction",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -75296,7 +75296,7 @@
       "Novel-based",
       "Religious"
     ],
-    "grupo": null,
+    "grupo": "The Pillars of the Earth",
     "cazagangas_status": "200",
     "duracion": 105,
     "modo": "Competitivo",
@@ -75506,7 +75506,7 @@
       "Deduction",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Love Letter",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -75773,7 +75773,7 @@
       "Science Fiction",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -76166,7 +76166,7 @@
       "Dice",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Set a Watch",
     "cazagangas_status": null,
     "duracion": 62,
     "modo": "Cooperativo",
@@ -76650,7 +76650,7 @@
       "Fantasy",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone Advance",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Competitivo",
@@ -76993,7 +76993,7 @@
       "Exploration",
       "Math"
     ],
-    "grupo": null,
+    "grupo": "Lost Cities",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Competitivo",
@@ -77200,7 +77200,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -77283,7 +77283,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "DC Deck-Building Game",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -78168,7 +78168,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "DC Deck-Building Game",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -78819,7 +78819,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Summoner Wars",
     "cazagangas_status": "404",
     "duracion": 45,
     "modo": "Competitivo",
@@ -78904,7 +78904,7 @@
       "Fantasy",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -79279,7 +79279,7 @@
       "Animals",
       "Children's Game"
     ],
-    "grupo": null,
+    "grupo": "Rhino Hero",
     "cazagangas_status": "200",
     "duracion": 15,
     "modo": "Competitivo",
@@ -79710,7 +79710,7 @@
       "Trains",
       "Transportation"
     ],
-    "grupo": null,
+    "grupo": "On the Underground",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Competitivo",
@@ -80062,7 +80062,7 @@
       "Medieval",
       "Political"
     ],
-    "grupo": null,
+    "grupo": "Oriflamme",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -81241,7 +81241,7 @@
       "Humor",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": "404",
     "duracion": 45,
     "modo": "Competitivo",
@@ -82031,7 +82031,7 @@
       "City Building",
       "Medieval"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": "404",
     "duracion": 38,
     "modo": "Competitivo",
@@ -82281,7 +82281,7 @@
       "Fantasy",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Conspiracy",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -82460,7 +82460,7 @@
       "Science Fiction",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "The Resistance",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Equipos",
@@ -82597,7 +82597,7 @@
       "Miniatures",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Cooperativo",
@@ -83869,7 +83869,7 @@
       "Humor",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Dixit",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -84504,7 +84504,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "KeyForge",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -84597,7 +84597,7 @@
       "Puzzle",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Cascadia",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -84639,7 +84639,7 @@
       "Dice",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Marvel Dice Masters",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -85115,7 +85115,7 @@
       "Party Game",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": "404",
     "duracion": 15,
     "modo": "Equipos",
@@ -85282,7 +85282,7 @@
       "Racing",
       "Sports"
     ],
-    "grupo": null,
+    "grupo": "Rallyman",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -87341,7 +87341,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -87478,7 +87478,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Pathfinder Adventure Card Game",
     "cazagangas_status": "200",
     "duracion": 90,
     "modo": "Cooperativo",
@@ -87611,7 +87611,7 @@
       "Horror",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "XenoShyft",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -88339,7 +88339,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Funkoverse Strategy Game",
     "cazagangas_status": null,
     "duracion": 40,
     "modo": "Equipos",
@@ -89025,7 +89025,7 @@
       "Card Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -89290,7 +89290,7 @@
       "Fantasy",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Harry Potter: Hogwarts Battle",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -90263,7 +90263,7 @@
       "American West",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -90424,7 +90424,7 @@
       "Dice",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Marvel Dice Masters",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -91661,7 +91661,7 @@
       "Prehistoric",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": "404",
     "duracion": 35,
     "modo": "Competitivo",
@@ -91922,7 +91922,7 @@
       "Racing",
       "Sports"
     ],
-    "grupo": null,
+    "grupo": "Rallyman",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Competitivo",
@@ -92932,7 +92932,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -93097,7 +93097,7 @@
       "Exploration",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "Thebes",
     "cazagangas_status": "404",
     "duracion": 60,
     "modo": "Competitivo",
@@ -93389,7 +93389,7 @@
       "Wargame",
       "World War I"
     ],
-    "grupo": null,
+    "grupo": "Wings of War",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -94054,7 +94054,7 @@
       "Movies / TV / Radio theme",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Love Letter",
     "cazagangas_status": null,
     "duracion": 25,
     "modo": "Competitivo",
@@ -95609,7 +95609,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -95826,7 +95826,7 @@
       "City Building",
       "Medieval"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -95992,7 +95992,7 @@
     "categorias": [
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Exploding Kittens",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -96036,7 +96036,7 @@
       "Fighting",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Legends of Andor",
     "cazagangas_status": "404",
     "duracion": 75,
     "modo": "Cooperativo",
@@ -97451,7 +97451,7 @@
       "Card Game",
       "Political"
     ],
-    "grupo": null,
+    "grupo": "Oriflamme",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -97707,7 +97707,7 @@
       "Dice",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Marvel Dice Masters",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -98016,7 +98016,7 @@
       "Dice",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "One Deck Dungeon",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Cooperativo",
@@ -98231,7 +98231,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -98272,7 +98272,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "KeyForge",
     "cazagangas_status": "404",
     "duracion": 30,
     "modo": "Competitivo",
@@ -98315,7 +98315,7 @@
       "Horror",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Arkham Noir",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -98555,7 +98555,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Legendary Encounters",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -99130,7 +99130,7 @@
       "Humor",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Exploding Kittens",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -100191,7 +100191,7 @@
       "Murder / Mystery",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -100882,7 +100882,7 @@
       "Ancient",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Field Commander",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -101027,7 +101027,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -101194,7 +101194,7 @@
       "Novel-based",
       "Racing"
     ],
-    "grupo": null,
+    "grupo": "Tales & Games",
     "cazagangas_status": null,
     "duracion": 18,
     "modo": "Competitivo",
@@ -101317,7 +101317,7 @@
     "categorias": [
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 12,
     "modo": "Competitivo",
@@ -101358,7 +101358,7 @@
       "Medical",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Pandemic",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Cooperativo",
@@ -101995,7 +101995,7 @@
       "Card Game",
       "Number"
     ],
-    "grupo": null,
+    "grupo": "The Game",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -102035,7 +102035,7 @@
       "Wargame",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Zombicide",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Cooperativo",
@@ -102165,7 +102165,7 @@
       "Fantasy",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Call to Adventure",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -103659,7 +103659,7 @@
       "Economic",
       "Nautical"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -103913,7 +103913,7 @@
       "Card Game",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Legendary",
     "cazagangas_status": null,
     "duracion": 52,
     "modo": "Cooperativo",
@@ -105391,7 +105391,7 @@
       "Horror",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "One Night Ultimate Werewolf",
     "cazagangas_status": "200",
     "duracion": 10,
     "modo": "Competitivo",
@@ -106472,7 +106472,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Ascension",
     "cazagangas_status": "200",
     "duracion": 30,
     "modo": "Competitivo",
@@ -106553,7 +106553,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -106805,7 +106805,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "DC Deck-Building Game",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -107521,7 +107521,7 @@
       "Exploration",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -107784,7 +107784,7 @@
       "Prehistoric",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Evolution",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -108399,7 +108399,7 @@
       "Horror",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Escape Tales",
     "cazagangas_status": null,
     "duracion": 450,
     "modo": "Cooperativo",
@@ -108600,7 +108600,7 @@
       "Card Game",
       "Comic Book / Strip"
     ],
-    "grupo": null,
+    "grupo": "DC Deck-Building Game",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -108820,7 +108820,7 @@
       "Expansion for Base-game",
       "Movies / TV / Radio theme"
     ],
-    "grupo": null,
+    "grupo": "Star Wars: Destiny",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -108988,7 +108988,7 @@
       "Animals",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -109292,7 +109292,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Betrayal at House on the Hill",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Equipos",
@@ -109545,7 +109545,7 @@
       "Children's Game",
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -109584,7 +109584,7 @@
       "Animals",
       "Card Game"
     ],
-    "grupo": null,
+    "grupo": "Beasty Bar",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -110608,7 +110608,7 @@
       "Mature / Adult",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Escape Tales",
     "cazagangas_status": null,
     "duracion": 270,
     "modo": "Cooperativo",
@@ -110815,7 +110815,7 @@
       "Fighting",
       "Horror"
     ],
-    "grupo": null,
+    "grupo": "Nightfall",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -111141,7 +111141,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -111768,7 +111768,7 @@
       "Medieval",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -112148,7 +112148,7 @@
     "categorias": [
       "Card Game"
     ],
-    "grupo": null,
+    "grupo": "Tidal Blades",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -112233,7 +112233,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -112401,7 +112401,7 @@
       "Fantasy",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Call to Adventure",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -112522,7 +112522,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -113176,7 +113176,7 @@
       "Party Game",
       "Political"
     ],
-    "grupo": null,
+    "grupo": "Coup",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -113522,7 +113522,7 @@
       "City Building",
       "Mafia"
     ],
-    "grupo": null,
+    "grupo": "Caper",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -113687,7 +113687,7 @@
       "Wargame",
       "World War I"
     ],
-    "grupo": null,
+    "grupo": "Wings of War",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -113890,7 +113890,7 @@
       "Card Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -114728,7 +114728,7 @@
       "Horror",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Dungeons & Dragons (Adventure System)",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Cooperativo",
@@ -114895,7 +114895,7 @@
       "Party Game",
       "Political"
     ],
-    "grupo": null,
+    "grupo": "Coup",
     "cazagangas_status": "200",
     "duracion": 15,
     "modo": "Competitivo",
@@ -115151,7 +115151,7 @@
       "Medical",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Pandemic",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Cooperativo",
@@ -115192,7 +115192,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Field Commander",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -115356,7 +115356,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -115913,7 +115913,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -116531,7 +116531,7 @@
     "categorias": [
       "Abstract Strategy"
     ],
-    "grupo": null,
+    "grupo": "Santorini",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -118199,7 +118199,7 @@
       "Exploration",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Escape",
     "cazagangas_status": "404",
     "duracion": 10,
     "modo": "Cooperativo",
@@ -118823,7 +118823,7 @@
       "Negotiation",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Ultimate Werewolf",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Equipos",
@@ -119550,7 +119550,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -120361,7 +120361,7 @@
       "Card Game",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Mystery Rummy",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -120536,7 +120536,7 @@
       "Fantasy",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "One Deck Dungeon",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Cooperativo",
@@ -120836,7 +120836,7 @@
       "Fantasy",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Adventure Games",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -121043,7 +121043,7 @@
       "Action / Dexterity",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Ghost Blitz",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -121688,7 +121688,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -121728,7 +121728,7 @@
     "categorias": [
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 12,
     "modo": "Competitivo",
@@ -124500,7 +124500,7 @@
       "Cooperative Game"
     ],
     "categorias": [],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 150,
     "modo": "Cooperativo",
@@ -124542,7 +124542,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Thunderstone",
     "cazagangas_status": "200",
     "duracion": 60,
     "modo": "Competitivo",
@@ -124582,7 +124582,7 @@
       "Card Game",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "Boomerang",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -124624,7 +124624,7 @@
       "Party Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Escape the Room",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -125058,7 +125058,7 @@
       "Miniatures",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Last Night on Earth",
     "cazagangas_status": "200",
     "duracion": 75,
     "modo": "Equipos",
@@ -125227,7 +125227,7 @@
     "categorias": [
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 12,
     "modo": "Competitivo",
@@ -125401,7 +125401,7 @@
       "Children's Game",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Rhino Hero",
     "cazagangas_status": "200",
     "duracion": 10,
     "modo": "Competitivo",
@@ -125731,7 +125731,7 @@
       "Card Game",
       "Number"
     ],
-    "grupo": null,
+    "grupo": "The Game",
     "cazagangas_status": null,
     "duracion": 25,
     "modo": "Cooperativo",
@@ -126015,7 +126015,7 @@
       "Horror",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "XenoShyft",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -126680,7 +126680,7 @@
       "Trains",
       "Transportation"
     ],
-    "grupo": null,
+    "grupo": "On the Underground",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -126772,7 +126772,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Imperium",
     "cazagangas_status": null,
     "duracion": 240,
     "modo": "Competitivo",
@@ -127415,7 +127415,7 @@
       "Fantasy",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Dungeon Mayhem",
     "cazagangas_status": null,
     "duracion": 10,
     "modo": "Competitivo",
@@ -128860,7 +128860,7 @@
       "Collectible Components",
       "Video Game Theme"
     ],
-    "grupo": null,
+    "grupo": "Gwent",
     "cazagangas_status": null,
     "duracion": 18,
     "modo": "Competitivo",
@@ -128944,7 +128944,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -129607,7 +129607,7 @@
       "Card Game",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "Boomerang",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -129725,7 +129725,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -129940,7 +129940,7 @@
       "Fantasy",
       "Video Game Theme"
     ],
-    "grupo": null,
+    "grupo": "Boss Monster",
     "cazagangas_status": null,
     "duracion": 32,
     "modo": "Competitivo",
@@ -131014,7 +131014,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -131228,7 +131228,7 @@
       "Wargame",
       "World War I"
     ],
-    "grupo": null,
+    "grupo": "Wings of War",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Equipos",
@@ -131269,7 +131269,7 @@
       "Card Game",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -131685,7 +131685,7 @@
       "Exploration",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "Thebes",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -132177,7 +132177,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Detective",
     "cazagangas_status": null,
     "duracion": 105,
     "modo": "Cooperativo",
@@ -132217,7 +132217,7 @@
       "Children's Game",
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Ticket to Ride",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -133219,7 +133219,7 @@
       "Wargame",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "Wings of War",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -133345,7 +133345,7 @@
       "American West",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "Flick 'em Up!",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Equipos",
@@ -133426,7 +133426,7 @@
       "Card Game",
       "Mafia"
     ],
-    "grupo": null,
+    "grupo": "Mystery Rummy",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -133473,7 +133473,7 @@
       "Civilization",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Roll Through the Ages",
     "cazagangas_status": "200",
     "duracion": 38,
     "modo": "Competitivo",
@@ -133768,7 +133768,7 @@
       "Video Game Theme",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Resident Evil Deck Building Game",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Equipos",
@@ -134023,7 +134023,7 @@
       "Murder / Mystery",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "The Werewolves of Miller's Hollow",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -134186,7 +134186,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -136553,7 +136553,7 @@
       "Science Fiction",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -137484,7 +137484,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Ubongo",
     "cazagangas_status": null,
     "duracion": 28,
     "modo": "Competitivo",
@@ -138522,7 +138522,7 @@
       "Children's Game",
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Clue",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -138560,7 +138560,7 @@
       "Deduction",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -139061,7 +139061,7 @@
       "Card Game",
       "Travel"
     ],
-    "grupo": null,
+    "grupo": "Boomerang",
     "cazagangas_status": null,
     "duracion": 22,
     "modo": "Competitivo",
@@ -139106,7 +139106,7 @@
       "Exploration",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "The Adventurers",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -139394,7 +139394,7 @@
       "Card Game",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Beasty Bar",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -140750,7 +140750,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -140793,7 +140793,7 @@
       "Card Game",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Hostage Negotiator",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -141580,7 +141580,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -142814,7 +142814,7 @@
       "Card Game",
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Lost Legacy",
     "cazagangas_status": null,
     "duracion": 10,
     "modo": "Competitivo",
@@ -143544,7 +143544,7 @@
       "Party Game",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -144237,7 +144237,7 @@
       "Party Game",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -144488,7 +144488,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Funkoverse Strategy Game",
     "cazagangas_status": null,
     "duracion": 40,
     "modo": "Competitivo",
@@ -145766,7 +145766,7 @@
       "Comic Book / Strip",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Marvel Villainous",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -145969,7 +145969,7 @@
       "Card Game",
       "Print & Play"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Cooperativo",
@@ -146517,7 +146517,7 @@
       "Educational",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -147355,7 +147355,7 @@
       "Horror",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Arkham Noir",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -147399,7 +147399,7 @@
       "Humor",
       "Mythology"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -148065,7 +148065,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -149155,7 +149155,7 @@
       "Real-time",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Escape",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Cooperativo",
@@ -149562,7 +149562,7 @@
       "Party Game",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -149772,7 +149772,7 @@
       "Card Game",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Mystery Rummy",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -150900,7 +150900,7 @@
       "Educational",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -151304,7 +151304,7 @@
       "Card Game",
       "Number"
     ],
-    "grupo": null,
+    "grupo": "The Game",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Cooperativo",
@@ -151679,7 +151679,7 @@
       "Children's Game",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Ghost Blitz",
     "cazagangas_status": "404",
     "duracion": 20,
     "modo": "Competitivo",
@@ -151755,7 +151755,7 @@
       "Card Game",
       "Number"
     ],
-    "grupo": null,
+    "grupo": "The Game",
     "cazagangas_status": null,
     "duracion": 9,
     "modo": "Cooperativo",
@@ -152710,7 +152710,7 @@
       "Science Fiction",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -153344,7 +153344,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Sherlock",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Cooperativo",
@@ -153598,7 +153598,7 @@
       "Movies / TV / Radio theme",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -153888,7 +153888,7 @@
       "Educational",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -154421,7 +154421,7 @@
       "Novel-based",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "War of the Ring (ediciones)",
     "cazagangas_status": "200",
     "duracion": 135,
     "modo": "Competitivo",
@@ -154804,7 +154804,7 @@
       "Murder / Mystery",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "The Werewolves of Miller's Hollow",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -155260,7 +155260,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -156397,7 +156397,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Ubongo",
     "cazagangas_status": null,
     "duracion": 25,
     "modo": "Competitivo",
@@ -156486,7 +156486,7 @@
       "Science Fiction",
       "Space Exploration"
     ],
-    "grupo": null,
+    "grupo": "Star Trek Deck Building Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Equipos",
@@ -156651,7 +156651,7 @@
       "Card Game",
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "Lost Legacy",
     "cazagangas_status": null,
     "duracion": 10,
     "modo": "Competitivo",
@@ -156734,7 +156734,7 @@
       "Educational",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -156892,7 +156892,7 @@
       "Card Game",
       "Exploration"
     ],
-    "grupo": null,
+    "grupo": "Lost Cities",
     "cazagangas_status": null,
     "duracion": 40,
     "modo": "Competitivo",
@@ -157336,7 +157336,7 @@
       "Real-time",
       "Trains"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -157990,7 +157990,7 @@
       "Collectible Components",
       "Video Game Theme"
     ],
-    "grupo": null,
+    "grupo": "Gwent",
     "cazagangas_status": null,
     "duracion": 18,
     "modo": "Competitivo",
@@ -158603,7 +158603,7 @@
       "Party Game",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -159028,7 +159028,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -159069,7 +159069,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -159630,7 +159630,7 @@
       "Card Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -160040,7 +160040,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 180,
     "modo": "Competitivo",
@@ -161087,7 +161087,7 @@
       "City Building",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Machi Koro",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -161171,7 +161171,7 @@
       "Racing",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Thunder Road",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -161251,7 +161251,7 @@
       "Puzzle",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Escape Tales",
     "cazagangas_status": null,
     "duracion": 450,
     "modo": "Cooperativo",
@@ -162154,7 +162154,7 @@
       "Ancient",
       "City Building"
     ],
-    "grupo": null,
+    "grupo": "The Builders",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -162570,7 +162570,7 @@
       "Card Game",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Mystery Rummy",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -163953,7 +163953,7 @@
       "Horror",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Flick 'em Up!",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Equipos",
@@ -164157,7 +164157,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Sherlock",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Cooperativo",
@@ -164879,7 +164879,7 @@
       "Science Fiction",
       "Space Exploration"
     ],
-    "grupo": null,
+    "grupo": "Star Trek Deck Building Game",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -165667,7 +165667,7 @@
       "Party Game",
       "Word Game"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Equipos",
@@ -165880,7 +165880,7 @@
       "Exploration",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "The Adventurers",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -166210,7 +166210,7 @@
       "Fighting",
       "Miniatures"
     ],
-    "grupo": null,
+    "grupo": "Funkoverse Strategy Game",
     "cazagangas_status": null,
     "duracion": 40,
     "modo": "Competitivo",
@@ -166376,7 +166376,7 @@
       "City Building",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Machi Koro",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -167569,7 +167569,7 @@
       "Space Exploration",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Twilight Imperium",
     "cazagangas_status": null,
     "duracion": 240,
     "modo": "Competitivo",
@@ -168012,7 +168012,7 @@
       "Deduction",
       "Science Fiction"
     ],
-    "grupo": null,
+    "grupo": "Lost Legacy",
     "cazagangas_status": null,
     "duracion": 10,
     "modo": "Competitivo",
@@ -168294,7 +168294,7 @@
     "categorias": [
       "Deduction"
     ],
-    "grupo": null,
+    "grupo": "echoes",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -168988,7 +168988,7 @@
       "Civilization",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Roll Through the Ages",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Competitivo",
@@ -169197,7 +169197,7 @@
       "Environmental",
       "Prehistoric"
     ],
-    "grupo": null,
+    "grupo": "Evolution",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -169338,7 +169338,7 @@
       "Negotiation",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Ultimate Werewolf",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Equipos",
@@ -170786,7 +170786,7 @@
       "Spies / Secret Agents",
       "Word Game"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Equipos",
@@ -171487,7 +171487,7 @@
       "Narrative Choice / Paragraph"
     ],
     "categorias": [],
-    "grupo": null,
+    "grupo": "Adventure Games",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Cooperativo",
@@ -172418,7 +172418,7 @@
       "Video Game Theme",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "Resident Evil Deck Building Game",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -172835,7 +172835,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -172951,7 +172951,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "echoes",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -173122,7 +173122,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 180,
     "modo": "Equipos",
@@ -173292,7 +173292,7 @@
       "Party Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Escape the Room",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Cooperativo",
@@ -174175,7 +174175,7 @@
       "Fantasy",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Smash Up",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -174874,7 +174874,7 @@
       "Fighting",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Epic Spell Wars of the Battle Wizards",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -176291,7 +176291,7 @@
       "Medieval",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "The Pillars of the Earth",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -177452,7 +177452,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Unlock!",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -177664,7 +177664,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Decktective",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -178486,7 +178486,7 @@
       "Fighting",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Epic Spell Wars of the Battle Wizards",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -178911,7 +178911,7 @@
       "Horror",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Ultimate Werewolf",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Equipos",
@@ -179208,7 +179208,7 @@
       "Fantasy",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Pocket Battles",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -179583,7 +179583,7 @@
       "Educational",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -179626,7 +179626,7 @@
       "Novel-based",
       "Word Game"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Cooperativo",
@@ -180497,7 +180497,7 @@
       "Party Game",
       "Puzzle"
     ],
-    "grupo": null,
+    "grupo": "Rory's Story Cubes",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Cooperativo",
@@ -180545,7 +180545,7 @@
       "Deduction",
       "Fighting"
     ],
-    "grupo": null,
+    "grupo": "BANG!",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -181902,7 +181902,7 @@
       "Medieval",
       "Territory Building"
     ],
-    "grupo": null,
+    "grupo": "Carcassonne (expansiones standalone)",
     "cazagangas_status": null,
     "duracion": 38,
     "modo": "Competitivo",
@@ -182648,7 +182648,7 @@
       "Fighting",
       "Horror"
     ],
-    "grupo": null,
+    "grupo": "Nightfall",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -183228,7 +183228,7 @@
       "City Building",
       "Medieval"
     ],
-    "grupo": null,
+    "grupo": "The Builders",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -184697,7 +184697,7 @@
       "Industry / Manufacturing",
       "World War II"
     ],
-    "grupo": null,
+    "grupo": "The Manhattan Project",
     "cazagangas_status": null,
     "duracion": 35,
     "modo": "Competitivo",
@@ -184862,7 +184862,7 @@
       "Science Fiction",
       "Space Exploration"
     ],
-    "grupo": null,
+    "grupo": "Star Trek Deck Building Game",
     "cazagangas_status": null,
     "duracion": 75,
     "modo": "Equipos",
@@ -185403,7 +185403,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Exit: The Game",
     "cazagangas_status": null,
     "duracion": 68,
     "modo": "Cooperativo",
@@ -185805,7 +185805,7 @@
       "Fighting",
       "Humor"
     ],
-    "grupo": null,
+    "grupo": "Epic Spell Wars of the Battle Wizards",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -186770,7 +186770,7 @@
       "Card Game",
       "Exploration"
     ],
-    "grupo": null,
+    "grupo": "Cartaventura",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -186933,7 +186933,7 @@
     "categorias": [
       "Animals"
     ],
-    "grupo": null,
+    "grupo": "Boomerang",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -187929,7 +187929,7 @@
       "Dice",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Tales & Games",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -189508,7 +189508,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -190128,7 +190128,7 @@
       "Deduction",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Sherlock",
     "cazagangas_status": null,
     "duracion": 50,
     "modo": "Cooperativo",
@@ -190645,7 +190645,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Decktective",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -190772,7 +190772,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -191141,7 +191141,7 @@
       "Ancient",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Pocket Battles",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -193657,7 +193657,7 @@
     "categorias": [
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Rory's Story Cubes",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Cooperativo",
@@ -194107,7 +194107,7 @@
       "Fighting",
       "Zombies"
     ],
-    "grupo": null,
+    "grupo": "BANG!",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Equipos",
@@ -196654,7 +196654,7 @@
       "Fantasy",
       "Maze"
     ],
-    "grupo": null,
+    "grupo": "Saboteur",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Equipos",
@@ -199097,7 +199097,7 @@
       "Card Game",
       "Exploration"
     ],
-    "grupo": null,
+    "grupo": "Cartaventura",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Cooperativo",
@@ -199311,7 +199311,7 @@
       "Exploration",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Dungeoneer",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -199727,7 +199727,7 @@
       "Card Game",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Dungeoneer",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -201844,7 +201844,7 @@
       "Territory Building",
       "Wargame"
     ],
-    "grupo": null,
+    "grupo": "Risk",
     "cazagangas_status": null,
     "duracion": 120,
     "modo": "Competitivo",
@@ -202296,7 +202296,7 @@
       "Fantasy",
       "Video Game Theme"
     ],
-    "grupo": null,
+    "grupo": "Boss Monster",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -202966,7 +202966,7 @@
       "Humor",
       "Math"
     ],
-    "grupo": null,
+    "grupo": "Fast Forward",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -203084,7 +203084,7 @@
       "Memory",
       "Spies / Secret Agents"
     ],
-    "grupo": null,
+    "grupo": "Conspiracy",
     "cazagangas_status": null,
     "duracion": 90,
     "modo": "Competitivo",
@@ -203850,7 +203850,7 @@
       "Memory",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Sherlock",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Competitivo",
@@ -204107,7 +204107,7 @@
       "Animals",
       "Card Game"
     ],
-    "grupo": null,
+    "grupo": "Evolution",
     "cazagangas_status": null,
     "duracion": 45,
     "modo": "Competitivo",
@@ -204759,7 +204759,7 @@
       "Humor",
       "Mature / Adult"
     ],
-    "grupo": null,
+    "grupo": "Exploding Kittens",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -205080,7 +205080,7 @@
       "Murder / Mystery",
       "Novel-based"
     ],
-    "grupo": null,
+    "grupo": "Clue",
     "cazagangas_status": null,
     "duracion": 30,
     "modo": "Competitivo",
@@ -205244,7 +205244,7 @@
       "Children's Game",
       "Dice"
     ],
-    "grupo": null,
+    "grupo": "Rory's Story Cubes",
     "cazagangas_status": null,
     "duracion": 20,
     "modo": "Cooperativo",
@@ -209912,7 +209912,7 @@
       "Deduction",
       "Party Game"
     ],
-    "grupo": null,
+    "grupo": "Codenames",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Equipos",
@@ -210111,7 +210111,7 @@
       "Puzzle",
       "Real-time"
     ],
-    "grupo": null,
+    "grupo": "Deckscape",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Cooperativo",
@@ -213067,7 +213067,7 @@
       "Memory",
       "Murder / Mystery"
     ],
-    "grupo": null,
+    "grupo": "Clue",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -213800,7 +213800,7 @@
       "Math",
       "Number"
     ],
-    "grupo": null,
+    "grupo": "Fast Forward",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
@@ -213846,7 +213846,7 @@
       "Exploration",
       "Fantasy"
     ],
-    "grupo": null,
+    "grupo": "Dungeoneer",
     "cazagangas_status": null,
     "duracion": 60,
     "modo": "Competitivo",
@@ -213970,7 +213970,7 @@
       "Movies / TV / Radio theme",
       "Trivia"
     ],
-    "grupo": null,
+    "grupo": "Timeline",
     "cazagangas_status": null,
     "duracion": 15,
     "modo": "Competitivo",
