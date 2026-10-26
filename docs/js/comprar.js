@@ -1,4 +1,5 @@
 let GAMES = [];
+let GRUPO_INDEX = new Map();
 
 const TIPOS = ["Competitivo", "Cooperativo", "Equipos", "Cooperativo y competitivo"];
 
@@ -65,20 +66,29 @@ function sortGames(list) {
 
 function render() {
   const filtered = sortGames(GAMES.filter(matchesFilters));
+  const grouped = collapseGrupos(filtered, GRUPO_INDEX);
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
   const loadMoreRow = document.getElementById("load-more-row");
-  const visible = filtered.slice(0, state.visibleCount);
+  const visible = grouped.slice(0, state.visibleCount);
 
-  count.textContent = filtered.length
-    ? `${visible.length} de ${filtered.length} juego${filtered.length === 1 ? "" : "s"}`
+  count.textContent = grouped.length
+    ? `${visible.length} de ${grouped.length} juego${grouped.length === 1 ? "" : "s"}`
     : "0 juegos";
 
   grid.innerHTML = visible.length
-    ? visible.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
+    ? visible
+        .map((entry) =>
+          cardTemplate(entry.game, {
+            jugadores: state.jugadores,
+            variantes: entry.variantes,
+            grupoNombre: entry.grupoNombre,
+          })
+        )
+        .join("")
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
 
-  const restantes = filtered.length - visible.length;
+  const restantes = grouped.length - visible.length;
   loadMoreRow.innerHTML = restantes > 0
     ? `<button type="button" class="load-more-btn" id="load-more-btn">Mostrar ${Math.min(PAGE_SIZE, restantes)} más (quedan ${restantes})</button>`
     : "";
@@ -231,9 +241,10 @@ function setupControls() {
 document.getElementById("nav").innerHTML = navTemplate("comprar.html");
 setupFiltersToggle();
 
-loadGames()
-  .then((data) => {
+Promise.all([loadGames(), loadGrupos()])
+  .then(([data, grupos]) => {
     GAMES = data;
+    GRUPO_INDEX = buildGrupoIndex(grupos);
     setupControls();
     render();
   })
