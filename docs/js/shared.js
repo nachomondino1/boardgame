@@ -60,30 +60,16 @@ function loadGames() {
   return fetch("data/data.json").then((r) => r.json());
 }
 
-function loadGrupos() {
-  return fetch("data/grupos.json")
-    .then((r) => r.json())
-    .catch(() => ({ grupos: [] }));
-}
-
-// nombre -> nombre del grupo, para saber de un juego si es "variante de" algo
-function buildGrupoIndex(grupos) {
-  const map = new Map();
-  (grupos.grupos || []).forEach((grupo) => {
-    grupo.juegos.forEach((nombre) => map.set(nombre, grupo.nombre));
-  });
-  return map;
-}
-
 // Colapsa una lista ya filtrada/ordenada: la primera aparición de cada
 // grupo (la de mejor orden, porque la lista ya viene ordenada) se queda
 // como representante de la tarjeta; el resto de sus variantes se cuelgan
-// adentro en vez de ocupar su propia fila en la grilla.
-function collapseGrupos(list, grupoIndex) {
+// adentro en vez de ocupar su propia fila en la grilla. `g.grupo` ya viene
+// calculado en data.json (ver construct_data.py / data/grupos.json).
+function collapseGrupos(list) {
   const representantes = new Map(); // nombre del grupo -> entry
   const result = [];
   list.forEach((g) => {
-    const grupoNombre = grupoIndex.get(g.nombre);
+    const grupoNombre = g.grupo;
     if (!grupoNombre) {
       result.push({ game: g, variantes: [], grupoNombre: null });
       return;
