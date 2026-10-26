@@ -1,5 +1,9 @@
-"""Agrega juegos nuevos al catálogo, de dos formas:
+"""Agrega juegos nuevos al catálogo, de tres formas:
 
+0. --add-all: bulk, agrega TODO bgg_id del dataset que falte en
+   universo_juegos.jsonl, con link_cazagangas vacío (resolverlo juego
+   por juego para miles de filas es muy costoso por ahora). Solo con
+   --mode dummy.
 1. --add <id o nombre>: busca el juego en el dataset de BGG y lo suma a
    universo_juegos.jsonl / bgg_data.jsonl / cazagangas_data.jsonl en un
    solo paso:
@@ -131,6 +135,25 @@ def add_to_ludoteca(bgg_id, nombre, estado):
     return True
 
 
+def add_all_missing(universo_rows, dataset):
+    """Agrega una fila de identidad para TODO bgg_id del dataset que
+    todavía no esté en universo_juegos.jsonl — bulk, sin resolver
+    Cazagangas (--estado tampoco aplica acá, es por juego): hoy
+    verificar el link de Cazagangas de miles de juegos de una es
+    demasiado costoso (HEAD real por juego, con delay), así que queda
+    vacío para cargar a mano o resolver más adelante con search_new_game.py
+    --add puntual."""
+    existing_ids = {r["bgg_id"] for r in universo_rows if r.get("bgg_id")}
+    nuevas = [
+        {"bgg_id": bgg_id, "nombre": row["name"], "bgg_url": f"https://boardgamegeek.com/boardgame/{bgg_id}", "link_cazagangas": ""}
+        for bgg_id, row in dataset.items()
+        if bgg_id not in existing_ids
+    ]
+    universo_rows.extend(nuevas)
+    print(f"Agregando {len(nuevas)} juego(s) nuevo(s) del dataset a {UNIVERSO_PATH.name} (link_cazagangas vacío).")
+    return nuevas
+
+
 def missing_ids(universo_rows, cache_rows):
     universo_ids = [(r.get("bgg_id") or "").strip() for r in universo_rows]
     universo_ids = [i for i in universo_ids if i]
@@ -141,6 +164,8 @@ def missing_ids(universo_rows, cache_rows):
 def main():
     parser = argparse.ArgumentParser(description="Suma juegos nuevos a universo_juegos.jsonl / bgg_data.jsonl / cazagangas_data.jsonl")
     parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual")
+    parser.add_argument("--add-all", action="store_true",
+                         help="agrega TODO bgg_id del dataset que falte en universo_juegos.jsonl (bulk, sin Cazagangas)")
     parser.add_argument("--estado", choices=ESTADOS_VALIDOS, default=None,
                          help="si se pasa, también agrega una fila a ludoteca.jsonl con este estado "
                               "(sin esto, el juego nuevo queda como Watchlist implícito, sin fila)")
@@ -148,11 +173,19 @@ def main():
                          help="dummy = dataset placeholder de Hugging Face (default); "
                               "api = xmlapi2 oficial (requiere app aprobada)")
     args = parser.parse_args()
+    if args.add_all and args.add:
+        parser.error("--add-all y --add son excluyentes")
+    if args.add_all and args.mode == "api":
+        parser.error("--add-all solo con --mode dummy (miles de requests a xmlapi2 no es razonable)")
 
     dataset = fetch_dataset() if args.mode == "dummy" else {}
 
     universo_rows = load_universo()
     updates = {}
+
+    if args.add_all:
+        add_all_missing(universo_rows, dataset)
+        write_universo(universo_rows)
 
     if args.add:
         existing_ids = {r["bgg_id"] for r in universo_rows if r.get("bgg_id")}

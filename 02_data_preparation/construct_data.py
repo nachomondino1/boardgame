@@ -164,6 +164,13 @@ def main():
         if g["precio_calidad"] is not None:
             g["precio_calidad"] = round(g["precio_calidad"], 2)
 
+    # descripcion no viaja a data.json: es el campo más pesado con
+    # diferencia (~60% del archivo con el catálogo completo de BGG) y el
+    # sitio ya no la muestra en la tarjeta (ver docs/js/shared.js) — para
+    # leer la descripción real, el link a la ficha de BGG alcanza.
+    for g in games:
+        g.pop("descripcion", None)
+
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(games, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"OK: {len(games)} juegos escritos en {OUTPUT_PATH}")
