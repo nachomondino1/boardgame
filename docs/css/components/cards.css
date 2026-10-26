@@ -148,6 +148,15 @@ details p {
   margin: 6px 0 0;
 }
 
+details.variantes ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+details.variantes li a {
+  color: inherit;
+}
+
 .empty-state {
   text-align: center;
   color: var(--muted);

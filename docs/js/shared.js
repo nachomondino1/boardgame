@@ -49,6 +49,45 @@ function loadGames() {
   return fetch("data/data.json").then((r) => r.json());
 }
 
+function loadGrupos() {
+  return fetch("data/grupos.json")
+    .then((r) => r.json())
+    .catch(() => ({ grupos: [] }));
+}
+
+// nombre -> nombre del grupo, para saber de un juego si es "variante de" algo
+function buildGrupoIndex(grupos) {
+  const map = new Map();
+  (grupos.grupos || []).forEach((grupo) => {
+    grupo.juegos.forEach((nombre) => map.set(nombre, grupo.nombre));
+  });
+  return map;
+}
+
+// Colapsa una lista ya filtrada/ordenada: la primera aparición de cada
+// grupo (la de mejor orden, porque la lista ya viene ordenada) se queda
+// como representante de la tarjeta; el resto de sus variantes se cuelgan
+// adentro en vez de ocupar su propia fila en la grilla.
+function collapseGrupos(list, grupoIndex) {
+  const representantes = new Map(); // nombre del grupo -> entry
+  const result = [];
+  list.forEach((g) => {
+    const grupoNombre = grupoIndex.get(g.nombre);
+    if (!grupoNombre) {
+      result.push({ game: g, variantes: [], grupoNombre: null });
+      return;
+    }
+    if (representantes.has(grupoNombre)) {
+      representantes.get(grupoNombre).variantes.push(g);
+    } else {
+      const entry = { game: g, variantes: [], grupoNombre };
+      representantes.set(grupoNombre, entry);
+      result.push(entry);
+    }
+  });
+  return result;
+}
+
 // Puntaje de "qué tan recomendado" es un juego para jugar HOY con N jugadores.
 // No es una fórmula del Sheet: combina Mi gusto (duración <=60, complejidad <=2.5),
 // si N es el número ideal de jugadores, y el puntaje personal/BGG como desempate.
@@ -82,6 +121,18 @@ function cardTemplate(g, opts) {
   if (g.descripcion) notesParts.push(`<p>${escapeHtml(g.descripcion)}</p>`);
   const detailsHtml = notesParts.length
     ? `<details><summary>Más info</summary>${notesParts.join("")}</details>`
+    : "";
+
+  const variantes = opts.variantes || [];
+  const variantesHtml = variantes.length
+    ? `<details class="variantes">
+        <summary>${variantes.length} variante${variantes.length === 1 ? "" : "s"} más de ${escapeHtml(opts.grupoNombre)}</summary>
+        <ul>${variantes
+          .map((v) => `<li>${v.bgg_url
+            ? `<a href="${escapeHtml(v.bgg_url)}" target="_blank" rel="noopener">${escapeHtml(v.nombre)}</a>`
+            : escapeHtml(v.nombre)}</li>`)
+          .join("")}</ul>
+      </details>`
     : "";
 
   const nombreHtml = g.bgg_url
@@ -123,6 +174,7 @@ function cardTemplate(g, opts) {
       ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
       ${compraHtml}
       ${detailsHtml}
+      ${variantesHtml}
     </div>
   `;
 }

@@ -15,7 +15,12 @@ que salga de otras fuentes (ej. bosque_data.csv el día que se automatice —
 ver el README de esta carpeta).
 
 Campos que son tuyos, nunca los toca el enriquecimiento de BGG:
-    bgg_id, nombre, estado, bgg_url, modo, mi_puntaje, pros, cons, notas
+    bgg_id, nombre, estado, bgg_url, modo, transportable, mi_puntaje, pros,
+    cons, notas
+`transportable` ("Sí"/"No"/"Más o menos", o vacío): según el tamaño de la
+caja, si el juego entra en una mochila/bolso para llevarlo a otro lado.
+Carga 100% manual — BGG no tiene este dato, así que nunca se completa solo
+ni se investiga, se deja vacío hasta que el usuario lo carga.
 El resto (anio, descripcion, disenador, edad_min, jug_min/max,
 jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg, reviews_bgg,
 ranking_bgg, mecanicas, categorias) sale de BGG y se refresca en cada
@@ -95,7 +100,7 @@ USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.m
 TOP_N_DEFAULT = 1000
 
 # Columnas propias (nunca las pisa el enriquecimiento) vs. las que vienen de BGG.
-OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "mi_puntaje", "pros", "cons", "notas"]
+OWNED_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "transportable", "mi_puntaje", "pros", "cons", "notas"]
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
               "mecanicas", "categorias"]
@@ -109,7 +114,7 @@ BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_ma
 # últimos campos difieran mucho en longitud de una fila a otra, nunca
 # corren de lugar a los campos estructurados que los preceden.
 ALL_FIELDS = [
-    "bgg_id", "nombre", "estado", "bgg_url", "modo",
+    "bgg_id", "nombre", "estado", "bgg_url", "modo", "transportable",
     "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
     "disenador", "mecanicas", "categorias",
