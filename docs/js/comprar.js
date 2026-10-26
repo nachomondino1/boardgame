@@ -83,6 +83,7 @@ function render() {
             jugadores: state.jugadores,
             variantes: entry.variantes,
             grupoNombre: entry.grupoNombre,
+            showCazagangas: true,
           })
         )
         .join("")
