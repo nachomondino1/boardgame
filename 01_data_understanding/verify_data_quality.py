@@ -13,12 +13,12 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-BGG_DIR = ROOT / "collect_initial_data" / "bgg"
-sys.path.insert(0, str(BGG_DIR))
+HERE = Path(__file__).resolve().parent
+COLLECT_DIR = HERE / "collect_initial_data"
+sys.path.insert(0, str(COLLECT_DIR))
 from collect_bgg_data import ALL_FIELDS, LIST_FIELDS  # noqa: E402
 
-BGG_DATA_PATH = BGG_DIR / "bgg_data.jsonl"
+BGG_DATA_PATH = HERE.parent / "data" / "bgg_data.jsonl"
 
 ESTADOS_VALIDOS = {"Own", "Prev. owned", "Watchlist", "Want to buy", "Descartado"}
 # "Ambos" y "A confirmar" son variantes legacy conocidas (ver README) — se
