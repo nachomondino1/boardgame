@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA_PATH = ROOT / "docs" / "data" / "data.json"
 
-MIN_REVIEWS_PERCENTILE = 40  # descarta el Watchlist por debajo de este percentil de reviews_bgg
+MIN_REVIEWS_PERCENTILE = 80  # descarta el Watchlist por debajo de este percentil de reviews_bgg
 TOP_N_WATCHLIST = 5000  # de lo que queda, los TOP_N mejor puntuados (puntaje_bgg) por sobre el resto
 
 
