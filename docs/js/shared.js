@@ -8,17 +8,6 @@ function normalize(str) {
     .toLowerCase();
 }
 
-// Mejor esfuerzo, no una resolución real contra el catálogo: el juego puede
-// no estar en Cazagangas o tener un slug distinto (ej. le agregan el año,
-// o le sacan signos de puntuación distinto a como lo hacemos acá). El link
-// se muestra siempre igual; si no existe, Cazagangas da 404 y listo.
-function cazagangasUrl(nombre) {
-  const slug = normalize(nombre)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug ? `https://www.cazagangas.com.ar/juego/${slug}` : null;
-}
-
 function jugBestRange(g) {
   if (g.jug_best_min == null && g.jug_best_max == null) return null;
   const lo = g.jug_best_min != null ? g.jug_best_min : g.jug_best_max;
@@ -140,8 +129,12 @@ function cardTemplate(g, opts) {
     ? `<span class="badge badge-best">👥 Best con ${opts.jugadores}</span>`
     : "";
 
-  const cazagangasHtml = opts.showCazagangas
-    ? `<a class="stat stat-link" href="${escapeHtml(cazagangasUrl(g.nombre))}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
+  // link_cazagangas/cazagangas_status ya vienen resueltos desde
+  // check_cazagangas_links.py + integrate_data.py: solo se muestra cuando
+  // sabemos que el link responde 200 (no uno armado a ciegas que puede
+  // dar 404 — ver DATA_PLAYBOOK.md).
+  const cazagangasHtml = opts.showCazagangas && g.cazagangas_status === "200"
+    ? `<a class="stat stat-link" href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
     : "";
 
   const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda || cazagangasHtml)
