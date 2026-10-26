@@ -1,7 +1,7 @@
 """Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: mis_datos.jsonl
-+ bgg_data.jsonl + grupos.json + cazagangas_data.jsonl ya mergeados — correr
-ese script antes si alguna fuente cambió), calcula las columnas derivadas y
-escribe docs/data/data.json, lo que consume el sitio.
++ universo_juegos.jsonl + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl
+ya mergeados — correr ese script antes si alguna fuente cambió), calcula
+las columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
 
 integrated_data.jsonl es JSON Lines (un objeto por línea, ver el docstring
 de collect_bgg_data.py sobre por qué JSONL y no CSV): mecanicas/categorias

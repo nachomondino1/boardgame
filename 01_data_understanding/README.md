@@ -2,43 +2,54 @@
 
 Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso es trabajo de `02_data_preparation/`, y 02 puede importar de 01, nunca al revés).
 
-- `collect_initial_data/collect_bgg_data.py` — produce dos archivos de `../data/`: `mis_datos.jsonl` (EL universo de juegos: identidad + Estado + todo lo que cargás a mano) y `bgg_data.jsonl` (caché 100% regenerable de datos de BGG, join por `bgg_id`). Ver más abajo.
-- `collect_initial_data/cazagangas/check_cazagangas_links.py` — chequea si el link a la ficha de cada juego en [Cazagangas](https://www.cazagangas.com.ar) existe de verdad (código HTTP real, no un slug armado a ciegas). Produce `../data/01_data_understanding/cazagangas_data.jsonl`. A diferencia de Bosque Lúdico, esta fuente sí se integra activamente (ver `02_data_preparation/integrate_data.py`) — lo único que no corre solo es el chequeo de red en sí (manual, por volumen).
+- `collect_initial_data/collect_bgg_data.py` — produce dos archivos de `../data/01_data_understanding/`: `universo_juegos.jsonl` (catálogo de identidad: `bgg_id`, `nombre`, `bgg_url`, `link_cazagangas`) y `bgg_data.jsonl` (caché 100% regenerable de datos de BGG, join por `bgg_id`). Nunca toca `mis_datos.jsonl`. Ver más abajo.
+- `collect_initial_data/cazagangas/check_cazagangas_links.py` — verifica con un HEAD real el `link_cazagangas` ya cargado en `universo_juegos.jsonl` (no arma ninguna URL). Produce `../data/01_data_understanding/cazagangas_data.jsonl`. A diferencia de Bosque Lúdico, esta fuente sí se integra activamente (ver `02_data_preparation/integrate_data.py`) — lo único que no corre solo es el chequeo de red en sí (manual, por volumen).
 - `collect_initial_data/bosque_ludico/` — **[PAUSADO]** precio en [El Bosque Lúdico](https://www.elbosqueludico.com.ar). Los scripts existen y funcionan solos, pero nada los corre activamente ni integra su salida todavía — ver más abajo.
 
-- `verify_data_quality.py` — chequeos de integridad sobre `mis_datos.jsonl` y `bgg_data.jsonl` (bgg_id único, estado/modo válidos, min ≤ max, rangos numéricos, etc.), no modifica nada, solo reporta. Ver más abajo.
+- `../data/01_data_understanding/mis_datos.jsonl` — 100% manual, lo cargás vos: Estado, modo, transportable, tu puntaje/pros/cons/notas. Ningún script de esta carpeta lo escribe.
+
+- `verify_data_quality.py` — chequeos de integridad sobre `mis_datos.jsonl`, `universo_juegos.jsonl` y `bgg_data.jsonl` (bgg_id único, estado/modo válidos, min ≤ max, rangos numéricos, etc.), no modifica nada, solo reporta. Ver más abajo.
 
 Describe data / Explore data (contar nulos, correlaciones, etc.) — en un futuro, no existen todavía.
 
 ## verify_data_quality.py: Verify Data Quality (CRISP-DM)
 
-Corre standalone sobre `mis_datos.jsonl` + `bgg_data.jsonl`, en cualquier momento (después de un `--add`, una corrección manual, o un refresh):
+Corre standalone sobre los tres archivos de `data/01_data_understanding/`, en cualquier momento (después de un `--add`, una edición a mano de `mis_datos.jsonl`, o un refresh):
 
 ```bash
 python3 01_data_understanding/verify_data_quality.py
 ```
 
-Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que convendría arreglar — ej. `bgg_id` repetido, un min mayor que su max, un `estado` que no es ninguno de los válidos) o `WARNING` (exit code 0: algo para revisar pero no necesariamente un error — ej. un `modo` con una variante legacy, dos juegos con el mismo nombre pero `bgg_id` distinto, o un `bgg_id` en `mis_datos.jsonl` que todavía no tiene fila en `bgg_data.jsonl`). No corrige nada solo: si encuentra un duplicado real, hay que sacarlo a mano (o pedírselo a Claude).
+Reporta cada problema como `ERROR` (sale con exit code 1: datos rotos que convendría arreglar — ej. `bgg_id` repetido, un min mayor que su max, un `estado` que no es ninguno de los válidos) o `WARNING` (exit code 0: algo para revisar pero no necesariamente un error — ej. un `modo` con una variante legacy, dos juegos con el mismo nombre pero `bgg_id` distinto, un `bgg_id` en `universo_juegos.jsonl` que todavía no tiene fila en `bgg_data.jsonl`, o un juego de `mis_datos.jsonl` que todavía no está en `universo_juegos.jsonl`). No corrige nada solo: si encuentra un duplicado real, hay que sacarlo a mano (o pedírselo a Claude).
 
-## collect_initial_data/collect_bgg_data.py: el universo de juegos (`mis_datos.jsonl`) + su caché de BGG (`bgg_data.jsonl`)
+## Tres archivos, cada uno con una sola fuente de verdad
 
-Dos archivos, cada uno con una sola fuente de verdad (ver `DATA_PLAYBOOK.md`, "Las columnas que no vienen de BGG viven en su propio archivo"):
+Ver `DATA_PLAYBOOK.md`, "Las columnas que no vienen de BGG viven en su propio archivo", para el porqué de esta separación:
 
-- **`../data/01_data_understanding/mis_datos.jsonl`** — identidad + Estado + todo lo que cargás a mano. `collect_bgg_data.py` **nunca** lo pisa salvo que se lo pidas explícito (`--add`, `--set-estado`): un refresh normal ni lo abre para escribir. Si se borra, se pierde tu trabajo — no es regenerable de ninguna fuente externa.
-- **`../data/01_data_understanding/bgg_data.jsonl`** — caché de BGG (rating, duración, etc.), un juego por línea para cada `bgg_id` no vacío de `mis_datos.jsonl`. Se reescribe entero en cada refresh. Si se borra, el próximo refresh la reconstruye sola — no se pierde nada.
+- **`../data/01_data_understanding/universo_juegos.jsonl`** — catálogo de identidad, "qué juegos conoce este repo". `collect_bgg_data.py` lo escribe (bootstrap, `--add`) con `bgg_id`/`nombre`/`bgg_url` resueltos automático contra el dataset de BGG — `link_cazagangas` se carga a mano (la ficha real en cazagangas.com.ar/juego/...).
+- **`../data/01_data_understanding/mis_datos.jsonl`** — tu opinión/estado sobre cada juego. 100% manual: ningún script de `01_data_understanding/` lo escribe. Si se borra, se pierde tu trabajo — no es regenerable de ninguna fuente externa.
+- **`../data/01_data_understanding/bgg_data.jsonl`** — caché de BGG (rating, duración, etc.), un juego por línea para cada `bgg_id` no vacío de `universo_juegos.jsonl`. Se reescribe entero en cada refresh. Si se borra, el próximo refresh la reconstruye sola — no se pierde nada.
 
-`bgg_id` es la primera columna de ambos, para poder integrar fácil (ver `02_data_preparation/integrate_data.py`).
+`bgg_id` es la primera columna de los tres, para poder integrar fácil (ver `02_data_preparation/integrate_data.py`); `mis_datos.jsonl` también guarda `nombre` (además de `bgg_id`) para que una fila se entienda sin tener que cruzar con `universo_juegos.jsonl`, y como respaldo de join para los pocos juegos sin `bgg_id`.
 
-**El orden de las filas de cada tabla de abajo es el orden real de los campos dentro de cada línea** (`MIS_DATOS_FIELDS`/`BGG_CACHE_FIELDS` en `collect_bgg_data.py`): primero los campos cortos/estructurados (longitud parecida entre juegos), al final los de texto libre o longitud muy variable — así, al editar un `.jsonl` a mano, un campo largo en un juego puntual no hace más difícil ubicar los campos que lo preceden en otra fila.
+**El orden de las filas de cada tabla de abajo es el orden real de los campos dentro de cada línea** (`UNIVERSO_FIELDS`/`BGG_CACHE_FIELDS` en `collect_bgg_data.py`, `MIS_DATOS_FIELDS` en `verify_data_quality.py`): primero los campos cortos/estructurados (longitud parecida entre juegos), al final los de texto libre o longitud muy variable — así, al editar un `.jsonl` a mano, un campo largo en un juego puntual no hace más difícil ubicar los campos que lo preceden en otra fila.
+
+### `data/01_data_understanding/universo_juegos.jsonl`
+
+| Columna | Valores típicos | Descripción | Notas |
+|---|---|---|---|
+| `bgg_id` | id numérico de BGG, o vacío | Identificador del juego en BGG. | Clave de join con `bgg_data.jsonl`, `mis_datos.jsonl` y otras fuentes (ver `bosque_ludico/`, `cazagangas/`). Vacío cuando el juego no tiene ficha en BGG. |
+| `nombre` | texto | Nombre del juego. | En inglés tal como figura en BGG, no traducido. |
+| `bgg_url` | URL a `boardgamegeek.com/boardgame/<id>` | Link a la ficha de BGG. | Se arma sola al agregar el juego (`--add`). |
+| `link_cazagangas` | URL a `cazagangas.com.ar/juego/<slug>`, o vacío | Link a la ficha del juego en Cazagangas. | **100% manual** — ni este script ni el frontend lo arman solos. Vacío hasta que lo cargás a mano; `check_cazagangas_links.py` lo verifica (no lo genera). |
 
 ### `data/01_data_understanding/mis_datos.jsonl`
 
 | Columna | Valores típicos | Descripción | Notas |
 |---|---|---|---|
-| `bgg_id` | id numérico de BGG, o vacío | Identificador del juego en BGG. | Clave de join con `bgg_data.jsonl` y con otras fuentes (ver `bosque_ludico/`, `cazagangas/`). Vacío cuando el juego no tiene ficha en BGG. |
-| `nombre` | texto | Nombre del juego. | En inglés tal como figura en BGG, no traducido. |
+| `bgg_id` | id numérico de BGG, o vacío | Mismo valor que en `universo_juegos.jsonl` — clave de join principal. | Vacío para juegos sin ficha en BGG (ahí `nombre` hace de respaldo). |
+| `nombre` | texto | Nombre del juego. | Duplicado a propósito de `universo_juegos.jsonl`, para que la fila se lea sola y sirva de respaldo de join. |
 | `estado` | `Own`, `Prev. owned`, `Watchlist`, `Want to buy`, `Descartado` | En qué situación está el juego respecto a vos. | `Want to buy` es una shortlist *dentro* de la watchlist (juegos que se quieren comprar pronto, no solo "interesa"). `Descartado` está reservado (badge y CSS ya existen) pero sin uso real todavía. |
-| `bgg_url` | URL a `boardgamegeek.com/boardgame/<id>` | Link a la ficha de BGG. | Se arma sola al agregar el juego. |
 | `modo` | `Competitivo`, `Cooperativo`, `Equipos`, `Cooperativo y competitivo`, o vacío | Tipo de juego para el filtro "Tipo" de ¿Cuál comprar?. | Estos 4 son los que espera `docs/js/comprar.js`; hay alguna fila legacy con variantes sueltas (`Ambos`, `A confirmar`) que convendría normalizar en algún momento. Se completa a mano, nunca se infiere de BGG. |
 | `transportable` | `Sí`, `No`, `Más o menos`, o vacío | Si el juego entra en una mochila/bolso para llevarlo a otro lado, según el tamaño de la caja. | 100% manual — BGG no trackea esto, nunca se completa solo ni se investiga. Valores iniciales cargados desde una planilla personal del usuario (2026-10-26). |
 | `mi_puntaje` | 1–10, o vacío | Tu puntaje personal. | Opinión personal — nunca investigar ni inventar, se deja en blanco hasta que el usuario lo cargue. Casi siempre vacío: solo se completa para juegos `Own`/`Prev. owned` que ya jugaste. |
@@ -49,7 +60,7 @@ Dos archivos, cada uno con una sola fuente de verdad (ver `DATA_PLAYBOOK.md`, "L
 
 | Columna | Valores típicos | Descripción | Notas |
 |---|---|---|---|
-| `bgg_id` | id numérico de BGG | Clave de join con `mis_datos.jsonl`. | Toda fila de este archivo tiene un `bgg_id` no vacío (si no hay match en BGG, directamente no hay fila). |
+| `bgg_id` | id numérico de BGG | Clave de join con `universo_juegos.jsonl`/`mis_datos.jsonl`. | Toda fila de este archivo tiene un `bgg_id` no vacío (si no hay match en BGG, directamente no hay fila). |
 | `anio` | año | Año de publicación. | — |
 | `edad_min` | entero, o vacío | Edad mínima recomendada. | El dataset usa `0` como sentinel de "sin dato" en vez de vacío; el script ya lo trata como `null`. |
 | `jug_min` / `jug_max` | rango de jugadores | Cantidad de jugadores que soporta el juego. | **Regla fija: siempre priorizar el rango "Community" de la ficha de BGG por sobre el de caja.** El dataset placeholder trae `minplayers`/`maxplayers` (caja, ej. 2–5), que no siempre coincide con lo que la comunidad recomienda (ej. Bomb Busters: caja 2–5, Community 3–5). Si se tiene o se puede chequear el dato de Community, usar ese; si no está disponible y se carga el de caja por default, **dejar nota explícita en `mis_datos.jsonl::notas` aclarando que es el valor de caja, no el de Community** (para que quede claro que puede no reflejar lo recomendado). Un refresh futuro sin `--mode api` va a volver a pisar una corrección manual con el valor del dataset — la nota ayuda a detectarlo. |
@@ -64,20 +75,16 @@ Dos archivos, cada uno con una sola fuente de verdad (ver `DATA_PLAYBOOK.md`, "L
 | `categorias` | array JSON de texto | Categorías temáticas (ej. Animals, Spies / Secret Agents). | — |
 | `descripcion` | texto (inglés) | Descripción oficial del juego, tal como figura en la ficha de BGG. | Es el texto de marketing/reglas de BGG, no un resumen propio — no confundir con `mis_datos.jsonl::notas`, que es lo que vos escribís. El campo más largo y de longitud más variable de todos, por eso va último. |
 
-**`mis_datos.jsonl` se commitea porque no es regenerable sin pérdida** (sobre todo `mi_puntaje`/`pros`/`cons`/`notas`, cargadas a mano, igual que antes el Sheet). **`bgg_data.jsonl` también se commitea** (para no depender de la red en cada build — el sitio lee `docs/data/data.json`, no esto directo), pero a diferencia de `mis_datos.jsonl` sí es 100% regenerable: `collect_bgg_data.py` la reconstruye entera a partir de los `bgg_id` de `mis_datos.jsonl`.
+**`universo_juegos.jsonl` y `mis_datos.jsonl` se commitean porque no son regenerables sin pérdida** (`link_cazagangas`/`mi_puntaje`/`pros`/`cons`/`notas`, cargadas a mano, igual que antes el Sheet). **`bgg_data.jsonl` también se commitea** (para no depender de la red en cada build — el sitio lee `docs/data/data.json`, no esto directo), pero a diferencia de los otros dos sí es 100% regenerable: `collect_bgg_data.py` la reconstruye entera a partir de los `bgg_id` de `universo_juegos.jsonl`.
 
-### Cómo se usa, de cuatro formas
+### Cómo se usa `collect_bgg_data.py`, de tres formas
 
-1. **Bootstrap** (la primera vez, cuando `mis_datos.jsonl` todavía no existe): arma el universo con el top N (1000 por default) del ranking de BGG + tus propios juegos. Esto último lo hace leyendo `ludoteca/mi_ludoteca.json` **una sola vez**, para taguear qué juegos son `Own`/`Prev. owned` (el resto queda `Watchlist`) — después de este bootstrap, `mi_ludoteca.json` ya se puede borrar, no se vuelve a leer nunca más (así quedó: el bootstrap para este repo ya corrió y la carpeta `ludoteca/` no existe más).
-2. **Refresh** (default una vez que `mis_datos.jsonl` ya existe, sin `--add`/`--set-estado`): re-descarga el dataset de BGG y reconstruye `bgg_data.jsonl` entero a partir de los `bgg_id` que ya están en `mis_datos.jsonl`. Nunca toca `mis_datos.jsonl` — es lo que corre el cron.
-3. **Agregar un juego puntual** (`--add`): así es como se amplía el universo de acá en más — `mis_datos.jsonl` no se regenera solo con juegos nuevos, se le pide explícitamente.
+1. **Bootstrap** (la primera vez, cuando `universo_juegos.jsonl` todavía no existe): arma el catálogo con el top N (1000 por default) del ranking de BGG + tus propios juegos. Esto último lo hace leyendo `ludoteca/mi_ludoteca.json` **una sola vez**, solo identidad — después de este bootstrap, `mi_ludoteca.json` ya se puede borrar, no se vuelve a leer nunca más (así quedó: el bootstrap para este repo ya corrió y la carpeta `ludoteca/` no existe más). No asigna ningún estado: eso lo cargás vos en `mis_datos.jsonl` aparte.
+2. **Refresh** (default una vez que `universo_juegos.jsonl` ya existe, sin `--add`): re-descarga el dataset de BGG y reconstruye `bgg_data.jsonl` entero a partir de los `bgg_id` que ya están en `universo_juegos.jsonl`. Nunca toca `universo_juegos.jsonl` ni `mis_datos.jsonl` — es lo que corre el cron.
+3. **Agregar un juego puntual** (`--add`): resuelve `bgg_id`/`nombre`/`bgg_url` automático contra el dataset y agrega la fila a `universo_juegos.jsonl`, con `link_cazagangas` vacío (cargalo a mano y corré `check_cazagangas_links.py` para verificarlo). Después, agregá el juego a `mis_datos.jsonl` a mano con el estado que quieras — este script no lo hace por vos.
    ```bash
-   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430                    # por bgg_id (Gloomhaven)
-   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan" --estado Own    # por nombre, y le decís el Estado (default Watchlist)
-   ```
-4. **Cambiar el estado de un juego ya cargado** (`--set-estado`): edita `mis_datos.jsonl` nomás, no toca ni descarga nada de BGG.
-   ```bash
-   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --set-estado "Sky Team" "Want to buy"
+   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430      # por bgg_id (Gloomhaven)
+   python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan"   # por nombre
    ```
 
 ### De dónde sale el dato de BGG
@@ -96,7 +103,7 @@ Dos quirks del dataset que el script ya filtra, por si hace falta debuggear algo
 ## Correr todo el pipeline de 01 a mano
 
 ```bash
-python3 01_data_understanding/collect_initial_data/collect_bgg_data.py   # refresca mis_datos.jsonl/bgg_data.jsonl (o --add para sumar un juego)
+python3 01_data_understanding/collect_initial_data/collect_bgg_data.py   # refresca universo_juegos.jsonl/bgg_data.jsonl (o --add para sumar un juego)
 python3 02_data_preparation/integrate_data.py             # ver 02_data_preparation/README.md
 python3 02_data_preparation/construct_data.py              # ver 02_data_preparation/README.md
 ```

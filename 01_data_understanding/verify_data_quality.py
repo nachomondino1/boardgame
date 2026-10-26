@@ -1,8 +1,9 @@
 """Verify Data Quality (CRISP-DM, fase Data Understanding): chequeos sobre
-data/01_data_understanding/mis_datos.jsonl (el universo + lo que cargás a mano) y data/01_data_understanding/bgg_data.jsonl
-(el caché de BGG) que no dependen de ningún otro paso del pipeline — corre
-standalone, antes o después de un refresh/--add/--set-estado de
-collect_bgg_data.py.
+data/01_data_understanding/mis_datos.jsonl (lo que cargás a mano),
+universo_juegos.jsonl (el catálogo de identidad) y bgg_data.jsonl (el
+caché de BGG) que no dependen de ningún otro paso del pipeline — corre
+standalone, antes o después de un refresh/--add de collect_bgg_data.py o
+de una edición a mano de mis_datos.jsonl.
 
 No modifica nada: solo reporta. Pensado para correr a mano después de
 cargar juegos nuevos o corregir datos, y eventualmente como paso de CI
@@ -18,10 +19,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 COLLECT_DIR = HERE / "collect_initial_data"
 sys.path.insert(0, str(COLLECT_DIR))
-from collect_bgg_data import MIS_DATOS_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
+from collect_bgg_data import UNIVERSO_FIELDS, BGG_CACHE_FIELDS, LIST_FIELDS  # noqa: E402
 
-MIS_DATOS_PATH = HERE.parent / "data" / "01_data_understanding" / "mis_datos.jsonl"
-BGG_DATA_PATH = HERE.parent / "data" / "01_data_understanding" / "bgg_data.jsonl"
+DATA_DIR = HERE.parent / "data" / "01_data_understanding"
+MIS_DATOS_PATH = DATA_DIR / "mis_datos.jsonl"
+UNIVERSO_PATH = DATA_DIR / "universo_juegos.jsonl"
+BGG_DATA_PATH = DATA_DIR / "bgg_data.jsonl"
+
+MIS_DATOS_FIELDS = ["bgg_id", "nombre", "estado", "modo", "transportable", "mi_puntaje", "pros", "cons", "notas"]
 
 ESTADOS_VALIDOS = {"Own", "Prev. owned", "Watchlist", "Want to buy", "Descartado"}
 # "Ambos" y "A confirmar" son variantes legacy conocidas (ver README) — se
@@ -83,10 +88,9 @@ def check_schema(rows, expected_fields, path):
     return problems
 
 
-def check_bgg_id_unico(rows):
-    """bgg_id es el identificador del juego en BGG: si se repite en
-    mis_datos.jsonl, son dos filas para el mismo juego (duplicado real, no
-    una coincidencia)."""
+def check_bgg_id_unico(rows, path):
+    """bgg_id es el identificador del juego en BGG: si se repite, son dos
+    filas para el mismo juego (duplicado real, no una coincidencia)."""
     problems = []
     vistos = {}
     for row in rows:
@@ -96,14 +100,14 @@ def check_bgg_id_unico(rows):
         if bgg_id in vistos:
             problems.append((
                 "ERROR",
-                f'bgg_id {bgg_id} repetido: "{vistos[bgg_id]}" y "{nombre_de(row)}"',
+                f'{path.name}: bgg_id {bgg_id} repetido: "{vistos[bgg_id]}" y "{nombre_de(row)}"',
             ))
         else:
             vistos[bgg_id] = nombre_de(row)
     return problems
 
 
-def check_nombre_duplicado(rows):
+def check_nombre_duplicado(rows, path):
     """Mismo nombre en dos filas con bgg_id distinto (o vacío) puede ser el
     mismo juego cargado dos veces por error, o dos ediciones distintas
     legítimas — se marca como warning para que se revise a mano, no error
@@ -113,12 +117,12 @@ def check_nombre_duplicado(rows):
     for row in rows:
         nombre = (row.get("nombre") or "").strip().lower()
         if not nombre:
-            problems.append(("ERROR", "fila con nombre vacío"))
+            problems.append(("ERROR", f"{path.name}: fila con nombre vacío"))
             continue
         if nombre in vistos:
             problems.append((
                 "WARNING",
-                f'nombre repetido: "{nombre_de(row)}" (bgg_id {row.get("bgg_id") or "vacío"}) '
+                f'{path.name}: nombre repetido: "{nombre_de(row)}" (bgg_id {row.get("bgg_id") or "vacío"}) '
                 f'ya estaba cargado (bgg_id {vistos[nombre] or "vacío"})',
             ))
         else:
@@ -186,9 +190,9 @@ def check_list_fields(bgg_rows):
     return problems
 
 
-def check_bgg_url_coincide_con_bgg_id(rows):
+def check_bgg_url_coincide_con_bgg_id(universo_rows):
     problems = []
-    for row in rows:
+    for row in universo_rows:
         bgg_id = (row.get("bgg_id") or "").strip()
         bgg_url = (row.get("bgg_url") or "").strip()
         if bgg_id and bgg_url and f"/boardgame/{bgg_id}" not in bgg_url and f"/boardgameexpansion/{bgg_id}" not in bgg_url:
@@ -196,38 +200,62 @@ def check_bgg_url_coincide_con_bgg_id(rows):
     return problems
 
 
-def check_bgg_id_sin_cache(mis_datos_rows, bgg_ids_en_cache):
-    """Un juego con bgg_id en mis_datos.jsonl pero sin fila en
+def check_bgg_id_sin_cache(universo_rows, bgg_ids_en_cache):
+    """Un juego con bgg_id en universo_juegos.jsonl pero sin fila en
     bgg_data.jsonl: o no corrió collect_bgg_data.py todavía después de
     cargarlo, o ese bgg_id no tiene match en el dataset de origen (puede
     pasar, no es necesariamente un error — se marca warning para revisar)."""
     problems = []
-    for row in mis_datos_rows:
+    for row in universo_rows:
         bgg_id = (row.get("bgg_id") or "").strip()
         if bgg_id and bgg_id not in bgg_ids_en_cache:
             problems.append(("WARNING", f"{nombre_de(row)}: bgg_id {bgg_id} no tiene datos en bgg_data.jsonl todavía"))
     return problems
 
 
+def check_mis_datos_en_universo(mis_datos_rows, universo_rows):
+    """Un juego de mis_datos.jsonl que no aparece en universo_juegos.jsonl
+    (ni por bgg_id ni por nombre) no va a tener bgg_url/link_cazagangas/
+    datos de BGG en data.json — probablemente falta correr
+    collect_bgg_data.py --add para ese juego."""
+    ids = {(r.get("bgg_id") or "").strip() for r in universo_rows if r.get("bgg_id")}
+    nombres = {r.get("nombre") for r in universo_rows}
+    problems = []
+    for row in mis_datos_rows:
+        bgg_id = (row.get("bgg_id") or "").strip()
+        if bgg_id and bgg_id in ids:
+            continue
+        if row.get("nombre") in nombres:
+            continue
+        problems.append(("WARNING", f'{nombre_de(row)}: no está en universo_juegos.jsonl todavía (ni por bgg_id ni por nombre)'))
+    return problems
+
+
 def main():
     mis_datos_rows = load_jsonl(MIS_DATOS_PATH)
+    universo_rows = load_jsonl(UNIVERSO_PATH)
     bgg_rows = load_jsonl(BGG_DATA_PATH)
-    print(f"Verificando {len(mis_datos_rows)} juego(s) en {MIS_DATOS_PATH} "
+    print(f"Verificando {len(mis_datos_rows)} juego(s) en {MIS_DATOS_PATH}, "
+          f"{len(universo_rows)} en {UNIVERSO_PATH} "
           f"y {len(bgg_rows)} fila(s) en {BGG_DATA_PATH}...\n")
 
     all_problems = []
     all_problems += check_schema(mis_datos_rows, MIS_DATOS_FIELDS, MIS_DATOS_PATH)
+    all_problems += check_schema(universo_rows, UNIVERSO_FIELDS, UNIVERSO_PATH)
     all_problems += check_schema(bgg_rows, BGG_CACHE_FIELDS, BGG_DATA_PATH)
-    all_problems += check_bgg_id_unico(mis_datos_rows)
-    all_problems += check_nombre_duplicado(mis_datos_rows)
+    all_problems += check_bgg_id_unico(mis_datos_rows, MIS_DATOS_PATH)
+    all_problems += check_bgg_id_unico(universo_rows, UNIVERSO_PATH)
+    all_problems += check_nombre_duplicado(mis_datos_rows, MIS_DATOS_PATH)
+    all_problems += check_nombre_duplicado(universo_rows, UNIVERSO_PATH)
     all_problems += check_estado(mis_datos_rows)
     all_problems += check_modo(mis_datos_rows)
-    all_problems += check_bgg_url_coincide_con_bgg_id(mis_datos_rows)
     all_problems += check_rangos_numericos(mis_datos_rows, NUMERIC_RANGES_MIS_DATOS)
+    all_problems += check_bgg_url_coincide_con_bgg_id(universo_rows)
+    all_problems += check_mis_datos_en_universo(mis_datos_rows, universo_rows)
     all_problems += check_rangos_min_max(bgg_rows)
     all_problems += check_rangos_numericos(bgg_rows, NUMERIC_RANGES_BGG)
     all_problems += check_list_fields(bgg_rows)
-    all_problems += check_bgg_id_sin_cache(mis_datos_rows, {r["bgg_id"] for r in bgg_rows})
+    all_problems += check_bgg_id_sin_cache(universo_rows, {r["bgg_id"] for r in bgg_rows})
 
     errores = [p for p in all_problems if p[0] == "ERROR"]
     warnings = [p for p in all_problems if p[0] == "WARNING"]

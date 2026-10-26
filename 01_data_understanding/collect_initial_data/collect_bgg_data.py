@@ -1,51 +1,51 @@
-"""Recolección inicial de BGG, repartida en dos archivos de data/ (ver
-DATA_PLAYBOOK.md, "Las columnas que no vienen de BGG viven en su propio
-archivo"):
+"""Recolección inicial de BGG, a partir del catálogo de identidad en
+data/01_data_understanding/universo_juegos.jsonl (ver DATA_PLAYBOOK.md,
+"Las columnas que no vienen de BGG viven en su propio archivo"):
 
-- data/01_data_understanding/mis_datos.jsonl — EL UNIVERSO de juegos (qué juegos existen, con qué
-  Estado) + todo lo que cargás vos a mano: bgg_id, nombre, estado, bgg_url,
-  modo, transportable, mi_puntaje, pros, cons, notas. Este script NUNCA pisa
-  estas columnas salvo que vos se lo pidas explícito (--add, --set-estado):
-  un refresh normal no las toca.
-- data/01_data_understanding/bgg_data.jsonl — caché 100% regenerable de datos de BGG (rating,
-  duración, etc.) para cada bgg_id de mis_datos.jsonl. Se reescribe entero
-  en cada corrida; si se borra, se reconstruye solo con el próximo refresh,
-  no se pierde nada (a diferencia de mis_datos.jsonl, que si se borra se
-  pierde tu trabajo a mano).
+- data/01_data_understanding/universo_juegos.jsonl — EL catálogo de
+  identidad: bgg_id, nombre, bgg_url, link_cazagangas. Es la lista de
+  "qué juegos conoce este repo", sin opinión tuya sobre ellos (eso vive en
+  mis_datos.jsonl, que es 100% manual — ver más abajo). Este script sí lo
+  escribe (bootstrap, --add), siempre identidad pura: nunca un estado, ni
+  tu puntaje, ni nada de mis_datos.jsonl.
+- data/01_data_understanding/bgg_data.jsonl — caché 100% regenerable de
+  datos de BGG (rating, duración, etc.) para cada bgg_id de
+  universo_juegos.jsonl. Se reescribe entera en cada corrida; si se borra,
+  se reconstruye sola con el próximo refresh.
+- data/01_data_understanding/mis_datos.jsonl — estado, modo, transportable,
+  mi_puntaje, pros, cons, notas: 100% tuyo, lo cargás vos a mano. Este
+  script NUNCA lo toca ni lo lee.
 
-Formato de ambos: JSON Lines, un juego por línea (no un array). Se eligió
+Formato de todos: JSON Lines, un juego por línea (no un array). Se eligió
 sobre CSV porque `descripcion` trae texto libre de BGG con saltos de línea
 reales adentro, lo que en CSV hacía que una sola fila se desparramara en
 decenas de líneas visuales en el editor — en JSONL un salto de línea dentro
 de un string se escapa (`\\n` literal), así que cada juego queda
 garantizado en una sola línea física, buscable por nombre con Ctrl+F.
 
-`transportable` ("Sí"/"No"/"Más o menos", o vacío): según el tamaño de la
-caja, si el juego entra en una mochila/bolso para llevarlo a otro lado.
-Carga 100% manual — BGG no tiene este dato, así que nunca se completa solo
-ni se investiga, se deja vacío hasta que el usuario lo carga.
-
-El resto de data/01_data_understanding/bgg_data.jsonl (anio, descripcion, disenador, edad_min,
+El resto de bgg_data.jsonl (anio, descripcion, disenador, edad_min,
 jug_min/max, jug_best_min/max, duracion_min/max, complejidad, puntaje_bgg,
 reviews_bgg, ranking_bgg, mecanicas, categorias) sale de BGG y se refresca
 en cada corrida. `mecanicas`/`categorias` se guardan como array JSON (no
 como string separado por "|").
 
-Cuatro usos:
-  1. Bootstrap (primera vez, mis_datos.jsonl no existe todavía): arma el
-     universo con el top N del ranking de BGG + tus propios juegos (lee
-     ludoteca/mi_ludoteca.json UNA SOLA VEZ para taguear Own/Prev. owned —
-     después de este bootstrap ese archivo ya no hace falta, se puede
-     borrar). El resto de los juegos del top N quedan en Watchlist.
-  2. Refresh (default si mis_datos.jsonl ya existe, sin --add/--set-estado):
+Tres usos:
+  1. Bootstrap (primera vez, universo_juegos.jsonl no existe todavía): arma
+     el catálogo con el top N del ranking de BGG + tus propios juegos (lee
+     ludoteca/mi_ludoteca.json UNA SOLA VEZ para identidad — después de
+     este bootstrap ese archivo ya no hace falta, se puede borrar). No
+     asigna ningún estado: eso lo cargás vos en mis_datos.jsonl aparte.
+  2. Refresh (default si universo_juegos.jsonl ya existe, sin --add):
      reconstruye bgg_data.jsonl entero a partir de los bgg_id que ya están
-     en mis_datos.jsonl. Nunca toca mis_datos.jsonl.
+     en universo_juegos.jsonl. Nunca toca universo_juegos.jsonl ni
+     mis_datos.jsonl.
   3. Agregar un juego puntual (--add): `collect_bgg_data.py --add <id o
-     nombre> [--estado Own|"Prev. owned"|Watchlist]`. Así es como se
-     amplía el universo de acá en más — mis_datos.jsonl no se regenera
-     solo, se le pide explícitamente que sume un juego.
-  4. Cambiar el estado de un juego ya cargado (--set-estado): edita
-     mis_datos.jsonl nomás, no toca ni descarga nada de BGG.
+     nombre>`. Resuelve bgg_id/nombre/bgg_url automático contra el dataset
+     y agrega la fila a universo_juegos.jsonl con `link_cazagangas` vacío
+     — cargá ese link a mano (la ficha real en cazagangas.com.ar/juego/...)
+     y corré check_cazagangas_links.py para verificarlo. Después, agregá
+     el juego a mis_datos.jsonl a mano con el estado que quieras: este
+     script no lo hace por vos.
 
 De dónde sale el dato de BGG hoy: BGG cerró el acceso sin auth a xmlapi2
 (401 hasta que aprueben la aplicación registrada) — ver DATA_PLAYBOOK.md.
@@ -59,9 +59,8 @@ juego, en un solo archivo — no hace falta combinar dos datasets distintos.
 Uso:
     python3 01_data_understanding/collect_initial_data/collect_bgg_data.py                  # bootstrap o refresh según corresponda
     python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --top 1500       # bootstrap con otro tamaño de universo
-    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430     # agrega Gloomhaven (Watchlist)
-    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan" --estado Own
-    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --set-estado "Sky Team" "Want to buy"  # cambia el estado de un juego ya existente
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add 174430     # agrega Gloomhaven a universo_juegos.jsonl
+    python3 01_data_understanding/collect_initial_data/collect_bgg_data.py --add "Wingspan"
 """
 import argparse
 import ast
@@ -84,7 +83,7 @@ csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae des
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-MIS_DATOS_PATH = ROOT / "data" / "01_data_understanding" / "mis_datos.jsonl"
+UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
 LUDOTECA_PATH = HERE / "ludoteca" / "mi_ludoteca.json"
 
@@ -98,9 +97,10 @@ USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.m
 
 TOP_N_DEFAULT = 1000
 
-# data/01_data_understanding/mis_datos.jsonl: tuyas, este script nunca las pisa salvo que se lo
-# pidas explícito (--add/--set-estado).
-MIS_DATOS_FIELDS = ["bgg_id", "nombre", "estado", "bgg_url", "modo", "transportable", "mi_puntaje", "pros", "cons", "notas"]
+# data/01_data_understanding/universo_juegos.jsonl: identidad pura, sin
+# estado ni ninguna opinión tuya (eso es mis_datos.jsonl, que este script
+# ni lee ni escribe).
+UNIVERSO_FIELDS = ["bgg_id", "nombre", "bgg_url", "link_cazagangas"]
 # data/01_data_understanding/bgg_data.jsonl: 100% de BGG, se refresca entero en cada corrida.
 BGG_FIELDS = ["anio", "descripcion", "disenador", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
               "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
@@ -311,19 +311,19 @@ def fetch_api_attributes(bgg_id):
 
 
 # ---------------------------------------------------------------------------
-# mis_datos.jsonl / bgg_data.jsonl: leer / escribir (un objeto JSON por
-# línea, ver docstring)
+# universo_juegos.jsonl / bgg_data.jsonl: leer / escribir (un objeto JSON
+# por línea, ver docstring)
 # ---------------------------------------------------------------------------
 
-def load_mis_datos():
-    with MIS_DATOS_PATH.open(encoding="utf-8") as f:
+def load_universo():
+    with UNIVERSO_PATH.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def write_mis_datos(rows):
-    with MIS_DATOS_PATH.open("w", encoding="utf-8") as f:
+def write_universo(rows):
+    with UNIVERSO_PATH.open("w", encoding="utf-8") as f:
         for row in rows:
-            ordered = {k: (row.get(k) or "") for k in MIS_DATOS_FIELDS}
+            ordered = {k: (row.get(k) or "") for k in UNIVERSO_FIELDS}
             f.write(json.dumps(ordered, ensure_ascii=False))
             f.write("\n")
 
@@ -364,13 +364,7 @@ def load_ludoteca_once():
         own.append({
             "bgg_id": entry.get("bgg_id") or extract_bgg_id(bgg_url) or "",
             "nombre": nombre,
-            "estado": entry.get("estado") or "",
             "bgg_url": bgg_url or "",
-            "modo": entry.get("modo") or "",
-            "mi_puntaje": entry.get("mi_puntaje") or "",
-            "pros": entry.get("pros") or "",
-            "cons": entry.get("cons") or "",
-            "notas": entry.get("notas") or "",
         })
     return own
 
@@ -390,12 +384,12 @@ def bootstrap(dataset, top_n):
         rows.append({
             "bgg_id": r["id"],
             "nombre": r["name"],
-            "estado": "Watchlist",
             "bgg_url": f"https://boardgamegeek.com/boardgame/{r['id']}",
         })
         added += 1
 
-    print(f"Bootstrap: {len(own)} juego(s) propios + {added} candidatos del top {top_n} de BGG.")
+    print(f"Bootstrap: {len(own)} juego(s) propios + {added} candidatos del top {top_n} de BGG "
+          f"(identidad nomás — cargá el estado de cada uno en mis_datos.jsonl a mano).")
     return rows
 
 
@@ -429,52 +423,27 @@ def find_in_dataset(term, dataset):
     return next(r for r in dataset.values() if r.get("name") == best_name)
 
 
-def set_estado(term, estado, rows):
-    """Cambia el estado de un juego que ya está en mis_datos.jsonl, por nombre o bgg_id."""
-    term_stripped = term.strip()
-    if term_stripped.isdigit():
-        matches = [r for r in rows if r.get("bgg_id", "").strip() == term_stripped]
-    else:
-        norm_term = normalize(term_stripped)
-        matches = [r for r in rows if normalize(r.get("nombre", "")) == norm_term]
-        if not matches:
-            names = [r.get("nombre", "") for r in rows]
-            close = difflib.get_close_matches(term_stripped, names, n=5, cutoff=0.6)
-            if not close:
-                sys.exit(f"No encontré ningún juego parecido a \"{term}\" en {MIS_DATOS_PATH}.")
-            if len(close) > 1:
-                sys.exit("Más de un juego parecido, sé más específico:\n  " + "\n  ".join(close))
-            matches = [r for r in rows if r.get("nombre") == close[0]]
-
-    if not matches:
-        sys.exit(f"No encontré \"{term}\" en {MIS_DATOS_PATH}.")
-    if len(matches) > 1:
-        sys.exit(f"Más de un juego se llama \"{term}\", usá el bgg_id.")
-
-    row = matches[0]
-    print(f"{row['nombre']}: estado {row.get('estado') or '(vacío)'} -> {estado}")
-    row["estado"] = estado
-
-
-def add_game(term, estado, dataset):
+def add_game(term, dataset):
     row = find_in_dataset(term, dataset)
     new_row = {
         "bgg_id": row["id"],
         "nombre": row["name"],
-        "estado": estado or "Watchlist",
         "bgg_url": f"https://boardgamegeek.com/boardgame/{row['id']}",
+        "link_cazagangas": "",
     }
-    print(f"Agregando: {new_row['nombre']} (bgg_id={new_row['bgg_id']}, estado={new_row['estado']})")
+    print(f"Agregando a {UNIVERSO_PATH.name}: {new_row['nombre']} (bgg_id={new_row['bgg_id']})")
+    print("  Falta: link_cazagangas a mano (la ficha real en cazagangas.com.ar/juego/...),")
+    print(f"  y el estado en mis_datos.jsonl (este script no lo toca).")
     return new_row
 
 
 # ---------------------------------------------------------------------------
 
-def build_bgg_cache(mis_datos_rows, dataset, mode):
+def build_bgg_cache(universo_rows, dataset, mode):
     """Reconstruye el caché de BGG entero a partir de los bgg_id no vacíos
-    de mis_datos_rows — un juego sin bgg_id (BGG_SKIP, o sin match todavía)
+    de universo_rows — un juego sin bgg_id (BGG_SKIP, o sin match todavía)
     simplemente no tiene fila acá, no es un error."""
-    ids = [(r.get("bgg_id") or "").strip() for r in mis_datos_rows]
+    ids = [(r.get("bgg_id") or "").strip() for r in universo_rows]
     ids = [i for i in ids if i]
 
     cache_rows = []
@@ -494,51 +463,34 @@ def build_bgg_cache(mis_datos_rows, dataset, mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Universo de juegos (data/01_data_understanding/mis_datos.jsonl) + caché de BGG (data/01_data_understanding/bgg_data.jsonl)")
-    parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual (por id de BGG o nombre)")
-    parser.add_argument("--estado", choices=["Own", "Prev. owned", "Watchlist", "Want to buy"],
-                         help="estado del juego agregado con --add (default Watchlist)")
-    parser.add_argument("--set-estado", nargs=2, metavar=("NOMBRE_O_ID", "ESTADO"),
-                         help="cambia el estado de un juego que ya está en mis_datos.jsonl, ej: "
-                              "--set-estado \"Sky Team\" \"Want to buy\"")
+    parser = argparse.ArgumentParser(description="Catálogo de identidad (data/01_data_understanding/universo_juegos.jsonl) + caché de BGG (data/01_data_understanding/bgg_data.jsonl)")
+    parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual a universo_juegos.jsonl (por id de BGG o nombre)")
     parser.add_argument("--top", type=int, default=TOP_N_DEFAULT, help="tamaño del universo en el bootstrap (default 1000)")
     parser.add_argument("--mode", choices=["dummy", "api"], default="dummy",
                          help="dummy = dataset placeholder de terceros (default, hoy); "
                               "api = xmlapi2 oficial (requiere app aprobada)")
     args = parser.parse_args()
 
-    if args.estado and not args.add:
-        parser.error("--estado solo tiene sentido junto con --add")
-
-    if args.set_estado:
-        if not MIS_DATOS_PATH.exists():
-            parser.error(f"No existe {MIS_DATOS_PATH} todavía.")
-        nombre_o_id, estado = args.set_estado
-        rows = load_mis_datos()
-        set_estado(nombre_o_id, estado, rows)
-        write_mis_datos(rows)
-        return
-
     dataset = fetch_dataset() if args.mode == "dummy" else {}
 
     if args.add:
-        if not MIS_DATOS_PATH.exists():
-            parser.error(f"No existe {MIS_DATOS_PATH} todavía; corré el script sin --add primero para el bootstrap")
-        rows = load_mis_datos()
+        if not UNIVERSO_PATH.exists():
+            parser.error(f"No existe {UNIVERSO_PATH} todavía; corré el script sin --add primero para el bootstrap")
+        rows = load_universo()
         if args.add.strip().isdigit() and any(r["bgg_id"] == args.add.strip() for r in rows):
-            sys.exit(f"El juego con bgg_id {args.add} ya está en {MIS_DATOS_PATH}.")
-        rows.append(add_game(args.add, args.estado, dataset))
-        write_mis_datos(rows)
-    elif not MIS_DATOS_PATH.exists():
+            sys.exit(f"El juego con bgg_id {args.add} ya está en {UNIVERSO_PATH}.")
+        rows.append(add_game(args.add, dataset))
+        write_universo(rows)
+    elif not UNIVERSO_PATH.exists():
         rows = bootstrap(dataset, args.top)
-        write_mis_datos(rows)
+        write_universo(rows)
     else:
-        rows = load_mis_datos()
-        print(f"{len(rows)} juego(s) ya en {MIS_DATOS_PATH}, refrescando caché de BGG...")
+        rows = load_universo()
+        print(f"{len(rows)} juego(s) ya en {UNIVERSO_PATH}, refrescando caché de BGG...")
 
     cache_rows = build_bgg_cache(rows, dataset, args.mode)
     write_bgg_cache(cache_rows)
-    print(f"\nOK: {len(rows)} juego(s) en {MIS_DATOS_PATH}, {len(cache_rows)} con datos de BGG en {BGG_DATA_PATH}")
+    print(f"\nOK: {len(rows)} juego(s) en {UNIVERSO_PATH}, {len(cache_rows)} con datos de BGG en {BGG_DATA_PATH}")
 
 
 if __name__ == "__main__":
