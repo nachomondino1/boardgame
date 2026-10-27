@@ -268,10 +268,23 @@ const COMPARE_ROWS = [
   { label: "Duración", get: (g) => g.duracion, format: (v) => `${v} min`, better: "lower" },
   { label: "Complejidad", get: (g) => g.complejidad, format: (v) => v.toFixed(1), better: "lower" },
   { label: "Puntaje BGG", get: (g) => g.puntaje_bgg, format: (v) => v.toFixed(2), better: "higher" },
+  { label: "Reviews BGG", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
   { label: "Puntaje ajustado", get: (g) => g.puntaje_ajust_bgg, format: (v) => v.toFixed(2), better: "higher" },
   { label: "Mi puntaje", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
   { label: "Costo", get: (g) => g.costo, format: (v) => `$${v.toLocaleString("es-AR")}`, better: "lower" },
   { label: "Precio / calidad", get: (g) => g.precio_calidad, format: (v) => v.toFixed(2), better: "higher" },
+  {
+    label: "Ficha BGG",
+    html: true,
+    get: (g) => (g.bgg_url ? `<a href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">Ver en BGG ↗</a>` : null),
+  },
+  {
+    label: "Cazagangas",
+    html: true,
+    get: (g) => (g.cazagangas_status === "200" && g.link_cazagangas
+      ? `<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">Ver en Cazagangas ↗</a>`
+      : null),
+  },
   { label: "Diseñador", get: (g) => g.disenador },
   { label: "Mecánicas", get: (g) => (g.mecanicas && g.mecanicas.length ? g.mecanicas.join(", ") : null) },
   { label: "Categorías", get: (g) => (g.categorias && g.categorias.length ? g.categorias.join(", ") : null) },
@@ -287,8 +300,9 @@ function compareCellHtml(game, row, winner) {
   if (!game) return `<td class="compare-cell compare-cell--empty">—</td>`;
   const raw = row.get(game);
   if (raw == null || raw === "") return `<td class="compare-cell compare-cell--empty">?</td>`;
-  const text = row.format ? row.format(typeof raw === "string" ? Number(raw) : raw) : raw;
   const cls = winner ? "compare-cell compare-cell--winner" : "compare-cell";
+  if (row.html) return `<td class="${cls}">${raw}</td>`;  // raw ya viene con su propio escapeHtml en el valor dinámico (ver get())
+  const text = row.format ? row.format(typeof raw === "string" ? Number(raw) : raw) : raw;
   return `<td class="${cls}">${escapeHtml(String(text))}</td>`;
 }
 
