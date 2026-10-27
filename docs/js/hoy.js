@@ -36,7 +36,7 @@ function matchesFilters(g) {
     if (g.jug_min == null || g.jug_max == null) return false;
     if (state.jugadores < g.jug_min || state.jugadores > g.jug_max) return false;
   }
-  const estadosPermitidos = state.incluirDeseados ? new Set(["Own", "Watchlist"]) : new Set(["Own"]);
+  const estadosPermitidos = state.incluirDeseados ? new Set(["Own", "Want to buy"]) : new Set(["Own"]);
   if (!estadosPermitidos.has(g.estado)) return false;
   return true;
 }
@@ -59,8 +59,8 @@ function render() {
 
   if (!posibles.length) {
     const sugerencia = state.incluirDeseados
-      ? "No encontré ningún juego (ni siquiera en tu watchlist) para esa cantidad de jugadores."
-      : "No tenés ningún juego Own para esa cantidad. Probá tildar \"incluir watchlist\" para ver qué comprarías.";
+      ? "No encontré ningún juego (ni siquiera en Want to buy) para esa cantidad de jugadores."
+      : "No tenés ningún juego Own para esa cantidad. Probá tildar \"incluir Want to buy\" para ver qué comprarías.";
     grid.innerHTML = `<div class="empty-state">${sugerencia}</div>`;
     return;
   }
