@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>¿Cuál comprar? — Juegos de mesa</title>
-  <meta name="description" content="Watchlist y lista de deseados de juegos de mesa, filtrados por duración, complejidad y cantidad de jugadores." />
+  <meta name="description" content="Watchlist y lista de deseados de juegos de mesa, filtrados por duración, complejidad y cantidad de jugadores, con comparador lado a lado." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/components/results-bar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/pages/comprar.css" />
+  <link rel="stylesheet" href="css/pages/comparar.css" />
   <link rel="preload" href="data/data.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
@@ -100,6 +101,24 @@
     </label>
   </div>
   <main>
+    <div class="compare-panel" id="compare-panel">
+      <button type="button" class="compare-toggle" id="compare-toggle" aria-expanded="false" aria-controls="compare-body">⚔️ Comparar dos juegos</button>
+      <div class="compare-body" id="compare-body" hidden>
+        <div class="compare-pickers">
+          <div class="compare-picker">
+            <label class="filter-label" for="game-a">Juego A</label>
+            <input type="text" id="game-a" list="games-list" placeholder="Ej: Cascadia" autocomplete="off" />
+          </div>
+          <span class="compare-vs">vs</span>
+          <div class="compare-picker">
+            <label class="filter-label" for="game-b">Juego B</label>
+            <input type="text" id="game-b" list="games-list" placeholder="Ej: Harmonies" autocomplete="off" />
+          </div>
+        </div>
+        <datalist id="games-list"></datalist>
+        <div id="compare-result"></div>
+      </div>
+    </div>
     <div class="grid" id="grid"></div>
     <div class="load-more-row" id="load-more-row"></div>
   </main>
