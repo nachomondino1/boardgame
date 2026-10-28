@@ -1,4 +1,6 @@
 #!/bin/bash
+# Lo corres cuando actualizaste los datos de entrada (ya sea universo_juegos, bgg_data u otro) y queres reflejarlos en la web.
+
 # Actualiza data.json a mano (ver DATA_PLAYBOOK.md, "Gitignorear toda la
 # fuente cruda" en Decisiones clave: el sync automático en CI ya no es
 # posible porque data/01_data_understanding/ es gitignored, solo vive en

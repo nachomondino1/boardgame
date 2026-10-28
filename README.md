@@ -17,6 +17,8 @@ Y abrir `http://localhost:8765`.
 ./sync_data.sh
 ```
 
+ Nota: Sino esperar a los 1º de cada mes que se corre la cronjob local que creé. Corre el ./sync_data.sh
+
 **Agregar un juego nuevo al catálogo:**
 ```bash
 python3 01_data_understanding/collect_initial_data/search_new_game.py --add "Nombre o bgg_id" --estado "Own"
