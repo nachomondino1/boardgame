@@ -200,6 +200,34 @@ def check_bgg_url_coincide_con_bgg_id(universo_rows):
     return problems
 
 
+def check_ranking_bgg_duplicado(bgg_rows, nombre_por_bgg_id):
+    """ranking_bgg es la posición de un juego en el ranking global de BGG:
+    por definición, dos juegos nunca deberían compartir el mismo número.
+    Si pasa, es casi siempre porque se actualizó el ranking de algunos
+    juegos con un dato más nuevo (ej. un mirror en vivo, ver DATA_PLAYBOOK.md)
+    y otros quedaron con el valor viejo del dataset placeholder — warning,
+    no error: mientras se actualiza de a partes del catálogo es esperable
+    que pase, y se corrige a mano cuando se nota (como con Ark Nova /
+    Pandemic Legacy: Season 1, 2026-10-28). bgg_data.jsonl no tiene
+    columna `nombre` (vive en universo_juegos.jsonl), así que se cruza acá
+    para que el mensaje sea legible."""
+    problems = []
+    por_ranking = {}
+    for row in bgg_rows:
+        ranking = _as_float(row.get("ranking_bgg"))
+        if ranking is None:
+            continue
+        por_ranking.setdefault(ranking, []).append(row)
+    for ranking, rows in sorted(por_ranking.items()):
+        if len(rows) > 1:
+            nombres = ", ".join(
+                f'"{nombre_por_bgg_id.get(r.get("bgg_id"), "(sin nombre)")}" (bgg_id {r.get("bgg_id")})'
+                for r in rows
+            )
+            problems.append(("WARNING", f"ranking_bgg {int(ranking)} repetido en {len(rows)} juegos: {nombres}"))
+    return problems
+
+
 def check_bgg_id_sin_cache(universo_rows, bgg_ids_en_cache):
     """Un juego con bgg_id en universo_juegos.jsonl pero sin fila en
     bgg_data.jsonl: o no corrió search_new_game.py todavía después de
@@ -256,6 +284,8 @@ def main():
     all_problems += check_rangos_min_max(bgg_rows)
     all_problems += check_rangos_numericos(bgg_rows, NUMERIC_RANGES_BGG)
     all_problems += check_list_fields(bgg_rows)
+    nombre_por_bgg_id = {r["bgg_id"]: r.get("nombre") for r in universo_rows if r.get("bgg_id")}
+    all_problems += check_ranking_bgg_duplicado(bgg_rows, nombre_por_bgg_id)
     all_problems += check_bgg_id_sin_cache(universo_rows, {r["bgg_id"] for r in bgg_rows})
 
     errores = [p for p in all_problems if p[0] == "ERROR"]
