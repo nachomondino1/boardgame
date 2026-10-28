@@ -2,20 +2,38 @@
 
 Prototipo de página estática para buscar y filtrar la colección de juegos de mesa (sin build system: HTML + CSS + JS vanilla).
 
-## Correr local
+Vivo en: https://nachomondino1.github.io/boardgame/
 
+## Comandos
+
+**Correr la web en local:**
 ```bash
 cd docs && python3 -m http.server 8765
 ```
-
 Y abrir `http://localhost:8765`.
 
-Vivo en: https://nachomondino1.github.io/boardgame/
+**Actualizar los datos de la web** (después de tocar algo en `data/01_data_understanding/`, o para traer juegos/rankings nuevos de BGG) — una sola línea, corre todo el pipeline y lo manda a producción (commit + push + PR + merge a `main`):
+```bash
+./sync_data.sh
+```
+
+**Agregar un juego nuevo al catálogo:**
+```bash
+python3 01_data_understanding/collect_initial_data/search_new_game.py --add "Nombre o bgg_id" --estado "Own"
+```
+`--estado` es opcional — sin él, el juego queda como Watchlist implícito (ver "Un juego sin fila no es un juego sin datos" en `DATA_PLAYBOOK.md`).
+
+**Cambiar el estado (u otro campo manual) de un juego que ya tiene fila en `ludoteca.jsonl`:** no hay script — `--add --estado` solo crea la fila si no existe, nunca pisa una ya cargada (para no perder curación tuya sin querer). Se edita `data/01_data_understanding/ludoteca.jsonl` directo (a mano, o pidiéndoselo a un asistente).
+
+**Rechequear links de Cazagangas** (de a tandas, no bloquea el resto):
+```bash
+python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py --limit 100
+```
 
 ## Páginas
 
 - `index.html` — **Mi ludoteca**: los juegos con Estado Own o Prev. owned (lo que tenés o tuviste), buscador, filtros y orden. Watchlist no se navega acá, solo en ¿Cuál comprar?.
-- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), ordenado por una heurística de qué tan bueno es cada juego para hoy. El toggle "incluir Watchlist" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
+- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), ordenado por Puntaje BGG por default. El toggle "incluir Watchlist" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
 - `comprar.html` — **¿Cuál comprar?**: solo Watchlist, con sliders de duración máxima y complejidad máxima, el mismo filtro de jugadores, y (cuando están cargados/relevados) link a la tienda, costo y relación precio/calidad en cada tarjeta, con opción de ordenar por estos dos últimos. Incluye una sección colapsable "Comparar dos juegos" (tabla lado a lado con todos los campos relevantes, resaltando quién gana cada fila) — antes era una página aparte (`comparar.html`), se fusionó acá porque se usa siempre junto con esta página.
 
 ## Archivos
@@ -33,8 +51,8 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 - `data/01_data_understanding/cazagangas_data.jsonl` — código HTTP real (verificado) del `link_cazagangas` de cada juego de `universo_juegos.jsonl`, generado por `check_cazagangas_links.py` (ver abajo).
 - `01_data_understanding/collect_initial_data/bgg/` — librería y scripts específicos de BGG: `bgg_common.py`, `initialize_bgg_data.py` (bootstrap único, no se vuelve a correr), `modify_values.py` (editar campos puntuales a mano) y `extract_new_fields.py` (sumar una columna nueva a todas las filas).
 - `01_data_understanding/collect_initial_data/cazagangas/` — `cazagangas_common.py` (slug best-effort + verificación HTTP) y `check_cazagangas_links.py` (re-verifica masivamente los links ya cargados, manual).
-- `01_data_understanding/collect_initial_data/search_new_game.py` — vive afuera de `bgg/`/`cazagangas/` porque orquesta las dos: con `--add <id o nombre>` suma un juego nuevo a `universo_juegos.jsonl` + `bgg_data.jsonl` + `cazagangas_data.jsonl`/`link_cazagangas` (si el slug verifica 200) de una; con `--estado <...>` además, agrega una fila a `ludoteca.jsonl` (si no se pasa, el juego queda como Watchlist implícito, sin fila). Sin `--add` (uso normal, lo que corre el cron), completa `bgg_data.jsonl` con lo que falte. Ver el README de `01_data_understanding/`.
-- `01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py` — verifica con un HEAD real el `link_cazagangas` ya cargado en `universo_juegos.jsonl` (no arma ninguna URL) y guarda el código HTTP (`200`/`404`/`error`) en `data/01_data_understanding/cazagangas_data.jsonl`. Corre a mano (`--limit N` para ir de a tandas), no está en el cron — ver `DATA_PLAYBOOK.md`.
+- `01_data_understanding/collect_initial_data/search_new_game.py` — vive afuera de `bgg/`/`cazagangas/` porque orquesta las dos: con `--add <id o nombre>` suma un juego nuevo a `universo_juegos.jsonl` + `bgg_data.jsonl` + `cazagangas_data.jsonl`/`link_cazagangas` (si el slug verifica 200) de una; con `--estado <...>` además, agrega una fila a `ludoteca.jsonl` (si no se pasa, el juego queda como Watchlist implícito, sin fila). Sin `--add` (uso normal, lo que corre `sync_data.sh`), completa `bgg_data.jsonl` con lo que falte. Ver el README de `01_data_understanding/`.
+- `01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py` — verifica con un HEAD real el `link_cazagangas` ya cargado en `universo_juegos.jsonl` (no arma ninguna URL) y guarda el código HTTP (`200`/`404`/`error`) en `data/01_data_understanding/cazagangas_data.jsonl`. Corre a mano (`--limit N` para ir de a tandas), no está en `sync_data.sh` — ver `DATA_PLAYBOOK.md`.
 - `02_data_preparation/integrate_data.py` — junta `universo_juegos.jsonl` (base) + `ludoteca.jsonl`/`bgg_data.jsonl` (por `bgg_id`) + `grupos.json`/`cazagangas_data.jsonl` (por nombre) en un solo archivo (`data/02_data_preparation/integrated_data.jsonl`, gitignored: es un intermedio del build, se regenera siempre). Solo integra, no calcula nada.
 - `02_data_preparation/construct_data.py` — lee `data/02_data_preparation/integrated_data.jsonl`, calcula las columnas derivadas (`duracion`, `modo`, `puntaje_ajust_bgg`, `precio_calidad` — ver "Columnas calculadas" abajo) y escribe `docs/data/data.json`. `transportable`/`bgg_url`/`link_cazagangas`/`grupo`/`cazagangas_status` no se calculan acá, pasan de largo tal cual vienen (`transportable` es 100% manual, ver `01_data_understanding/README.md`; los otros cuatro ya vienen resueltos de `integrate_data.py`).
 - `02_data_preparation/select_data.py` — corre después de `construct_data.py`, sobre `docs/data/data.json`: recorta los candidatos con `estado = "Watchlist"` (nunca los curados — `Own`/`Prev. owned`/`Want to buy`/`Descartado` siempre quedan) descartando los que están por debajo del percentil `MIN_REVIEWS_PERCENTILE` de reviews en BGG (calculado sobre el propio Watchlist de cada corrida, no un número fijo) y quedándose con los `TOP_N_WATCHLIST` mejor puntuados del resto. Pensado para que "¿Cuál comprar?" no tenga que lidiar con miles de tarjetas de baja calidad de dato/interés.
@@ -63,15 +81,6 @@ Ninguna de estas cinco viene directo de una fuente: `02_data_preparation/constru
 - `duracion` — promedio de `duracion_min`/`duracion_max` (ambos de BGG); si falta uno de los dos, el que haya.
 - `modo` (`Competitivo`/`Cooperativo`/`Equipos`/`Cooperativo y competitivo`) — derivado 100% de las mecánicas/categorías de BGG (`Cooperative Game`, `Team-Based Game`, `Semi-Cooperative Game`, `infer_modo` en `bgg_common.py`); sin mecánicas/categorías, queda en `null` en vez de asumir "Competitivo" a ciegas. No vive en ninguna fuente curada a mano.
 
-### Sincronizar a mano
-
-Si no querés esperar al cron, desde GitHub: Actions → "Sync data.json" → Run workflow. O localmente:
-```bash
-python3 01_data_understanding/collect_initial_data/search_new_game.py
-python3 02_data_preparation/integrate_data.py
-python3 02_data_preparation/construct_data.py
-python3 02_data_preparation/select_data.py
-```
 
 ## Qué tiene
 
