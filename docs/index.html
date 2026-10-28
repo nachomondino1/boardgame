@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mi ludoteca</title>
-  <meta name="description" content="Los juegos de mesa que tenés (o tuviste): buscador, filtros por jugadores y estado, y orden por puntaje." />
+  <title>Juegos de mesa — mi colección</title>
+  <meta name="description" content="Mi colección de juegos de mesa, y una forma rápida de elegir qué jugar hoy o qué comprar después." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,67 +15,46 @@
 
   <link rel="stylesheet" href="css/components/base.css" />
   <link rel="stylesheet" href="css/components/nav.css" />
-  <link rel="stylesheet" href="css/components/header.css" />
-  <link rel="stylesheet" href="css/components/filters.css" />
-  <link rel="stylesheet" href="css/components/results-bar.css" />
-  <link rel="stylesheet" href="css/components/cards.css" />
-  <link rel="stylesheet" href="css/pages/index.css" />
+  <link rel="stylesheet" href="css/pages/landing.css" />
   <link rel="preload" href="data/data.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
-  <script src="js/app.js" defer></script>
+  <script src="js/landing.js" defer></script>
 </head>
 <body>
   <div id="nav"></div>
-  <header>
-    <div class="header-inner">
-      <div class="header-top">
-        <div class="header-titles">
-          <h1>📚 Mi ludoteca</h1>
-          <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
-        </div>
-        <div class="header-search">
-          <div class="search-box">
-            <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
-          </div>
-        </div>
+  <main class="landing">
+    <section class="landing__hero">
+      <p class="landing__eyebrow">Juegos de mesa</p>
+      <h1 class="landing__title">Qué tengo, qué jugar hoy<br />y qué comprar después.</h1>
+      <p class="landing__lead">Mi colección en un solo lugar, con una forma rápida de decidir qué sacar de la caja según cuántos son, y qué vale la pena sumar.</p>
+      <div class="landing__stats" id="stats" hidden>
+        <div class="landing__stat"><span class="landing__stat-num" id="stat-own">–</span><span class="landing__stat-label">juegos en casa</span></div>
+        <div class="landing__stat"><span class="landing__stat-num" id="stat-watch">–</span><span class="landing__stat-label">en la lista para comprar</span></div>
+        <div class="landing__stat"><span class="landing__stat-num" id="stat-top">–</span><span class="landing__stat-label">mejor ranking BGG</span></div>
       </div>
-      <div class="filters-panel open">
-        <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
-        <div class="filter-grid filter-grid--nowrap" id="filter-grid">
-          <div class="filter-group">
-            <span class="filter-label">Jugadores</span>
-            <div class="player-stepper">
-              <button id="player-minus">−</button>
-              <span id="player-label">todos</span>
-              <button id="player-plus">+</button>
-              <button id="player-clear" title="Quitar filtro">✕</button>
-            </div>
-          </div>
-          <div class="filter-group">
-            <span class="filter-label">Estado</span>
-            <div class="chip-row" id="estado-chips"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-  <div class="result-count-row">
-    <span id="result-count"></span>
-    <label class="sort-control" for="sort-select">
-      <span class="sort-icon" aria-hidden="true">⇅</span>
-      <select id="sort-select">
-        <option value="ranking_bgg_asc">Ranking BGG</option>
-        <option value="puntaje_bgg_desc">Puntaje BGG</option>
-        <option value="mi_puntaje_desc">Mi puntaje</option>
-        <option value="complejidad_asc">Complejidad (menor primero)</option>
-        <option value="duracion_asc">Duración (menor primero)</option>
-        <option value="nombre_asc">Nombre</option>
-      </select>
-    </label>
-  </div>
-  <main>
-    <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="landing__cards" aria-label="Secciones">
+      <a class="landing__card" href="ludoteca.html">
+        <span class="landing__card-emoji" aria-hidden="true">📚</span>
+        <h2 class="landing__card-title">Mi ludoteca</h2>
+        <p class="landing__card-text">Todo lo que tengo (y lo que tuve). Buscá por nombre, filtrá por cantidad de jugadores y ordená por ranking, duración o complejidad.</p>
+        <span class="landing__card-cta">Ver la colección →</span>
+      </a>
+      <a class="landing__card" href="hoy.html">
+        <span class="landing__card-emoji" aria-hidden="true">🎲</span>
+        <h2 class="landing__card-title">¿Qué jugamos hoy?</h2>
+        <p class="landing__card-text">Decime cuántos son y te muestro qué podés jugar con lo que ya tenés, empezando por los mejor rankeados.</p>
+        <span class="landing__card-cta">Elegir un juego →</span>
+      </a>
+      <a class="landing__card" href="comprar.html">
+        <span class="landing__card-emoji" aria-hidden="true">🛒</span>
+        <h2 class="landing__card-title">¿Cuál comprar?</h2>
+        <p class="landing__card-text">La lista de deseos con puntaje, precio y complejidad, para comparar candidatos y decidir la próxima compra.</p>
+        <span class="landing__card-cta">Comparar opciones →</span>
+      </a>
+    </section>
   </main>
 </body>
 </html>

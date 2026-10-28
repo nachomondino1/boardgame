@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mi ludoteca</title>
+  <meta name="description" content="Los juegos de mesa que tenés (o tuviste): buscador, filtros por jugadores y estado, y orden por puntaje." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" /></noscript>
+
+  <link rel="stylesheet" href="css/components/base.css" />
+  <link rel="stylesheet" href="css/components/nav.css" />
+  <link rel="stylesheet" href="css/components/header.css" />
+  <link rel="stylesheet" href="css/components/filters.css" />
+  <link rel="stylesheet" href="css/components/results-bar.css" />
+  <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/pages/ludoteca.css" />
+  <link rel="preload" href="data/data.json" as="fetch" crossorigin="anonymous" />
+
+  <script src="js/shared.js" defer></script>
+  <script src="js/ludoteca.js" defer></script>
+</head>
+<body>
+  <div id="nav"></div>
+  <header>
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="header-titles">
+          <h1>📚 Mi ludoteca</h1>
+          <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
+        </div>
+        <div class="header-search">
+          <div class="search-box">
+            <input type="text" id="search" placeholder="Buscar juego (ej: pandemic)" />
+          </div>
+        </div>
+      </div>
+      <div class="filters-panel open">
+        <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
+        <div class="filter-grid filter-grid--nowrap" id="filter-grid">
+          <div class="filter-group">
+            <span class="filter-label">Jugadores</span>
+            <div class="player-stepper">
+              <button id="player-minus">−</button>
+              <span id="player-label">todos</span>
+              <button id="player-plus">+</button>
+              <button id="player-clear" title="Quitar filtro">✕</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Estado</span>
+            <div class="chip-row" id="estado-chips"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="result-count-row">
+    <span id="result-count"></span>
+    <label class="sort-control" for="sort-select">
+      <span class="sort-icon" aria-hidden="true">⇅</span>
+      <select id="sort-select">
+        <option value="ranking_bgg_asc">Ranking BGG</option>
+        <option value="puntaje_bgg_desc">Puntaje BGG</option>
+        <option value="mi_puntaje_desc">Mi puntaje</option>
+        <option value="complejidad_asc">Complejidad (menor primero)</option>
+        <option value="duracion_asc">Duración (menor primero)</option>
+        <option value="nombre_asc">Nombre</option>
+      </select>
+    </label>
+  </div>
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+</body>
+</html>

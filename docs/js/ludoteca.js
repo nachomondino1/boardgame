@@ -96,7 +96,7 @@ function setupControls() {
 
 }
 
-document.getElementById("nav").innerHTML = navTemplate("index.html");
+document.getElementById("nav").innerHTML = navTemplate("ludoteca.html");
 setupFiltersToggle();
 
 loadGames()

@@ -4,7 +4,7 @@ const state = {
   jugadores: null,
   incluirDeseados: false,
   soloBest: false,
-  sort: "puntaje_bgg_desc",
+  sort: "ranking_bgg_asc",
 };
 
 // Ordena por el campo del juego directo, como en ¿Cuál comprar?.
