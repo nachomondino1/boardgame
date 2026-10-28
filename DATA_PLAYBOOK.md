@@ -29,10 +29,10 @@ data/01_data_understanding/universo_juegos.jsonl   (gitignored, catálogo de ide
   dataset público de terceros, Hugging Face (ver "Decisiones clave")
   initialize_bgg_data.py: bootstrap único (universo_juegos.jsonl no
   existe todavía) — top N del ranking + ludoteca, identidad nomás.
-  search_new_game.py (uso normal, lo que corre el cron sin --add):
+  search_new_game.py (uso normal, lo que corre sync_data.sh sin --add):
   agrega a bgg_data.jsonl solo los bgg_id de universo_juegos.jsonl que
   todavía no tienen fila — nunca reescribe una fila existente.
-  --add <id o nombre> (un juego a la vez, nunca en el cron): además de
+  --add <id o nombre> (un juego a la vez, nunca en sync_data.sh): además de
   sumar la fila a universo_juegos.jsonl, en la misma corrida arma un
   slug best-effort para Cazagangas y lo verifica con un HEAD real
   (collect_initial_data/cazagangas/cazagangas_common.py) — si da 200,
