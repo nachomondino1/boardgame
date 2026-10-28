@@ -15,7 +15,13 @@ data/01_data_understanding/universo_juegos.jsonl — EL catálogo completo,
 - data/01_data_understanding/bgg_data.jsonl — caché de BGG (ver
   search_new_game.py), join por `bgg_id`. Un juego sin bgg_id (o sin
   match todavía) no tiene fila acá: sus columnas de BGG quedan en `null`,
-  no es un error.
+  no es un error. **Gitignored** (2026-10-28, junto con el resto de
+  `data/01_data_understanding/`, ver DATA_PLAYBOOK.md): pesa ~94MB,
+  un sync lo reescribe entero y el diff era ilegible. Vive solo local,
+  con copia de seguridad a cargo del usuario (no de git) — incluye tanto
+  el dataset de terceros como las correcciones manuales puntuales que se
+  le hacen encima (jugadores "Community" vs. caja, mecánicas/categorías
+  agregadas a mano), ya no separadas en un archivo de overrides aparte.
 - data/01_data_understanding/grupos.json — curado a mano, juego -> nombre
   de grupo (ver DATA_PLAYBOOK.md, "Agrupar variantes/expansiones del
   mismo sistema de juego"), join por `nombre`. Se suma como el campo

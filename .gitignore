@@ -1,8 +1,14 @@
 .DS_Store
 __pycache__/
 cookies.json
-# Pausado, no se usa por ahora (ver DATA_PLAYBOOK.md) — sacado del repo temporalmente.
 # Intermedio del build (integrate_data.py): se regenera siempre a partir de
-# archivos ya commiteados (bgg_data.jsonl, grupos.json, cazagangas_data.jsonl),
-# nunca se edita a mano — no hace falta versionarlo.
+# data/01_data_understanding/, nunca se edita a mano — no hace falta
+# versionarlo.
 data/02_data_preparation/integrated_data.jsonl
+
+# Todo data/01_data_understanding/ vive solo local desde 2026-10-28 (ver
+# DATA_PLAYBOOK.md): backup a cargo del usuario, no de git — una sola regla
+# para todo en vez de decidir archivo por archivo (antes solo bgg_data.jsonl
+# estaba gitignored y el resto commiteado, pero separar "cuál sí, cuál no" es
+# más fricción que simplemente no versionar nada de esta carpeta).
+data/01_data_understanding/
