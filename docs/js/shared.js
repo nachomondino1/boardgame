@@ -1,4 +1,19 @@
-// Helpers compartidos por index.html (Mi ludoteca), hoy.html y comprar.html.
+// Helpers compartidos por ludoteca.html (Mi ludoteca), hoy.html y comprar.html.
+
+// Google Analytics (GA4). Vive acá para cargarse una sola vez desde las 4 páginas;
+// no mide en localhost para no ensuciar los datos con las pruebas.
+(function () {
+  const GA_ID = "G-6QMST63T71";
+  if (["localhost", "127.0.0.1"].includes(location.hostname)) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  gtag("js", new Date());
+  gtag("config", GA_ID);
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(s);
+})();
 
 function normalize(str) {
   return (str || "")
@@ -179,13 +194,15 @@ function setupFiltersToggle() {
 }
 
 function navTemplate(active) {
+  // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
-    { href: "index.html", emoji: "📚", label: "Mi ludoteca" },
+    { href: "index.html", emoji: "🏠", label: "Inicio", cls: "nav-home" },
+    { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca" },
     { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },
   ];
   const linksHtml = links
-    .map((l) => `<a href="${l.href}" class="${l.href === active ? "active" : ""}">${l.emoji} ${l.label}</a>`)
+    .map((l) => `<a href="${l.href}" class="${[l.cls, l.href === active ? "active" : ""].filter(Boolean).join(" ")}">${l.emoji} ${l.label}</a>`)
     .join("");
   return `
     <div class="top-nav">

@@ -49,6 +49,10 @@
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.nav-links a.nav-home {
+  display: none;
+}
+
 .nav-links a:hover {
   color: var(--text);
 }
@@ -97,7 +101,8 @@
      más chica) en vez de un solo renglón que no entra. Si en el futuro
      se suman más páginas y esto deja de ser legible, ahí conviene pasar
      a un menú hamburguesa en vez de seguir achicando. */
-  .nav-links a {
+  .nav-links a,
+  .nav-links a.nav-home {
     display: flex;
     align-items: center;
     justify-content: center;
