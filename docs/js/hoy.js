@@ -4,18 +4,11 @@ const state = {
   jugadores: null,
   incluirDeseados: false,
   soloBest: false,
-  sort: "recomendado",
+  sort: "puntaje_bgg_desc",
 };
 
-// "Recomendado" usa recommendationScore (shared.js); el resto ordena por
-// el campo del juego directo, como en ¿Cuál comprar?.
+// Ordena por el campo del juego directo, como en ¿Cuál comprar?.
 function sortPosibles(posibles) {
-  if (state.sort === "recomendado") {
-    return posibles
-      .map((g) => ({ g, score: recommendationScore(g, state.jugadores) }))
-      .sort((a, b) => b.score - a.score)
-      .map((x) => x.g);
-  }
   const dir = state.sort.endsWith("_asc") ? 1 : -1;
   const field = state.sort.replace(/_(asc|desc)$/, "");
   return [...posibles].sort((a, b) => {

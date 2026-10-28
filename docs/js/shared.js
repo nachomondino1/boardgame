@@ -74,19 +74,6 @@ function collapseGrupos(list) {
   return result;
 }
 
-// Puntaje de "qué tan recomendado" es un juego para jugar HOY con N jugadores.
-// No es una fórmula del Sheet: combina Mi gusto (duración <=60, complejidad <=2.5),
-// si N es el número ideal de jugadores, y el puntaje personal/BGG como desempate.
-function recommendationScore(g, n) {
-  let score = 0;
-  if (matchesJugBest(g, n)) score += 3;
-  if (g.complejidad != null && g.complejidad <= 2.5) score += 1.5;
-  if (g.duracion != null && g.duracion <= 60) score += 1;
-  if (g.modo && normalize(g.modo).includes("cooperativo")) score += 0.5;
-  if (g.mi_puntaje != null) score += g.mi_puntaje / 10;
-  else if (g.puntaje_ajust_bgg != null) score += (g.puntaje_ajust_bgg / 10) * 0.5;
-  return score;
-}
 
 function cardTemplate(g, opts) {
   opts = opts || {};
