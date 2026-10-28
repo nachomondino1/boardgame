@@ -133,10 +133,15 @@ function cardTemplate(g, opts) {
       </div>`
     : "";
 
+  const imagenHtml = g.imagen
+    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" width="56" height="56" onerror="this.remove()">`
+    : "";
+
   return `
     <div class="card">
       <div class="card-title-row">
-        <div>
+        ${imagenHtml}
+        <div class="card-title-text">
           <div class="card-title">${nombreHtml}</div>
           <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}</div>
         </div>

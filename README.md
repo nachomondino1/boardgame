@@ -48,7 +48,7 @@ Cada juego linkea directo a `https://boardgamegeek.com/boardgame/<bgg_id>` — e
 
 ### De dónde salen los datos de BGG
 
-`search_new_game.py`/`initialize_bgg_data.py` completan `descripcion`, `disenador`, `edad_min`, `jug_min/max`, `jug_best_min/max`, `duracion_min/max`, `complejidad`, `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `mecanicas`, `categorias` para los juegos que tienen un link exacto a BGG.
+`search_new_game.py`/`initialize_bgg_data.py` completan `descripcion`, `disenador`, `edad_min`, `jug_min/max`, `jug_best_min/max`, `duracion_min/max`, `complejidad`, `puntaje_bgg`, `reviews_bgg`, `ranking_bgg`, `mecanicas`, `categorias`, `imagen` (URL del thumbnail, CDN de BGG) para los juegos que tienen un link exacto a BGG. `imagen` se muestra como miniatura en cada tarjeta (`docs/js/shared.js`, `cardTemplate`); si falta (juego sin match en el dataset), la tarjeta se ve igual sin ella.
 
 **Hoy corre en `--mode dummy` (default), un placeholder temporal:** la vía oficial (`--mode api`, `xmlapi2/thing`) sigue bloqueada (401 sin auth hasta que BGG apruebe la aplicación registrada), y scrapear la página normal está descartado (Cloudflare la protege con un challenge que no se evade ni con cookies de una sesión ya autenticada — se probó explícito, ver `DATA_PLAYBOOK.md`). En cambio, `--mode dummy` usa un dataset público de terceros con un **snapshot de BGG de 2025** (`games_detailed_info2025.csv` de `mmpa/board_game_analysis` en Hugging Face, ~28.000 juegos, sin auth) — cubre ~98% del universo. No trae precio (BGG no lo trackea; Amazon tampoco se consultó — ver "Pendiente" abajo). Un juego que no esté en ese snapshot no tiene match — sin error, sin dato inventado, esos campos quedan en `null` hasta que BGG apruebe la app.
 
