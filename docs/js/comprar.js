@@ -18,7 +18,7 @@ const state = {
   jugadores: null,
   soloMejor: false,
   soloQuieroComprar: false,
-  sort: "puntaje_ajust_bgg_desc",
+  sort: "ranking_bgg_asc",
   visibleCount: PAGE_SIZE,
 };
 
@@ -269,7 +269,7 @@ const COMPARE_ROWS = [
   { label: "Complejidad", get: (g) => g.complejidad, format: (v) => v.toFixed(1), better: "lower" },
   { label: "Puntaje BGG", get: (g) => g.puntaje_bgg, format: (v) => v.toFixed(2), better: "higher" },
   { label: "Reviews BGG", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
-  { label: "Puntaje ajustado", get: (g) => g.puntaje_ajust_bgg, format: (v) => v.toFixed(2), better: "higher" },
+  { label: "Ranking BGG", get: (g) => g.ranking_bgg, format: (v) => `#${Number(v).toLocaleString("es-AR")}`, better: "lower" },
   { label: "Mi puntaje", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
   { label: "Costo", get: (g) => g.costo, format: (v) => `$${v.toLocaleString("es-AR")}`, better: "lower" },
   { label: "Precio / calidad", get: (g) => g.precio_calidad, format: (v) => v.toFixed(2), better: "higher" },

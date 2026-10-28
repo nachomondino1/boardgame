@@ -78,11 +78,11 @@ python3 02_data_preparation/select_data.py
 - Buscador instantáneo por nombre (Mi ludoteca).
 - Filtro "¿cuántos jugadores somos?" (usa Jug. mín/máx, y marca con un tag verde "Best con N" si N coincide con Jug Best mín/máx).
 - Filtros por Estado en Mi ludoteca (Own / Prev. owned).
-- Orden por Puntaje ajustado, Puntaje BGG, Mi puntaje, Complejidad o Duración.
+- Orden por Ranking BGG, Puntaje BGG, Mi puntaje, Complejidad o Duración.
 - Toggle "Según mi gusto" (duración ≤60 min, complejidad ≤2.5), tomado de la sección "Mi gusto" de la pestaña Resumen.
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
 - Link directo a BGG en el título de cada tarjeta.
-- "¿Qué jugamos hoy?": recomendador simple (no toma nada del Sheet, es una heurística en `shared.js::recommendationScore` que combina Mi gusto + N jugadores dentro de Jug Best mín/máx + puntaje personal/BGG).
+- "¿Qué jugamos hoy?": filtra por N jugadores dentro de Jug mín/máx (o solo Jug Best mín/máx con "Solo si es el mejor número"), ordenado por Puntaje BGG por default (antes había un recomendador heurístico propio en `shared.js::recommendationScore`, sacado por confuso — ver git log, 2026-10-28).
 - "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por tipo (modo), duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). El ~2% de candidatos sin match en el dataset placeholder de BGG no tiene duración/complejidad/jugadores/modo — las tarjetas lo muestran como "?" en vez de ocultarse. Variantes/expansiones del mismo sistema de juego (ej. las cajas de Unmatched) se colapsan en una sola tarjeta, con el resto desplegable (ver `data/01_data_understanding/grupos.json`). Link a la ficha real en [Cazagangas](https://www.cazagangas.com.ar) cuando `check_cazagangas_links.py` confirmó que existe (código 200) — ver `data/01_data_understanding/cazagangas_data.jsonl`. Resultados paginados (60 a la vez, "Mostrar más") y los sliders/el buscador debounced — renderizar hasta ~1000 tarjetas en cada cambio de filtro se sentía lento, sobre todo en mobile.
 
 ## Pendiente si esto vale la pena
