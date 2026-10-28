@@ -15,20 +15,13 @@ data/01_data_understanding/universo_juegos.jsonl — EL catálogo completo,
 - data/01_data_understanding/bgg_data.jsonl — caché de BGG (ver
   search_new_game.py), join por `bgg_id`. Un juego sin bgg_id (o sin
   match todavía) no tiene fila acá: sus columnas de BGG quedan en `null`,
-  no es un error. **Gitignored** (2026-10-28): es un dump de ~28.000
-  juegos del dataset de terceros, pesa ~94MB y un sync lo reescribe
-  entero — el diff es ilegible y choca en cada merge entre branches, sin
-  que nadie lo vaya a revisar. Vive solo local, con copia de seguridad a
-  cargo del usuario (no de git).
-- data/01_data_understanding/bgg_overrides.jsonl — correcciones manuales
-  puntuales sobre bgg_data.jsonl (campos que la ficha real de BGG trae
-  distinto del dataset placeholder — ver bgg_data.jsonl arriba, y
-  DATA_PLAYBOOK.md "Separar overrides de un caché gitignored"). **Sí se
-  versiona**: es chico (una fila por juego corregido, solo los campos que
-  cambian) y es el único lugar donde sobrevive esa corrección si
-  bgg_data.jsonl se borra o se regenera desde cero. Join por `bgg_id`,
-  pisa campo por campo sobre lo que traiga bgg_data.jsonl (no hace falta
-  repetir los campos que no se corrigieron).
+  no es un error. **Gitignored** (2026-10-28, junto con el resto de
+  `data/01_data_understanding/`, ver DATA_PLAYBOOK.md): pesa ~94MB,
+  un sync lo reescribe entero y el diff era ilegible. Vive solo local,
+  con copia de seguridad a cargo del usuario (no de git) — incluye tanto
+  el dataset de terceros como las correcciones manuales puntuales que se
+  le hacen encima (jugadores "Community" vs. caja, mecánicas/categorías
+  agregadas a mano), ya no separadas en un archivo de overrides aparte.
 - data/01_data_understanding/grupos.json — curado a mano, juego -> nombre
   de grupo (ver DATA_PLAYBOOK.md, "Agrupar variantes/expansiones del
   mismo sistema de juego"), join por `nombre`. Se suma como el campo
@@ -63,7 +56,6 @@ ROOT = Path(__file__).resolve().parent.parent
 LUDOTECA_PATH = ROOT / "data" / "01_data_understanding" / "ludoteca.jsonl"
 UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
-BGG_OVERRIDES_PATH = ROOT / "data" / "01_data_understanding" / "bgg_overrides.jsonl"
 GRUPOS_PATH = ROOT / "data" / "01_data_understanding" / "grupos.json"
 CAZAGANGAS_DATA_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
 OUTPUT_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
@@ -109,20 +101,10 @@ def load_ludoteca_indices():
 
 
 def load_bgg_cache_index():
-    """bgg_id -> fila de bgg_data.jsonl, con bgg_overrides.jsonl pisando
-    campo por campo encima (ver su docstring arriba: bgg_data.jsonl es
-    gitignored, bgg_overrides.jsonl es la corrección que sobrevive aunque
-    el cache se borre o se regenere desde cero). `{}` si bgg_data.jsonl no
-    existe todavía (corré initialize_bgg_data.py primero)."""
+    """bgg_id -> fila de bgg_data.jsonl. `{}` si el archivo no existe
+    todavía (corré initialize_bgg_data.py primero)."""
     rows = load_jsonl(BGG_DATA_PATH)
-    index = {r["bgg_id"]: r for r in rows if r.get("bgg_id")}
-    for override in load_jsonl(BGG_OVERRIDES_PATH):
-        bgg_id = override.get("bgg_id")
-        if not bgg_id:
-            continue
-        fields = {k: v for k, v in override.items() if k not in ("bgg_id", "nota")}
-        index.setdefault(bgg_id, {"bgg_id": bgg_id}).update(fields)
-    return index
+    return {r["bgg_id"]: r for r in rows if r.get("bgg_id")}
 
 
 def load_grupo_index():
