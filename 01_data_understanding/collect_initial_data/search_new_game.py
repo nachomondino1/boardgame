@@ -178,10 +178,15 @@ def main():
     if args.add_all and args.mode == "api":
         parser.error("--add-all solo con --mode dummy (miles de requests a xmlapi2 no es razonable)")
 
-    dataset = fetch_dataset() if args.mode == "dummy" else {}
-
     universo_rows = load_universo()
     updates = {}
+
+    # Bajar el dataset (~94MB) es caro — solo vale la pena si de verdad hay
+    # algo que resolver con él (--add/--add-all, o un bgg_id sin fila
+    # todavía en bgg_data.jsonl). La corrida normal de sync_data.sh, sin
+    # juegos nuevos, no debería pagar ese costo por nada.
+    necesita_dataset = args.add_all or args.add or missing_ids(universo_rows, load_bgg_cache())
+    dataset = fetch_dataset() if args.mode == "dummy" and necesita_dataset else {}
 
     if args.add_all:
         add_all_missing(universo_rows, dataset)
