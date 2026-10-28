@@ -4,7 +4,7 @@ const state = {
   query: "",
   jugadores: null,
   estados: new Set(["Own"]),
-  sort: "puntaje_ajust_bgg_desc",
+  sort: "ranking_bgg_asc",
 };
 
 const ESTADOS = ["Own", "Prev. owned"];

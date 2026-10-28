@@ -154,7 +154,7 @@ function cardTemplate(g, opts) {
       </div>
       <div class="stat-row">
         <span class="stat">BGG: ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}${g.reviews_bgg != null ? ` (${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews)` : ""}</span>
-        <span class="stat">Puntaje ajustado: ${g.puntaje_ajust_bgg != null ? g.puntaje_ajust_bgg.toFixed(2) : "?"}</span>
+        <span class="stat">Ranking BGG: ${g.ranking_bgg != null ? "#" + Number(g.ranking_bgg).toLocaleString("es-AR") : "?"}</span>
         ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
       </div>
       ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
