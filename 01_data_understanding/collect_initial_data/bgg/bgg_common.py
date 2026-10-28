@@ -52,7 +52,7 @@ UNIVERSO_FIELDS = ["bgg_id", "nombre", "bgg_url", "link_cazagangas"]
 BGG_CACHE_FIELDS = [
     "bgg_id", "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "disenador", "mecanicas", "categorias", "descripcion",
+    "disenador", "mecanicas", "categorias", "imagen", "descripcion",
 ]
 LIST_FIELDS = {"mecanicas", "categorias"}
 
@@ -201,6 +201,9 @@ def dataset_row_to_attributes(row):
         "ranking_bgg": num("Board Game Rank"),
         "mecanicas": mecanicas,
         "categorias": categorias,
+        # thumbnail (no "image", la versión full): alcanza para la tarjeta
+        # y pesa una fracción — ambas vienen del CDN de BGG igual.
+        "imagen": (row.get("thumbnail") or "").strip() or None,
     }
 
 
@@ -264,6 +267,9 @@ def fetch_api_attributes(bgg_id):
         "ranking_bgg": rank,
         "mecanicas": mecanicas,
         "categorias": categorias,
+        # <thumbnail> es contenido de texto, no un atributo @value como el
+        # resto de los tags que lee text() — por eso no se reusa esa helper.
+        "imagen": (item.find("thumbnail").text or "").strip() or None if item.find("thumbnail") is not None else None,
     }
 
 

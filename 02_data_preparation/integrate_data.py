@@ -78,7 +78,7 @@ LUDOTECA_FIELDS_CON_DEFAULT = {
 BGG_CACHE_FIELDS = [
     "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "disenador", "mecanicas", "categorias", "descripcion",
+    "disenador", "mecanicas", "categorias", "imagen", "descripcion",
 ]
 LIST_FIELDS = {"mecanicas", "categorias"}
 

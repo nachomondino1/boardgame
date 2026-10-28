@@ -32,6 +32,21 @@
   gap: 8px;
 }
 
+.card-title-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-soft);
+}
+
 .card-title {
   font-weight: 700;
   font-size: 1.04rem;
