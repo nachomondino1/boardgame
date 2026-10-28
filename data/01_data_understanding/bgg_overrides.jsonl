@@ -1,0 +1,7 @@
+{"bgg_id": "150145", "jug_min": "3", "jug_max": "6", "jug_best_min": "4", "jug_best_max": "5", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-27)."}
+{"bgg_id": "68448", "jug_min": "3", "jug_max": "7", "jug_best_min": "4", "jug_best_max": "5", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-27)."}
+{"bgg_id": "205398", "jug_min": "3", "jug_max": "7", "jug_best_min": "5", "jug_best_max": "5", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-27)."}
+{"bgg_id": "283355", "jug_min": "5", "jug_max": "6", "jug_best_min": "6", "jug_best_max": "6", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-27)."}
+{"bgg_id": "269207", "jug_min": "2", "jug_max": "4", "jug_best_min": "2", "jug_best_max": "3", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-27)."}
+{"bgg_id": "413246", "jug_min": "3", "jug_max": "5", "jug_best_min": "4", "jug_best_max": "4", "nota": "Jugadores: dato Community de la ficha de BGG, no el de caja del dataset placeholder (2026-10-25, ver notas en ludoteca.jsonl)."}
+{"bgg_id": "434654", "mecanicas": ["Area Majority / Influence", "Zone of Control"], "categorias": ["Wargame"], "nota": "Mecanicas/categorias agregadas a mano desde boardmatch.app (2026-10-27): el dataset placeholder las traia vacias porque es un juego muy nuevo (2025)."}
