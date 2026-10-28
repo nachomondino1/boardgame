@@ -34,17 +34,18 @@ python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_l
 
 ## Páginas
 
-- `index.html` — **Mi ludoteca**: los juegos con Estado Own o Prev. owned (lo que tenés o tuviste), buscador, filtros y orden. Watchlist no se navega acá, solo en ¿Cuál comprar?.
-- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), ordenado por Puntaje BGG por default. El toggle "incluir Watchlist" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
+- `index.html` — **Landing**: presenta el sitio y lleva a las otras tres páginas; muestra algunos números de la colección (juegos en casa, para comprar, mejor ranking) leídos de `data.json`.
+- `ludoteca.html` — **Mi ludoteca**: los juegos con Estado Own o Prev. owned (lo que tenés o tuviste), buscador, filtros y orden. Watchlist no se navega acá, solo en ¿Cuál comprar?.
+- `hoy.html` — **¿Qué jugamos hoy?**: elegís cuántos son y te muestra qué podés jugar de lo que ya tenés (Estado = Own), ordenado por Ranking BGG por default. El toggle "incluir Watchlist" extiende la búsqueda a lo que no tenés todavía, y el toggle "buscar por cantidad ideal (best)" cambia el filtro de jugadores de Jug. mín/máx a Jug Best min/máx.
 - `comprar.html` — **¿Cuál comprar?**: solo Watchlist, con sliders de duración máxima y complejidad máxima, el mismo filtro de jugadores, y (cuando están cargados/relevados) link a la tienda, costo y relación precio/calidad en cada tarjeta, con opción de ordenar por estos dos últimos. Incluye una sección colapsable "Comparar dos juegos" (tabla lado a lado con todos los campos relevantes, resaltando quién gana cada fila) — antes era una página aparte (`comparar.html`), se fusionó acá porque se usa siempre junto con esta página.
 
 ## Archivos
 
 - `docs/` — el sitio tal cual lo sirve GitHub Pages (**Deploy from branch** `main`, carpeta `/docs`):
-  - `docs/index.html` / `docs/hoy.html` / `docs/comprar.html` — las 3 páginas.
+  - `docs/index.html` / `docs/ludoteca.html` / `docs/hoy.html` / `docs/comprar.html` — las 4 páginas.
   - `docs/css/pages/comparar.css` — estilos de la sección "Comparar dos juegos" dentro de `comprar.html` (ver arriba).
-  - `docs/js/shared.js` — helpers comunes a las 3 páginas (carga de datos, armado de las tarjetas, nav, etc.).
-  - `docs/css/style.css` / `docs/js/app.js` / `docs/js/hoy.js` / `docs/js/comprar.js` — estilos y lógica de cada página.
+  - `docs/js/shared.js` — helpers comunes a las 4 páginas (carga de datos, armado de las tarjetas, nav, Google Analytics, etc.).
+  - `docs/css/` (`components/` + `pages/`) / `docs/js/landing.js` / `ludoteca.js` / `hoy.js` / `comprar.js` — estilos y lógica de cada página.
   - `docs/data/data.json` — el universo de juegos, con las columnas derivadas ya calculadas. Se regenera solo, ver abajo.
 - `data/01_data_understanding/universo_juegos.jsonl` — **catálogo de identidad**: `bgg_id`, `nombre`, `bgg_url`, `link_cazagangas` — qué juegos conoce este repo, sin tu opinión sobre ellos. Se commitea. `search_new_game.py --add` lo completa solo, `link_cazagangas` incluido cuando el slug resuelto verifica 200 (si no, queda vacío para cargarlo a mano).
 - `data/01_data_understanding/ludoteca.jsonl` — **tu opinión**, pero solo para los juegos que curaste (`Own`/`Prev. owned`/`Want to buy`/`Descartado`, o un `Watchlist` con algo cargado): `bgg_id`, `nombre`, `estado`, `transportable`, `mi_puntaje`, `pros`, `cons`, `notas`. Un juego del catálogo sin fila acá no es un error — `estado` cae en "Watchlist" por default (ver `integrate_data.py`). Se commitea: solo `search_new_game.py --add --estado <...>` le agrega filas nuevas, nunca pisa una existente. Ver el README de `01_data_understanding/` para el detalle completo.
@@ -94,7 +95,7 @@ Ninguna de estas cinco viene directo de una fuente: `02_data_preparation/constru
 - Toggle "Según mi gusto" (duración ≤60 min, complejidad ≤2.5), tomado de la sección "Mi gusto" de la pestaña Resumen.
 - Complejidad con color (verde→rojo), como el formato condicional del Sheet.
 - Link directo a BGG en el título de cada tarjeta.
-- "¿Qué jugamos hoy?": filtra por N jugadores dentro de Jug mín/máx (o solo Jug Best mín/máx con "Solo si es el mejor número"), ordenado por Puntaje BGG por default (antes había un recomendador heurístico propio en `shared.js::recommendationScore`, sacado por confuso — ver git log, 2026-10-28).
+- "¿Qué jugamos hoy?": filtra por N jugadores dentro de Jug mín/máx (o solo Jug Best mín/máx con "Solo si es el mejor número"), ordenado por Ranking BGG por default (antes había un recomendador heurístico propio en `shared.js::recommendationScore`, sacado por confuso — ver git log, 2026-10-28).
 - "¿Cuál comprar?": Watchlist (hasta ~1000 candidatos del top N de BGG + lo que no es tuyo) filtrada por tipo (modo), duración, complejidad y jugadores, con link a la tienda y costo cuando están cargados/relevados, y relación precio/calidad calculada (ver "Columnas calculadas"). El ~2% de candidatos sin match en el dataset placeholder de BGG no tiene duración/complejidad/jugadores/modo — las tarjetas lo muestran como "?" en vez de ocultarse. Variantes/expansiones del mismo sistema de juego (ej. las cajas de Unmatched) se colapsan en una sola tarjeta, con el resto desplegable (ver `data/01_data_understanding/grupos.json`). Link a la ficha real en [Cazagangas](https://www.cazagangas.com.ar) cuando `check_cazagangas_links.py` confirmó que existe (código 200) — ver `data/01_data_understanding/cazagangas_data.jsonl`. Resultados paginados (60 a la vez, "Mostrar más") y los sliders/el buscador debounced — renderizar hasta ~1000 tarjetas en cada cambio de filtro se sentía lento, sobre todo en mobile.
 
 ## Pendiente si esto vale la pena
