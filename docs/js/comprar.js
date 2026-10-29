@@ -83,6 +83,7 @@ function render() {
             variantes: entry.variantes,
             grupoNombre: entry.grupoNombre,
             showCazagangas: true,
+            showPrecioRef: true,
           })
         )
         .join("")

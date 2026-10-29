@@ -130,12 +130,19 @@ function cardTemplate(g, opts) {
     ? `<a class="stat stat-link" href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
     : "";
 
-  const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda || cazagangasHtml)
+  // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG
+  // (en USD, nuevos o como nuevos) — referencia del exterior, no un precio local.
+  const precioRefHtml = opts.showPrecioRef && g.precio_ref_usd != null
+    ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 Ref. USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
+    : "";
+
+  const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda || cazagangasHtml || precioRefHtml)
     ? `
       <div class="stat-row">
         ${g.costo != null ? `<span class="stat">💰 $${g.costo.toLocaleString("es-AR")}</span>` : ""}
         ${g.precio_calidad != null ? `<span class="stat">Precio/calidad: ${g.precio_calidad.toFixed(2)}</span>` : ""}
         ${g.link_tienda ? `<a class="stat stat-link" href="${escapeHtml(g.link_tienda)}" target="_blank" rel="noopener">Tienda ↗</a>` : ""}
+        ${precioRefHtml}
         ${cazagangasHtml}
       </div>`
     : "";
