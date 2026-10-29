@@ -61,6 +61,13 @@
   margin-top: 2px;
 }
 
+.card-publisher {
+  color: var(--muted);
+  font-size: 0.74rem;
+  margin-top: 1px;
+  opacity: 0.85;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
