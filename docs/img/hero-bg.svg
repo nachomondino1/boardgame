@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c2a3d" />
+      <stop offset="55%" stop-color="#16222f" />
+      <stop offset="100%" stop-color="#0f1822" />
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="28%" r="60%">
+      <stop offset="0%" stop-color="#8ab4d8" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#8ab4d8" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="tileA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3d5a80" />
+      <stop offset="100%" stop-color="#2c4260" />
+    </linearGradient>
+    <linearGradient id="tileB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a6f98" />
+      <stop offset="100%" stop-color="#365172" />
+    </linearGradient>
+    <linearGradient id="dieFace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4efe6" />
+      <stop offset="100%" stop-color="#d8d0c0" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bgGrad)" />
+  <rect width="1600" height="1000" fill="url(#glow)" />
+
+  <!-- Tablero isometrico: grilla de rombos desvaneciendose hacia la derecha -->
+  <g opacity="0.55">
+    <g transform="translate(560,120)">
+      <!-- 8 columnas x 10 filas de rombos (tile = 110x64) -->
+      <g>
+        <!-- generado a mano, fila por fila, alternando luz/sombra -->
+      </g>
+      <g fill="url(#tileA)" stroke="#0f1822" stroke-width="2">
+        <polygon points="110,0 220,32 110,64 0,32" />
+        <polygon points="330,0 440,32 330,64 220,32" />
+        <polygon points="550,0 660,32 550,64 440,32" />
+        <polygon points="770,0 880,32 770,64 660,32" />
+        <polygon points="990,0 1000,3 990,36 930,32" opacity="0.5" />
+      </g>
+      <g fill="url(#tileB)" stroke="#0f1822" stroke-width="2">
+        <polygon points="220,32 330,64 220,96 110,64" />
+        <polygon points="440,32 550,64 440,96 330,64" />
+        <polygon points="660,32 770,64 660,96 550,64" />
+        <polygon points="880,32 990,64 880,96 770,64" />
+      </g>
+      <g fill="url(#tileA)" stroke="#0f1822" stroke-width="2">
+        <polygon points="110,64 220,96 110,128 0,96" />
+        <polygon points="330,64 440,96 330,128 220,96" />
+        <polygon points="550,64 660,96 550,128 440,96" />
+        <polygon points="770,64 880,96 770,128 660,96" />
+      </g>
+      <g fill="url(#tileB)" stroke="#0f1822" stroke-width="2" opacity="0.9">
+        <polygon points="220,96 330,128 220,160 110,128" />
+        <polygon points="440,96 550,128 440,160 330,128" />
+        <polygon points="660,96 770,128 660,160 550,128" />
+      </g>
+      <g fill="url(#tileA)" stroke="#0f1822" stroke-width="2" opacity="0.75">
+        <polygon points="110,128 220,160 110,192 0,160" />
+        <polygon points="330,128 440,160 330,192 220,160" />
+        <polygon points="550,128 660,160 550,192 440,160" />
+      </g>
+      <g fill="url(#tileB)" stroke="#0f1822" stroke-width="2" opacity="0.5">
+        <polygon points="220,160 330,192 220,224 110,192" />
+        <polygon points="440,160 550,192 440,224 330,192" />
+      </g>
+    </g>
+  </g>
+
+  <!-- Meeples (fichas de juego) dispersas: cabeza redonda + cuerpo
+       trapezoidal redondeado, forma simple reconocible como token/ficha. -->
+  <g fill="#e07a5f" opacity="0.85" transform="translate(262,592)">
+    <circle cx="0" cy="-34" r="15" />
+    <path d="M-24,-12 Q-24,-24 -12,-24 L12,-24 Q24,-24 24,-12 L24,30 Q24,36 18,36 L-18,36 Q-24,36 -24,30 Z" />
+  </g>
+  <g fill="#8ab4d8" opacity="0.8" transform="translate(1249,729)">
+    <circle cx="0" cy="-30" r="13" />
+    <path d="M-21,-10 Q-21,-21 -11,-21 L11,-21 Q21,-21 21,-10 L21,26 Q21,32 16,32 L-16,32 Q-21,32 -21,26 Z" />
+  </g>
+  <g fill="#f2cc8f" opacity="0.75" transform="translate(1385,282)">
+    <circle cx="0" cy="-26" r="11" />
+    <path d="M-18,-9 Q-18,-18 -9,-18 L9,-18 Q18,-18 18,-9 L18,22 Q18,27 14,27 L-14,27 Q-18,27 -18,22 Z" />
+  </g>
+
+  <!-- Dados isometricos: caras superior sin pips (vidrio liso), caras
+       frontal/lateral con patrones reales de dado (5 y 6). -->
+  <g transform="translate(1180,420)">
+    <polygon points="90,0 180,42 90,84 0,42" fill="#f4efe6" />
+    <polygon points="0,42 90,84 90,174 0,132" fill="#c9c0ac" />
+    <polygon points="180,42 90,84 90,174 180,132" fill="#ddd3bd" />
+    <!-- cara izquierda (5): centro + 4 esquinas -->
+    <g fill="#16222f">
+      <circle cx="45" cy="80" r="5" />
+      <circle cx="20" cy="67" r="5" /><circle cx="70" cy="67" r="5" />
+      <circle cx="20" cy="99" r="5" /><circle cx="70" cy="99" r="5" />
+    </g>
+    <!-- cara derecha (6): dos columnas de 3 -->
+    <g fill="#2b2419">
+      <circle cx="115" cy="66" r="5" /><circle cx="155" cy="66" r="5" />
+      <circle cx="115" cy="83" r="5" /><circle cx="155" cy="83" r="5" />
+      <circle cx="115" cy="100" r="5" /><circle cx="155" cy="100" r="5" />
+    </g>
+  </g>
+
+  <g transform="translate(310,760) scale(0.6)">
+    <polygon points="90,0 180,42 90,84 0,42" fill="#f4efe6" />
+    <polygon points="0,42 90,84 90,174 0,132" fill="#c9c0ac" />
+    <polygon points="180,42 90,84 90,174 180,132" fill="#ddd3bd" />
+    <g fill="#16222f">
+      <circle cx="45" cy="67" r="5" /><circle cx="45" cy="99" r="5" />
+    </g>
+    <g fill="#2b2419">
+      <circle cx="115" cy="66" r="5" /><circle cx="155" cy="66" r="5" />
+      <circle cx="115" cy="83" r="5" /><circle cx="155" cy="83" r="5" />
+      <circle cx="115" cy="100" r="5" /><circle cx="155" cy="100" r="5" />
+    </g>
+  </g>
+
+  <!-- vignette inferior para legibilidad del texto (el scrim real lo pone el CSS encima) -->
+  <rect x="0" y="700" width="1600" height="300" fill="url(#bgGrad)" opacity="0.4" />
+</svg>
