@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/components/nav.css" />
   <link rel="stylesheet" href="css/pages/landing.css" />
   <link rel="preload" href="data/data.json" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="img/hero-bg.jpg" as="image" />
 
   <script src="js/shared.js" defer></script>
   <script src="js/landing.js" defer></script>
@@ -25,35 +26,43 @@
   <div id="nav"></div>
   <main class="landing">
     <section class="landing__hero">
-      <p class="landing__eyebrow">Juegos de mesa</p>
-      <h1 class="landing__title">Qué tengo, qué jugar hoy<br />y qué comprar después.</h1>
-      <p class="landing__lead">Mi colección en un solo lugar, con una forma rápida de decidir qué sacar de la caja según cuántos son, y qué vale la pena sumar.</p>
-      <div class="landing__stats" id="stats" hidden>
-        <div class="landing__stat"><span class="landing__stat-num" id="stat-own">–</span><span class="landing__stat-label">juegos en casa</span></div>
-        <div class="landing__stat"><span class="landing__stat-num" id="stat-watch">–</span><span class="landing__stat-label">en la lista para comprar</span></div>
-        <div class="landing__stat"><span class="landing__stat-num" id="stat-top">–</span><span class="landing__stat-label">mejor ranking BGG</span></div>
+      <div class="landing__hero-inner">
+        <p class="landing__eyebrow">Juegos de mesa</p>
+        <h1 class="landing__title">Qué tengo, qué jugar hoy<br />y qué comprar después.</h1>
+        <p class="landing__lead">Mi colección en un solo lugar, con una forma rápida de decidir qué sacar de la caja según cuántos son, y qué vale la pena sumar.</p>
+        <div class="landing__stats" id="stats" hidden>
+          <div class="landing__stat"><span class="landing__stat-num" id="stat-own">–</span><span class="landing__stat-label">juegos en casa</span></div>
+          <div class="landing__stat"><span class="landing__stat-num" id="stat-watch">–</span><span class="landing__stat-label">en la lista para comprar</span></div>
+          <div class="landing__stat"><span class="landing__stat-num" id="stat-top">–</span><span class="landing__stat-label">mejor ranking BGG</span></div>
+        </div>
       </div>
+      <span class="landing__scroll-hint" aria-hidden="true">
+        Scrolleá
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
+      </span>
     </section>
 
-    <section class="landing__cards" aria-label="Secciones">
-      <a class="landing__card" href="ludoteca.html">
-        <span class="landing__card-emoji" aria-hidden="true">📚</span>
-        <h2 class="landing__card-title">Mi ludoteca</h2>
-        <p class="landing__card-text">Todo lo que tengo (y lo que tuve). Buscá por nombre, filtrá por cantidad de jugadores y ordená por ranking, duración o complejidad.</p>
-        <span class="landing__card-cta">Ver la colección →</span>
-      </a>
-      <a class="landing__card" href="hoy.html">
-        <span class="landing__card-emoji" aria-hidden="true">🎲</span>
-        <h2 class="landing__card-title">¿Qué jugamos hoy?</h2>
-        <p class="landing__card-text">Decime cuántos son y te muestro qué podés jugar con lo que ya tenés, empezando por los mejor rankeados.</p>
-        <span class="landing__card-cta">Elegir un juego →</span>
-      </a>
-      <a class="landing__card" href="comprar.html">
-        <span class="landing__card-emoji" aria-hidden="true">🛒</span>
-        <h2 class="landing__card-title">¿Cuál comprar?</h2>
-        <p class="landing__card-text">La lista de deseos con puntaje, precio y complejidad, para comparar candidatos y decidir la próxima compra.</p>
-        <span class="landing__card-cta">Comparar opciones →</span>
-      </a>
+    <section class="landing__sections">
+      <section class="landing__cards" aria-label="Secciones">
+        <a class="landing__card" href="ludoteca.html">
+          <span class="landing__card-emoji" aria-hidden="true">📚</span>
+          <h2 class="landing__card-title">Mi ludoteca</h2>
+          <p class="landing__card-text">Todo lo que tengo (y lo que tuve). Buscá por nombre, filtrá por cantidad de jugadores y ordená por ranking, duración o complejidad.</p>
+          <span class="landing__card-cta">Ver la colección →</span>
+        </a>
+        <a class="landing__card" href="hoy.html">
+          <span class="landing__card-emoji" aria-hidden="true">🎲</span>
+          <h2 class="landing__card-title">¿Qué jugamos hoy?</h2>
+          <p class="landing__card-text">Decime cuántos son y te muestro qué podés jugar con lo que ya tenés, empezando por los mejor rankeados.</p>
+          <span class="landing__card-cta">Elegir un juego →</span>
+        </a>
+        <a class="landing__card" href="comprar.html">
+          <span class="landing__card-emoji" aria-hidden="true">🛒</span>
+          <h2 class="landing__card-title">¿Cuál comprar?</h2>
+          <p class="landing__card-text">La lista de deseos con puntaje, precio y complejidad, para comparar candidatos y decidir la próxima compra.</p>
+          <span class="landing__card-cta">Comparar opciones →</span>
+        </a>
+      </section>
     </section>
   </main>
   <footer class="site-footer">

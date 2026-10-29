@@ -288,6 +288,13 @@ def fetch_things(bgg_ids, marketplace=False, progress=None):
     return out
 
 
+def fetch_hot_ids():
+    """ids del "hot" de BGG (los 50 juegos del momento). Es lo único que la
+    API ofrece para encontrar juegos nuevos: no hay un listado por ranking."""
+    root = ET.fromstring(http_get("https://boardgamegeek.com/xmlapi2/hot?type=boardgame", authorized=True))
+    return [item.get("id") for item in root.findall("item")]
+
+
 def fetch_attributes(bgg_id, mode, dataset):
     """mode == "api": xmlapi2/thing. mode == "dummy": dataset de Hugging
     Face ya descargado (sin red extra)."""

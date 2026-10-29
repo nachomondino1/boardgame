@@ -6,8 +6,36 @@
   padding: 0 24px 64px;
 }
 
+/* Hero a pantalla completa: foto real (docs/img/hero-bg.jpg — fichas de
+   madera sobre un tablero, Unsplash License: gratis para uso comercial,
+   sin atribución obligatoria; foto de VD Photography/colección original
+   en unsplash.com/photos/a-close-up-of-a-wooden-board-game-HMBugh3HZ0M)
+   + scrim/gradiente oscuro encima para legibilidad. Ver DESIGN_PLAYBOOK.md
+   §11 — ya se había probado una foto full-width acá antes y se sacó por
+   "queda muy mal"; el scrim es la diferencia deliberada esta vez (probada
+   primero como ilustración SVG generada, descartada por floja — esta foto
+   la reemplaza). Texto claro fijo (no depende de --text/--muted: el fondo
+   es siempre oscuro, en los dos temas). Ocupa el 100% del alto de ventana
+   (el nav de arriba, que no es sticky, empuja el resto del contenido un
+   poco más allá de un viewport — aceptable, lo pedido es que ESTA sección
+   sea 100vh, no "resto de la pantalla"). */
 .landing__hero {
-  padding: 72px 0 48px;
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 calc(-1 * (50vw - 50%));
+  padding: 48px calc(50vw - 50%) 64px;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(15, 20, 28, 0.55) 0%, rgba(15, 20, 28, 0.35) 40%, rgba(15, 20, 28, 0.85) 100%),
+    url("../../img/hero-bg.jpg") center / cover no-repeat;
+  color: #f4efe6;
+}
+
+.landing__hero-inner {
   max-width: 760px;
 }
 
@@ -17,7 +45,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted-soft);
+  color: rgba(244, 239, 230, 0.75);
 }
 
 .landing__title {
@@ -26,12 +54,13 @@
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.025em;
+  color: #f4efe6;
 }
 
 .landing__lead {
   margin: 20px 0 0;
   font-size: 1.1rem;
-  color: var(--muted);
+  color: rgba(244, 239, 230, 0.82);
   max-width: 560px;
 }
 
@@ -51,11 +80,57 @@
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+  color: #f4efe6;
 }
 
 .landing__stat-label {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: rgba(244, 239, 230, 0.75);
+}
+
+.landing__scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.7);
+  animation: landing-bounce 1.8s ease-in-out infinite;
+}
+
+.landing__scroll-hint svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes landing-bounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__scroll-hint {
+    animation: none;
+  }
+}
+
+/* En mobile el nav pasa a ser una barra fija abajo (ver nav.css) — sin
+   este ajuste el indicador de scroll queda tapado detrás. */
+@media (max-width: 640px) {
+  .landing__scroll-hint {
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.landing__sections {
+  padding-top: 56px;
 }
 
 .landing__cards {
@@ -121,7 +196,7 @@
     padding: 0 16px 48px;
   }
   .landing__hero {
-    padding: 40px 0 32px;
+    padding: 40px calc(50vw - 50%) 32px;
   }
   .landing__cards {
     grid-template-columns: 1fr;

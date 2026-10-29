@@ -14,7 +14,7 @@ Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso 
 
 - `collect_initial_data/bgg/bgg_common.py` — librería: requests a la API de BGG (con `BGG_TOKEN` de `.env`) y al dataset de Hugging Face, y lectura/escritura de los `.jsonl`. No se corre directo.
 - `collect_initial_data/bgg/initialize_bgg_data.py` — bootstrap único de `bgg_data.jsonl` (top N del ranking de BGG, desde Hugging Face). Ya corrió; no se vuelve a correr salvo para reiniciar el catálogo (`--force`).
-- `collect_initial_data/bgg/refresh_bgg_data.py` — trae tu colección (`bgg_collection.jsonl`) y actualiza desde la API los datos que cambian (puntaje, ranking, votos, marketplace) de esos juegos; agrega los de tu colección que no estén en el catálogo. Con `--dry-run` muestra el diff sin escribir; `--fields all` trae todos los campos; `--scope all` recorre todo el catálogo (miles de requests, ~5s por lote de 20). Necesita `BGG_TOKEN` y `BGG_USERNAME` en `.env`.
+- `collect_initial_data/bgg/refresh_bgg_data.py` — trae tu colección (`bgg_collection.jsonl`) y actualiza desde la API los datos que cambian (puntaje, ranking, votos, marketplace) de esos juegos; agrega los de tu colección que no estén en el catálogo. Con `--dry-run` muestra el diff sin escribir; `--fields all` trae todos los campos; `--top N` suma los N mejor rankeados; `--discover` busca antes juegos nuevos en el "hot" de BGG (única forma que da la API) y agrega los que entran en el top N; `--scope all` recorre todo el catálogo (miles de requests, ~5s por lote de 20). Necesita `BGG_TOKEN` y `BGG_USERNAME` en `.env`.
 - `collect_initial_data/search_new_game.py` — `--add <id o nombre>` suma un juego a `bgg_data.jsonl` y, si el slug verifica 200, a `cazagangas_data.jsonl`. Vive afuera de `bgg/` y `cazagangas/` porque orquesta las dos.
 - `collect_initial_data/cazagangas/` — `cazagangas_common.py` (slug best-effort + verificación HTTP) y `check_cazagangas_links.py` (re-verifica con un HEAD real los links ya guardados; manual, con `--limit N`/`--refresh`).
 - `verify_data_quality.py` — chequeos de integridad sobre los tres archivos (schema, `bgg_id` único, min ≤ max, rangos, listas, ranking repetido). No modifica nada. `ERROR` sale con exit code 1; `WARNING` con 0.
@@ -46,6 +46,10 @@ Nombres y valores tal cual los trae BGG (la API y el dataset de Hugging Face lle
 | `description` | descripción de BGG (la más larga, va última) |
 
 `bgg_collection.jsonl` y `cazagangas_data.jsonl` son más simples: ver `COLLECTION_FIELDS` en `bgg_common.py` y `cazagangas_common.py`.
+
+## Plan a futuro: pasar los tres archivos a un solo SQLite
+
+Hoy los datos son `.jsonl` y anda bien (medido con 27.786 juegos: leer todo 0,8 s, reescribir 0,6 s, 117 MB). Idea para más adelante: un solo archivo `bgg.db` con tres tablas (`bgg_data`, `bgg_collection`, `cazagangas_data`), con los polls y listas anidados guardados como texto JSON. Ventajas: un archivo en vez de tres (menos archivos), actualizaciones en el lugar (200 juegos en 4 ms, en vez de reescribir 117 MB y arriesgar un archivo truncado si el proceso se corta), y consultas sin cargar todo. Costos: no se abre en un editor de texto (se mira con `sqlite3`) y hay que reescribir la lectura/escritura en `bgg_common.py`, `integrate_data.py` y `verify_data_quality.py`. Parquet se descartó: necesita `pyarrow` y no actualiza filas sueltas. Se hace cuando el cambio empiece a pagarse (más volumen, o un corte en medio de una escritura).
 
 ## De dónde sale el dato de BGG
 

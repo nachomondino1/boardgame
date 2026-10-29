@@ -102,14 +102,6 @@ function cardTemplate(g, opts) {
     ? `<span class="complexity-pill" style="background:${complexityColor(g.complejidad)}">${g.complejidad.toFixed(1)}</span>`
     : `<span class="tag">complejidad ?</span>`;
 
-  const notesParts = [];
-  if (g.pros) notesParts.push(`<p><strong>Pros:</strong> ${escapeHtml(g.pros)}</p>`);
-  if (g.cons) notesParts.push(`<p><strong>Contras:</strong> ${escapeHtml(g.cons)}</p>`);
-  if (g.notas) notesParts.push(`<p><strong>Notas:</strong> ${escapeHtml(g.notas)}</p>`);
-  const detailsHtml = notesParts.length
-    ? `<details><summary>Más info</summary>${notesParts.join("")}</details>`
-    : "";
-
   const variantes = opts.variantes || [];
   const variantesHtml = variantes.length
     ? `<details class="variantes">
@@ -159,6 +151,7 @@ function cardTemplate(g, opts) {
         <div class="card-title-text">
           <div class="card-title">${nombreHtml}</div>
           <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}</div>
+          ${g.publisher_principal ? `<div class="card-publisher">${escapeHtml(g.publisher_principal)}</div>` : ""}
         </div>
         <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
       </div>
@@ -174,7 +167,6 @@ function cardTemplate(g, opts) {
       </div>
       ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
       ${compraHtml}
-      ${detailsHtml}
       ${variantesHtml}
     </div>
   `;
