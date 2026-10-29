@@ -71,8 +71,10 @@ BGG_CACHE_FIELDS = [
     "boardgamedesigner", "boardgamepublisher", "boardgamemechanic", "boardgamecategory", "boardgamefamily",
     "name", "alternate", "thumbnail",
     "suggested_num_players", "poll_summary", "suggested_playerage", "suggested_language_dependence",
-    "marketplacelistings", "description",
+    "marketplacelistings", "fecha_actualizacion", "description",
 ]
+# `fecha_actualizacion` (AAAA-MM-DD) no viene de BGG: es el día que refresh_bgg_data.py
+# trajo por última vez los datos de ese juego desde la API.
 # Campos cuyo valor es una lista (vacía si BGG no devuelve nada); el resto son strings.
 LIST_FIELDS = {
     "boardgamedesigner", "boardgamepublisher", "boardgamemechanic", "boardgamecategory", "boardgamefamily",

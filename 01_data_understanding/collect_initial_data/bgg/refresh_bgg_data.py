@@ -31,7 +31,9 @@ Uso:
     python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py --fields averageweight,suggested_num_players
 """
 import argparse
+import datetime
 import sys
+import time
 
 from bgg_common import (
     BGG_DATA_PATH, BGG_CACHE_FIELDS, COLLECTION_PATH,
@@ -43,7 +45,30 @@ VOLATILE_FIELDS = [
     "usersrated", "average", "bayesaverage", "Board Game Rank", "averageweight",
     "owned", "wishing", "marketplacelistings",
 ]
-ALL_FIELDS = [f for f in BGG_CACHE_FIELDS if f not in ("bgg_id", "description")]
+ALL_FIELDS = [f for f in BGG_CACHE_FIELDS if f not in ("bgg_id", "description", "fecha_actualizacion")]
+
+LOG_PATH = BGG_DATA_PATH.parents[2] / "01_data_understanding" / "refresh_log.md"
+LOG_HEADER = (
+    "# Registro de actualizaciones de BGG\n\n"
+    "Una fila por cada corrida de `refresh_bgg_data.py` (la escribe el script solo, no a mano).\n\n"
+    "| Fecha | Opciones | Juegos consultados | Con datos distintos | Cambios de campos | Juegos nuevos | No devueltos por BGG | Colección | Duración |\n"
+    "|---|---|---|---|---|---|---|---|---|\n"
+)
+
+
+def write_log(args, consultados, con_cambios, cambios, nuevos, no_devueltos, coleccion, segundos):
+    """Suma una fila al registro de corridas (data/ está gitignored; este log vive
+    junto a los scripts y se versiona)."""
+    if not LOG_PATH.exists():
+        LOG_PATH.write_text(LOG_HEADER, encoding="utf-8")
+    opciones = " ".join(a for a in (f"--scope {args.scope}", f"--top {args.top}" if args.top else "",
+                                    "--discover" if args.discover else "", f"--fields {args.fields}",
+                                    f"--limit {args.limit}" if args.limit else "") if a)
+    minutos, seg = divmod(int(segundos), 60)
+    with LOG_PATH.open("a", encoding="utf-8") as f:
+        f.write(f"| {datetime.date.today().isoformat()} | `{opciones}` | {consultados} | {con_cambios} | {cambios} | "
+                f"{nuevos} | {no_devueltos} | {coleccion} | {minutos} min {seg} s |\n")
+
 
 
 def resolve_fields(spec):
@@ -79,7 +104,7 @@ def discover_hot(top, dry_run):
     nuevos = [i for i in fetch_hot_ids() if i not in known]
     print(f"Hot de BGG: {len(nuevos)} juego(s) que no están en el catálogo")
     if not nuevos:
-        return
+        return 0
     fetched = fetch_things(nuevos, marketplace=True)
     to_add = {}
     for bgg_id, attrs in fetched.items():
@@ -91,6 +116,7 @@ def discover_hot(top, dry_run):
     if to_add and not dry_run:
         upsert_bgg_cache(to_add)
     print(f"  {len(to_add)} agregado(s)" + (" (dry-run)" if dry_run else ""))
+    return len(to_add)
 
 
 def main():
@@ -103,10 +129,11 @@ def main():
     parser.add_argument("--limit", type=int, help="solo los primeros N juegos (para probar)")
     args = parser.parse_args()
 
+    inicio = time.time()
+    hoy = datetime.date.today().isoformat()
     fields = resolve_fields(args.fields)
     collection = refresh_collection(args.dry_run)
-    if args.discover:
-        discover_hot(args.top, args.dry_run)
+    descubiertos = discover_hot(args.top, args.dry_run) if args.discover else 0
 
     cache = {r["bgg_id"]: r for r in load_bgg_cache() if r.get("bgg_id")}
     ids = [r["bgg_id"] for r in collection] if args.scope == "coleccion" else sorted(cache, key=int)
@@ -125,13 +152,14 @@ def main():
         progress=lambda done, total: print(f"  {done}/{total}"),
     )
 
-    updates, changes = {}, 0
+    updates, changes, no_devueltos = {}, 0, 0
     for bgg_id in ids:
         attrs = fetched.get(bgg_id)
         if attrs is None:
             print(f"  bgg_id={bgg_id}: BGG no lo devolvió, no se toca.", file=sys.stderr)
+            no_devueltos += 1
             continue
-        row_updates = {}
+        row_updates = {"fecha_actualizacion": hoy}
         for field in (ALL_FIELDS if bgg_id in nuevos else fields):
             new, old = attrs.get(field), cache.get(bgg_id, {}).get(field)
             if new in (None, "", []):
@@ -141,13 +169,15 @@ def main():
                 if changes < 40:
                     print(f"  {bgg_id} {field}: {str(old)[:40]!r} -> {str(new)[:40]!r}")
                 changes += 1
-        if row_updates:
-            updates[bgg_id] = row_updates
+        updates[bgg_id] = row_updates
 
-    print(f"{changes} cambio(s) en {len(updates)} juego(s)" + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
+    con_cambios = sum(1 for u in updates.values() if len(u) > 1)
+    print(f"{changes} cambio(s) en {con_cambios} juego(s), {len(updates)} con fecha_actualizacion al día" + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
     if updates and not args.dry_run:
         added, updated = upsert_bgg_cache(updates)
         print(f"OK: {added} fila(s) nueva(s) y {updated} actualizada(s) en {BGG_DATA_PATH.name}; colección en {COLLECTION_PATH.name}.")
+        write_log(args, len(updates), con_cambios, changes, descubiertos, no_devueltos, len(collection), time.time() - inicio)
+        print(f"Registro en {LOG_PATH}")
 
 
 if __name__ == "__main__":
