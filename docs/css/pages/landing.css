@@ -6,15 +6,19 @@
   padding: 0 24px 64px;
 }
 
-/* Hero a pantalla completa: imagen propia (docs/img/hero-bg.svg, ver
-   DESIGN_PLAYBOOK.md §11 — ya se había probado una foto full-width acá
-   antes y se sacó por "queda muy mal"; esta vez el scrim/gradiente oscuro
-   encima de la imagen es lo que evita que se repita, nunca la imagen sola)
-   + texto claro fijo (no depende de --text/--muted: el fondo es siempre
-   oscuro, en los dos temas). Ocupa el 100% del alto de ventana (el nav de
-   arriba, que no es sticky, empuja el resto del contenido un poco más
-   allá de un viewport — aceptable, lo pedido es que ESTA sección sea
-   100vh, no "resto de la pantalla"). */
+/* Hero a pantalla completa: foto real (docs/img/hero-bg.jpg — fichas de
+   madera sobre un tablero, Unsplash License: gratis para uso comercial,
+   sin atribución obligatoria; foto de VD Photography/colección original
+   en unsplash.com/photos/a-close-up-of-a-wooden-board-game-HMBugh3HZ0M)
+   + scrim/gradiente oscuro encima para legibilidad. Ver DESIGN_PLAYBOOK.md
+   §11 — ya se había probado una foto full-width acá antes y se sacó por
+   "queda muy mal"; el scrim es la diferencia deliberada esta vez (probada
+   primero como ilustración SVG generada, descartada por floja — esta foto
+   la reemplaza). Texto claro fijo (no depende de --text/--muted: el fondo
+   es siempre oscuro, en los dos temas). Ocupa el 100% del alto de ventana
+   (el nav de arriba, que no es sticky, empuja el resto del contenido un
+   poco más allá de un viewport — aceptable, lo pedido es que ESTA sección
+   sea 100vh, no "resto de la pantalla"). */
 .landing__hero {
   position: relative;
   min-height: 100vh;
@@ -27,7 +31,7 @@
   justify-content: center;
   background:
     linear-gradient(180deg, rgba(15, 20, 28, 0.55) 0%, rgba(15, 20, 28, 0.35) 40%, rgba(15, 20, 28, 0.85) 100%),
-    url("../../img/hero-bg.svg") center / cover no-repeat;
+    url("../../img/hero-bg.jpg") center / cover no-repeat;
   color: #f4efe6;
 }
 
