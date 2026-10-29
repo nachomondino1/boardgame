@@ -3,10 +3,12 @@ search_new_game.py (collect_initial_data/bgg/): slug best-effort a partir
 del nombre del juego + verificación real por HTTP.
 
 El slug nunca se guarda a ciegas: `slugify()` arma una URL candidata,
-pero solo vale la pena cargarla en universo_juegos.jsonl si `check_status()`
-le devuelve 200 — si no, se deja `link_cazagangas` vacío para cargar a
-mano (la decisión de "nunca adivinar" se cambió a "adivinar, pero nunca
-sin verificar con un HEAD real antes de guardar nada").
+pero solo vale la pena guardarla en cazagangas_data.jsonl si `check_status()`
+le devuelve 200 (adivinar, pero nunca sin verificar con un HEAD real antes
+de guardar nada).
+
+cazagangas_data.jsonl: una fila por juego con link a Cazagangas — `bgg_id`,
+`link_cazagangas`, `status_http`, `fecha_chequeado`. El link vive solo acá.
 """
 import datetime
 import json
@@ -18,7 +20,6 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
 OUTPUT_PATH = ROOT / "data" / "01_data_understanding" / "cazagangas_data.jsonl"
 
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
@@ -65,40 +66,38 @@ def check_status(url, retries=3):
 
 
 def load_cazagangas_cache():
+    """bgg_id -> fila de cazagangas_data.jsonl."""
     if not OUTPUT_PATH.exists():
         return {}
     with OUTPUT_PATH.open(encoding="utf-8") as f:
         rows = [json.loads(line) for line in f if line.strip()]
-    return {row["nombre"]: row for row in rows}
+    return {row["bgg_id"]: row for row in rows}
 
 
-def upsert_cazagangas_cache(entries_by_nombre):
-    """Mergea {nombre: {bgg_id, status_http, fecha_chequeado}} sobre lo que
-    ya está en cazagangas_data.jsonl, sin perder lo que ya había (igual
-    patrón que upsert_bgg_cache en bgg_common.py)."""
-    existing = load_cazagangas_cache()
-    existing.update(entries_by_nombre)
+def write_cazagangas_cache(by_bgg_id):
     with OUTPUT_PATH.open("w", encoding="utf-8") as f:
-        for row in existing.values():
+        for row in by_bgg_id.values():
             f.write(json.dumps(row, ensure_ascii=False))
             f.write("\n")
 
 
 def resolver_link(nombre, bgg_id):
     """Arma un slug best-effort a partir del nombre, lo verifica con un
-    HEAD real, y devuelve (url, status). Solo tiene sentido guardar `url`
-    en universo_juegos.jsonl si status == "200" — el llamador decide eso,
-    acá solo se resuelve y se verifica."""
+    HEAD real y devuelve (url, status). Si da 200, lo guarda en
+    cazagangas_data.jsonl; si no, no guarda nada (lo decide acá, no el
+    llamador)."""
     slug = slugify(nombre)
     if not slug:
         return None, "error"
     url = f"https://www.cazagangas.com.ar/juego/{slug}"
     status = check_status(url)
     if status == "200":
-        upsert_cazagangas_cache({nombre: {
+        existing = load_cazagangas_cache()
+        existing[bgg_id] = {
             "bgg_id": bgg_id,
-            "nombre": nombre,
+            "link_cazagangas": url,
             "status_http": status,
             "fecha_chequeado": datetime.date.today().isoformat(),
-        }})
+        }
+        write_cazagangas_cache(existing)
     return url, status

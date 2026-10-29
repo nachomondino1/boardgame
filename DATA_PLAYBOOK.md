@@ -4,9 +4,11 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 
 **Nota sobre el Google Sheet:** este proyecto arrancó con un Sheet como fuente de verdad (la sección "Cómo adaptarlo a un proyecto nuevo" más abajo sigue siendo la guía genérica para eso, vale para otro proyecto que sí lo necesite). Acá se abandonó dos veces: primero el Sheet se reemplazó por un JSON (`mi_ludoteca.json`, ver "Cuándo un Sheet deja de valer la pena" en Decisiones clave), y ese JSON terminó en lo que hoy es `data/01_data_understanding/ludoteca.jsonl` — tu curación manual (identidad + estado + lo que cargás vos), pero **solo para los juegos que curaste** (ver "Un juego sin fila no es un juego sin datos" en Decisiones clave) — separado de `data/01_data_understanding/universo_juegos.jsonl` (EL catálogo completo, identidad pura) y de `data/01_data_understanding/bgg_data.jsonl` (caché de BGG — ver "Las columnas que no vienen de BGG viven en su propio archivo"). **Toda esta carpeta (`data/01_data_understanding/`) es gitignored desde 2026-10-28** (ver "Gitignorear toda la fuente cruda, backup manual" en Decisiones clave): vive solo local, con copia de seguridad a cargo del usuario.
 
+**Actualización 2026-10-29:** `ludoteca.jsonl`, `universo_juegos.jsonl` y `grupos.json` ya no existen. `bgg_data.jsonl` (crudo, con nombres de BGG) es el universo de juegos; `estado` y `mi_puntaje` salen de tu colección en BGG (`bgg_collection.jsonl`); el link a Cazagangas vive en `cazagangas_data.jsonl`; y `grupo`, `nombre` y los jugadores best/recomendados se construyen en `construct_data.py`. Donde más abajo se mencione alguno de esos archivos, es historia de decisiones, no el estado actual.
+
 ## Filosofía
 
-- **La fuente de verdad la edita un humano**, no en código ni en un admin panel — hoy `ludoteca.jsonl`, un archivo local que ningún script de refresh toca salvo que vos se lo pidas explícito (ver "Gitignorear toda la fuente cruda" en Decisiones clave: ya no está versionado en el repo, solo con backup manual); en otro proyecto, o en este al principio, puede ser un Google Sheet o un JSON aparte versionado. Cero backend, cero base de datos propia.
+- **La fuente de verdad la edita un humano**, no en código ni en un admin panel — hoy tu colección en BGG (se edita en el sitio de BGG; `bgg_collection.jsonl` es solo su copia cruda, regenerable); en otro proyecto, o en este al principio, puede ser un Google Sheet o un JSON aparte versionado. Cero backend, cero base de datos propia.
 - **El sitio nunca le pega a una API externa en runtime.** Hay un paso de build (local o CI) que junta las fuentes y las convierte en un JSON estático, que es lo que el sitio realmente consume.
 - **Cada sync del artefacto publicado (`docs/data/data.json`) es un commit.** Ese JSON sí vive versionado en el repo, así que un cambio se ve como un diff normal de git y un dato roto se puede `git revert` — las fuentes crudas que lo alimentan (`data/01_data_understanding/`) ya no están versionadas, ver nota arriba.
 - **El build es tolerante a cambios en la forma de la fuente curada a mano** (agregar/reordenar columnas o campos) pero intolerante a fallar en silencio (si algo sale muy mal, el script explota en vez de commitear datos vacíos o truncados).
@@ -14,76 +16,36 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 ## Arquitectura / flujo de datos
 
 ```
-data/01_data_understanding/universo_juegos.jsonl   (gitignored, catálogo de identidad)
-  bgg_id, nombre, bgg_url, link_cazagangas — "qué juegos conoce este
-  repo", sin opinión tuya sobre ellos. Agregar un juego nuevo es: sumar
-  una fila acá (a mano, o con search_new_game.py --add <id o nombre>,
-  que resuelve bgg_id/nombre/bgg_url Y arma+verifica link_cazagangas
-  solo — ver más abajo).
-                            │
-                            ▼  (bgg_id/nombre de cada fila)
 01_data_understanding/collect_initial_data/
-  search_new_game.py vive acá, un nivel arriba de bgg/ y cazagangas/,
-  porque orquesta las dos carpetas — no es parte de ninguna.
-  collect_initial_data/bgg/ (bgg_common.py + 3 scripts)
-  dataset público de terceros, Hugging Face (ver "Decisiones clave")
-  initialize_bgg_data.py: bootstrap único (universo_juegos.jsonl no
-  existe todavía) — top N del ranking + ludoteca, identidad nomás.
-  search_new_game.py (uso normal, lo que corre sync_data.sh sin --add):
-  agrega a bgg_data.jsonl solo los bgg_id de universo_juegos.jsonl que
-  todavía no tienen fila — nunca reescribe una fila existente.
-  --add <id o nombre> (un juego a la vez, nunca en sync_data.sh): además de
-  sumar la fila a universo_juegos.jsonl, en la misma corrida arma un
-  slug best-effort para Cazagangas y lo verifica con un HEAD real
-  (collect_initial_data/cazagangas/cazagangas_common.py) — si da 200,
-  carga link_cazagangas + fila en cazagangas_data.jsonl solo; si no,
-  deja link_cazagangas vacío para cargar a mano. ludoteca.jsonl NO se
-  toca salvo que se pase --estado <...>: sin eso, el juego queda como
-  Watchlist implícito, sin fila (ver más abajo).
-  modify_values.py / extract_new_fields.py: edición manual de campos
-  puntuales / columnas nuevas sobre filas ya existentes — mismo
-  principio de upsert, nunca reescritura completa.
+  bgg/ (bgg_common.py + initialize_bgg_data.py + refresh_bgg_data.py)
+    initialize_bgg_data.py: bootstrap único de bgg_data.jsonl — top N del
+      ranking de BGG, desde un dataset público de terceros (Hugging Face).
+    refresh_bgg_data.py: con la API de BGG (BGG_TOKEN) trae tu colección
+      (bgg_collection.jsonl) y actualiza los campos que cambian de tus
+      juegos — upsert, nunca reescritura completa; --dry-run muestra el diff.
+  search_new_game.py vive un nivel arriba de bgg/ y cazagangas/ porque
+    orquesta las dos: --add <id o nombre> suma el juego a bgg_data.jsonl y,
+    si un slug best-effort verifica 200 con un HEAD real, a cazagangas_data.jsonl.
+  Collect guarda el dato crudo con el nombre de la fuente; toda columna
+  derivada se construye en 02_data_preparation.
                             │
                             ▼
-      data/01_data_understanding/bgg_data.jsonl   (gitignored, caché de BGG:
-        anio, descripcion, disenador, edad_min, jug_min/max, jug_best_min/max,
-        duracion_min/max, complejidad, puntaje_bgg, reviews_bgg, ranking_bgg,
-        mecanicas, categorias — una fila que falta es regenerable
-        (search_new_game.py la completa); una fila que ya existe nunca se
-        reescribe sola, así una corrección manual no se pierde en el refresh.
-        Ver "Gitignorear toda la fuente cruda, backup manual" en Decisiones
-        clave: por qué este archivo (y toda la carpeta) salió de git.
-
-data/01_data_understanding/cazagangas_data.jsonl   (gitignored, status HTTP verificado)
-  bgg_id, nombre, status_http, fecha_chequeado — una fila por juego con
-  link_cazagangas cargado. check_cazagangas_links.py re-verifica en
-  lote lo ya cargado (manual, --limit N); search_new_game.py --add
-  resuelve y verifica el de un juego nuevo en el momento de agregarlo.
-
-data/01_data_understanding/ludoteca.jsonl   (gitignored, 100% manual, lo cargás vos)
-  bgg_id, nombre, estado, transportable, mi_puntaje, pros, cons, notas —
-  tu criterio, nunca inferido, pero SOLO para los juegos que curaste
-  (Own/Prev. owned/Want to buy/Descartado, o un Watchlist con algo
-  anotado). search_new_game.py --add --estado <...> es la única
-  excepción que lo escribe, agregando una fila nueva (nunca pisa una
-  existente). Un juego del catálogo sin fila acá no es un error:
-  integrate_data.py le pone estado="Watchlist" por default. Si se
-  borra, se pierde tu trabajo: no es regenerable de ninguna fuente.
-
-      data/01_data_understanding/grupos.json ─────┐  (curado a mano, ver "Agrupar variantes/expansiones")
-      data/01_data_understanding/cazagangas_data.jsonl ─┤  (check_cazagangas_links.py, manual — ver más abajo)
+data/01_data_understanding/bgg_data.jsonl   (gitignored, EL universo de juegos, crudo:
+  yearpublished, minplayers/maxplayers, suggested_num_players, average,
+  usersrated, Board Game Rank, boardgamefamily, etc. — nombres de BGG).
+  Ver "Gitignorear toda la fuente cruda, backup manual" en Decisiones clave.
+data/01_data_understanding/bgg_collection.jsonl   (gitignored, tu colección en
+  BGG, cruda: own, prevowned, wanttobuy, rating…; de acá salen estado y mi_puntaje)
+data/01_data_understanding/cazagangas_data.jsonl   (gitignored)
+  bgg_id, link_cazagangas, status_http, fecha_chequeado — una fila por juego con
+  link. check_cazagangas_links.py re-verifica en lote (manual, --limit N).
                             │
-      universo_juegos.jsonl + ludoteca.jsonl + bgg_data.jsonl + grupos.json
-      + cazagangas_data.jsonl
                             ▼
       02_data_preparation/integrate_data.py
-        base = universo_juegos.jsonl (EL catálogo completo); suma
-        ludoteca.jsonl/bgg_data.jsonl por bgg_id (nombre como fallback;
-        estado cae en "Watchlist" si el juego no está en ludoteca.jsonl),
-        y grupos.json/cazagangas_data.jsonl por nombre — sin tipar ni
-        calcular nada (eso es trabajo de construct_data.py). Las últimas
-        tres son opcionales: si no existen, esos campos quedan en su
-        default
+        base = bgg_data.jsonl (EL catálogo completo); suma bgg_collection.jsonl
+        y cazagangas_data.jsonl por bgg_id — sin tipar ni calcular nada (eso es
+        trabajo de construct_data.py). Las dos últimas son opcionales: si no
+        existen, esos campos quedan en null.
                             ▼
       data/02_data_preparation/integrated_data.jsonl   (intermedio del build, gitignored:
         se regenera siempre de archivos ya commiteados, no se edita a mano)
@@ -120,7 +82,7 @@ collect_*, un merge en integrate_data.py).
 
 Nadie en el camino del usuario final toca ninguna API externa: para quien visita el sitio, `data/data.json` es un archivo estático más, servido por GitHub Pages.
 
-**01 (entender/recolectar) nunca depende de un output de 02 (integrar/construir).** `integrate_data.py` lee `universo_juegos.jsonl`/`ludoteca.jsonl`/`bgg_data.jsonl`/`grupos.json`/`cazagangas_data.jsonl` directo (outputs de 01), nunca al revés — y `construct_data.py` lee la salida de `integrate_data.py`, nunca las fuentes crudas directo (así cada paso tiene una sola fuente de verdad: 01 recolecta, `integrate_data.py` junta, `construct_data.py` calcula).
+**01 (entender/recolectar) nunca depende de un output de 02 (integrar/construir).** `integrate_data.py` lee `bgg_data.jsonl`/`bgg_collection.jsonl`/`cazagangas_data.jsonl` directo (outputs de 01), nunca al revés — y `construct_data.py` lee la salida de `integrate_data.py`, nunca las fuentes crudas directo (así cada paso tiene una sola fuente de verdad: 01 recolecta, `integrate_data.py` junta, `construct_data.py` calcula).
 
 **El universo de candidatos ya no lo cura una persona a mano (la vieja columna Watchlist del Sheet): lo arma automáticamente "top N de un ranking público menos lo que ya tenés", con la opción de sumar juegos puntuales con `--add`.** Esto es deliberado — mantener a mano una lista de "juegos que me interesan" no escala a miles de candidatos, y el ranking de BGG ya hace ese trabajo de curación/orden inicial; `--add` cubre el caso puntual ("quiero este juego en el análisis aunque no esté en el top N"). El costo es volumen (el "¿Cuál comprar?" del sitio puede mostrar hasta ~1000 tarjetas); los datos por candidato están casi completos (~98%, contra un dataset placeholder de 2025 — ver "Decisiones clave"), salvo precio, que depende de una integración con Bosque Lúdico que todavía no existe.
 
@@ -129,6 +91,8 @@ Nadie en el camino del usuario final toca ninguna API externa: para quien visita
 **Un identificador compartido por todas las fuentes (`bgg_id`, el id de BGG) en vez de matchear por nombre.** Cada fila de `bgg_data.jsonl` lleva `bgg_id` como primera columna — calculado una sola vez en el bootstrap (`extract_bgg_id` sobre `bgg_url` para la ludoteca, directo de la columna del dataset para los candidatos del top N) y nunca vuelto a derivar. La futura integración con `bosque_data.csv` (por nombre, no por id — Bosque Lúdico no expone un id de BGG) sigue este mismo criterio: `bosque_data.csv` también lleva `bgg_id` como primera columna aunque el join real sea por nombre, para que cualquier análisis posterior pueda cruzar ambos archivos sin tener que volver a resolver el id.
 
 ## Decisiones clave (y por qué)
+
+*(Varias de estas decisiones nombran `ludoteca.jsonl`, `universo_juegos.jsonl`, `grupos.json`, `modify_values.py` o `extract_new_fields.py`: archivos y scripts que se eliminaron el 2026-10-29, ver la actualización arriba. Se dejan como historia del razonamiento.)*
 
 - **JSON Lines (un objeto por línea) en vez de CSV para la fuente curada a mano, cuando alguna columna trae texto libre con saltos de línea reales.** `bgg_data.jsonl` tiene una columna (`descripcion`) con texto de BGG que incluye `\n` reales adentro: en CSV eso hace que una sola fila se desparrame en decenas de líneas visuales en el editor de texto (aunque el parser la siga leyendo bien como una fila), haciendo casi imposible ubicar/editar a mano el campo de un juego puntual sin una herramienta de CSV dedicada. En JSON ese mismo salto de línea se escapa como `\n` literal dentro del string, así que cada fila queda garantizada en una sola línea física del archivo — buscable por nombre con Ctrl+F en cualquier editor de texto plano, sin extensiones. El costo es editar `{"clave": "valor", ...}` en vez de un valor entre comas, algo peor para cambios de una sola celda pero sin alternativa real una vez que el contenido de una columna deja de ser "una celda corta". La señal para este cambio no es "¿CSV es incómodo en general?" sino "¿alguna columna de texto libre tiene saltos de línea reales que rompen la alineación de una fila = una línea?" — si ninguna columna los tiene, CSV sigue siendo más simple de editar a mano (sobre todo en una planilla) y no hace falta este cambio.
 
@@ -182,6 +146,8 @@ Para relevar precios de El Bosque Lúdico (`01_data_understanding/collect_initia
 
 ## Las columnas que no vienen de BGG viven en su propio archivo (hoy `data/01_data_understanding/ludoteca.jsonl`, antes `mis_datos.jsonl` — ver también "Un juego sin fila..." más arriba, sobre por qué dejó de ser "un juego, una fila")
 
+**[Reemplazado 2026-10-29]** Ya no hay archivo propio de columnas manuales: `estado` y `mi_puntaje` salen de la colección de BGG, y `transportable`/`pros`/`cons`/`notas` se dejaron de usar. Lo que sigue es el razonamiento original.
+
 `bgg_data.jsonl` arrancó siendo dos cosas a la vez: el universo de juegos (identidad + Estado, que cargás vos) y el caché de datos de BGG (que se refresca solo) — un humano mandaba sobre un grupo de columnas de la fila, BGG sobre el resto, documentado con una constante (`OWNED_FIELDS` vs `BGG_FIELDS`) pero conviviendo en el mismo archivo. Funcionaba porque `collect_bgg_data.py` nunca pisaba `OWNED_FIELDS` en un refresh — pero "funciona si el script se porta bien" es más frágil que "no puede pasar": un bug en el refresh, un `write_jsonl` con el `dict` armado mal, cualquier cosa que toque el archivo entero, pone en riesgo datos irreemplazables (`mi_puntaje`, `pros`, `cons`, `notas`) junto a datos 100% regenerables (`puntaje_bgg`, `descripcion`, etc.).
 
 **Separarlos en dos archivos saca esa fragilidad por diseño, no por disciplina:** `data/01_data_understanding/mis_datos.jsonl` (antes `OWNED_FIELDS`: `bgg_id`, `nombre`, `estado`, `bgg_url`, `modo`, `transportable`, `mi_puntaje`, `pros`, `cons`, `notas`) es ahora EL universo — la única fuente de qué juegos existen, y lo único que un refresh de BGG no puede tocar porque ni siquiera abre ese archivo para escribirlo. `data/01_data_understanding/bgg_data.jsonl` queda como caché puro (antes `BGG_FIELDS`, join por `bgg_id`): si se borra entero, el próximo refresh lo reconstruye solo a partir de los `bgg_id` de `mis_datos.jsonl` — no hay forma de perder nada al tocarlo. `integrate_data.py` pasa a tener `mis_datos.jsonl` como base (no `bgg_data.jsonl`): un juego sin bgg_id (o sin match en el dataset) igual aparece en `data.json`, con las columnas de BGG en `null`.
@@ -193,6 +159,8 @@ Efecto colateral en `collect_bgg_data.py`: `--set-estado` deja de tocar el datas
 **Segunda vuelta de tuerca: separar "identidad" (bgg_id, nombre, bgg_url, link_cazagangas) de "tu opinión" (estado, modo, transportable, mi_puntaje, pros, cons, notas), aunque las dos sean manuales/semi-manuales.** `mis_datos.jsonl` seguía mezclando dos cosas de naturaleza distinta: identidad del juego (qué es, dónde está — bgg_url, y después link_cazagangas) y tu relación con él (qué pensás, en qué estado está). La señal para separar de nuevo: `check_cazagangas_links.py` necesitaba saber la URL de Cazagangas de cada juego para verificarla, y esa URL no tiene nada que ver con si el juego está en tu Watchlist o no — forzar a ese script a leer `mis_datos.jsonl` (con estado adentro) solo para sacar `nombre` lo acoplaba a un archivo que es 100% tuyo sin necesidad. `data/01_data_understanding/universo_juegos.jsonl` (`bgg_id`, `nombre`, `bgg_url`, `link_cazagangas`) pasa a ser el catálogo de identidad — lo que collect_bgg_data.py y check_cazagangas_links.py necesitan para saber qué buscar, sin tocar nunca `mis_datos.jsonl`. `mis_datos.jsonl` se achica a solo tu opinión/estado (sigue con `bgg_id` y `nombre` para que un humano pueda abrirlo y entender cada fila sin cruzar con otro archivo, y como fallback de join cuando `bgg_id` está vacío). Agregar un juego nuevo pasa a ser dos pasos independientes: sumarlo a `universo_juegos.jsonl` (identidad, por `--add` o a mano) y, aparte, cuando quieras, agregarlo a `mis_datos.jsonl` con el estado que corresponda — ninguno de los dos pasos depende del otro.
 
 ## Agrupar variantes/expansiones del mismo sistema de juego (`data/01_data_understanding/grupos.json`)
+
+**[Reemplazado 2026-10-29]** `grupos.json` ya no existe: `construct_data.py` deriva el grupo de las familias de BGG (`boardgamefamily`, prefijos "Game:"/"Series:"): cada juego va a su familia más grande, y el grupo solo se acepta si al menos el 60% de sus miembros comparte el principio del nombre (`GRUPO_PREFIJO_COMUN_MIN`), lo que descarta series de una editorial. Contra los grupos curados a mano coincidió en el 89% de los pares. Lo de abajo que dice que la family de BGG "no alcanza" era cierto sola; con el filtro de nombre sí funciona como generador automático. Lo que sigue es el razonamiento original.
 
 En "¿Cuál comprar?" varias cajas de un mismo sistema (ej. las 7 de Unmatched, las 5 de Ticket to Ride) saturaban la grilla. No hay forma confiable de detectar esto automático: ni el prefijo antes de `:` del nombre ni la "family" de BGG alcanzan, porque agrupan por **marca/tema**, no por si es el mismo diseño — "Star Wars: Rebellion" y "Star Wars: X-Wing" comparten prefijo y BGG family pero son juegos completamente distintos; "Roll Through the Ages" y "Through the Ages" comparten casi el nombre entero y son de autores distintos. Mismo problema con `boardgameimplementation`/`boardgameexpansion` de BGG: están pensados para expansiones "de verdad" (reglas que se suman a un juego base), no para "mismo motor, otra caja standalone" (que es el caso típico acá: Unmatched, Ticket to Ride, Century, Azul).
 
@@ -206,7 +174,7 @@ Al sumar un juego nuevo que sea "otra caja del mismo sistema" de algo que ya est
 
 A diferencia de El Bosque Lúdico (que necesita matchear por texto contra un sitemap, ver "Resolver un link a producto..." más arriba), Cazagangas publica sus fichas en una URL predecible a partir del nombre (`/juego/<slug>`). Primera versión: el frontend armaba ese slug al vuelo y mostraba el link igual, a ver qué pasaba ("si no existe, da 404 y lo veo yo"). Segunda versión: `check_cazagangas_links.py` generaba el mismo slug del lado Python y lo verificaba con un `HEAD` real. **Versión actual (esta): ni el frontend ni `check_cazagangas_links.py` generan ninguna URL — `link_cazagangas` se carga a mano en `data/01_data_understanding/universo_juegos.jsonl`** (junto a `bgg_id`/`nombre`/`bgg_url`, ver "Las columnas que no vienen de BGG viven en su propio archivo"), y `check_cazagangas_links.py` solo le pega un `HEAD` a lo que ya está cargado ahí, guardando el código HTTP (`200`/`404`/`error`) en `data/01_data_understanding/cazagangas_data.jsonl`. Sacar el slugify evita mantener el mismo algoritmo sincronizado en dos lugares (antes Python + JS) y evita adivinar: si el link está mal, se corrige una vez en `universo_juegos.jsonl`, no en la lógica de armado. El frontend sigue sin adivinar nada: `shared.js` solo muestra el link cuando `cazagangas_status === "200"`.
 
-Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~1000 candidatos, los que tengan `link_cazagangas` cargado en `universo_juegos.jsonl` — ya no filtra por estado, porque ese campo ni vive en el mismo archivo): corre con `--limit` para ir de a tandas y mergea por nombre contra corridas anteriores, sin perder lo ya chequeado. A diferencia de Bosque Lúdico, esto **no está pausado**: es una fuente activa (aunque, como el resto de `data/01_data_understanding/`, gitignored desde 2026-10-28 — ver Decisiones clave) y `integrate_data.py` la lee en cada build — pero el chequeo en sí (`check_cazagangas_links.py`) no corre en `sync_data.sh`, se corre a mano cuando hace falta refrescar, por el mismo motivo que Bosque Lúdico: ~1000 requests de red a un tercero es demasiado para colgarlo de un sync automático sin supervisión.
+Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~1000 candidatos, los que tengan link guardado en `cazagangas_data.jsonl` — ya no filtra por estado, porque ese campo ni vive en el mismo archivo): corre con `--limit` para ir de a tandas y mergea por nombre contra corridas anteriores, sin perder lo ya chequeado. A diferencia de Bosque Lúdico, esto **no está pausado**: es una fuente activa (aunque, como el resto de `data/01_data_understanding/`, gitignored desde 2026-10-28 — ver Decisiones clave) y `integrate_data.py` la lee en cada build — pero el chequeo en sí (`check_cazagangas_links.py`) no corre en `sync_data.sh`, se corre a mano cuando hace falta refrescar, por el mismo motivo que Bosque Lúdico: ~1000 requests de red a un tercero es demasiado para colgarlo de un sync automático sin supervisión.
 
 ## Qué evitar
 

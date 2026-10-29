@@ -12,3 +12,5 @@ data/02_data_preparation/integrated_data.jsonl
 # estaba gitignored y el resto commiteado, pero separar "cuál sí, cuál no" es
 # más fricción que simplemente no versionar nada de esta carpeta).
 data/01_data_understanding/
+
+.env

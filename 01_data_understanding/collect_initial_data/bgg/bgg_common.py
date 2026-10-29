@@ -1,90 +1,89 @@
 """Código compartido por los scripts de BGG (initialize_bgg_data.py,
-search_new_game.py, modify_values.py, extract_new_fields.py): paths,
-fetch del dataset de Hugging Face / API oficial, y lectura/escritura de
-data/01_data_understanding/universo_juegos.jsonl y bgg_data.jsonl.
+refresh_bgg_data.py, search_new_game.py): paths, requests a la API oficial y
+al dataset de Hugging Face, y lectura/escritura de
+data/01_data_understanding/bgg_data.jsonl (el universo de juegos: todo juego
+con fila acá existe para el repo) y bgg_collection.jsonl.
+
+Regla de esta carpeta: los datos se guardan CRUDOS, con los mismos nombres
+de campo que la fuente (BGG) y sin calcular nada. Toda columna derivada
+(jugadores best/recomendados, precio de referencia, modo, etc.) se
+construye en 02_data_preparation/construct_data.py.
+
+Forma de cada valor en bgg_data.jsonl: la del dataset de Hugging Face (que a
+su vez es la respuesta de la API de BGG convertida a dict) — strings para los
+escalares, listas para los `link` y para los polls (con las claves '@...'
+del XML). La API oficial y el dataset llenan exactamente la misma forma, así
+que 02_data_preparation lee un solo formato.
 
 Regla central de bgg_data.jsonl: NINGUNA función de acá reescribe el
 archivo entero salvo write_bgg_cache_full (solo para el bootstrap, donde
-no hay nada previo que perder). Para todo lo demás (agregar un juego
-nuevo, editar un campo, sumar una columna) se usa upsert_bgg_cache, que
-lee lo que ya está en disco y solo toca las filas/campos indicados —
-así una fila editada a mano (ej. jug_min/max de community en vez de
-caja) nunca se pisa con el dataset de origen en una corrida posterior.
+no hay nada previo que perder). Para todo lo demás se usa upsert_bgg_cache,
+que lee lo que ya está en disco y solo toca las filas/campos indicados.
 """
 import ast
 import csv
-import html
 import io
+import json
+import os
 import re
 import sys
 import time
 import unicodedata
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-import json
 
 csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae descripciones largas en una sola celda CSV
 
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
-UNIVERSO_PATH = ROOT / "data" / "01_data_understanding" / "universo_juegos.jsonl"
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
+COLLECTION_PATH = ROOT / "data" / "01_data_understanding" / "bgg_collection.jsonl"
 
 DATASET_URL = (
     "https://huggingface.co/datasets/mmpa/board_game_analysis/"
     "resolve/main/games_detailed_info2025.csv"
 )
 API_URL = "https://boardgamegeek.com/xmlapi2/thing"
+COLLECTION_URL = "https://boardgamegeek.com/xmlapi2/collection"
+BATCH_SIZE = 20  # ids por request a la API
 CRAWL_DELAY_SECONDS = 5  # robots.txt de BGG: Crawl-delay: 5
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal; contacto: negocios.mondineta@gmail.com)"
 
-# data/01_data_understanding/universo_juegos.jsonl: identidad pura, sin
-# estado ni ninguna opinión tuya (eso es mis_datos.jsonl).
-UNIVERSO_FIELDS = ["bgg_id", "nombre", "bgg_url", "link_cazagangas"]
-# data/01_data_understanding/bgg_data.jsonl: 100% de BGG.
-# Orden de escritura: primero los campos cortos/estructurados, al final
-# los de texto libre o longitud muy variable (descripcion) — así un
-# campo largo en un juego puntual no corre de lugar a los campos que lo
-# preceden en esa misma fila, y es más fácil ubicar una columna a ojo
-# al editar el .jsonl a mano. Si extract_new_fields.py suma una columna
-# nueva, se agrega acá (al final, antes de "descripcion" si es corta).
-BGG_CACHE_FIELDS = [
-    "bgg_id", "anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
-    "duracion_min", "duracion_max", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "disenador", "mecanicas", "categorias", "imagen", "descripcion",
+# data/01_data_understanding/bgg_collection.jsonl: TU colección en BGG,
+# cruda (atributos de <status> y <rating> de xmlapi2/collection, mismos
+# nombres). `rating` es tu puntaje ("N/A" si no puntuaste).
+COLLECTION_FIELDS = [
+    "bgg_id", "name", "own", "prevowned", "fortrade", "want", "wanttoplay", "wanttobuy",
+    "wishlist", "preordered", "lastmodified", "rating", "numplays", "comment",
 ]
-LIST_FIELDS = {"mecanicas", "categorias"}
 
-# Tags de BGG (mecánicas o categorías, da igual de cuál de las dos venga)
-# que señalan modos de juego no competitivos de forma razonablemente
-# confiable. "Semi-Cooperative Game" es el tag que usa BGG para juegos con
-# un objetivo compartido pero intereses individuales en tensión (ej.
-# traidor oculto) — el calce más cercano a "Cooperativo y competitivo".
-# Usado tanto acá (search_new_game.py, para prellenar el stub de
-# mis_datos.jsonl) como en 02_data_preparation/construct_data.py (para
-# derivar `modo` en el build si todavía no está cargado a mano) — una sola
-# definición, nunca duplicada.
-MECANICA_SEMI_COOP = "Semi-Cooperative Game"
-MECANICA_EQUIPOS = "Team-Based Game"
-MECANICA_COOP = "Cooperative Game"
-
-
-def infer_modo(mecanicas, categorias):
-    """Devuelve un modo sugerido a partir de mecánicas/categorías de BGG,
-    o None si no hay ninguna (no hay base para decidir, no hay que asumir
-    "Competitivo" a ciegas). Quien llama decide si eso pisa o no un valor
-    ya cargado a mano — acá no se mira mis_datos.jsonl para nada."""
-    tags = set(mecanicas or []) | set(categorias or [])
-    if not tags:
-        return None
-    if MECANICA_SEMI_COOP in tags:
-        return "Cooperativo y competitivo"
-    if MECANICA_EQUIPOS in tags:
-        return "Equipos"
-    if MECANICA_COOP in tags:
-        return "Cooperativo"
-    return "Competitivo"  # tenemos mecánicas/categorías y ninguna es de las de arriba
+# data/01_data_understanding/bgg_data.jsonl: 100% de BGG, crudo. Los nombres
+# son los del dataset de Hugging Face / la API ("Board Game Rank" incluido).
+# Orden: primero los campos cortos, al final los largos o de longitud muy
+# variable, para ubicar una columna a ojo al abrir el .jsonl.
+BGG_CACHE_FIELDS = [
+    "bgg_id", "yearpublished", "minage", "minplayers", "maxplayers",
+    "playingtime", "minplaytime", "maxplaytime",
+    "usersrated", "average", "bayesaverage", "Board Game Rank", "averageweight", "owned", "wishing",
+    "boardgamedesigner", "boardgamepublisher", "boardgamemechanic", "boardgamecategory", "boardgamefamily",
+    "name", "alternate", "thumbnail",
+    "suggested_num_players", "poll_summary", "suggested_playerage", "suggested_language_dependence",
+    "marketplacelistings", "description",
+]
+# Campos cuyo valor es una lista (vacía si BGG no devuelve nada); el resto son strings.
+LIST_FIELDS = {
+    "boardgamedesigner", "boardgamepublisher", "boardgamemechanic", "boardgamecategory", "boardgamefamily",
+    "alternate", "suggested_num_players", "poll_summary", "suggested_playerage",
+    "suggested_language_dependence", "marketplacelistings",
+}
+# poll_summary (el "Best with 3–4 players" ya calculado por BGG) y
+# marketplacelistings solo los llena la API (el dataset no los trae);
+# marketplacelistings además solo cuando se pide, porque agrega mucho peso al pedido. Los listados más
+# viejos que esto suelen estar vendidos, así que no se guardan.
+MARKETPLACE_MAX_AGE_DAYS = 730
 
 
 def normalize(s):
@@ -98,8 +97,35 @@ def extract_bgg_id(url):
     return match.group(1) if match else None
 
 
-def http_get(url, retries=3):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+# ---------------------------------------------------------------------------
+# Requests
+# ---------------------------------------------------------------------------
+
+def load_env(name):
+    """`name` del entorno, o de .env en la raíz del repo (gitignored)."""
+    value = os.environ.get(name)
+    env_path = ROOT / ".env"
+    if not value and env_path.exists():
+        for line in env_path.read_text().splitlines():
+            key, _, raw = line.partition("=")
+            if key.strip() == name:
+                value = raw.strip().strip("\"'")
+    if not value:
+        raise RuntimeError(f"Falta {name} (variable de entorno o .env en la raíz del repo)")
+    return value
+
+
+def load_bgg_token():
+    return load_env("BGG_TOKEN")
+
+
+def http_get(url, authorized=False, retries=3):
+    """GET con reintento ante 429/503. `authorized=True` manda el token de
+    BGG: usarlo SOLO con boardgamegeek.com, nunca con otro host."""
+    headers = {"User-Agent": USER_AGENT}
+    if authorized:
+        headers["Authorization"] = f"Bearer {load_bgg_token()}"
+    req = urllib.request.Request(url, headers=headers)
     delay = CRAWL_DELAY_SECONDS
     for attempt in range(1, retries + 1):
         try:
@@ -116,7 +142,7 @@ def http_get(url, retries=3):
 
 
 # ---------------------------------------------------------------------------
-# Dataset placeholder (modo dummy, default) — Hugging Face
+# Dataset de Hugging Face
 # ---------------------------------------------------------------------------
 
 def fetch_dataset():
@@ -140,199 +166,226 @@ def _literal(value, default):
         return default
 
 
-def _best_numplayers(suggested_num_players):
-    """El dataset trae una lista de entries, salvo cuando el juego solo
-    tiene un rango de jugadores posible: ahí viene un único dict pelado
-    en vez de una lista de un elemento (ej. "Traditional Card Games",
-    bgg_id 21804) — normalizar acá antes de iterar."""
-    if isinstance(suggested_num_players, dict):
-        suggested_num_players = [suggested_num_players]
-    best_result, best_votes = None, -1
-    for entry in suggested_num_players:
-        for result in entry.get("result", []):
-            if result.get("@value") != "Best":
-                continue
-            votes = int(result.get("@numvotes", 0))
-            if votes > best_votes:
-                best_votes, best_result = votes, entry.get("@numplayers")
-    if not best_result:
-        return None, None
-    parts = best_result.replace("+", "").split("-")
-    return parts[0], parts[-1]
+def _as_list(value):
+    """Cuando un poll tiene un único elemento, el dataset trae un dict
+    pelado en vez de una lista de un elemento — normalizar a lista."""
+    if isinstance(value, dict):
+        return [value]
+    return value if isinstance(value, list) else []
 
 
-def dataset_row_to_attributes(row):
-    def num(key, zero_is_missing=False):
-        value = (row.get(key) or "").strip()
-        if not value:
-            return None
-        if zero_is_missing and value == "0":
-            return None  # el dataset usa 0 como "sin dato" en duración/edad, no un valor real
-        return value
-
-    designers = _literal(row.get("boardgamedesigner"), [])
-    mecanicas = _literal(row.get("boardgamemechanic"), [])
-    categorias = _literal(row.get("boardgamecategory"), [])
-    best_min, best_max = _best_numplayers(_literal(row.get("suggested_num_players"), []))
-    description = (row.get("description") or "").strip()
-
-    return {
-        "anio": num("yearpublished"),
-        "descripcion": html.unescape(description) if description else None,
-        "disenador": ", ".join(designers) if designers else None,
-        "edad_min": num("minage", zero_is_missing=True),
-        # jug_min/jug_max: rango de CAJA (minplayers/maxplayers), no el
-        # "Community" de la ficha de BGG — priorizar siempre Community
-        # cuando se lo tenga a mano (ver modify_values.py).
-        # 0 = sin dato (mismo sentinel que duracion/edad), no "no soporta
-        # jugadores" — visible en la cola larga (juegos sin ficha completa).
-        "jug_min": num("minplayers", zero_is_missing=True),
-        "jug_max": num("maxplayers", zero_is_missing=True),
-        "jug_best_min": best_min,
-        "jug_best_max": best_max,
-        "duracion_min": num("minplaytime", zero_is_missing=True),
-        "duracion_max": num("maxplaytime", zero_is_missing=True),
-        # 0.0 = sin votos todavía (mismo sentinel que edad_min/duracion),
-        # no un peso/puntaje real — aparece en la larga cola de juegos sin
-        # reviews, invisible mientras solo se procesaba el top N.
-        "complejidad": num("averageweight", zero_is_missing=True),
-        "puntaje_bgg": num("average", zero_is_missing=True),
-        "reviews_bgg": num("usersrated"),
-        "ranking_bgg": num("Board Game Rank"),
-        "mecanicas": mecanicas,
-        "categorias": categorias,
-        # thumbnail (no "image", la versión full): alcanza para la tarjeta
-        # y pesa una fracción — ambas vienen del CDN de BGG igual.
-        "imagen": (row.get("thumbnail") or "").strip() or None,
-    }
+def dataset_row_to_raw(row):
+    """Fila del CSV de Hugging Face -> fila cruda de bgg_data.jsonl."""
+    out = {}
+    for field in BGG_CACHE_FIELDS:
+        if field == "bgg_id":
+            out[field] = row.get("id", "")
+        elif field in ("marketplacelistings", "poll_summary"):
+            out[field] = []  # solo la API lo trae
+        elif field in LIST_FIELDS:
+            out[field] = _as_list(_literal(row.get(field), []))
+        else:
+            out[field] = (row.get(field) or "").strip()
+    return out
 
 
 # ---------------------------------------------------------------------------
-# API oficial (modo api, para cuando BGG apruebe la aplicación)
+# API oficial (xmlapi2/thing): XML -> misma forma cruda que el dataset
 # ---------------------------------------------------------------------------
 
-def fetch_api_attributes(bgg_id):
-    raw = http_get(f"{API_URL}?id={bgg_id}&stats=1")
-    root = ET.fromstring(raw)
-    item = root.find("item")
-    if item is None:
-        return None
+def _poll_results(item, poll_name):
+    poll = item.find(f"poll[@name='{poll_name}']")
+    return poll.findall("results") if poll is not None else []
 
-    def text(tag, attr="value"):
+
+def _marketplace_listings(item):
+    cutoff = datetime.now(timezone.utc) - timedelta(days=MARKETPLACE_MAX_AGE_DAYS)
+    listings = []
+    for listing in item.findall("marketplacelistings/listing"):
+        price, cond, date = listing.find("price"), listing.find("condition"), listing.find("listdate")
+        if price is None or cond is None or date is None:
+            continue
+        try:
+            listed_at = datetime.strptime(date.get("value"), "%a, %d %b %Y %H:%M:%S %z")
+        except ValueError:
+            continue
+        if listed_at >= cutoff:
+            listings.append({
+                "listdate": date.get("value"), "price": price.get("value"),
+                "currency": price.get("currency"), "condition": cond.get("value"),
+            })
+    return listings
+
+
+def parse_item(item, marketplace=False):
+    """<item> de xmlapi2/thing -> fila cruda de bgg_data.jsonl (sin bgg_id)."""
+    ratings = item.find("statistics/ratings")
+
+    def stat(tag):
+        el = ratings.find(tag) if ratings is not None else None
+        return el.get("value") if el is not None else ""
+
+    def attr(path):
+        el = item.find(path)
+        return el.get("value") if el is not None else ""
+
+    def links(link_type):
+        return [l.get("value") for l in item.findall(f"link[@type='{link_type}']")]
+
+    def text(tag):
         el = item.find(tag)
-        return el.get(attr) if el is not None else None
+        return (el.text or "").strip() if el is not None and el.text else ""
 
-    stats = item.find("statistics/ratings")
-    rating = stats.find("average").get("value") if stats is not None and stats.find("average") is not None else None
-    usersrated = stats.find("usersrated").get("value") if stats is not None and stats.find("usersrated") is not None else None
-    rank_el = stats.find("ranks/rank[@name='boardgame']") if stats is not None else None
-    rank = rank_el.get("value") if rank_el is not None else None
-    weight = stats.find("averageweight").get("value") if stats is not None and stats.find("averageweight") is not None else None
-
-    designers = [l.get("value") for l in item.findall("link[@type='boardgamedesigner']")]
-    mecanicas = [l.get("value") for l in item.findall("link[@type='boardgamemechanic']")]
-    categorias = [l.get("value") for l in item.findall("link[@type='boardgamecategory']")]
-
-    best_min = best_max = None
-    poll = item.find("poll[@name='suggested_numplayers']")
-    if poll is not None:
-        best_result, best_votes = None, -1
-        for results in poll.findall("results"):
-            best_el = results.find("result[@value='Best']")
-            if best_el is not None:
-                votes = int(best_el.get("numvotes", 0))
-                if votes > best_votes:
-                    best_votes, best_result = votes, results.get("numplayers")
-        if best_result:
-            parts = best_result.replace("+", "").split("-")
-            best_min, best_max = parts[0], parts[-1]
-
-    desc_el = item.find("description")
-    description = html.unescape(desc_el.text.strip()) if desc_el is not None and desc_el.text else None
+    rank_el = ratings.find("ranks/rank[@name='boardgame']") if ratings is not None else None
+    primary = next((n.get("value") for n in item.findall("name") if n.get("type") == "primary"), "")
 
     return {
-        "anio": text("yearpublished"),
-        "descripcion": description,
-        "disenador": ", ".join(designers) or None,
-        "edad_min": text("minage"),
-        "jug_min": text("minplayers"),
-        "jug_max": text("maxplayers"),
-        "jug_best_min": best_min,
-        "jug_best_max": best_max,
-        "duracion_min": text("minplaytime"),
-        "duracion_max": text("maxplaytime"),
-        "complejidad": weight,
-        "puntaje_bgg": rating,
-        "reviews_bgg": usersrated,
-        "ranking_bgg": rank,
-        "mecanicas": mecanicas,
-        "categorias": categorias,
-        # <thumbnail> es contenido de texto, no un atributo @value como el
-        # resto de los tags que lee text() — por eso no se reusa esa helper.
-        "imagen": (item.find("thumbnail").text or "").strip() or None if item.find("thumbnail") is not None else None,
+        "yearpublished": attr("yearpublished"), "minage": attr("minage"),
+        "minplayers": attr("minplayers"), "maxplayers": attr("maxplayers"),
+        "playingtime": attr("playingtime"), "minplaytime": attr("minplaytime"), "maxplaytime": attr("maxplaytime"),
+        "usersrated": stat("usersrated"), "average": stat("average"), "bayesaverage": stat("bayesaverage"),
+        "Board Game Rank": rank_el.get("value") if rank_el is not None else "",
+        "averageweight": stat("averageweight"), "owned": stat("owned"), "wishing": stat("wishing"),
+        "boardgamedesigner": links("boardgamedesigner"), "boardgamepublisher": links("boardgamepublisher"),
+        "boardgamemechanic": links("boardgamemechanic"), "boardgamecategory": links("boardgamecategory"),
+        "boardgamefamily": links("boardgamefamily"),
+        "name": primary,
+        "alternate": [n.get("value") for n in item.findall("name") if n.get("type") == "alternate"],
+        "thumbnail": text("thumbnail"),
+        "suggested_num_players": [
+            {"@numplayers": r.get("numplayers"),
+             "result": [{"@value": x.get("value"), "@numvotes": x.get("numvotes")} for x in r.findall("result")]}
+            for r in _poll_results(item, "suggested_numplayers")
+        ],
+        "poll_summary": [{"@name": r.get("name"), "@value": r.get("value")} for r in item.findall("poll-summary/result")],
+        "suggested_playerage": [
+            {"@value": x.get("value"), "@numvotes": x.get("numvotes")}
+            for r in _poll_results(item, "suggested_playerage") for x in r.findall("result")
+        ],
+        "suggested_language_dependence": [
+            {"@level": x.get("level"), "@value": x.get("value"), "@numvotes": x.get("numvotes")}
+            for r in _poll_results(item, "language_dependence") for x in r.findall("result")
+        ],
+        "marketplacelistings": _marketplace_listings(item) if marketplace else [],
+        "description": text("description"),
     }
+
+
+def fetch_things(bgg_ids, marketplace=False, progress=None):
+    """Pide `bgg_ids` en lotes de BATCH_SIZE (respetando el Crawl-delay
+    entre lotes) y devuelve {bgg_id: fila cruda}. Un id que BGG no
+    devuelve queda fuera."""
+    ids = list(dict.fromkeys(bgg_ids))
+    out = {}
+    for start in range(0, len(ids), BATCH_SIZE):
+        if start:
+            time.sleep(CRAWL_DELAY_SECONDS)
+        url = f"{API_URL}?id={','.join(ids[start:start + BATCH_SIZE])}&stats=1" + ("&marketplace=1" if marketplace else "")
+        for item in ET.fromstring(http_get(url, authorized=True)).findall("item"):
+            out[item.get("id")] = parse_item(item, marketplace)
+        if progress:
+            progress(min(start + BATCH_SIZE, len(ids)), len(ids))
+    return out
 
 
 def fetch_attributes(bgg_id, mode, dataset):
-    """mode == "api": xmlapi2/thing (respeta el Crawl-delay). mode ==
-    "dummy": dataset de Hugging Face ya descargado (sin red extra)."""
+    """mode == "api": xmlapi2/thing. mode == "dummy": dataset de Hugging
+    Face ya descargado (sin red extra)."""
     if mode == "api":
-        return fetch_api_attributes(bgg_id)
+        return fetch_things([bgg_id], marketplace=True).get(str(bgg_id))
     row = dataset.get(bgg_id)
-    return dataset_row_to_attributes(row) if row else None
+    return dataset_row_to_raw(row) if row else None
 
 
 # ---------------------------------------------------------------------------
-# universo_juegos.jsonl / bgg_data.jsonl: leer / escribir (un objeto JSON
-# por línea)
+# Tu colección (xmlapi2/collection) -> bgg_collection.jsonl, cruda
 # ---------------------------------------------------------------------------
 
-def load_universo():
-    if not UNIVERSO_PATH.exists():
-        sys.exit(f"No existe {UNIVERSO_PATH} todavía; corré initialize_bgg_data.py primero")
-    with UNIVERSO_PATH.open(encoding="utf-8") as f:
+def fetch_collection(username, retries=6):
+    """Colección de `username` (solo juegos, sin expansiones). BGG responde
+    202 mientras arma la lista: se reintenta hasta que da 200."""
+    query = urllib.parse.urlencode({
+        "username": username, "stats": 1, "subtype": "boardgame", "excludesubtype": "boardgameexpansion",
+    })
+    for _ in range(retries):
+        req = urllib.request.Request(
+            f"{COLLECTION_URL}?{query}",
+            headers={"User-Agent": USER_AGENT, "Authorization": f"Bearer {load_bgg_token()}"},
+        )
+        with urllib.request.urlopen(req) as resp:
+            if resp.status == 200:
+                body = resp.read().decode("utf-8", errors="replace")
+                break
+        time.sleep(CRAWL_DELAY_SECONDS)
+    else:
+        raise RuntimeError("BGG no devolvió la colección (siguió en 202); reintentar en un rato")
+
+    rows = []
+    for item in ET.fromstring(body).findall("item"):
+        status = item.find("status")
+        rating = item.find("stats/rating")
+        comment = item.find("comment")
+        row = {k: (status.get(k) if status is not None else "") for k in COLLECTION_FIELDS}
+        row.update({
+            "bgg_id": item.get("objectid"),
+            "name": (item.find("name").text or "") if item.find("name") is not None else "",
+            "rating": rating.get("value") if rating is not None else "",
+            "numplays": (item.find("numplays").text or "") if item.find("numplays") is not None else "",
+            "comment": (comment.text or "") if comment is not None else "",
+        })
+        rows.append(row)
+    return rows
+
+
+def load_collection():
+    if not COLLECTION_PATH.exists():
+        return []
+    with COLLECTION_PATH.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def write_universo(rows):
-    with UNIVERSO_PATH.open("w", encoding="utf-8") as f:
+def write_collection(rows):
+    """Foto completa de tu colección en BGG: se reescribe entera (no hay
+    nada tuyo acá que pisar, todo viene de BGG)."""
+    with COLLECTION_PATH.open("w", encoding="utf-8") as f:
         for row in rows:
-            ordered = {k: (row.get(k) or "") for k in UNIVERSO_FIELDS}
-            f.write(json.dumps(ordered, ensure_ascii=False))
+            f.write(json.dumps({k: row.get(k, "") for k in COLLECTION_FIELDS}, ensure_ascii=False))
             f.write("\n")
 
 
+# ---------------------------------------------------------------------------
+# bgg_data.jsonl: leer / escribir (un objeto JSON
+# por línea)
+# ---------------------------------------------------------------------------
+
 def load_bgg_cache():
-    """Lee bgg_data.jsonl tal cual está en disco (incluye lo editado a
-    mano). Lista vacía si el archivo todavía no existe."""
+    """Lee bgg_data.jsonl tal cual está en disco. Lista vacía si el
+    archivo todavía no existe."""
     if not BGG_DATA_PATH.exists():
         return []
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def _ordered_row(row, fields=BGG_CACHE_FIELDS):
-    return {k: (row.get(k) if row.get(k) not in (None, "") else ([] if k in LIST_FIELDS else "")) for k in fields}
+def _ordered_row(row):
+    return {k: (row.get(k) if row.get(k) not in (None, "") else ([] if k in LIST_FIELDS else "")) for k in BGG_CACHE_FIELDS}
 
 
-def write_bgg_cache_full(rows, fields=BGG_CACHE_FIELDS):
+def write_bgg_cache_full(rows):
     """Reescribe el archivo entero. Usar SOLO en el bootstrap (no hay
     nada previo que perder) — cualquier otro caso de uso debe pasar por
     upsert_bgg_cache."""
     with BGG_DATA_PATH.open("w", encoding="utf-8") as f:
         for row in rows:
-            f.write(json.dumps(_ordered_row(row, fields), ensure_ascii=False))
+            f.write(json.dumps(_ordered_row(row), ensure_ascii=False))
             f.write("\n")
 
 
-def upsert_bgg_cache(updates_by_id, fields=BGG_CACHE_FIELDS):
+def upsert_bgg_cache(updates_by_id):
     """Mergea `updates_by_id` ({bgg_id: {campo: valor, ...}}) sobre lo
-    que ya está en bgg_data.jsonl: una fila existente cuyo bgg_id está en
-    updates_by_id se actualiza solo en esos campos (lo demás, incluido
-    cualquier edición manual previa, queda intacto); un bgg_id nuevo se
-    agrega como fila nueva al final; una fila existente que NO está en
-    updates_by_id se reescribe tal cual, sin tocarla. Devuelve
-    (agregadas, actualizadas)."""
+    que ya está en bgg_data.jsonl: una fila existente se actualiza solo en
+    los campos indicados; un bgg_id nuevo se agrega al final; el resto
+    queda igual. Devuelve (agregadas, actualizadas)."""
     existing = load_bgg_cache()
     by_id = {row.get("bgg_id"): row for row in existing if row.get("bgg_id")}
 
@@ -349,7 +402,7 @@ def upsert_bgg_cache(updates_by_id, fields=BGG_CACHE_FIELDS):
 
     with BGG_DATA_PATH.open("w", encoding="utf-8") as f:
         for row in existing:
-            f.write(json.dumps(_ordered_row(row, fields), ensure_ascii=False))
+            f.write(json.dumps(_ordered_row(row), ensure_ascii=False))
             f.write("\n")
     return added, updated
 
