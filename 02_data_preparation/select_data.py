@@ -6,7 +6,7 @@ TOP_N mejor puntuados del resto. Reescribe el mismo docs/data/data.json
 (más chico) — correr siempre después de construct_data.py.
 
 Nunca se filtra un juego con estado distinto de "Watchlist" (Own/Prev. owned/
-Want to buy/Descartado): son tu curación manual en ludoteca.jsonl, no deben
+Want to buy): son tu colección en BGG, no deben
 poder desaparecer del sitio por tener pocas reviews o no estar en el top N de
 rating — ver DATA_PLAYBOOK.md.
 

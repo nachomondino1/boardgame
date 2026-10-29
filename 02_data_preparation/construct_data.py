@@ -1,11 +1,13 @@
-"""Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: universo_juegos.jsonl
-(base) + ludoteca.jsonl + bgg_data.jsonl + grupos.json + cazagangas_data.jsonl
+"""Lee data/02_data_preparation/integrated_data.jsonl (salida de integrate_data.py: bgg_data.jsonl
+(base) + bgg_collection.jsonl + cazagangas_data.jsonl
 ya mergeados — correr ese script antes si alguna fuente cambió), calcula
 las columnas derivadas y escribe docs/data/data.json, lo que consume el sitio.
 
-integrated_data.jsonl es JSON Lines (un objeto por línea, ver el docstring
-de bgg_common.py sobre por qué JSONL y no CSV): mecanicas/categorias
-ya llegan como array, el resto de los campos como string u null.
+integrated_data.jsonl es JSON Lines (un objeto por línea). Los campos de BGG
+llegan CRUDOS, con los nombres de BGG (ver bgg_common.py): acá se construye
+TODO lo que usa el sitio a partir de ellos — la columna de la web
+(`anio`, `jug_min`, `puntaje_bgg`…) es siempre una derivación de un campo
+crudo (`yearpublished`, `suggested_num_players`, `average`…).
 
 puntaje_ajust_bgg y precio_calidad: ver sus docstrings más abajo (vivían
 como fórmulas manuales en el Sheet original, se migraron leyendo la fórmula
@@ -14,43 +16,235 @@ depende de `costo`, que hoy no sale de ninguna fuente (Bosque Lúdico no
 está integrado todavía) — da `None` para todos los juegos hasta que exista.
 
 duracion y modo: derivadas 100% de datos de BGG (mecánicas, categorías,
-duración mín./máx. — infer_modo en bgg_common.py). `modo` no vive en
-ninguna fuente curada a mano (no tiene sentido guardar en ludoteca.jsonl
-lo mismo que ya se deriva acá en cada build).
+duración mín./máx. — infer_modo, acá abajo).
 
-`estado` es 100% de integrate_data.py: "Watchlist" por default, o lo que
-diga ludoteca.jsonl para el juego — acá no se recalcula, solo pasa de
-largo (igual que `transportable`).
+`estado` y `mi_puntaje` salen de tu colección en BGG (bgg_collection.jsonl):
+Own > Prev. owned > Want to buy, y "Watchlist" para todo lo demás.
 
-`transportable` es 100% manual (columna propia, ver bgg_common.py):
-BGG no trackea tamaño de caja en ningún campo, así que acá no se deriva de
-nada para los juegos sin dato — solo pasa de largo el valor que ya viene
-de ludoteca.jsonl (o `None` si el juego no está curado ahí).
-
-`grupo`, `link_cazagangas`, `cazagangas_status` ya vienen resueltos por
-integrate_data.py — acá solo pasan de largo (igual que `transportable`),
-no se recalculan.
+`nombre` es el `name` de BGG; `grupo` se arma con las familias de BGG
+(compute_grupos); `link_cazagangas` y `cazagangas_status` ya vienen resueltos
+por integrate_data.py y pasan de largo.
 """
+import collections
 import json
 import math
+import re
 import statistics
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 INTEGRATED_DATA_PATH = ROOT / "data" / "02_data_preparation" / "integrated_data.jsonl"
 OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 
-# 02 puede importar de 01 (nunca al revés, ver DATA_PLAYBOOK.md).
-sys.path.insert(0, str(ROOT / "01_data_understanding" / "collect_initial_data" / "bgg"))
-from bgg_common import infer_modo  # noqa: E402
+# Grupos: juegos que son el mismo sistema con otra caja (mapa, expansión
+# standalone, edición). Salen de las familias de BGG ("Game: Azul", "Series:
+# Exit: The Game"): cada juego va a su familia más grande, y un grupo solo se
+# acepta si al menos esa fracción de sus miembros comparte el principio del
+# nombre ("Exit: …", "Azul: …") — así se descartan series de una editorial
+# ("Series: Alea Big Box") que no son un mismo sistema de juego.
+GRUPO_FAMILIAS = ("Game", "Series")
+GRUPO_PREFIJO_COMUN_MIN = 0.6
+
+PUBLISHER_IGNORADOS = ("(",)  # BGG lista "(Unknown)", "(Self-Published)", etc.
+
+# Tags de BGG (mecánicas o categorías, da igual de cuál de las dos venga)
+# que señalan modos de juego no competitivos de forma razonablemente
+# confiable. "Semi-Cooperative Game" es el tag que usa BGG para juegos con
+# un objetivo compartido pero intereses individuales en tensión (ej.
+# traidor oculto) — el calce más cercano a "Cooperativo y competitivo".
+MECANICA_SEMI_COOP = "Semi-Cooperative Game"
+MECANICA_EQUIPOS = "Team-Based Game"
+MECANICA_COOP = "Cooperative Game"
+
+# Marketplace: precio de referencia = mediana de listados recientes en USD
+# y en buen estado (ya filtrados por fecha en bgg_common.py).
+MARKETPLACE_CONDICIONES = {"new", "likenew"}
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
 
-NUMERIC_FLOAT = {"complejidad", "puntaje_bgg"}
-NUMERIC_INT = {"anio", "edad_min", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
-               "duracion_min", "duracion_max", "reviews_bgg", "ranking_bgg", "mi_puntaje"}
-LIST_FIELDS = {"mecanicas", "categorias"}
+# Campos de identidad que pasan de largo tal cual (strings; "" -> None).
+PASSTHROUGH = ["bgg_id", "link_cazagangas"]
+
+
+def num(value, zero_is_missing=False):
+    """Número de un string crudo de BGG, o None. BGG usa 0 como "sin dato" en
+    edad/duración/peso/puntaje (no es un valor real)."""
+    try:
+        n = float(value)
+    except (TypeError, ValueError):
+        return None
+    return None if zero_is_missing and n == 0 else n
+
+
+def to_int(n):
+    return None if n is None else int(n)
+
+
+def players_from_poll(suggested_num_players, poll_summary, box_min, box_max):
+    """((best_min, best_max), (jug_min, jug_max)) a partir de los polls de
+    cantidad de jugadores.
+    - best: lo que dice el resumen de BGG ("Best with 3–4 players") si el
+      juego lo tiene (lo trae la API); si no, la cantidad con más votos "Best".
+    - rango de la comunidad: las cantidades donde Best + Recommended supera a
+      Not Recommended — da lo mismo que el "Recommended with X–Y" de BGG
+      (coincidió en 100 de 100 juegos).
+    Sin votos, el rango cae al de la caja (minplayers/maxplayers)."""
+    best_n, best_votes = None, 0
+    recommended = set()
+    for entry in suggested_num_players or []:
+        votes = {r["@value"]: int(r["@numvotes"]) for r in entry.get("result", [])}
+        label = entry.get("@numplayers", "")
+        n = label.rstrip("+")
+        if not n.isdigit():
+            continue
+        if votes.get("Best", 0) > best_votes:
+            best_n, best_votes = int(n), votes["Best"]
+        if not label.endswith("+") and votes.get("Best", 0) + votes.get("Recommended", 0) > votes.get("Not Recommended", 0):
+            recommended.add(int(n))
+
+    best = (best_n, best_n)
+    for r in poll_summary or []:
+        if r.get("@name") == "bestwith":
+            nums = re.findall(r"\d+", r.get("@value", ""))
+            if nums:
+                best = (int(nums[0]), int(nums[-1]))
+    rango = (min(recommended), max(recommended)) if recommended else (box_min, box_max)
+    return best, rango
+
+
+def top_vote(entries, key):
+    """Valor de `key` de la opción más votada de un poll crudo, o None."""
+    best, best_votes = None, 0
+    for e in entries or []:
+        votes = int(e.get("@numvotes", 0))
+        if votes > best_votes:
+            best, best_votes = e.get(key), votes
+    return best
+
+
+def dependencia_idioma(entries):
+    """Nivel 1 (sin texto en el juego) a 5 (injugable en otro idioma) más
+    votado. Se cuenta por posición: el `@level` del dataset de Hugging Face
+    no siempre es confiable."""
+    votes = [int(e.get("@numvotes", 0)) for e in entries or []]
+    return votes.index(max(votes)) + 1 if votes and max(votes) > 0 else None
+
+
+def marketplace_mediana_usd(listings):
+    precios = []
+    for l in listings or []:
+        if l.get("currency") == "USD" and l.get("condition") in MARKETPLACE_CONDICIONES:
+            p = num(l.get("price"))
+            if p is not None:
+                precios.append(p)
+    return round(statistics.median(precios), 2) if precios else None
+
+
+def infer_modo(mecanicas, categorias):
+    """Devuelve un modo sugerido a partir de mecánicas/categorías de BGG,
+    o None si no hay ninguna (no hay base para decidir, no hay que asumir
+    "Competitivo" a ciegas)."""
+    tags = set(mecanicas or []) | set(categorias or [])
+    if not tags:
+        return None
+    if MECANICA_SEMI_COOP in tags:
+        return "Cooperativo y competitivo"
+    if MECANICA_EQUIPOS in tags:
+        return "Equipos"
+    if MECANICA_COOP in tags:
+        return "Cooperativo"
+    return "Competitivo"  # tenemos mecánicas/categorías y ninguna es de las de arriba
+
+
+def estado_de(row):
+    """Estado en tu colección de BGG: Own > Prev. owned > Want to buy; el
+    resto (incluido no estar en la colección) es Watchlist."""
+    if row.get("own") == "1":
+        return "Own"
+    if row.get("prevowned") == "1":
+        return "Prev. owned"
+    if row.get("wanttobuy") == "1":
+        return "Want to buy"
+    return "Watchlist"
+
+
+def nombre_base(nombre):
+    """Principio del nombre antes de ":", "–", "-" o "(", en minúscula."""
+    return re.split(r"\s*[:–—-]\s|\s\(", nombre, maxsplit=1)[0].strip().lower()
+
+
+def compute_grupos(rows):
+    """{bgg_id: nombre del grupo} para los juegos que comparten familia de
+    BGG con otros (ver GRUPO_FAMILIAS)."""
+    def familias(row):
+        return [f for f in row.get("boardgamefamily") or [] if f.split(":")[0] in GRUPO_FAMILIAS]
+
+    tamanio = collections.Counter(f for row in rows for f in familias(row))
+    miembros = collections.defaultdict(list)
+    for row in rows:
+        fs = familias(row)
+        if fs:
+            miembros[max(fs, key=lambda f: (tamanio[f], f))].append(row)
+
+    grupos = {}
+    for familia, juegos in miembros.items():
+        if len(juegos) < 2:
+            continue
+        comun = collections.Counter(nombre_base(j.get("name") or "") for j in juegos).most_common(1)[0][1]
+        if comun / len(juegos) >= GRUPO_PREFIJO_COMUN_MIN:
+            nombre_grupo = re.sub(r"\s*\([^)]*\)$", "", familia.split(":", 1)[1].strip())  # sin "(Official)", "(Space Cowboys)"
+            for j in juegos:
+                grupos[j["bgg_id"]] = nombre_grupo
+    return grupos
+
+
+def build_game(row, grupo):
+    """Una fila de integrated_data.jsonl (campos crudos de BGG) -> el juego
+    que consume el sitio, con las columnas ya construidas."""
+    game = {}
+    for key in PASSTHROUGH:
+        value = row.get(key)
+        game[key] = (value.strip() if isinstance(value, str) else value) or None
+    game["nombre"] = (row.get("name") or "").strip()
+    game["bgg_url"] = f"https://boardgamegeek.com/boardgame/{game['bgg_id']}"
+    game["estado"] = estado_de(row)
+    rating = num(row.get("rating"))  # "N/A" si no puntuaste
+    game["mi_puntaje"] = None if rating is None else (int(rating) if rating == int(rating) else rating)
+
+    box_min = to_int(num(row.get("minplayers"), zero_is_missing=True))
+    box_max = to_int(num(row.get("maxplayers"), zero_is_missing=True))
+    (best_min, best_max), (jug_min, jug_max) = players_from_poll(
+        row.get("suggested_num_players"), row.get("poll_summary"), box_min, box_max)
+    rank = (row.get("Board Game Rank") or "").strip()
+    publishers = [p for p in row.get("boardgamepublisher") or [] if not p.startswith(PUBLISHER_IGNORADOS)]
+    designers = row.get("boardgamedesigner") or []
+    edad_comunidad = top_vote(row.get("suggested_playerage"), "@value")
+
+    game.update({
+        "anio": to_int(num(row.get("yearpublished"))),
+        "edad_min": to_int(num(row.get("minage"), zero_is_missing=True)),
+        "jug_min": jug_min,
+        "jug_max": jug_max,
+        "jug_best_min": best_min,
+        "jug_best_max": best_max,
+        "duracion_min": to_int(num(row.get("minplaytime"), zero_is_missing=True)),
+        "duracion_max": to_int(num(row.get("maxplaytime"), zero_is_missing=True)),
+        "complejidad": num(row.get("averageweight"), zero_is_missing=True),
+        "puntaje_bgg": num(row.get("average"), zero_is_missing=True),
+        "reviews_bgg": to_int(num(row.get("usersrated"))),
+        "ranking_bgg": int(rank) if rank.isdigit() else None,
+        "disenador": ", ".join(designers) or None,
+        "mecanicas": row.get("boardgamemechanic") or [],
+        "categorias": row.get("boardgamecategory") or [],
+        "imagen": (row.get("thumbnail") or "").strip() or None,
+        "grupo": grupo,
+        "cazagangas_status": row.get("cazagangas_status"),
+        "publisher_principal": publishers[0] if publishers else None,
+        "dependencia_idioma": dependencia_idioma(row.get("suggested_language_dependence")),
+        "edad_comunidad": to_int(num(re.sub(r"\D.*", "", edad_comunidad))) if edad_comunidad else None,
+        "precio_ref_usd": marketplace_mediana_usd(row.get("marketplacelistings")),
+    })
+    return game
 
 
 def load_games():
@@ -60,25 +254,8 @@ def load_games():
         rows = [json.loads(line) for line in f if line.strip()]
     if not rows:
         raise SystemExit(f"{INTEGRATED_DATA_PATH} está vacío; corré 02_data_preparation/integrate_data.py primero.")
-
-    games = []
-    for row in rows:
-        game = {}
-        for key, value in row.items():
-            if key in LIST_FIELDS:
-                game[key] = value if isinstance(value, list) else []
-                continue
-            value = (value or "").strip()
-            if not value:
-                game[key] = None
-            elif key in NUMERIC_FLOAT:
-                game[key] = float(value)
-            elif key in NUMERIC_INT:
-                game[key] = int(float(value))
-            else:
-                game[key] = value
-        games.append(game)
-    return games
+    grupos = compute_grupos(rows)
+    return [build_game(row, grupos.get(row["bgg_id"])) for row in rows]
 
 
 def compute_puntaje_ajust_bgg(game):
@@ -142,8 +319,7 @@ def compute_duracion(game):
 
 
 def compute_modo(game):
-    """Deriva `modo` de las mecánicas/categorías de BGG (infer_modo, en
-    bgg_common.py). Sin mecánicas/categorías en el caché (juego no
+    """Deriva `modo` de las mecánicas/categorías de BGG (infer_modo). Sin mecánicas/categorías en el caché (juego no
     enriquecido todavía, o BGG no las trae), infer_modo devuelve None en
     vez de asumir "Competitivo" a ciegas."""
     return infer_modo(game.get("mecanicas"), game.get("categorias"))
@@ -163,13 +339,6 @@ def main():
             g["puntaje_ajust_bgg"] = round(g["puntaje_ajust_bgg"], 2)
         if g["precio_calidad"] is not None:
             g["precio_calidad"] = round(g["precio_calidad"], 2)
-
-    # descripcion no viaja a data.json: es el campo más pesado con
-    # diferencia (~60% del archivo con el catálogo completo de BGG) y el
-    # sitio ya no la muestra en la tarjeta (ver docs/js/shared.js) — para
-    # leer la descripción real, el link a la ficha de BGG alcanza.
-    for g in games:
-        g.pop("descripcion", None)
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(games, ensure_ascii=False, indent=2), encoding="utf-8")

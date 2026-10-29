@@ -1,5 +1,5 @@
 #!/bin/bash
-# Lo corres cuando actualizaste los datos de entrada (ya sea universo_juegos, bgg_data u otro) y queres reflejarlos en la web.
+# Lo corres cuando actualizaste los datos de entrada (tu colección en BGG, bgg_data u otro) y queres reflejarlos en la web.
 
 # Actualiza data.json a mano (ver DATA_PLAYBOOK.md, "Gitignorear toda la
 # fuente cruda" en Decisiones clave: el sync automático en CI ya no es
@@ -12,8 +12,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-echo "== Sumando juegos nuevos de universo_juegos.jsonl a bgg_data.jsonl =="
-python3 01_data_understanding/collect_initial_data/search_new_game.py
+echo "== Trayendo tu colección de BGG y actualizando los datos de tus juegos =="
+python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py
 
 echo "== Integrando fuentes =="
 python3 02_data_preparation/integrate_data.py
