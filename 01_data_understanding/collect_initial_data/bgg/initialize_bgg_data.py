@@ -9,7 +9,7 @@ refresh_bgg_data.py fue trayendo de la API, así que una corrida nueva te pisa
 esos datos más nuevos sin aviso.
 
 Para agregar un juego nuevo al universo ya existente, usar
-search_new_game.py (no este script). Para actualizar datos que cambian,
+refresh_bgg_data.py --add (no este script). Para actualizar datos que cambian,
 refresh_bgg_data.py.
 
 Uso:
@@ -35,7 +35,7 @@ def main():
     if BGG_DATA_PATH.exists() and not args.force:
         sys.exit(
             f"{BGG_DATA_PATH} ya existe — este script es solo para el bootstrap inicial.\n"
-            "Para agregar un juego nuevo: search_new_game.py --add <id o nombre>.\n"
+            "Para agregar un juego nuevo: refresh_bgg_data.py --add <id o nombre>.\n"
             "Para reiniciar el catálogo desde cero a propósito: --force (vas a perder "
             "lo que trajo refresh_bgg_data.py)."
         )

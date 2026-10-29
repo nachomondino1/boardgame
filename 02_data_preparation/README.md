@@ -12,4 +12,4 @@ python3 02_data_preparation/integrate_data.py
 python3 02_data_preparation/construct_data.py
 ```
 
-`../.github/workflows/sync-data.yml` corre `01_data_understanding/collect_initial_data/search_new_game.py` y después estos dos, en ese orden, el día 1 de cada mes. El chequeo de links de Cazagangas (`check_cazagangas_links.py`) no corre acá — es manual, ver `../01_data_understanding/README.md`.
+`../sync_data.sh` corre `refresh_bgg_data.py` y después estos tres pasos (`integrate_data.py`, `construct_data.py`, `select_data.py`), en ese orden; un LaunchAgent local lo dispara el día 1 de cada mes (`../scripts/cron_sync_data.sh`). El chequeo de links de Cazagangas (`check_cazagangas_links.py`) no corre acá — es manual, ver `../01_data_understanding/README.md`.
