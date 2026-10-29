@@ -23,9 +23,9 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
     refresh_bgg_data.py: con la API de BGG (BGG_TOKEN) trae tu colección
       (bgg_collection.jsonl) y actualiza los campos que cambian de tus
       juegos — upsert, nunca reescritura completa; --dry-run muestra el diff.
-  search_new_game.py vive un nivel arriba de bgg/ y cazagangas/ porque
-    orquesta las dos: --add <id o nombre> suma el juego a bgg_data.jsonl y,
-    si un slug best-effort verifica 200 con un HEAD real, a cazagangas_data.jsonl.
+  Todo juego nuevo (--add <id o nombre>, --discover o tu colección) prueba
+    slugs best-effort de Cazagangas (nombre principal y alternativos de BGG)
+    con un HEAD real, y si uno da 200, lo guarda en cazagangas_data.jsonl.
   Collect guarda el dato crudo con el nombre de la fuente; toda columna
   derivada se construye en 02_data_preparation.
                             │
@@ -61,7 +61,7 @@ data/01_data_understanding/cazagangas_data.jsonl   (gitignored)
         │  sync_data.sh: 100% local (ver "Gitignorear toda la fuente
         │  cruda" en Decisiones clave — el cron de CI dejó de ser posible
         │  en cuanto data/01_data_understanding/ se gitignoreó, CI no
-        │  tiene de dónde leer esos archivos). Corre search_new_game.py +
+        │  tiene de dónde leer esos archivos). Corre refresh_bgg_data.py +
         │  integrate_data.py + construct_data.py + select_data.py,
         │  commitea data.json si cambió, pushea staging, abre PR a main
         │  y lo mergea (push a main = redeploy de GitHub Pages)
@@ -92,7 +92,7 @@ Nadie en el camino del usuario final toca ninguna API externa: para quien visita
 
 ## Decisiones clave (y por qué)
 
-*(Varias de estas decisiones nombran `ludoteca.jsonl`, `universo_juegos.jsonl`, `grupos.json`, `modify_values.py` o `extract_new_fields.py`: archivos y scripts que se eliminaron el 2026-10-29, ver la actualización arriba. Se dejan como historia del razonamiento.)*
+*(Varias de estas decisiones nombran `ludoteca.jsonl`, `universo_juegos.jsonl`, `grupos.json`, `search_new_game.py`, `modify_values.py` o `extract_new_fields.py`: archivos y scripts que se eliminaron el 2026-10-29, ver la actualización arriba. Se dejan como historia del razonamiento.)*
 
 - **JSON Lines (un objeto por línea) en vez de CSV para la fuente curada a mano, cuando alguna columna trae texto libre con saltos de línea reales.** `bgg_data.jsonl` tiene una columna (`descripcion`) con texto de BGG que incluye `\n` reales adentro: en CSV eso hace que una sola fila se desparrame en decenas de líneas visuales en el editor de texto (aunque el parser la siga leyendo bien como una fila), haciendo casi imposible ubicar/editar a mano el campo de un juego puntual sin una herramienta de CSV dedicada. En JSON ese mismo salto de línea se escapa como `\n` literal dentro del string, así que cada fila queda garantizada en una sola línea física del archivo — buscable por nombre con Ctrl+F en cualquier editor de texto plano, sin extensiones. El costo es editar `{"clave": "valor", ...}` en vez de un valor entre comas, algo peor para cambios de una sola celda pero sin alternativa real una vez que el contenido de una columna deja de ser "una celda corta". La señal para este cambio no es "¿CSV es incómodo en general?" sino "¿alguna columna de texto libre tiene saltos de línea reales que rompen la alineación de una fila = una línea?" — si ninguna columna los tiene, CSV sigue siendo más simple de editar a mano (sobre todo en una planilla) y no hace falta este cambio.
 
@@ -113,6 +113,16 @@ Nadie en el camino del usuario final toca ninguna API externa: para quien visita
 - **Cuando una columna pedida no tiene una variable real en ninguna fuente disponible, no asumir que hay que inventar un proxy calculado — primero preguntar si el usuario prefiere cargarla a mano.** Se probó con `transportable` (tamaño de caja; BGG no lo trackea en ningún campo) un proxy calculado a partir de complejidad + duración, calibrado contra 3 casos de referencia conocidos (Pistas Cruzadas, La Isla Prohibida, Catan). El usuario lo descartó: prefirió carga 100% manual (columna propia más, como `mi_puntaje`/`pros`/`cons`), porque "entra en una mochila" es un juicio que él ya tiene y un proxy puede acertar los 3 casos de calibración y fallar en el resto. Lección: un proxy calibrado contra pocos casos de referencia es una apuesta razonable cuando el dato es costoso de cargar a mano para *muchas* filas (acá, todo el universo de BGG); cuando lo que hace falta es una columna manual para un puñado de juegos que el usuario ya conoce bien (su propia ludoteca), cargarla a mano directamente es más simple y más confiable que cualquier heurística — no reemplaza el juicio del dueño del dato por una fórmula sin que lo pida.
 - **Una columna categórica derivada que ya existe como campo editable a mano en la fuente curada (acá, `modo`) nunca se pisa: se deriva solo para las filas que lo tienen vacío.** Mismo principio que el fallback de enriquecimiento externo (más arriba), aplicado a una columna *calculada*, no solo a una que viene de otra fuente externa — la regla es "¿el humano ya decidió esto?", no "¿de dónde viene el valor nuevo?".
 - **Cuándo un Sheet deja de valer la pena como fuente de lo curado a mano: cuando lo que queda ahí es chico y cambia poco.** Acá el Sheet original tenía ~70 columnas pobladas por BGG/Bosque Lúdico fila por fila; una vez que esas dos fuentes se automatizaron, quedó reducido a ~10 columnas de ~30 filas que el usuario cambia pocas veces al año. En ese punto, mantener el fetch a la API de Google (CSV + `.xlsx` para hyperlinks, parseo de columnas) ya no se paga a sí mismo — un JSON versionado en el repo, editado directo, es estrictamente más simple y no depende de que el Sheet siga siendo público. La señal para hacer el cambio no es "¿el Sheet es incómodo?" sino "¿lo que queda en el Sheet todavía justifica el costo de ir a buscarlo por HTTP?".
+
+### Decisiones del 2026-10-29: API de BGG con token, datos crudos y refresco periódico
+
+- **Datos crudos, con los nombres de la fuente, en Collect; todo lo derivado en Data Preparation.** `bgg_data.jsonl` guarda `yearpublished`, `minplayers`, `suggested_num_players`, etc., sin calcular nada; el rango de jugadores de la comunidad, el grupo, el estado y el precio de referencia se construyen en `construct_data.py`. Así el dato crudo es siempre el mismo y cambiar una variable no obliga a recolectar de nuevo. Una corrección manual de un dato crudo ya no existe: se resuelve como override en la preparación.
+- **Un solo script para mantener el catálogo (`refresh_bgg_data.py`)** en vez de varios (`search_new_game.py`, `modify_values.py`, `extract_new_fields.py` se eliminaron): trae la colección propia, actualiza campos de juegos existentes (upsert, nunca borra con un vacío), agrega juegos (`--add`, `--discover` con el "hot" de BGG, tu colección) y resuelve su link a la tienda. Guarda por tandas de 500 (un corte no pierde lo ya traído; `--skip-fresh` retoma). Cada juego lleva `fecha_actualizacion` y cada corrida suma una fila a `01_data_understanding/refresh_log.md` (versionado, a diferencia de `data/`).
+- **La API de BGG no tiene un listado por ranking:** la única forma de encontrar juegos nuevos es el "hot" (50 juegos) o recorrer ids. Hasta que se corra `--scope all`, el ranking de los juegos que no se refrescaron es el del snapshot de 2025.
+- **El estado propio sale de la colección de BGG** (`own`, `wanttobuy`, `rating`), no de un archivo manual: `ludoteca.jsonl` se eliminó. Lo que BGG no puede guardar (`transportable`, notas) se dejó de usar.
+- **Grupos de variantes derivados de las familias de BGG** (`Game:`/`Series:`) con un filtro por prefijo de nombre (`GRUPO_PREFIJO_COMUN_MIN` = 0,6): coincidió en el 89% de los pares del `grupos.json` curado a mano. Antes se había descartado la family de BGG porque agrupa por marca/tema; con el filtro de nombre deja de ser un problema.
+- **Link a la tienda local (Cazagangas) con nombres alternativos de BGG:** el slug de "The Crew" en Cazagangas es `la-tripulacion`, que sale del nombre alternativo en español sin el subtítulo. Se prueban el nombre completo y sin subtítulo de cada nombre, y se verifica con un HEAD real (nunca se guarda un link sin 200).
+- **Plan a futuro: pasar los tres archivos de `data/01_data_understanding/` a un solo SQLite** (actualización en el lugar, un archivo en vez de tres); hoy el costo del `.jsonl` (117 MB, ~1 s) no lo justifica. Ver `01_data_understanding/README.md`.
 
 ## Cómo adaptarlo a un proyecto nuevo
 

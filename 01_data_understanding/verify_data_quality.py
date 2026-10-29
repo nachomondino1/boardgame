@@ -2,7 +2,7 @@
 data/01_data_understanding/bgg_data.jsonl (datos crudos de BGG, que es el
 catálogo completo), bgg_collection.jsonl (tu colección en BGG) y
 cazagangas_data.jsonl que no dependen de ningún otro paso del pipeline — corre
-standalone, antes o después de search_new_game.py/refresh_bgg_data.py.
+standalone, antes o después de refresh_bgg_data.py.
 
 No modifica nada: solo reporta. Pensado para correr a mano después de
 cargar juegos nuevos o corregir datos, y eventualmente como paso de CI

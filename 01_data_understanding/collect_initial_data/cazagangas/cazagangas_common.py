@@ -1,5 +1,5 @@
 """Código compartido por check_cazagangas_links.py y
-search_new_game.py (collect_initial_data/bgg/): slug best-effort a partir
+refresh_bgg_data.py (collect_initial_data/bgg/): slug best-effort a partir
 del nombre del juego + verificación real por HTTP.
 
 El slug nunca se guarda a ciegas: `slugify()` arma una URL candidata,
@@ -81,23 +81,37 @@ def write_cazagangas_cache(by_bgg_id):
             f.write("\n")
 
 
-def resolver_link(nombre, bgg_id):
-    """Arma un slug best-effort a partir del nombre, lo verifica con un
-    HEAD real y devuelve (url, status). Si da 200, lo guarda en
-    cazagangas_data.jsonl; si no, no guarda nada (lo decide acá, no el
-    llamador)."""
-    slug = slugify(nombre)
-    if not slug:
-        return None, "error"
-    url = f"https://www.cazagangas.com.ar/juego/{slug}"
-    status = check_status(url)
-    if status == "200":
-        existing = load_cazagangas_cache()
-        existing[bgg_id] = {
-            "bgg_id": bgg_id,
-            "link_cazagangas": url,
-            "status_http": status,
-            "fecha_chequeado": datetime.date.today().isoformat(),
-        }
-        write_cazagangas_cache(existing)
-    return url, status
+def resolver_link(nombres, bgg_id, max_intentos=12):
+    """Prueba un slug best-effort por cada nombre de `nombres` (el principal
+    primero, después los alternativos de BGG) y, de cada uno, también el
+    título sin subtítulo (lo que va antes de ":" o "–"): "The Crew" está en
+    Cazagangas como `la-tripulacion`, que sale de "La Tripulación: En busca
+    del noveno planeta". Verifica cada slug con un HEAD real y devuelve
+    (url, status) del primero que da 200 — y lo guarda en cazagangas_data.jsonl.
+    Si ninguno da 200, no guarda nada y devuelve el resultado del primer intento."""
+    candidatos = []
+    for nombre in nombres:
+        candidatos += [nombre, re.split(r"\s*[:–—]\s", nombre or "", maxsplit=1)[0]]
+    primero, vistos = None, set()
+    for nombre in candidatos:
+        slug = slugify(nombre)
+        if not slug or slug in vistos:
+            continue
+        vistos.add(slug)
+        if len(vistos) > max_intentos:
+            break
+        url = f"https://www.cazagangas.com.ar/juego/{slug}"
+        status = check_status(url)
+        primero = primero or (url, status)
+        if status == "200":
+            existing = load_cazagangas_cache()
+            existing[bgg_id] = {
+                "bgg_id": bgg_id,
+                "link_cazagangas": url,
+                "status_http": status,
+                "fecha_chequeado": datetime.date.today().isoformat(),
+            }
+            write_cazagangas_cache(existing)
+            return url, status
+        time.sleep(CRAWL_DELAY_SECONDS)
+    return primero or (None, "error")

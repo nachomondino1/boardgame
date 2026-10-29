@@ -1,7 +1,7 @@
 """Verifica los links a Cazagangas ya guardados en
 data/01_data_understanding/cazagangas_data.jsonl (bgg_id, link_cazagangas,
 status_http, fecha_chequeado): no arma ninguna URL nueva acá (eso lo hace
-search_new_game.py --add, ver cazagangas_common.resolver_link), solo le pega
+refresh_bgg_data.py al agregar un juego, ver cazagangas_common.resolver_link), solo le pega
 un HEAD real (fallback GET si el servidor no soporta HEAD) a cada link para
 guardar/refrescar el código HTTP.
 

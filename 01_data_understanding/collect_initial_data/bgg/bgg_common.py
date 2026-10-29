@@ -1,5 +1,5 @@
 """Código compartido por los scripts de BGG (initialize_bgg_data.py,
-refresh_bgg_data.py, search_new_game.py): paths, requests a la API oficial y
+refresh_bgg_data.py): paths, requests a la API oficial y
 al dataset de Hugging Face, y lectura/escritura de
 data/01_data_understanding/bgg_data.jsonl (el universo de juegos: todo juego
 con fila acá existe para el repo) y bgg_collection.jsonl.
