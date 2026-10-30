@@ -121,7 +121,7 @@ def load_bgg_token():
     return load_env("BGG_TOKEN")
 
 
-def http_get(url, authorized=False, retries=3):
+def http_get(url, authorized=False, retries=5):
     """GET con reintento ante 429/503. `authorized=True` manda el token de
     BGG: usarlo SOLO con boardgamegeek.com, nunca con otro host."""
     headers = {"User-Agent": USER_AGENT}
@@ -136,6 +136,13 @@ def http_get(url, authorized=False, retries=3):
         except urllib.error.HTTPError as e:
             if e.code in (429, 503) and attempt < retries:
                 print(f"  HTTP {e.code}, reintento {attempt}/{retries} en {delay}s...", file=sys.stderr)
+                time.sleep(delay)
+                delay *= 2
+                continue
+            raise
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:  # corte de red: reintentar
+            if attempt < retries:
+                print(f"  {type(e).__name__}, reintento {attempt}/{retries} en {delay}s...", file=sys.stderr)
                 time.sleep(delay)
                 delay *= 2
                 continue
