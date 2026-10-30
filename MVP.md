@@ -39,10 +39,10 @@ Navegador (páginas estáticas de docs/)
                                      └── BGG xmlapi2/collection (con BGG_TOKEN, solo en el servidor)
 ```
 
-- **Hosting:** Cloudflare Pages, rama de producción `mvp`, directorio de salida `docs/`, funciones en `functions/` (raíz del repo). Plan gratis; revisar sus límites actuales antes de compartir la URL.
+- **Hosting:** Cloudflare, flujo "Workers" con archivos estáticos (no Pages): `wrangler.jsonc` sirve `docs/` y `src/index.js` enruta `/api/collection` a `functions/api/collection.js`. Rama de producción `mvp`, comando de deploy `npx wrangler deploy`. Plan gratis; revisar sus límites actuales antes de compartir la URL. URL: https://boardgame-mvp.nachomondino1.workers.dev/
 - **Local:** `node --env-file=<ruta al .env con BGG_TOKEN> dev-server.mjs` sirve `docs/` y la misma función en `http://localhost:8766` (sin dependencias; ver `.claude/launch.json` de la carpeta principal). Es una simulación: el runtime real de Cloudflare se prueba recién en M4.
 - **Una sola función**, la de la colección. Las fichas **no** pasan por función: son archivos estáticos (decisión, ver sección 4).
-- El token de BGG se carga como secreto en el panel de Cloudflare (`BGG_TOKEN`). Nunca en el repo ni en el navegador. Para desarrollo local, un archivo ignorado por git.
+- El token de BGG se carga como secreto **de runtime** en el panel de Cloudflare (Settings → Runtime → Variables and secrets, `BGG_TOKEN`); las variables de la sección Builds no llegan al Worker. Nunca en el repo ni en el navegador. Para desarrollo local, un archivo ignorado por git.
 
 ## 4. Datos
 
@@ -114,7 +114,7 @@ Diseño: el de `DESIGN_PLAYBOOK.md`. Sin cambios visuales salvo la entrada y el 
 | M1 | `build_catalog.py` genera `names.json`, `index.json` y `games/NNN.json` | ✅ hecho: 27.796 juegos, 56 tramos, índice y fichas coherentes |
 | M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | ✅ hecho: marqué 3 juegos en el panel de carga y aparecen bien en Mi ludoteca, ¿Qué jugamos hoy? y la landing; ¿Cuál comprar? excluye los marcados Own |
 | M3 | Función `/api/collection` y entrada por username, en local | ✅ hecho: mi usuario trae 63 juegos con los mismos conteos que mi colección local (24 Own, 35 Want to buy, 2 Prev. owned, 13 con puntaje; falta 1 juego que solo tenía "want to play"). Probado con `dev-server.mjs`, no con `wrangler` |
-| M4 | Deploy en Cloudflare Pages desde `mvp`, token como secreto | La URL pública funciona con mi username |
+| M4 | Deploy en Cloudflare desde `mvp`, token como secreto | ✅ hecho: en la URL pública, mi usuario trae 63 juegos (24/35/2/13), un usuario inexistente da 404, uno inválido 400, el segundo pedido sale del caché de Cloudflare (HIT, 40 ms vs 1,1 s) y Mi ludoteca y ¿Cuál comprar? muestran mi colección |
 | M5 | Lo prueban 2 o 3 personas con su usuario | Anoto qué falla y qué piden |
 
 Cada hito se commitea aparte en `mvp`.
