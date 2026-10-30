@@ -58,7 +58,10 @@ function render() {
     return;
   }
 
-  const gamesHtml = sortPosibles(posibles)
+  const ordenados = sortPosibles(posibles);
+  hydrate(ordenados).then((n) => { if (n) render(); });
+
+  const gamesHtml = ordenados
     .map((g) => cardTemplate(g, { jugadores: state.jugadores }))
     .join("");
 
@@ -102,5 +105,5 @@ loadGames()
   })
   .catch((err) => {
     document.getElementById("grid").innerHTML =
-      `<div class="empty-state">No pude cargar data.json: ${escapeHtml(err.message)}</div>`;
+      `<div class="empty-state">No pude cargar los datos: ${escapeHtml(err.message)}</div>`;
   });

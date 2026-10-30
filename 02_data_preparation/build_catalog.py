@@ -8,7 +8,7 @@ Escribe, en docs/data/:
 - index.json: los campos para filtrar, ordenar y armar tarjetas, como listas,
   más `tramo` (en qué games/NNN.json está la ficha completa).
 - games/NNN.json: fichas completas {bgg_id: juego}, GAMES_PER_SHARD por archivo,
-  en orden de bgg_id.
+  en orden de ranking BGG (los sin ranking, al final, por reviews).
 
 No toca docs/data/data.json. Corre después de integrate_data.py.
 """
@@ -39,7 +39,9 @@ def main():
     for g in games:
         for field in USER_FIELDS:
             g.pop(field, None)
-    games.sort(key=lambda g: int(g["bgg_id"]))
+    # Tramos por popularidad (ranking, y sin ranking por reviews): una página de
+    # ~60 tarjetas ordenadas por ranking cae en pocos tramos, no en todos.
+    games.sort(key=lambda g: (g["ranking_bgg"] is None, g["ranking_bgg"] or 0, -(g["reviews_bgg"] or 0), int(g["bgg_id"])))
     for i, g in enumerate(games):
         g["tramo"] = i // GAMES_PER_SHARD
 

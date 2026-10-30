@@ -89,6 +89,8 @@ function render() {
         .join("")
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
 
+  hydrate(visible.map((entry) => entry.game)).then((n) => { if (n) render(); });
+
   const restantes = grouped.length - visible.length;
   loadMoreRow.innerHTML = restantes > 0
     ? `<button type="button" class="load-more-btn" id="load-more-btn">Mostrar ${Math.min(PAGE_SIZE, restantes)} más (quedan ${restantes})</button>`
@@ -380,11 +382,13 @@ function setupCompareControls() {
     compareState.a = findGame(inputA.value);
     syncCompareUrl();
     renderCompare();
+    if (compareState.a) hydrate([compareState.a]).then(renderCompare);
   });
   inputB.addEventListener("change", () => {
     compareState.b = findGame(inputB.value);
     syncCompareUrl();
     renderCompare();
+    if (compareState.b) hydrate([compareState.b]).then(renderCompare);
   });
 
   const toggle = document.getElementById("compare-toggle");
@@ -401,10 +405,12 @@ function setupCompareControls() {
   if (presetA) {
     inputA.value = presetA;
     compareState.a = findGame(presetA);
+    if (compareState.a) hydrate([compareState.a]).then(renderCompare);
   }
   if (presetB) {
     inputB.value = presetB;
     compareState.b = findGame(presetB);
+    if (compareState.b) hydrate([compareState.b]).then(renderCompare);
   }
   // Si llegaron presets por URL (ej. un link compartido), el panel arranca
   // abierto de una en vez de forzar un click extra para ver el resultado.
@@ -427,5 +433,5 @@ loadGames()
   })
   .catch((err) => {
     document.getElementById("grid").innerHTML =
-      `<div class="empty-state">No pude cargar data.json: ${escapeHtml(err.message)}</div>`;
+      `<div class="empty-state">No pude cargar los datos: ${escapeHtml(err.message)}</div>`;
   });

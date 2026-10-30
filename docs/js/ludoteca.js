@@ -45,6 +45,7 @@ function render() {
   grid.innerHTML = filtered.length
     ? filtered.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
+  hydrate(filtered).then((n) => { if (n) render(); });
 }
 
 function setupControls() {
@@ -107,5 +108,5 @@ loadGames()
   })
   .catch((err) => {
     document.getElementById("grid").innerHTML =
-      `<div class="empty-state">No pude cargar data.json: ${escapeHtml(err.message)}</div>`;
+      `<div class="empty-state">No pude cargar los datos: ${escapeHtml(err.message)}</div>`;
   });

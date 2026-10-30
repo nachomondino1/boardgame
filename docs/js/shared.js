@@ -60,8 +60,98 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// --- Datos del MVP (ver MVP.md) ---
+// El índice trae lo necesario para filtrar y ordenar los ~28.000 juegos; la
+// ficha completa (imagen, editorial, links, mecánicas...) vive en
+// games/NNN.json y se pide solo para lo que se muestra (hydrate).
+// `estado` y `mi_puntaje` no vienen en los datos: salen de la colección del
+// visitante, guardada en el navegador.
+
+const COLLECTION_KEY = "mvp.collection";
+
+function emptyCollection() {
+  return { source: null, user: null, savedAt: null, games: {} };
+}
+
+// localStorage puede fallar (ventana privada, datos bloqueados): la página
+// tiene que seguir funcionando, solo que sin recordar la colección.
+function loadCollection() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(COLLECTION_KEY));
+    if (stored && stored.games) return stored;
+  } catch (e) { /* sin colección guardada */ }
+  return emptyCollection();
+}
+
+function saveCollection(collection) {
+  collection.savedAt = new Date().toISOString();
+  try {
+    localStorage.setItem(COLLECTION_KEY, JSON.stringify(collection));
+  } catch (e) { /* no se pudo guardar; queda en memoria de esta página */ }
+}
+
+// Misma regla que estado_de() en construct_data.py: Own > Prev. owned >
+// Want to buy, y Watchlist para todo lo que no está marcado.
+function estadoDe(entry) {
+  if (entry && entry.own) return "Own";
+  if (entry && entry.prevowned) return "Prev. owned";
+  if (entry && entry.wanttobuy) return "Want to buy";
+  return "Watchlist";
+}
+
 function loadGames() {
-  return fetch("data/data.json").then((r) => r.json());
+  const collection = loadCollection().games;
+  return fetch("data/index.json")
+    .then((r) => {
+      if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(({ cols, rows }) =>
+      rows.map((row) => {
+        const g = {};
+        cols.forEach((c, i) => { g[c] = row[i]; });
+        g._tramo = g.tramo;
+        delete g.tramo;
+        g.bgg_url = `https://boardgamegeek.com/boardgame/${g.bgg_id}`;
+        const entry = collection[g.bgg_id];
+        g.estado = estadoDe(entry);
+        g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
+        return g;
+      })
+    );
+}
+
+const shardCache = new Map();
+
+function loadShard(tramo) {
+  if (!shardCache.has(tramo)) {
+    shardCache.set(
+      tramo,
+      fetch(`data/games/${String(tramo).padStart(3, "0")}.json`).then((r) => {
+        if (!r.ok) throw new Error(`tramo ${tramo}: HTTP ${r.status}`);
+        return r.json();
+      })
+    );
+  }
+  return shardCache.get(tramo);
+}
+
+// Completa con la ficha (imagen, editorial, links...) los juegos de la lista que
+// todavía no la tienen. Devuelve cuántos completó, para que la página vuelva a
+// dibujarse solo si hubo algo nuevo. Si un tramo falla, esos juegos quedan sin
+// ficha (tarjeta sin imagen) y no se reintenta en bucle.
+function hydrate(list) {
+  const pending = list.filter((g) => !g._hydrated);
+  const tramos = [...new Set(pending.map((g) => g._tramo))];
+  return Promise.all(tramos.map((t) => loadShard(t).catch(() => null))).then((shards) => {
+    const byTramo = new Map(tramos.map((t, i) => [t, shards[i]]));
+    pending.forEach((g) => {
+      const ficha = byTramo.get(g._tramo) && byTramo.get(g._tramo)[g.bgg_id];
+      if (ficha) Object.assign(g, ficha);
+      g._hydrated = true;
+    });
+    return pending.length;
+  });
 }
 
 // Colapsa una lista ya filtrada/ordenada: la primera aparición de cada
@@ -196,6 +286,7 @@ function navTemplate(active) {
   // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
     { href: "index.html", emoji: "🏠", label: "Inicio", cls: "nav-home" },
+    { href: "coleccion.html", emoji: "✏️", label: "Mi colección" },
     { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca" },
     { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },

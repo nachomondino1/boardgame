@@ -51,11 +51,11 @@ Generados en local por el pipeline de siempre y commiteados en la branch (Cloudf
 |---|---|---|
 | `docs/data/names.json` | `[bgg_id, nombre]` de todos los juegos | ~0,4 MB |
 | `docs/data/index.json` | campos para filtrar/ordenar/mostrar tarjeta (ver abajo), como listas | ~1,0 MB |
-| `docs/data/games/NN.json` | ficha completa (todos los campos de `catalog.json`), ~500 juegos por archivo, tramos de `bgg_id` ordenado | ~80 KB c/u, ~56 archivos |
+| `docs/data/games/NNN.json` | ficha completa (todos los campos salvo `estado`/`mi_puntaje`), 500 juegos por archivo, **ordenados por ranking BGG** (los sin ranking al final, por reviews) | ~80 KB c/u, ~56 archivos |
 
 Campos de `index.json`: `bgg_id, nombre, jug_min, jug_max, jug_best_min, jug_best_max, duracion, complejidad, puntaje_bgg, reviews_bgg, ranking_bgg, grupo, anio, modo, puntaje_ajust_bgg`, más una referencia al tramo de la ficha. Los nombres de columnas van en un encabezado del archivo.
 
-**Por qué fichas estáticas y no función:** una función que lea el catálogo completo (24 MB) en cada pedido es lenta y frágil; una base (D1/KV) agrega carga y mantenimiento que el MVP no necesita. Los tramos son pocos archivos, se cachean en el navegador y no requieren servidor. Contra: cada sync regenera todos los tramos y suma peso al historial de git. Se acepta para un MVP; si molesta, se pasa a base de datos (D1) sin cambiar lo que ve el usuario.
+**Por qué fichas estáticas y no función:** una función que lea el catálogo completo (24 MB) en cada pedido es lenta y frágil; una base (D1/KV) agrega carga y mantenimiento que el MVP no necesita. Los tramos son pocos archivos, se cachean en el navegador y no requieren servidor. Ordenarlos por ranking hace que una página de 60 tarjetas ordenadas por ranking caiga en uno o dos tramos (medido en M2: 1 tramo en ¿Cuál comprar?). Contra: cada sync regenera todos los tramos y suma peso al historial de git. Se acepta para un MVP; si molesta, se pasa a base de datos (D1) sin cambiar lo que ve el usuario.
 
 No existe un `catalog.json` completo: `build_catalog.py` escribe los tres archivos directamente desde `build_games()` (el completo pesaba 24 MB y no hace falta publicarlo). Los tramos suman ~24,7 MB sin comprimir en el repo (medido en M1).
 
@@ -110,7 +110,7 @@ Diseño: el de `DESIGN_PLAYBOOK.md`. Sin cambios visuales salvo la entrada y el 
 |---|---|---|
 | M0 | Branch `mvp` y primer catálogo de prueba | ✅ hecho |
 | M1 | `build_catalog.py` genera `names.json`, `index.json` y `games/NNN.json` | ✅ hecho: 27.796 juegos, 56 tramos, índice y fichas coherentes |
-| M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | Marco 3 juegos y aparecen en Mi ludoteca y Hoy |
+| M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | ✅ hecho: marqué 3 juegos en `coleccion.html` y aparecen bien en Mi ludoteca, ¿Qué jugamos hoy? y la landing; ¿Cuál comprar? excluye los marcados Own |
 | M3 | Función `/api/collection` y entrada por username, en local con `wrangler` | Mi username carga mi colección real y coincide con `data.json` |
 | M4 | Deploy en Cloudflare Pages desde `mvp`, token como secreto | La URL pública funciona con mi username |
 | M5 | Lo prueban 2 o 3 personas con su usuario | Anoto qué falla y qué piden |
@@ -126,6 +126,8 @@ Cada hito se commitea aparte en `mvp`.
 - Nada de `main` ni de GitHub Pages cambió.
 
 ## 11. Decisiones abiertas
+
+- El comparador de ¿Cuál comprar? usa un `<datalist>` con ~27.000 nombres; funciona pero es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
 
 - Si el catálogo publicado debe incluir todos los juegos o solo los que pasen un corte de calidad (hoy: todos).
 - Cuántos juegos por tramo de ficha (hoy 500).
