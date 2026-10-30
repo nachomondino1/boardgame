@@ -1,0 +1,155 @@
+/* Análisis de la ludoteca (js/analisis.js): números y gráficos de barras de una sola serie. */
+
+.analisis {
+  margin: 48px 0 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.analisis[hidden] {
+  display: none;
+}
+
+.analisis__title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.analisis__lead {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.analisis-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.analisis-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.analisis-stat__num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.analisis-stat__label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.analisis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.analisis-card {
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.analisis-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.analisis-card__sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.analisis-card__note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.analisis-card__note strong,
+.analisis-card__sub strong {
+  color: var(--text);
+}
+
+.analisis-card__list-title {
+  margin: 14px 0 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Barras finas (10px), con el extremo de datos redondeado y apoyadas en la línea base. */
+.bar-list,
+.puntaje-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(80px, 38%) 1fr 2ch;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.bar-label {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.bar-track {
+  height: 10px;
+  border-left: 1px solid var(--border);
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.bar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.puntaje-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.puntaje-vals {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .analisis-grid {
+    grid-template-columns: 1fr;
+  }
+}

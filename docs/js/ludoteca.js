@@ -37,19 +37,7 @@ function sortGames(list) {
   });
 }
 
-// Los números de la colección (antes en la landing): se ven recién cuando hay juegos cargados.
-function updateStats() {
-  const own = GAMES.filter((g) => g.estado === "Own").length;
-  const watch = GAMES.filter((g) => g.estado === "Want to buy").length;
-  const ranks = GAMES.filter((g) => g.estado === "Own" && g.ranking_bgg != null).map((g) => g.ranking_bgg);
-  document.getElementById("stat-own").textContent = own;
-  document.getElementById("stat-watch").textContent = watch;
-  document.getElementById("stat-top").textContent = ranks.length ? `#${Math.min(...ranks).toLocaleString("es-AR")}` : "–";
-  document.getElementById("stats").hidden = own + watch === 0;
-}
-
 function render() {
-  updateStats();
   const filtered = sortGames(GAMES.filter(matchesFilters));
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
@@ -119,6 +107,7 @@ mountCollectionLoader(document.getElementById("collection-loader"), {
   onChange: () => {
     applyCollection(GAMES);
     render();
+    renderAnalisis(document.getElementById("analisis"), GAMES);
   },
 });
 
@@ -129,6 +118,7 @@ loadGames()
     // Sin colección cargada, el panel arranca abierto: es lo único que hay para hacer.
     if (!GAMES.some((g) => g.estado !== "Watchlist")) detailsEl.open = true;
     render();
+    renderAnalisis(document.getElementById("analisis"), GAMES);
   })
   .catch((err) => {
     document.getElementById("grid").innerHTML =

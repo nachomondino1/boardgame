@@ -20,11 +20,13 @@
   <link rel="stylesheet" href="css/components/results-bar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/collection-loader.css" />
+  <link rel="stylesheet" href="css/components/analisis.css" />
   <link rel="stylesheet" href="css/pages/ludoteca.css" />
   <link rel="preload" href="data/index.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
   <script src="js/collection-loader.js" defer></script>
+  <script src="js/analisis.js" defer></script>
   <script src="js/ludoteca.js" defer></script>
 </head>
 <body>
@@ -77,16 +79,12 @@
     </label>
   </div>
   <main>
-    <div class="ludoteca-stats" id="stats" hidden>
-      <div class="ludoteca-stat"><span class="ludoteca-stat__num" id="stat-own">–</span><span class="ludoteca-stat__label">juegos en casa</span></div>
-      <div class="ludoteca-stat"><span class="ludoteca-stat__num" id="stat-watch">–</span><span class="ludoteca-stat__label">en la lista para comprar</span></div>
-      <div class="ludoteca-stat"><span class="ludoteca-stat__num" id="stat-top">–</span><span class="ludoteca-stat__label">mejor ranking BGG</span></div>
-    </div>
     <details class="col-details" id="col-details">
       <summary>✏️ Cargar o editar mis juegos</summary>
       <div id="collection-loader"></div>
     </details>
     <div class="grid" id="grid"></div>
+    <section class="analisis" id="analisis" aria-label="Análisis de tu ludoteca" hidden></section>
   </main>
   <footer class="site-footer">
     <a href="https://boardgamegeek.com" target="_blank" rel="noopener"><img src="img/powered-by-bgg.webp" alt="Powered by BGG" height="40"></a>
