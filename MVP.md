@@ -136,10 +136,11 @@ Dos ramas, un solo código:
 | `mvp` | Producción, lo que ve el cliente | Cloudflare (`npx wrangler deploy` en cada push) |
 
 - **Todo cambio entra por `staging`.** Los datos también: `./sync_data.sh` commitea el catálogo directo en `staging`, sin PR.
-- **Promover a producción:** `git checkout mvp && git merge --ff-only staging && git push`. `--ff-only` solo avanza `mvp` hasta donde está `staging`; si falla, es porque alguien tocó `mvp` por su cuenta.
+- **Promover a producción:** `git push origin staging:mvp`. Sin `+`, git solo lo acepta si `mvp` es un ancestro de `staging` (avance puro); si mvp tiene commits que staging no tiene, lo rechaza en vez de pisarlos. No hace falta cambiar de rama.
+- **Los datos se promueven solos:** al final de `sync_data.sh` (y por lo tanto en la cronjob mensual) corre `scripts/promote_data.sh`. Solo promueve si lo único que cambió en lo que se publica (`docs/`, `functions/`, `src/`, `wrangler.jsonc`, `package.json`) respecto de `mvp` son los datos de `docs/data/`; si `staging` tiene cambios del sitio sin promover, no hace nada y avisa. También se frena si el catálogo nuevo tiene menos del 95% de los juegos del que está en producción. Después espera el deploy y chequea que el sitio sirva la fecha nueva y que `/api/collection` responda (un 500 es que el Worker perdió `BGG_TOKEN`); si algo falla, avisa en la consola y con una notificación de macOS. `./scripts/promote_data.sh --dry-run` muestra qué haría y `--check` solo chequea producción.
 - **Único caso para tocar `mvp` directo:** un arreglo que solo aplique a producción. Se vuelve a traer a `staging` enseguida (`git checkout staging && git merge mvp`), si no el próximo pase puede chocar.
 - Nunca mergear al revés sin pensarlo: `mvp` no tiene nada que `staging` no tenga, salvo esos arreglos.
-- La carpeta `boardgame-mvp/` es un `git worktree` de `mvp`; con `staging` como base ya no hace falta para trabajar.
+- La carpeta `boardgame-mvp/` es un `git worktree` de `mvp`; ya no hace falta para trabajar (se puede borrar con `git worktree remove ../boardgame-mvp`). La rama local `mvp` queda atrasada respecto de `origin/mvp` y no importa: se promueve con el push de arriba.
 
 ## 12. Decisiones abiertas
 
