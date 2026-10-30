@@ -19,10 +19,12 @@
   <link rel="stylesheet" href="css/components/filters.css" />
   <link rel="stylesheet" href="css/components/results-bar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/components/filter-pills.css" />
   <link rel="stylesheet" href="css/pages/hoy.css" />
   <link rel="preload" href="data/index.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
+  <script src="js/filter-pills.js" defer></script>
   <script src="js/hoy.js" defer></script>
 </head>
 <body>
@@ -36,27 +38,16 @@
         <span class="big-number" id="player-number">?</span>
         <button id="player-plus">+</button>
       </div>
-      <div class="filters-panel open">
-        <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
-        <div class="filter-grid filter-grid--center" id="filter-grid">
-          <div class="filter-group">
-            <label class="toggle-gusto">
-              <input type="checkbox" id="incluir-deseados" />
-              Incluir los que quiero comprar (Want to buy)
-            </label>
-          </div>
-          <div class="filter-group">
-            <label class="toggle-gusto">
-              <input type="checkbox" id="solo-best" />
-              Solo juegos donde esta cantidad es la ideal
-            </label>
-          </div>
-        </div>
+      <div class="filter-bar">
+        <div class="filter-pills filter-pills--center" id="filter-pills"></div>
       </div>
     </div>
   </header>
   <div class="result-count-row">
-    <span id="result-count"></span>
+    <div class="result-left">
+      <span id="result-count"></span>
+      <button type="button" class="clear-filters" id="clear-filters" hidden></button>
+    </div>
     <label class="sort-control" for="sort-select">
       <span class="sort-icon" aria-hidden="true">⇅</span>
       <select id="sort-select">

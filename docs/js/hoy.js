@@ -80,14 +80,16 @@ function setupControls() {
   document.getElementById("player-plus").addEventListener("click", () => {
     setJugadores((state.jugadores ?? 0) + 1);
   });
-  document.getElementById("incluir-deseados").addEventListener("change", (e) => {
-    state.incluirDeseados = e.target.checked;
-    render();
+  mountFilterPills(document.getElementById("filter-pills"), {
+    toggles: [
+      { key: "incluirDeseados", label: "Sumar lo que quiero comprar", icono: "🛒" },
+      { key: "soloBest", label: "Solo si es el mejor número", icono: "⭐" },
+    ],
+    state,
+    clearButton: document.getElementById("clear-filters"),
+    onChange: render,
   });
-  document.getElementById("solo-best").addEventListener("change", (e) => {
-    state.soloBest = e.target.checked;
-    render();
-  });
+
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
     render();
@@ -95,7 +97,6 @@ function setupControls() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("hoy.html");
-setupFiltersToggle();
 
 loadGames()
   .then((data) => {

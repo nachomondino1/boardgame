@@ -355,19 +355,6 @@ function cardTemplate(g, opts) {
   `;
 }
 
-// En mobile, el panel de filtros arranca colapsado (botón "Filtros") para no
-// tapar los resultados con la pantalla entera de controles; en desktop el
-// botón queda oculto por CSS y el panel se ve siempre expandido.
-function setupFiltersToggle() {
-  const toggle = document.getElementById("filters-toggle");
-  const panel = toggle ? toggle.closest(".filters-panel") : null;
-  if (!toggle || !panel) return;
-  toggle.addEventListener("click", () => {
-    const open = panel.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-}
-
 function navTemplate(active) {
   // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
