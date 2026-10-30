@@ -41,51 +41,16 @@
           </div>
         </div>
       </div>
-      <div class="filters-panel open">
-        <button type="button" class="filters-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filter-grid">Filtros</button>
-        <div class="filter-grid filter-grid--nowrap" id="filter-grid">
-          <div class="filter-group">
-            <span class="filter-label">Jugadores</span>
-            <div class="player-stepper">
-              <button id="player-minus">−</button>
-              <span id="player-label">todos</span>
-              <button id="player-plus">+</button>
-              <button id="player-clear" title="Quitar filtro">✕</button>
-            </div>
-            <label class="toggle-gusto" id="best-toggle-label" for="best-only">
-              <input type="checkbox" id="best-only" disabled />
-              Solo si es el mejor número
-            </label>
-          </div>
-          <div class="filter-group filter-group--grow">
-            <label class="filter-label" for="duracion-max">Duración máxima <span class="filter-label-value" id="duracion-max-label">180+ min</span></label>
-            <input type="range" id="duracion-max" min="10" max="180" step="5" value="180" />
-          </div>
-          <div class="filter-group filter-group--grow">
-            <label class="filter-label" for="complejidad-max">Complejidad máxima <span class="filter-label-value" id="complejidad-max-label">5 (sin límite)</span></label>
-            <input type="range" id="complejidad-max" min="1" max="5" step="0.1" value="5" />
-          </div>
-          <div class="filter-group filter-group--capped">
-            <label class="filter-label" id="tipo-label">Tipo</label>
-            <div class="multiselect" id="tipo-multiselect">
-              <button type="button" class="multiselect-button" id="tipo-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tipo-label">
-                <span id="tipo-button-label">Todos</span>
-              </button>
-              <div class="multiselect-panel" id="tipo-panel" role="listbox" aria-multiselectable="true" hidden></div>
-            </div>
-          </div>
-          <div class="filter-group filter-group--checkbox">
-            <label class="toggle-gusto" for="quiero-comprar-only">
-              <input type="checkbox" id="quiero-comprar-only" />
-              Solo "Want to buy"
-            </label>
-          </div>
-        </div>
+      <div class="filter-bar">
+        <div class="filter-pills" id="filter-pills"></div>
       </div>
     </div>
   </header>
   <div class="result-count-row">
-    <span id="result-count"></span>
+    <div class="result-left">
+      <span id="result-count"></span>
+      <button type="button" class="clear-filters" id="clear-filters" hidden></button>
+    </div>
     <label class="sort-control" for="sort-select">
       <span class="sort-icon" aria-hidden="true">⇅</span>
       <select id="sort-select">

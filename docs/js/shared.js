@@ -23,6 +23,21 @@ function normalize(str) {
     .toLowerCase();
 }
 
+// Tramos de complejidad (peso de BGG, 1 a 5) y de duración (minutos): los comparten los filtros de
+// ¿Cuál comprar? y el análisis de Mi ludoteca, para que digan lo mismo.
+const BUCKETS_COMPLEJIDAD = [
+  { id: "liviano", label: "Liviano", hint: "menos de 2", match: (c) => c < 2 },
+  { id: "medio", label: "Medio", hint: "2 a 3", match: (c) => c >= 2 && c < 3 },
+  { id: "pesado", label: "Pesado", hint: "3 o más", match: (c) => c >= 3 },
+];
+
+const BUCKETS_DURACION = [
+  { id: "30", label: "Hasta 30 min", match: (d) => d <= 30 },
+  { id: "60", label: "31 a 60 min", match: (d) => d > 30 && d <= 60 },
+  { id: "120", label: "61 a 120 min", match: (d) => d > 60 && d <= 120 },
+  { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
+];
+
 // --- Búsqueda por nombre ---
 // Se busca en el nombre principal y en los alternativos de BGG (traducciones, ediciones: "Caza Bombas"
 // es "Bomb Busters"). Los alternativos vienen de names.json, que se pide recién cuando alguien busca.

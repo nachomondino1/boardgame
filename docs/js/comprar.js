@@ -13,8 +13,8 @@ const PAGE_SIZE = 60;
 const state = {
   query: "",
   tipos: new Set(),
-  duracionMax: 180,
-  complejidadMax: 5,
+  duraciones: new Set(), // ids de BUCKETS_DURACION; vacío = todas
+  complejidades: new Set(), // ids de BUCKETS_COMPLEJIDAD; vacío = todas
   jugadores: null,
   soloMejor: false,
   soloQuieroComprar: false,
@@ -34,8 +34,12 @@ function matchesFilters(g) {
     if (!matchesNombre(g, state.query)) return false;
   }
   if (state.tipos.size > 0 && !state.tipos.has(g.modo)) return false;
-  if (g.duracion != null && g.duracion > state.duracionMax) return false;
-  if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
+  if (state.duraciones.size > 0) {
+    if (g.duracion == null || !BUCKETS_DURACION.some((b) => state.duraciones.has(b.id) && b.match(g.duracion))) return false;
+  }
+  if (state.complejidades.size > 0) {
+    if (g.complejidad == null || !BUCKETS_COMPLEJIDAD.some((b) => state.complejidades.has(b.id) && b.match(g.complejidad))) return false;
+  }
   if (state.jugadores != null) {
     if (state.soloMejor) {
       if (g.jug_best_min == null) return false;
@@ -124,6 +128,132 @@ function scheduleFilterChange(delayMs = 150) {
   filterChangeTimer = setTimeout(onFilterChange, delayMs);
 }
 
+// --- Filtros: píldoras con menú -------------------------------------------------
+// Cada filtro es una píldora que abre un menú con la misma forma (título + fichas). Jugadores
+// elige un número; los demás aceptan varias opciones (sin elegir ninguna = todas). La píldora
+// resume lo elegido y se pinta cuando el filtro está activo; "Limpiar filtros" vive aparte, en la
+// fila de resultados.
+
+const MAX_JUGADORES_FILTRO = 8;
+
+const FILTROS = [
+  { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false,
+    opciones: Array.from({ length: MAX_JUGADORES_FILTRO }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })) },
+  { id: "duraciones", titulo: "Duración", icono: "⏱", multiple: true, opciones: BUCKETS_DURACION },
+  { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
+    opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
+  { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: t })) },
+];
+
+function seleccion(f) {
+  if (f.id === "jugadores") return state.jugadores == null ? [] : [String(state.jugadores)];
+  return [...state[f.id]];
+}
+
+function pillLabel(f, sel) {
+  if (!sel.length) return `${f.icono} ${f.titulo}`;
+  if (f.id === "jugadores") {
+    const n = Number(sel[0]);
+    return `${f.icono} ${n} jugador${n === 1 ? "" : "es"}${state.soloMejor ? " · mejor número" : ""}`;
+  }
+  if (sel.length === 1) return `${f.icono} ${f.opciones.find((o) => String(o.id) === sel[0]).label}`;
+  return `${f.icono} ${f.titulo} · ${sel.length}`;
+}
+
+function filtrosActivos() {
+  return FILTROS.filter((f) => seleccion(f).length > 0).length + (state.soloQuieroComprar ? 1 : 0);
+}
+
+function pillHtml(f) {
+  const chips = f.opciones
+    .map((o) => `<button type="button" class="fchip" data-filtro="${f.id}" data-opcion="${escapeHtml(String(o.id))}" aria-pressed="false"${o.hint ? ` title="${escapeHtml(o.hint)}"` : ""}>${escapeHtml(o.label)}</button>`)
+    .join("");
+  const extra = f.id === "jugadores"
+    ? `<div class="pill-pop__extra"><button type="button" class="fchip" id="solo-mejor" aria-pressed="false">Solo si es el mejor número</button></div>`
+    : "";
+  return `
+    <div class="pill-wrap" data-pill="${f.id}">
+      <button type="button" class="pill" aria-haspopup="true" aria-expanded="false"><span class="pill__label"></span><span class="pill__chev" aria-hidden="true">▾</span></button>
+      <div class="pill-pop" hidden>
+        <p class="pill-pop__title">${escapeHtml(f.titulo)}</p>
+        <div class="pill-pop__chips">${chips}</div>
+        ${extra}
+      </div>
+    </div>`;
+}
+
+function syncFilters() {
+  FILTROS.forEach((f) => {
+    const wrap = document.querySelector(`[data-pill="${f.id}"]`);
+    const sel = seleccion(f);
+    wrap.querySelector(".pill").classList.toggle("on", sel.length > 0);
+    wrap.querySelector(".pill__label").textContent = pillLabel(f, sel);
+    wrap.querySelectorAll(".fchip[data-opcion]").forEach((c) => c.setAttribute("aria-pressed", String(sel.includes(c.dataset.opcion))));
+  });
+  const mejor = document.getElementById("solo-mejor");
+  mejor.disabled = state.jugadores == null;
+  mejor.setAttribute("aria-pressed", String(state.soloMejor));
+  const quiero = document.getElementById("quiero-pill");
+  quiero.classList.toggle("on", state.soloQuieroComprar);
+  quiero.setAttribute("aria-pressed", String(state.soloQuieroComprar));
+  const n = filtrosActivos();
+  const clear = document.getElementById("clear-filters");
+  clear.hidden = n === 0;
+  clear.textContent = `✕ Limpiar filtros (${n})`;
+}
+
+function cerrarMenus(except) {
+  document.querySelectorAll(".pill-wrap").forEach((wrap) => {
+    if (wrap === except) return;
+    wrap.querySelector(".pill-pop").hidden = true;
+    wrap.querySelector(".pill").setAttribute("aria-expanded", "false");
+  });
+}
+
+function alternarMenu(wrap) {
+  cerrarMenus(wrap);
+  const pop = wrap.querySelector(".pill-pop");
+  const abrir = pop.hidden;
+  pop.hidden = !abrir;
+  wrap.querySelector(".pill").setAttribute("aria-expanded", String(abrir));
+  if (abrir) {
+    // Si el menú se saldría de la pantalla por la derecha, se alinea al borde derecho de la píldora.
+    pop.classList.remove("pill-pop--right");
+    if (pop.getBoundingClientRect().right > window.innerWidth - 12) pop.classList.add("pill-pop--right");
+  }
+}
+
+function elegirOpcion(chip) {
+  if (chip.id === "solo-mejor") {
+    if (state.jugadores == null) return;
+    state.soloMejor = !state.soloMejor;
+  } else {
+    const f = FILTROS.find((x) => x.id === chip.dataset.filtro);
+    const opcion = chip.dataset.opcion;
+    if (f.multiple) {
+      if (state[f.id].has(opcion)) state[f.id].delete(opcion);
+      else state[f.id].add(opcion);
+    } else {
+      state.jugadores = state.jugadores === Number(opcion) ? null : Number(opcion);
+      if (state.jugadores == null) state.soloMejor = false;
+      cerrarMenus(); // elegir un número es una sola decisión: el menú se cierra
+    }
+  }
+  syncFilters();
+  onFilterChange();
+}
+
+function limpiarFiltros() {
+  state.jugadores = null;
+  state.soloMejor = false;
+  state.soloQuieroComprar = false;
+  state.duraciones.clear();
+  state.complejidades.clear();
+  state.tipos.clear();
+  syncFilters();
+  onFilterChange();
+}
+
 function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
@@ -131,115 +261,31 @@ function setupControls() {
     ensureAltNames().then(() => { if (state.query) scheduleFilterChange(0); });
   });
 
-  const tipoMultiselect = document.getElementById("tipo-multiselect");
-  const tipoButton = document.getElementById("tipo-button");
-  const tipoButtonLabel = document.getElementById("tipo-button-label");
-  const tipoPanel = document.getElementById("tipo-panel");
+  const bar = document.getElementById("filter-pills");
+  bar.innerHTML = FILTROS.map(pillHtml).join("")
+    + `<button type="button" class="pill" id="quiero-pill" aria-pressed="false">🛒 Solo quiero comprar</button>`;
 
-  function updateTipoButtonLabel() {
-    if (state.tipos.size === 0) tipoButtonLabel.textContent = "Todos";
-    else if (state.tipos.size === 1) tipoButtonLabel.textContent = [...state.tipos][0];
-    else tipoButtonLabel.textContent = `${state.tipos.size} seleccionados`;
-  }
-
-  function closeTipoPanel() {
-    tipoPanel.hidden = true;
-    tipoMultiselect.classList.remove("open");
-    tipoButton.setAttribute("aria-expanded", "false");
-  }
-
-  TIPOS.forEach((tipo) => {
-    const option = document.createElement("label");
-    option.className = "multiselect-option";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = tipo;
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) state.tipos.add(tipo);
-      else state.tipos.delete(tipo);
-      updateTipoButtonLabel();
+  bar.addEventListener("click", (e) => {
+    const chip = e.target.closest(".fchip");
+    if (chip) { elegirOpcion(chip); return; }
+    const pill = e.target.closest(".pill-wrap > .pill");
+    if (pill) { alternarMenu(pill.parentElement); return; }
+    if (e.target.closest("#quiero-pill")) {
+      state.soloQuieroComprar = !state.soloQuieroComprar;
+      syncFilters();
       onFilterChange();
-    });
-    option.appendChild(checkbox);
-    option.appendChild(document.createTextNode(tipo));
-    tipoPanel.appendChild(option);
-  });
-
-  tipoButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const willOpen = tipoPanel.hidden;
-    tipoPanel.hidden = !willOpen;
-    tipoMultiselect.classList.toggle("open", willOpen);
-    tipoButton.setAttribute("aria-expanded", String(willOpen));
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!tipoMultiselect.contains(e.target)) closeTipoPanel();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeTipoPanel();
-  });
-
-  const duracionInput = document.getElementById("duracion-max");
-  const duracionLabel = document.getElementById("duracion-max-label");
-  duracionInput.addEventListener("input", (e) => {
-    state.duracionMax = Number(e.target.value);
-    duracionLabel.textContent = state.duracionMax >= 180 ? "180+ min" : `${state.duracionMax} min`;
-    scheduleFilterChange();
-  });
-
-  const complejidadInput = document.getElementById("complejidad-max");
-  const complejidadLabel = document.getElementById("complejidad-max-label");
-  complejidadInput.addEventListener("input", (e) => {
-    state.complejidadMax = Number(e.target.value);
-    complejidadLabel.textContent = state.complejidadMax >= 5 ? "5 (sin límite)" : state.complejidadMax.toFixed(1);
-    scheduleFilterChange();
-  });
-
-  const playerLabel = document.getElementById("player-label");
-  const bestOnlyInput = document.getElementById("best-only");
-
-  function syncBestOnlyAvailability() {
-    bestOnlyInput.disabled = state.jugadores == null;
-    if (state.jugadores == null && state.soloMejor) {
-      state.soloMejor = false;
-      bestOnlyInput.checked = false;
     }
-  }
-
-  document.getElementById("player-minus").addEventListener("click", () => {
-    state.jugadores = Math.max(1, (state.jugadores ?? 1) - 1);
-    playerLabel.textContent = state.jugadores;
-    syncBestOnlyAvailability();
-    onFilterChange();
   });
-  document.getElementById("player-plus").addEventListener("click", () => {
-    state.jugadores = Math.min(12, (state.jugadores ?? 0) + 1);
-    playerLabel.textContent = state.jugadores;
-    syncBestOnlyAvailability();
-    onFilterChange();
-  });
-  document.getElementById("player-clear").addEventListener("click", () => {
-    state.jugadores = null;
-    playerLabel.textContent = "todos";
-    syncBestOnlyAvailability();
-    onFilterChange();
-  });
-
-  bestOnlyInput.addEventListener("change", (e) => {
-    state.soloMejor = e.target.checked;
-    onFilterChange();
-  });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".pill-wrap")) cerrarMenus(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarMenus(); });
+  document.getElementById("clear-filters").addEventListener("click", limpiarFiltros);
 
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
     onFilterChange();
   });
 
-  document.getElementById("quiero-comprar-only").addEventListener("change", (e) => {
-    state.soloQuieroComprar = e.target.checked;
-    onFilterChange();
-  });
+  syncFilters();
 }
 
 // --- Comparar dos juegos (sección colapsable, reusa el GAMES ya cargado
