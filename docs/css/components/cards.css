@@ -87,7 +87,7 @@
 
 @media (prefers-color-scheme: dark) {
   .badge-own { color: #6fd79b; }
-  .badge-watch { background: #b5a5932b; color: #b5a593; }
+  .badge-watch { background: #a7a9b32b; color: #a7a9b3; }
   .badge-buy { background: #e8a3172b; color: #f2b84b; }
   .badge-descartado { color: #f0909c; }
 }

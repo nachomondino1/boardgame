@@ -31,25 +31,25 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1f1712;
-    --bg-subtle: #352a21;
-    --surface: #2a2019;
-    --text: #f3e9dd;
-    --muted: #b5a593;
-    --muted-soft: #917f6b;
-    --border: #3e3126;
-    --border-soft: #33271e;
+    --bg: #171a21;
+    --bg-subtle: #2a2f3a;
+    --surface: #1f232c;
+    --text: #ece9e4;
+    --muted: #a7a9b3;
+    --muted-soft: #8a8f9d;
+    --border: #2e333f;
+    --border-soft: #262a34;
     --accent: #f59e6b;
     --accent-soft: rgba(245, 158, 107, 0.14);
     --accent-contrast: #2a1408;
-    --nav-bg: #17100c;
+    --nav-bg: #11141a;
     --nav-links-bg: rgba(255, 255, 255, 0.07);
-    --nav-border: #2c2017;
+    --nav-border: #232733;
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 18px 32px -10px rgba(0, 0, 0, 0.55), 0 4px 10px rgba(0, 0, 0, 0.35);
-    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23b5a593' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7l5 5 5-5'/%3E%3C/svg%3E");
+    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23a7a9b3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7l5 5 5-5'/%3E%3C/svg%3E");
   }
 }
 
