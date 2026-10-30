@@ -121,6 +121,17 @@ function loadGames() {
     );
 }
 
+// Vuelve a calcular estado y mi_puntaje de los juegos ya cargados (después de
+// que el visitante cambió su colección), sin volver a pedir datos.
+function applyCollection(games) {
+  const collection = loadCollection().games;
+  games.forEach((g) => {
+    const entry = collection[g.bgg_id];
+    g.estado = estadoDe(entry);
+    g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
+  });
+}
+
 const shardCache = new Map();
 
 function loadShard(tramo) {
@@ -286,7 +297,6 @@ function navTemplate(active) {
   // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
     { href: "index.html", emoji: "🏠", label: "Inicio", cls: "nav-home" },
-    { href: "coleccion.html", emoji: "✏️", label: "Mi colección" },
     { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca" },
     { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },

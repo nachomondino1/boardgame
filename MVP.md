@@ -82,14 +82,15 @@ Own > Prev. owned > Want to buy > Watchlist (cualquier juego sin marca). `mi_pun
 mvp.collection = { source: "bgg" | "manual", user, savedAt, games: { "<bgg_id>": { own, prevowned, wanttobuy, rating } } }
 ```
 
-- Entrada manual: buscar un juego por nombre y marcar Own / Want to buy (y opcionalmente puntaje).
+- Entrada manual (en el panel "Cargá tus juegos"): buscar un juego por nombre y marcar Lo tengo / Lo tuve / Quiero comprar (y opcionalmente puntaje).
 - Con username: se baja la colección y se guarda; se refresca si pasaron más de unas horas o con un botón.
 - Botón "borrar mis datos".
 
 ## 7. Páginas
 
 Mismas que hoy, copiadas de `docs/` y adaptadas:
-- **Entrada** (`index.html`): campo de username de BGG, opción "cargar a mano", explicación de una línea.
+- **Entrada** (`index.html`): el CTA del hero lleva a la sección "Cargá tus juegos" (`js/collection-loader.js`): usuario de BGG o marcar a mano. Al cambiar la colección, los números de la landing se actualizan. No hay página aparte ni link en la barra.
+- **Mi ludoteca** incluye el mismo panel ("Cargar o editar mis juegos"), abierto de entrada si no hay colección.
 - **Mi ludoteca**: Own y Prev. owned de la colección del visitante.
 - **¿Qué jugamos hoy?**: elige cantidad de jugadores; muestra lo que tiene, ordenado por ranking.
 - **¿Cuál comprar?**: Watchlist del catálogo más Want to buy, con paginación y filtros sobre el índice.
@@ -110,7 +111,7 @@ Diseño: el de `DESIGN_PLAYBOOK.md`. Sin cambios visuales salvo la entrada y el 
 |---|---|---|
 | M0 | Branch `mvp` y primer catálogo de prueba | ✅ hecho |
 | M1 | `build_catalog.py` genera `names.json`, `index.json` y `games/NNN.json` | ✅ hecho: 27.796 juegos, 56 tramos, índice y fichas coherentes |
-| M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | ✅ hecho: marqué 3 juegos en `coleccion.html` y aparecen bien en Mi ludoteca, ¿Qué jugamos hoy? y la landing; ¿Cuál comprar? excluye los marcados Own |
+| M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | ✅ hecho: marqué 3 juegos en el panel de carga y aparecen bien en Mi ludoteca, ¿Qué jugamos hoy? y la landing; ¿Cuál comprar? excluye los marcados Own |
 | M3 | Función `/api/collection` y entrada por username, en local con `wrangler` | Mi username carga mi colección real y coincide con `data.json` |
 | M4 | Deploy en Cloudflare Pages desde `mvp`, token como secreto | La URL pública funciona con mi username |
 | M5 | Lo prueban 2 o 3 personas con su usuario | Anoto qué falla y qué piden |

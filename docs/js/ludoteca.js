@@ -44,7 +44,9 @@ function render() {
   count.textContent = `${filtered.length} juego${filtered.length === 1 ? "" : "s"}`;
   grid.innerHTML = filtered.length
     ? filtered.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
-    : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
+    : `<div class="empty-state">${GAMES.some((g) => g.estado === "Own" || g.estado === "Prev. owned")
+        ? "No encontré juegos con estos filtros."
+        : "Todavía no cargaste tus juegos. Usá \"Cargar o editar mis juegos\", acá arriba."}</div>`;
   hydrate(filtered).then((n) => { if (n) render(); });
 }
 
@@ -100,10 +102,20 @@ function setupControls() {
 document.getElementById("nav").innerHTML = navTemplate("ludoteca.html");
 setupFiltersToggle();
 
+const detailsEl = document.getElementById("col-details");
+mountCollectionLoader(document.getElementById("collection-loader"), {
+  onChange: () => {
+    applyCollection(GAMES);
+    render();
+  },
+});
+
 loadGames()
   .then((data) => {
     GAMES = data;
     setupControls();
+    // Sin colección cargada, el panel arranca abierto: es lo único que hay para hacer.
+    if (!GAMES.some((g) => g.estado !== "Watchlist")) detailsEl.open = true;
     render();
   })
   .catch((err) => {

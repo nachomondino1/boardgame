@@ -1,0 +1,172 @@
+/* "Cargá tus juegos" (js/collection-loader.js): usuario de BGG o marcar a mano.
+   Se usa en la landing y dentro de Mi ludoteca. */
+
+.col-loader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.col-loader__block {
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.col-loader__label {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.col-user {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.col-user input,
+.col-search {
+  flex: 1 1 180px;
+  min-width: 0;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.col-user input:disabled,
+.col-user__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.col-user__btn {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.col-hint {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.col-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 8px;
+}
+
+.col-heading .col-loader__label {
+  margin: 0;
+}
+
+.col-clear {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.col-clear:hover {
+  color: var(--text);
+  box-shadow: var(--shadow-xs);
+}
+
+.col-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.col-heading + .col-list {
+  margin-top: 0;
+}
+
+.col-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.col-name {
+  flex: 1 1 160px;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.col-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.col-btn {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.col-btn:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.col-btn.active {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.col-rating {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.col-empty {
+  padding: 10px 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 800px) {
+  .col-loader {
+    grid-template-columns: 1fr;
+  }
+}
