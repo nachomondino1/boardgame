@@ -33,13 +33,15 @@ function mountCollectionLoader(container, { onChange }) {
         <h3 class="col-loader__label">O marcá tus juegos a mano</h3>
         <input type="text" class="col-search" placeholder="Buscar juego (ej: catan)" autocomplete="off" />
         <ul class="col-list" data-results></ul>
-        <div class="col-heading">
-          <h3 class="col-loader__label" data-mine-title>Tu colección</h3>
-          <button type="button" class="col-clear" data-clear hidden>Borrar mis datos</button>
-        </div>
-        <p class="col-saved" data-saved role="status"></p>
-        <ul class="col-list" data-mine></ul>
       </div>
+      <p class="col-saved" data-saved role="status"></p>
+      <details class="col-mine" data-mine-details>
+        <summary data-mine-title>Tu colección</summary>
+        <div class="col-mine__body">
+          <button type="button" class="col-clear" data-clear hidden>Borrar mis datos</button>
+          <ul class="col-list" data-mine></ul>
+        </div>
+      </details>
     </div>`;
 
   const search = container.querySelector(".col-search");
@@ -48,6 +50,10 @@ function mountCollectionLoader(container, { onChange }) {
   const resultsEl = container.querySelector("[data-results]");
   const mineEl = container.querySelector("[data-mine]");
   const savedEl = container.querySelector("[data-saved]");
+  // La lista completa va plegada cuando es larga (con una colección de BGG pueden ser 60+ juegos),
+  // para que no empuje hacia abajo el resto de la página; el título muestra cuántos hay.
+  const mineDetails = container.querySelector("[data-mine-details]");
+  mineDetails.open = Object.keys(collection.games).length <= 8;
 
   // Cada cambio se guarda en el momento (no hay botón "Guardar"): esta línea lo deja a la vista.
   function persist() {
@@ -121,7 +127,7 @@ function mountCollectionLoader(container, { onChange }) {
       .filter((id) => nameById.has(id))
       .sort((a, b) => nameById.get(a).localeCompare(nameById.get(b), "es"));
     const total = Object.keys(collection.games).length;
-    container.querySelector("[data-mine-title]").textContent = `Tu colección (${total})`;
+    container.querySelector("[data-mine-title]").textContent = `Tu colección (${total}) · ${mineDetails.open ? "tocá para ocultar" : "tocá para ver y editar"}`;
     container.querySelector("[data-clear]").hidden = total === 0;
     savedEl.textContent = savedMessage();
     mineEl.innerHTML = !total
@@ -193,6 +199,7 @@ function mountCollectionLoader(container, { onChange }) {
       persist();
       await ensureNames();
       const desconocidos = Object.keys(games).filter((id) => !nameById.has(id)).length;
+      mineDetails.open = Object.keys(games).length <= 8; // una colección larga queda plegada
       render();
       onChange(collection);
       userHint.textContent = `Listo: ${result.count} juegos de ${result.user}.`
@@ -206,6 +213,7 @@ function mountCollectionLoader(container, { onChange }) {
   });
   if (collection.source === "bgg" && collection.user) userForm.elements.user.value = collection.user;
 
+  mineDetails.addEventListener("toggle", render);
   search.addEventListener("focus", ensureNames);
   search.addEventListener("input", () => { ensureNames(); render(); });
   container.addEventListener("click", (e) => {
