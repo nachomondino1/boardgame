@@ -149,6 +149,23 @@
   color: var(--accent-contrast);
 }
 
+.col-remove {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.col-remove:hover,
+.col-remove:focus-visible {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
 .col-rating {
   padding: 5px 8px;
   border: 1px solid var(--border);

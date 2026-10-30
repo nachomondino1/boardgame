@@ -1,4 +1,32 @@
-/* Nav entre páginas (arriba en desktop, barra fija abajo en mobile). */
+/* Nav entre páginas (arriba y fijo en desktop, barra fija abajo en mobile). */
+
+/* Altura del nav fijo de arriba (solo desktop; en mobile el nav va abajo y no ocupa el borde
+   superior). Los headers sticky de cada página se apoyan en esta variable para quedar justo debajo. */
+:root {
+  --nav-h: 0px;
+}
+
+@media (min-width: 641px) {
+  :root {
+    --nav-h: 64px;
+  }
+
+  /* El sticky va en #nav (hijo directo del body): dentro de .top-nav no tendría recorrido. */
+  #nav {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .top-nav {
+    height: var(--nav-h);
+  }
+}
 
 .top-nav {
   display: flex;
@@ -7,7 +35,7 @@
   gap: 16px;
   max-width: var(--container);
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 0 24px;
 }
 
 .nav-brand {

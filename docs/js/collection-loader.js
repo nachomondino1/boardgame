@@ -70,6 +70,13 @@ function mountCollectionLoader(container, { onChange }) {
     guardarEntrada(id, entry);
   }
 
+  function removeGame(id) {
+    delete collection.games[id];
+    saveCollection(collection);
+    render();
+    onChange(collection);
+  }
+
   function setRating(id, rating) {
     const entry = collection.games[id];
     if (!entry) return;
@@ -89,7 +96,11 @@ function mountCollectionLoader(container, { onChange }) {
           ${[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((n) => `<option value="${n}"${entry && entry.rating === n ? " selected" : ""}>${n}/10</option>`).join("")}
         </select>`
       : "";
-    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}</span><span class="col-actions">${botones}${puntaje}</span></li>`;
+    // Quitar borra el juego de la colección guardada en este navegador (no cambia nada en BGG).
+    const quitar = entry
+      ? `<button type="button" class="col-remove" data-remove="${escapeHtml(id)}" title="Quitar de mi colección (solo en este navegador, no cambia BGG)" aria-label="Quitar ${escapeHtml(nombre)} de mi colección">✕ Quitar</button>`
+      : "";
+    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}</span><span class="col-actions">${botones}${puntaje}${quitar}</span></li>`;
   }
 
   function render() {
@@ -195,6 +206,8 @@ function mountCollectionLoader(container, { onChange }) {
   container.addEventListener("click", (e) => {
     const btn = e.target.closest(".col-btn");
     if (btn) setFlag(btn.dataset.id, btn.dataset.flag);
+    const remove = e.target.closest(".col-remove");
+    if (remove) removeGame(remove.dataset.remove);
   });
   container.addEventListener("change", (e) => {
     if (e.target.classList.contains("col-rating")) {
