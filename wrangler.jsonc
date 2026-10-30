@@ -1,0 +1,9 @@
+{
+  "name": "boardgame-mvp",
+  "main": "src/index.js",
+  "compatibility_date": "2025-10-01",
+  "assets": {
+    "directory": "./docs",
+    "binding": "ASSETS"
+  }
+}
