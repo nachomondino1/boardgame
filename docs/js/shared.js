@@ -83,11 +83,15 @@ function loadCollection() {
   return emptyCollection();
 }
 
+// Devuelve false si no se pudo guardar (queda solo en memoria de esta página).
 function saveCollection(collection) {
   collection.savedAt = new Date().toISOString();
   try {
     localStorage.setItem(COLLECTION_KEY, JSON.stringify(collection));
-  } catch (e) { /* no se pudo guardar; queda en memoria de esta página */ }
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 // Misma regla que estado_de() en construct_data.py: Own > Prev. owned >

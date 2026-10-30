@@ -166,20 +166,16 @@
   border-color: var(--muted);
 }
 
-.col-rating {
-  padding: 5px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.8rem;
-}
-
 .col-empty {
   padding: 10px 4px;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.col-saved {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 @media (max-width: 800px) {

@@ -17,6 +17,7 @@ function mountCollectionLoader(container, { onChange }) {
   let nameById = new Map();
   let namesPromise = null;
   let collection = loadCollection();
+  let saveFailed = false;
 
   container.innerHTML = `
     <div class="col-loader">
@@ -36,8 +37,8 @@ function mountCollectionLoader(container, { onChange }) {
           <h3 class="col-loader__label" data-mine-title>Tu colección</h3>
           <button type="button" class="col-clear" data-clear hidden>Borrar mis datos</button>
         </div>
+        <p class="col-saved" data-saved role="status"></p>
         <ul class="col-list" data-mine></ul>
-        <p class="col-hint">Se guarda solo en este navegador.</p>
       </div>
     </div>`;
 
@@ -46,6 +47,21 @@ function mountCollectionLoader(container, { onChange }) {
   const userHint = container.querySelector("[data-user-hint]");
   const resultsEl = container.querySelector("[data-results]");
   const mineEl = container.querySelector("[data-mine]");
+  const savedEl = container.querySelector("[data-saved]");
+
+  // Cada cambio se guarda en el momento (no hay botón "Guardar"): esta línea lo deja a la vista.
+  function persist() {
+    saveFailed = !saveCollection(collection);
+  }
+
+  function savedMessage() {
+    if (saveFailed) return "⚠ No pude guardar en este navegador (¿ventana privada?). Si cambiás de página, se pierde.";
+    if (!Object.keys(collection.games).length) return "Todavía no cargaste juegos.";
+    const hora = collection.savedAt
+      ? new Date(collection.savedAt).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false })
+      : "";
+    return `✓ Guardado en este navegador${hora ? ` a las ${hora}` : ""}. Podés cambiar de página tranquilo.`;
+  }
 
   function flagActivo(entry) {
     const marcado = ESTADOS_MARCABLES.find((e) => entry && entry[e.flag]);
@@ -58,7 +74,7 @@ function mountCollectionLoader(container, { onChange }) {
     if (flagActivo(entry) || entry.rating != null) collection.games[id] = entry;
     else delete collection.games[id];
     collection.source = collection.source || "manual";
-    saveCollection(collection);
+    persist();
     render();
     onChange(collection);
   }
@@ -72,35 +88,22 @@ function mountCollectionLoader(container, { onChange }) {
 
   function removeGame(id) {
     delete collection.games[id];
-    saveCollection(collection);
+    persist();
     render();
     onChange(collection);
   }
 
-  function setRating(id, rating) {
-    const entry = collection.games[id];
-    if (!entry) return;
-    entry.rating = rating;
-    guardarEntrada(id, entry);
-  }
-
-  function rowHtml(id, nombre, conPuntaje) {
+  function rowHtml(id, nombre) {
     const entry = collection.games[id];
     const activo = flagActivo(entry);
     const botones = ESTADOS_MARCABLES
       .map((e) => `<button type="button" class="col-btn${activo === e.flag ? " active" : ""}" data-id="${escapeHtml(id)}" data-flag="${e.flag}">${e.label}</button>`)
       .join("");
-    const puntaje = conPuntaje
-      ? `<select class="col-rating" data-id="${escapeHtml(id)}" aria-label="Mi puntaje de ${escapeHtml(nombre)}">
-          <option value="">Sin puntaje</option>
-          ${[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((n) => `<option value="${n}"${entry && entry.rating === n ? " selected" : ""}>${n}/10</option>`).join("")}
-        </select>`
-      : "";
     // Quitar borra el juego de la colección guardada en este navegador (no cambia nada en BGG).
     const quitar = entry
       ? `<button type="button" class="col-remove" data-remove="${escapeHtml(id)}" title="Quitar de mi colección (solo en este navegador, no cambia BGG)" aria-label="Quitar ${escapeHtml(nombre)} de mi colección">✕ Quitar</button>`
       : "";
-    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}</span><span class="col-actions">${botones}${puntaje}${quitar}</span></li>`;
+    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}</span><span class="col-actions">${botones}${quitar}</span></li>`;
   }
 
   function render() {
@@ -110,7 +113,7 @@ function mountCollectionLoader(container, { onChange }) {
     } else {
       const found = names.filter((n) => n.norm.includes(query)).slice(0, MAX_RESULTS);
       resultsEl.innerHTML = found.length
-        ? found.map((n) => rowHtml(n.id, n.nombre, false)).join("")
+        ? found.map((n) => rowHtml(n.id, n.nombre)).join("")
         : `<li class="col-empty">${namesPromise && !names.length ? "Cargando juegos…" : "No encontré juegos con ese nombre."}</li>`;
     }
 
@@ -120,10 +123,11 @@ function mountCollectionLoader(container, { onChange }) {
     const total = Object.keys(collection.games).length;
     container.querySelector("[data-mine-title]").textContent = `Tu colección (${total})`;
     container.querySelector("[data-clear]").hidden = total === 0;
+    savedEl.textContent = savedMessage();
     mineEl.innerHTML = !total
       ? `<li class="col-empty">Todavía no marcaste ningún juego. Buscá uno arriba.</li>`
       : ids.length
-        ? ids.map((id) => rowHtml(id, nameById.get(id), true)).join("")
+        ? ids.map((id) => rowHtml(id, nameById.get(id))).join("")
         : `<li class="col-empty">Cargando tu colección…</li>`;
   }
 
@@ -186,12 +190,13 @@ function mountCollectionLoader(container, { onChange }) {
       const games = {};
       result.games.forEach((g) => { games[g.id] = { own: g.own, prevowned: g.prevowned, wanttobuy: g.wanttobuy, rating: g.rating }; });
       collection = { source: "bgg", user: result.user, savedAt: null, games };
-      saveCollection(collection);
+      persist();
       await ensureNames();
       const desconocidos = Object.keys(games).filter((id) => !nameById.has(id)).length;
       render();
       onChange(collection);
       userHint.textContent = `Listo: ${result.count} juegos de ${result.user}.`
+        + (saveFailed ? "" : " Ya quedó guardada en este navegador.")
         + (desconocidos ? ` ${desconocidos} no están en el catálogo y no se muestran.` : "");
     } catch (err) {
       userHint.textContent = err.message;
@@ -209,15 +214,10 @@ function mountCollectionLoader(container, { onChange }) {
     const remove = e.target.closest(".col-remove");
     if (remove) removeGame(remove.dataset.remove);
   });
-  container.addEventListener("change", (e) => {
-    if (e.target.classList.contains("col-rating")) {
-      setRating(e.target.dataset.id, e.target.value ? Number(e.target.value) : null);
-    }
-  });
   container.querySelector("[data-clear]").addEventListener("click", () => {
     if (!confirm("¿Borrar toda tu colección de este navegador?")) return;
     collection = emptyCollection();
-    saveCollection(collection);
+    persist();
     render();
     onChange(collection);
   });
