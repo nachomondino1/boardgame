@@ -193,6 +193,19 @@
 }
 
 @media (max-width: 640px) {
+  /* "Limpiar filtros" sube a su propia fila, justo debajo de las píldoras y arriba del conteo. */
+  .result-left {
+    display: contents;
+  }
+
+  .clear-filters {
+    order: -1;
+    flex: 1 0 100%;
+    padding: 0;
+    border-left: 0;
+    text-align: left;
+  }
+
   /* En celular las píldoras corren en una sola fila deslizable (no ocupan alto de más en el
      encabezado fijo) y el menú se abre debajo, a todo el ancho. */
   .filter-pills {
