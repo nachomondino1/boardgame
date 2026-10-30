@@ -106,6 +106,14 @@
   font-weight: 600;
 }
 
+.col-alias {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
 .col-actions {
   display: flex;
   flex-wrap: wrap;

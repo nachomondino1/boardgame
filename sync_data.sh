@@ -8,7 +8,8 @@
 #
 # No toca mvp (producción, Cloudflare): promover es a mano, ver "Ramas y despliegue" en MVP.md.
 #
-# Uso: ./sync_data.sh
+# Uso: ./sync_data.sh                    (tu colección + los 5000 mejor rankeados + juegos nuevos del hot, ~30 min)
+#      ./sync_data.sh --scope all         (todo el catálogo, ~2 h; cualquier argumento va tal cual a refresh_bgg_data.py)
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -17,8 +18,11 @@ if [ "$(git branch --show-current)" != "staging" ]; then
   exit 1
 fi
 
-echo "== Trayendo tu colección de BGG y actualizando los datos de tus juegos =="
-python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py
+echo "== Actualizando los datos de BGG =="
+if [ "$#" -eq 0 ]; then
+  set -- --top 5000 --discover
+fi
+python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py "$@"
 
 echo "== Integrando fuentes =="
 python3 02_data_preparation/integrate_data.py
@@ -26,7 +30,7 @@ python3 02_data_preparation/integrate_data.py
 echo "== Generando el catálogo del sitio =="
 python3 02_data_preparation/build_catalog.py
 
-git add docs/data/names.json docs/data/index.json docs/data/games
+git add docs/data/names.json docs/data/index.json docs/data/meta.json docs/data/games
 if git diff --cached --quiet; then
   echo "== Sin cambios en el catálogo, nada que mandar =="
   exit 0

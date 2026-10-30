@@ -13,7 +13,7 @@ function matchesFilters(g) {
   // Mi ludoteca es lo que tenés (o tuviste): Watchlist vive solo en ¿Cuál comprar?
   if (g.estado !== "Own" && g.estado !== "Prev. owned") return false;
   if (state.query) {
-    if (!normalize(g.nombre).includes(normalize(state.query))) return false;
+    if (!matchesNombre(g, state.query)) return false;
   }
   if (state.jugadores != null) {
     if (g.jug_min == null || g.jug_max == null) return false;
@@ -54,6 +54,7 @@ function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
     render();
+    ensureAltNames().then(() => { if (state.query) render(); });
   });
 
   const playerLabel = document.getElementById("player-label");

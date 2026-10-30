@@ -31,7 +31,7 @@ function matchesFilters(g) {
     return false;
   }
   if (state.query) {
-    if (!normalize(g.nombre).includes(normalize(state.query))) return false;
+    if (!matchesNombre(g, state.query)) return false;
   }
   if (state.tipos.size > 0 && !state.tipos.has(g.modo)) return false;
   if (g.duracion != null && g.duracion > state.duracionMax) return false;
@@ -128,6 +128,7 @@ function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
     scheduleFilterChange(200);
+    ensureAltNames().then(() => { if (state.query) scheduleFilterChange(0); });
   });
 
   const tipoMultiselect = document.getElementById("tipo-multiselect");

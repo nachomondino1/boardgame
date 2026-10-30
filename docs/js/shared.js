@@ -23,6 +23,62 @@ function normalize(str) {
     .toLowerCase();
 }
 
+// --- Búsqueda por nombre ---
+// Se busca en el nombre principal y en los alternativos de BGG (traducciones, ediciones: "Caza Bombas"
+// es "Bomb Busters"). Los alternativos vienen de names.json, que se pide recién cuando alguien busca.
+// Además se compara ignorando espacios y signos: "cazabombas" encuentra "Caza Bombas".
+
+function compactText(str) {
+  return normalize(str).replace(/[^a-z0-9]/g, "");
+}
+
+function makeQuery(text) {
+  return { norm: normalize(text.trim()), compact: compactText(text) };
+}
+
+function textKey(text) {
+  return { text, norm: normalize(text), compact: compactText(text) };
+}
+
+function keyMatches(key, q) {
+  return key.norm.includes(q.norm) || (q.compact.length >= 3 && key.compact.includes(q.compact));
+}
+
+// "Alt 1|Alt 2" (como viene en names.json) -> [{ text, norm, compact }]
+function parseAlts(altString) {
+  return altString ? altString.split("|").map(textKey) : [];
+}
+
+const altByGame = new Map(); // bgg_id -> [{ text, norm, compact }]
+let altPromise = null;
+
+function ensureAltNames() {
+  if (!altPromise) {
+    altPromise = fetch("data/names.json")
+      .then((r) => {
+        if (!r.ok) throw new Error(`names.json: HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(({ rows }) => {
+        rows.forEach(([id, , alt]) => { if (alt) altByGame.set(id, parseAlts(alt)); });
+      })
+      .catch(() => { altPromise = null; }); // sin alternativos, se sigue buscando por el nombre principal
+  }
+  return altPromise;
+}
+
+let lastQuery = { text: null, q: null };
+
+// ¿El juego (de index.json) coincide con lo escrito en el buscador?
+function matchesNombre(g, text) {
+  if (lastQuery.text !== text) lastQuery = { text, q: makeQuery(text) };
+  const q = lastQuery.q;
+  if (!g._nk) g._nk = textKey(g.nombre);
+  if (keyMatches(g._nk, q)) return true;
+  const alts = altByGame.get(g.bgg_id);
+  return !!alts && alts.some((a) => keyMatches(a, q));
+}
+
 function jugBestRange(g) {
   if (g.jug_best_min == null && g.jug_best_max == null) return null;
   const lo = g.jug_best_min != null ? g.jug_best_min : g.jug_best_max;
@@ -315,3 +371,25 @@ function navTemplate(active) {
     </div>
   `;
 }
+
+// Fecha de la última actualización de los datos de BGG, en el pie de cada página (data/meta.json,
+// que genera build_catalog.py). Si no se puede leer, el pie queda como estaba.
+function showDataStamp() {
+  const footers = document.querySelectorAll(".site-footer");
+  if (!footers.length) return;
+  fetch("data/meta.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((meta) => {
+      if (!meta || !meta.actualizado) return;
+      const [y, m, d] = meta.actualizado.split("-").map(Number);
+      const fecha = new Date(y, m - 1, d).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
+      const cobertura = meta.juegos_actualizados < meta.juegos_total
+        ? `${meta.juegos_actualizados.toLocaleString("es-AR")} de ${meta.juegos_total.toLocaleString("es-AR")} juegos al día; el resto viene de una copia de BGG de 2025. `
+        : "";
+      const html = `<p class="data-stamp"><strong>Datos de BGG actualizados el ${fecha}.</strong><br>${cobertura}El ranking y los puntajes cambian en cada actualización.</p>`;
+      footers.forEach((f) => f.insertAdjacentHTML("afterbegin", html));
+    })
+    .catch(() => {});
+}
+
+showDataStamp();
