@@ -40,6 +40,7 @@ Navegador (páginas estáticas de docs/)
 ```
 
 - **Hosting:** Cloudflare Pages, rama de producción `mvp`, directorio de salida `docs/`, funciones en `functions/` (raíz del repo). Plan gratis; revisar sus límites actuales antes de compartir la URL.
+- **Local:** `node --env-file=<ruta al .env con BGG_TOKEN> dev-server.mjs` sirve `docs/` y la misma función en `http://localhost:8766` (sin dependencias; ver `.claude/launch.json` de la carpeta principal). Es una simulación: el runtime real de Cloudflare se prueba recién en M4.
 - **Una sola función**, la de la colección. Las fichas **no** pasan por función: son archivos estáticos (decisión, ver sección 4).
 - El token de BGG se carga como secreto en el panel de Cloudflare (`BGG_TOKEN`). Nunca en el repo ni en el navegador. Para desarrollo local, un archivo ignorado por git.
 
@@ -112,7 +113,7 @@ Diseño: el de `DESIGN_PLAYBOOK.md`. Sin cambios visuales salvo la entrada y el 
 | M0 | Branch `mvp` y primer catálogo de prueba | ✅ hecho |
 | M1 | `build_catalog.py` genera `names.json`, `index.json` y `games/NNN.json` | ✅ hecho: 27.796 juegos, 56 tramos, índice y fichas coherentes |
 | M2 | Páginas funcionando en local con **entrada manual** y estado/puntaje calculados en el navegador | ✅ hecho: marqué 3 juegos en el panel de carga y aparecen bien en Mi ludoteca, ¿Qué jugamos hoy? y la landing; ¿Cuál comprar? excluye los marcados Own |
-| M3 | Función `/api/collection` y entrada por username, en local con `wrangler` | Mi username carga mi colección real y coincide con `data.json` |
+| M3 | Función `/api/collection` y entrada por username, en local | ✅ hecho: mi usuario trae 63 juegos con los mismos conteos que mi colección local (24 Own, 35 Want to buy, 2 Prev. owned, 13 con puntaje; falta 1 juego que solo tenía "want to play"). Probado con `dev-server.mjs`, no con `wrangler` |
 | M4 | Deploy en Cloudflare Pages desde `mvp`, token como secreto | La URL pública funciona con mi username |
 | M5 | Lo prueban 2 o 3 personas con su usuario | Anoto qué falla y qué piden |
 
@@ -127,6 +128,9 @@ Cada hito se commitea aparte en `mvp`.
 - Nada de `main` ni de GitHub Pages cambió.
 
 ## 11. Decisiones abiertas
+
+- Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
+- Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); si se quiere mostrar, hay que definir qué estado tiene.
 
 - El comparador de ¿Cuál comprar? usa un `<datalist>` con ~27.000 nombres; funciona pero es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
 

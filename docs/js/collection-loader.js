@@ -4,6 +4,8 @@
 // que cambia la colección llama a onChange para que la página se actualice.
 
 const MAX_RESULTS = 20;
+const PENDING_RETRIES = 8; // 202 de BGG: reintentos de la página, además de los de la función
+const PENDING_DELAY_MS = 4000;
 const ESTADOS_MARCABLES = [
   { label: "Lo tengo", flag: "own" },
   { label: "Lo tuve", flag: "prevowned" },
@@ -21,10 +23,10 @@ function mountCollectionLoader(container, { onChange }) {
       <div class="col-loader__block">
         <h3 class="col-loader__label">Con tu usuario de BGG</h3>
         <form class="col-user" data-user-form>
-          <input type="text" name="user" placeholder="Tu usuario de BGG" autocomplete="off" disabled />
-          <button type="submit" class="col-user__btn" disabled>Traer mi colección</button>
+          <input type="text" name="user" placeholder="Tu usuario de BGG" autocomplete="off" maxlength="40" />
+          <button type="submit" class="col-user__btn">Traer mi colección</button>
         </form>
-        <p class="col-hint">Próximamente. Por ahora, marcá tus juegos a mano.</p>
+        <p class="col-hint" data-user-hint role="status">Tiene que ser público: BGG no deja leer colecciones ocultas.</p>
       </div>
       <div class="col-loader__block">
         <h3 class="col-loader__label">O marcá tus juegos a mano</h3>
@@ -40,6 +42,8 @@ function mountCollectionLoader(container, { onChange }) {
     </div>`;
 
   const search = container.querySelector(".col-search");
+  const userForm = container.querySelector("[data-user-form]");
+  const userHint = container.querySelector("[data-user-hint]");
   const resultsEl = container.querySelector("[data-results]");
   const mineEl = container.querySelector("[data-mine]");
 
@@ -133,6 +137,58 @@ function mountCollectionLoader(container, { onChange }) {
     }
     return namesPromise;
   }
+
+  // Trae la colección desde /api/collection. BGG a veces responde 202 ("estoy
+  // preparando la lista"): se reintenta unos segundos antes de rendirse.
+  async function fetchBggCollection(user) {
+    for (let attempt = 0; attempt < PENDING_RETRIES; attempt++) {
+      let response;
+      try {
+        response = await fetch(`/api/collection?user=${encodeURIComponent(user)}`);
+      } catch (e) {
+        throw new Error("No pude conectar con el servidor. Probá de nuevo en un rato.");
+      }
+      const body = await response.json().catch(() => ({}));
+      if (response.status === 200) return body;
+      if (response.status !== 202) throw new Error(body.message || `Error ${response.status}`);
+      userHint.textContent = "BGG está preparando tu colección, esperá unos segundos…";
+      await new Promise((resolve) => setTimeout(resolve, PENDING_DELAY_MS));
+    }
+    throw new Error("BGG todavía no tiene lista tu colección. Probá de nuevo en un minuto.");
+  }
+
+  userForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const user = userForm.elements.user.value.trim();
+    if (!user) return;
+    if (collection.source === "manual" && Object.keys(collection.games).length
+        && !confirm("Esto reemplaza los juegos que marcaste a mano. ¿Seguir?")) return;
+    const button = userForm.querySelector("button");
+    button.disabled = true;
+    userHint.textContent = "Buscando tu colección en BGG…";
+    try {
+      const result = await fetchBggCollection(user);
+      if (!result.count) {
+        userHint.textContent = `Encontré a ${user}, pero no tiene juegos en su colección (o la tiene oculta).`;
+        return;
+      }
+      const games = {};
+      result.games.forEach((g) => { games[g.id] = { own: g.own, prevowned: g.prevowned, wanttobuy: g.wanttobuy, rating: g.rating }; });
+      collection = { source: "bgg", user: result.user, savedAt: null, games };
+      saveCollection(collection);
+      await ensureNames();
+      const desconocidos = Object.keys(games).filter((id) => !nameById.has(id)).length;
+      render();
+      onChange(collection);
+      userHint.textContent = `Listo: ${result.count} juegos de ${result.user}.`
+        + (desconocidos ? ` ${desconocidos} no están en el catálogo y no se muestran.` : "");
+    } catch (err) {
+      userHint.textContent = err.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+  if (collection.source === "bgg" && collection.user) userForm.elements.user.value = collection.user;
 
   search.addEventListener("focus", ensureNames);
   search.addEventListener("input", () => { ensureNames(); render(); });
