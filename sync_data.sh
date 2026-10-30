@@ -1,16 +1,21 @@
 #!/bin/bash
 # Lo corres cuando actualizaste los datos de entrada (tu colección en BGG, bgg_data u otro) y queres reflejarlos en la web.
 
-# Actualiza data.json a mano (ver DATA_PLAYBOOK.md, "Gitignorear toda la
-# fuente cruda" en Decisiones clave: el sync automático en CI ya no es
-# posible porque data/01_data_understanding/ es gitignored, solo vive en
-# esta máquina) y lo manda a la web: corre el pipeline completo, commitea
-# docs/data/data.json si cambió, pushea staging, abre un PR a main y lo
-# mergea (GitHub Pages sirve directo de main:/docs).
+# Regenera el catálogo del sitio (docs/data/names.json, index.json y games/NNN.json) y lo
+# commitea y pushea a staging, donde se prueba (GitHub Pages). Ver DATA_PLAYBOOK.md, "Gitignorear
+# toda la fuente cruda" en Decisiones clave: el sync automático en CI ya no es posible porque
+# data/01_data_understanding/ es gitignored, solo vive en esta máquina.
+#
+# No toca mvp (producción, Cloudflare): promover es a mano, ver "Ramas y despliegue" en MVP.md.
 #
 # Uso: ./sync_data.sh
 set -euo pipefail
 cd "$(dirname "$0")"
+
+if [ "$(git branch --show-current)" != "staging" ]; then
+  echo "Este script commitea en staging y ahora estás en '$(git branch --show-current)'. Cambiá de rama y volvé a correrlo." >&2
+  exit 1
+fi
 
 echo "== Trayendo tu colección de BGG y actualizando los datos de tus juegos =="
 python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py
@@ -18,29 +23,18 @@ python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py
 echo "== Integrando fuentes =="
 python3 02_data_preparation/integrate_data.py
 
-echo "== Calculando columnas derivadas =="
-python3 02_data_preparation/construct_data.py
+echo "== Generando el catálogo del sitio =="
+python3 02_data_preparation/build_catalog.py
 
-echo "== Recortando Watchlist =="
-python3 02_data_preparation/select_data.py
-
-git add docs/data/data.json
+git add docs/data/names.json docs/data/index.json docs/data/games
 if git diff --cached --quiet; then
-  echo "== Sin cambios en docs/data/data.json, nada que mandar a la web =="
+  echo "== Sin cambios en el catálogo, nada que mandar =="
   exit 0
 fi
 
 echo "== Commiteando y pusheando a staging =="
-git commit -m "Sync data.json"
+git commit -m "Sync catálogo"
 git push origin staging
 
-if [ -z "$(git log --oneline origin/main..staging)" ]; then
-  echo "== staging ya está al día con main, nada que mergear =="
-  exit 0
-fi
-
-echo "== Abriendo PR y mergeando a main =="
-gh pr create --base main --head staging --title "Sync data.json" --body "Actualización de datos vía sync_data.sh." 2>/dev/null || true
-gh pr merge staging --merge
-
-echo "== Listo: https://nachomondino1.github.io/boardgame/ =="
+echo "== Listo en staging: https://nachomondino1.github.io/boardgame/ =="
+echo "== Para llevarlo a producción (mvp): ver 'Ramas y despliegue' en MVP.md =="

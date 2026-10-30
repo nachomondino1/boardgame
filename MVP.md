@@ -1,6 +1,6 @@
 # MVP multiusuario (branch `mvp`)
 
-Documento de directrices. Lo que se construya en esta branch tiene que poder justificarse con algo de acá; si hay que cambiar el plan, se cambia primero este archivo. Contexto y riesgos en `escalabilidad.md` (branch `staging`/`main`).
+Documento de directrices. Lo que se construya en esta branch tiene que poder justificarse con algo de acá; si hay que cambiar el plan, se cambia primero este archivo. Contexto y riesgos en `escalabilidad.md` (branch `staging`).
 
 ## 1. Objetivo
 
@@ -25,7 +25,6 @@ No es un producto: sin login, sin cuentas, sin cobro.
 - Login, cuentas, contraseñas, base de datos de usuarios.
 - Registro de partidas, grupos, social, mapa de tiendas.
 - Cobro, publicidad, licencia comercial de BGG.
-- Cambios en `main`, GitHub Pages o el flujo de `sync_data.sh` actual.
 
 ## 3. Arquitectura
 
@@ -125,9 +124,24 @@ Cada hito se commitea aparte en `mvp`.
 - Con username inexistente u oculto, hay un mensaje claro.
 - Sin username, la entrada manual alcanza para usar las tres páginas.
 - La primera carga de datos no supera ~2 MB comprimidos (nombres + índice + una ficha).
-- Nada de `main` ni de GitHub Pages cambió.
+- El sitio de producción solo cambia al promover `staging` a `mvp` (sección 11).
 
-## 11. Decisiones abiertas
+## 11. Ramas y despliegue (desde 2026-10-30)
+
+Dos ramas, un solo código:
+
+| Rama | Rol | Despliegue |
+|---|---|---|
+| `staging` | Donde se hacen y prueban los cambios | GitHub Pages (`staging:/docs`). Ahí no existe `/api/collection`: la carga a mano anda, la de usuario de BGG no (se prueba en local con `dev-server.mjs` o en producción) |
+| `mvp` | Producción, lo que ve el cliente | Cloudflare (`npx wrangler deploy` en cada push) |
+
+- **Todo cambio entra por `staging`.** Los datos también: `./sync_data.sh` commitea el catálogo directo en `staging`, sin PR.
+- **Promover a producción:** `git checkout mvp && git merge --ff-only staging && git push`. `--ff-only` solo avanza `mvp` hasta donde está `staging`; si falla, es porque alguien tocó `mvp` por su cuenta.
+- **Único caso para tocar `mvp` directo:** un arreglo que solo aplique a producción. Se vuelve a traer a `staging` enseguida (`git checkout staging && git merge mvp`), si no el próximo pase puede chocar.
+- Nunca mergear al revés sin pensarlo: `mvp` no tiene nada que `staging` no tenga, salvo esos arreglos.
+- La carpeta `boardgame-mvp/` es un `git worktree` de `mvp`; con `staging` como base ya no hace falta para trabajar.
+
+## 12. Decisiones abiertas
 
 - Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
 - Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); si se quiere mostrar, hay que definir qué estado tiene.
