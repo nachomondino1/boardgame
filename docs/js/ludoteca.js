@@ -37,7 +37,19 @@ function sortGames(list) {
   });
 }
 
+// Los números de la colección (antes en la landing): se ven recién cuando hay juegos cargados.
+function updateStats() {
+  const own = GAMES.filter((g) => g.estado === "Own").length;
+  const watch = GAMES.filter((g) => g.estado === "Want to buy").length;
+  const ranks = GAMES.filter((g) => g.estado === "Own" && g.ranking_bgg != null).map((g) => g.ranking_bgg);
+  document.getElementById("stat-own").textContent = own;
+  document.getElementById("stat-watch").textContent = watch;
+  document.getElementById("stat-top").textContent = ranks.length ? `#${Math.min(...ranks).toLocaleString("es-AR")}` : "–";
+  document.getElementById("stats").hidden = own + watch === 0;
+}
+
 function render() {
+  updateStats();
   const filtered = sortGames(GAMES.filter(matchesFilters));
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");

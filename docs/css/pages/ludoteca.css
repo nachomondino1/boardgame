@@ -63,3 +63,35 @@
 .col-details[open] > summary {
   margin-bottom: 14px;
 }
+
+/* Números de la colección arriba de la grilla. */
+.ludoteca-stats[hidden] {
+  display: none;
+}
+
+.ludoteca-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.ludoteca-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.ludoteca-stat__num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ludoteca-stat__label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}

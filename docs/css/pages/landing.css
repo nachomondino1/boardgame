@@ -1,4 +1,4 @@
-/* Landing (index.html): hero + stats + "Cargá tus juegos" + 3 tarjetas de navegación. */
+/* Landing (index.html): hero + "Cargá tus juegos" + 3 tarjetas de navegación. */
 
 .landing {
   max-width: var(--container);
@@ -62,30 +62,6 @@
   font-size: 1.1rem;
   color: rgba(244, 239, 230, 0.82);
   max-width: 560px;
-}
-
-.landing__stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 40px;
-  margin-top: 36px;
-}
-
-.landing__stat {
-  display: flex;
-  flex-direction: column;
-}
-
-.landing__stat-num {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #f4efe6;
-}
-
-.landing__stat-label {
-  font-size: 0.8rem;
-  color: rgba(244, 239, 230, 0.75);
 }
 
 .landing__scroll-hint {
@@ -252,4 +228,11 @@
 .landing__load-lead {
   margin: 0 0 20px;
   color: var(--muted);
+}
+
+.landing__cards-title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
