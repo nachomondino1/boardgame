@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "MVP multiusuario (ver MVP.md). Sin dependencias: dev-server.mjs sirve docs/ y la función de functions/ en local."
+}

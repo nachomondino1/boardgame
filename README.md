@@ -8,7 +8,8 @@ Vivo en: https://nachomondino1.github.io/boardgame/
 
 **Correr la web en local:**
 ```bash
-cd docs && python3 -m http.server 8765
+cd docs
+python3 -m http.server 8765
 ```
 Y abrir `http://localhost:8765`.
 

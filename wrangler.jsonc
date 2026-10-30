@@ -1,0 +1,11 @@
+{
+  "name": "boardgame-mvp",
+  "main": "src/index.js",
+  "compatibility_date": "2025-10-01",
+  // Los deploys desde GitHub no tienen que borrar las variables cargadas a mano en el panel (BGG_TOKEN).
+  "keep_vars": true,
+  "assets": {
+    "directory": "./docs",
+    "binding": "ASSETS"
+  }
+}

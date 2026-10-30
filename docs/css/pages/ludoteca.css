@@ -45,3 +45,21 @@
     flex: none;
   }
 }
+
+/* Panel "Cargar o editar mis juegos" (js/collection-loader.js) arriba de la grilla. */
+.col-details {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.col-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.col-details[open] > summary {
+  margin-bottom: 14px;
+}

@@ -325,7 +325,8 @@ def compute_modo(game):
     return infer_modo(game.get("mecanicas"), game.get("categorias"))
 
 
-def main():
+def build_games():
+    """Todas las columnas derivadas, para todos los juegos de integrated_data.jsonl."""
     games = load_games()
 
     for g in games:
@@ -339,7 +340,11 @@ def main():
             g["puntaje_ajust_bgg"] = round(g["puntaje_ajust_bgg"], 2)
         if g["precio_calidad"] is not None:
             g["precio_calidad"] = round(g["precio_calidad"], 2)
+    return games
 
+
+def main():
+    games = build_games()
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(games, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"OK: {len(games)} juegos escritos en {OUTPUT_PATH}")
