@@ -68,7 +68,11 @@ function render() {
 
   if (!GAMES.some((g) => g.estado === "Own")) {
     count.textContent = "";
-    grid.innerHTML = `<div class="empty-state">Todavía no cargaste tus juegos. Usá "Cargar o editar mis juegos", acá arriba, y después elegí cuántos son.</div>`;
+    grid.innerHTML = `
+      <div class="empty-state">
+        <p>Todavía no cargaste tus juegos.</p>
+        <a class="hoy-pick__btn" href="ludoteca.html">Cargar mis juegos →</a>
+      </div>`;
     return;
   }
 
@@ -165,20 +169,11 @@ function setupControls() {
 
 document.getElementById("nav").innerHTML = navTemplate("hoy.html");
 
-const detailsEl = document.getElementById("col-details");
-mountCollectionLoader(document.getElementById("collection-loader"), {
-  onChange: () => {
-    applyCollection(GAMES);
-    render();
-  },
-});
 
 loadGames()
   .then((data) => {
     GAMES = data;
     setupControls();
-    // Sin colección cargada, el panel arranca abierto: es lo único que hay para hacer.
-    if (!GAMES.some((g) => g.estado === "Own")) detailsEl.open = true;
     render();
   })
   .catch((err) => {

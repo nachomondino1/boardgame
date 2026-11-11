@@ -115,7 +115,7 @@ Mismas que hoy, copiadas de `docs/` y adaptadas (prioridad en la sección 0: Hoy
 - **Entrada** (`index.html`): cuenta el flujo del problema ("¿A qué jugamos hoy? Elegí en menos de un minuto"), tres pasos y la sección "Cargá tus juegos" (`js/collection-loader.js`): usuario de BGG o marcar a mano. Con juegos cargados, el CTA del hero y un bloque debajo del panel llevan a ¿Qué jugamos hoy?. Mi ludoteca y ¿Cuál comprar? aparecen como "También podés". No hay página aparte ni link en la barra para cargar.
 - **Mi ludoteca** incluye el mismo panel ("Cargar o editar mis juegos"), abierto de entrada si no hay colección.
 - **Mi ludoteca**: Own y Prev. owned de la colección del visitante.
-- **¿Qué jugamos hoy?** (foco): elige cantidad de jugadores y, si quiere, el tiempo; muestra lo que tiene en dos tandas ("Mejor con N" y "Funcionan con N"), ordenado por ranking dentro de cada una, y "Elegime uno". Incluye el panel para cargar o editar los juegos.
+- **¿Qué jugamos hoy?** (foco): elige cantidad de jugadores y, si quiere, el tiempo; muestra lo que tiene en dos tandas ("Mejor con N" y "Funcionan con N"), ordenado por ranking dentro de cada una, y "Elegime uno". Si todavía no hay juegos cargados, muestra un botón "Cargar mis juegos" que lleva a Mi ludoteca (la carga vive ahí y en la landing, no en esta página).
 - **¿Cuál comprar?**: Watchlist del catálogo más Want to buy, con paginación y filtros sobre el índice.
 - Buscador por nombre en la barra, que usa `names.json` y abre la ficha del tramo.
 

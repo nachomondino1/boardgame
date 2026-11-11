@@ -108,6 +108,11 @@
   transition: transform 0.12s ease, box-shadow 0.15s ease;
 }
 
+.hoy-pick__btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
 .hoy-pick__btn:hover {
   box-shadow: var(--shadow-md);
 }

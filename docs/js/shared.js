@@ -359,8 +359,8 @@ function navTemplate(active) {
   // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
     { href: "index.html", emoji: "🏠", label: "Inicio", cls: "nav-home" },
-    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
     { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca" },
+    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
     { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },
   ];
   const linksHtml = links
