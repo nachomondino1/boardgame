@@ -2,9 +2,32 @@
 
 Documento de directrices. Lo que se construya en esta branch tiene que poder justificarse con algo de acá; si hay que cambiar el plan, se cambia primero este archivo. Contexto y riesgos en `escalabilidad.md` (branch `staging`).
 
+## 0. El problema
+
+**Problemas relevados** (desde la experiencia de quien arma esto; todavía sin validar con otras personas):
+1. **Tener mi ludoteca online**, más visual y linda que en BGG.
+2. **Elegir qué jugar hoy.** (a) Estoy en casa con amigos y quiero ver rápido cuáles son las opciones reales de todo lo que tengo. (b) Voy a la casa de un amigo, tengo 40 juegos y no sé cuál llevar según cuántos seamos. Hoy hay que revisar la ludoteca juego por juego y acordarse de cuántos jugadores funciona bien cada uno (según la comunidad, no según la caja) para ver cuál brilla con la cantidad de hoy.
+3. **Elegir qué juego comprar:** hay demasiadas alternativas y BGG no ofrece una forma simple de filtrar.
+
+**El MVP se centra en el 2.** Por qué:
+- **Es el único que se repite:** cada juntada es una oportunidad de volver. Es lo que dice si el producto sirve.
+- **Tiene un diferencial concreto:** la cantidad ideal de jugadores según la comunidad de BGG (el "Best con 4"), no la de la caja.
+- **El 1 no es un problema aparte, es la puerta de entrada:** hay que cargar los juegos para que el 2 funcione. Por sí solo es "lo mismo que BGG, más lindo".
+- **El 3 se usa pocas veces al año** y ya hay herramientas parecidas. Es una segunda etapa (ahí podría estar el negocio: precios en Argentina).
+
+**Definición:** *"Cuando me junto con amigos y no sé a qué jugar, quiero ver rápido qué juegos de mi ludoteca funcionan bien con la cantidad que somos hoy, para elegir en menos de un minuto."*
+
+**Promesa en una frase:** *"Decime cuántos son y te digo qué sacar de tu ludoteca."*
+
+**Cómo se mide:** cuánto tarda alguien en pasar de "entré" a "ya sé qué jugamos" (objetivo: menos de un minuto con la colección ya cargada) y cuántos vuelven en otra juntada.
+
+**Esto es una hipótesis, no un hecho:** que el 2 sea el más fuerte se infiere de la frecuencia y del diferencial. Se confirma o se descarta en la prueba con amigos (M5), dándoles una situación concreta ("somos 4, tenemos una hora") y mirando si llegan a un juego rápido.
+
+**Prioridad entre páginas:** ¿Qué jugamos hoy? (foco) > Mi ludoteca (apoyo: es donde se ve y se edita lo cargado) > ¿Cuál comprar? (se mantiene, pero fuera del foco: no se promueve en el MVP).
+
 ## 1. Objetivo
 
-Que cualquier persona abra una URL, diga qué juegos tiene (con su usuario de BGG o marcándolos a mano) y vea **Mi ludoteca**, **¿Qué jugamos hoy?** y **¿Cuál comprar?** con el diseño y las reglas de este proyecto, sobre el catálogo de ~28.000 juegos.
+Que cualquier persona abra una URL, diga qué juegos tiene (con su usuario de BGG o marcándolos a mano) y resuelva el problema de la sección 0 (**¿Qué jugamos hoy?**), con **Mi ludoteca** y **¿Cuál comprar?** disponibles, con el diseño y las reglas de este proyecto, sobre el catálogo de ~28.000 juegos.
 
 Objetivos reales, en orden:
 1. **Aprender a armar y desplegar un MVP** (branch propia + hosting) para repetirlo en otros proyectos.
@@ -17,7 +40,7 @@ No es un producto: sin login, sin cuentas, sin cobro.
 **Dentro**
 - Entrada por **username de BGG** (trae `own`, `prevowned`, `wanttobuy`, `rating`).
 - Entrada **manual**: marcar juegos sobre el catálogo, guardado en el navegador. No usa la API de BGG.
-- Las tres páginas existentes, con `estado` y `mi_puntaje` calculados en el navegador.
+- Las tres páginas existentes, con `estado` y `mi_puntaje` calculados en el navegador. El foco de diseño y de pruebas es ¿Qué jugamos hoy? (sección 0).
 - Buscador por nombre sobre los ~28.000 juegos.
 - Logo "Powered by BGG" con link, visible.
 
@@ -88,7 +111,7 @@ mvp.collection = { source: "bgg" | "manual", user, savedAt, games: { "<bgg_id>":
 
 ## 7. Páginas
 
-Mismas que hoy, copiadas de `docs/` y adaptadas:
+Mismas que hoy, copiadas de `docs/` y adaptadas (prioridad en la sección 0: Hoy > Ludoteca > Comprar):
 - **Entrada** (`index.html`): el CTA del hero lleva a la sección "Cargá tus juegos" (`js/collection-loader.js`): usuario de BGG o marcar a mano. Al cambiar la colección, los números de la landing se actualizan. No hay página aparte ni link en la barra.
 - **Mi ludoteca** incluye el mismo panel ("Cargar o editar mis juegos"), abierto de entrada si no hay colección.
 - **Mi ludoteca**: Own y Prev. owned de la colección del visitante.
@@ -125,6 +148,7 @@ Cada hito se commitea aparte en `mvp`.
 - Sin username, la entrada manual alcanza para usar las tres páginas.
 - La primera carga de datos no supera ~2 MB comprimidos (nombres + índice + una ficha).
 - El sitio de producción solo cambia al promover `staging` a `mvp` (sección 11).
+- **Prueba del problema (M5):** dada una situación ("somos 4, tenemos una hora"), la persona nombra un juego de su ludoteca en menos de un minuto y sin ayuda.
 
 ## 11. Ramas y despliegue (desde 2026-10-30)
 
@@ -143,6 +167,8 @@ Dos ramas, un solo código:
 - La carpeta `boardgame-mvp/` es un `git worktree` de `mvp`; ya no hace falta para trabajar (se puede borrar con `git worktree remove ../boardgame-mvp`). La rama local `mvp` queda atrasada respecto de `origin/mvp` y no importa: se promueve con el push de arriba.
 
 ## 12. Decisiones abiertas
+
+- **Para cerrar el problema de la sección 0 en ¿Qué jugamos hoy?** (nada de esto está hecho todavía): que la cantidad ideal sea el criterio por defecto (hoy es una casilla opcional), sumar el tiempo disponible, un botón "elegime uno" entre las mejores opciones, rehacer la landing alrededor de ese flujo y, más adelante, el modo "qué llevo a lo de un amigo" con las tres mejores.
 
 - Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
 - Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); si se quiere mostrar, hay que definir qué estado tiene.
