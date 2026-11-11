@@ -45,8 +45,109 @@
 }
 
 @media (max-width: 640px) {
+  /* En celular el encabezado fijo tiene que dejar lugar a los resultados: el subtítulo repite al título. */
+  header .subtitle {
+    display: none;
+  }
+
   .big-stepper {
     gap: 16px;
   }
 
 }
+
+/* Tandas de resultados (mejor con N / funcionan con N) y "Elegime uno". */
+.hoy-tanda + .hoy-tanda {
+  margin-top: 36px;
+}
+
+.hoy-tanda__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.hoy-tanda__count {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.hoy-tanda__sub {
+  margin: 4px 0 14px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hoy-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.hoy-pick__btn {
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.hoy-pick__btn:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.hoy-pick__btn:active {
+  transform: scale(0.97);
+}
+
+.hoy-pick__btn--ghost {
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: none;
+}
+
+.hoy-pick__hint {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hoy-pick__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.hoy-pick__card .card {
+  width: 100%;
+  border: 2px solid var(--accent);
+}
+
+.hoy-pick__label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted-soft);
+}
+

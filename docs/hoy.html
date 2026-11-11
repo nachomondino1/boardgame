@@ -20,11 +20,13 @@
   <link rel="stylesheet" href="css/components/results-bar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/filter-pills.css" />
+  <link rel="stylesheet" href="css/components/collection-loader.css" />
   <link rel="stylesheet" href="css/pages/hoy.css" />
   <link rel="preload" href="data/index.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
   <script src="js/filter-pills.js" defer></script>
+  <script src="js/collection-loader.js" defer></script>
   <script src="js/hoy.js" defer></script>
 </head>
 <body>
@@ -32,7 +34,7 @@
   <header>
     <div class="header-inner">
       <h1>🎲 ¿Qué jugamos hoy?</h1>
-      <p class="subtitle">Decime cuántos son y te digo qué podés jugar (de lo que ya tenés)</p>
+      <p class="subtitle">Decime cuántos son y te digo qué sacar de tu ludoteca</p>
       <div class="big-stepper">
         <button id="player-minus">−</button>
         <span class="big-number" id="player-number">?</span>
@@ -60,6 +62,10 @@
     </label>
   </div>
   <main>
+    <details class="col-details" id="col-details">
+      <summary>✏️ Cargar o editar mis juegos</summary>
+      <div id="collection-loader"></div>
+    </details>
     <div id="grid"></div>
   </main>
   <footer class="site-footer">

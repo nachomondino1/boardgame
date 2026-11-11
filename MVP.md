@@ -112,10 +112,10 @@ mvp.collection = { source: "bgg" | "manual", user, savedAt, games: { "<bgg_id>":
 ## 7. Páginas
 
 Mismas que hoy, copiadas de `docs/` y adaptadas (prioridad en la sección 0: Hoy > Ludoteca > Comprar):
-- **Entrada** (`index.html`): el CTA del hero lleva a la sección "Cargá tus juegos" (`js/collection-loader.js`): usuario de BGG o marcar a mano. Al cambiar la colección, los números de la landing se actualizan. No hay página aparte ni link en la barra.
+- **Entrada** (`index.html`): cuenta el flujo del problema ("¿A qué jugamos hoy? Elegí en menos de un minuto"), tres pasos y la sección "Cargá tus juegos" (`js/collection-loader.js`): usuario de BGG o marcar a mano. Con juegos cargados, el CTA del hero y un bloque debajo del panel llevan a ¿Qué jugamos hoy?. Mi ludoteca y ¿Cuál comprar? aparecen como "También podés". No hay página aparte ni link en la barra para cargar.
 - **Mi ludoteca** incluye el mismo panel ("Cargar o editar mis juegos"), abierto de entrada si no hay colección.
 - **Mi ludoteca**: Own y Prev. owned de la colección del visitante.
-- **¿Qué jugamos hoy?**: elige cantidad de jugadores; muestra lo que tiene, ordenado por ranking.
+- **¿Qué jugamos hoy?** (foco): elige cantidad de jugadores y, si quiere, el tiempo; muestra lo que tiene en dos tandas ("Mejor con N" y "Funcionan con N"), ordenado por ranking dentro de cada una, y "Elegime uno". Incluye el panel para cargar o editar los juegos.
 - **¿Cuál comprar?**: Watchlist del catálogo más Want to buy, con paginación y filtros sobre el índice.
 - Buscador por nombre en la barra, que usa `names.json` y abre la ficha del tramo.
 
@@ -168,7 +168,7 @@ Dos ramas, un solo código:
 
 ## 12. Decisiones abiertas
 
-- **Para cerrar el problema de la sección 0 en ¿Qué jugamos hoy?** (nada de esto está hecho todavía): que la cantidad ideal sea el criterio por defecto (hoy es una casilla opcional), sumar el tiempo disponible, un botón "elegime uno" entre las mejores opciones, rehacer la landing alrededor de ese flujo y, más adelante, el modo "qué llevo a lo de un amigo" con las tres mejores.
+- **Para cerrar el problema de la sección 0 (hecho el 2026-11-11):** ¿Qué jugamos hoy? muestra primero los juegos con la cantidad ideal para N ("Mejor con N") y después los que también funcionan, tiene el filtro de tiempo (hasta 30 min, 1 hora o 2 horas), el botón "Elegime uno" (sortea entre los 8 mejores de la primera tanda) y el panel para cargar los juegos ahí mismo; la landing cuenta ese flujo en tres pasos. **Falta** el modo "qué llevo a lo de un amigo" con las tres mejores, y confirmar con gente real (M5) que alcanza.
 
 - Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
 - Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); si se quiere mostrar, hay que definir qué estado tiene.
