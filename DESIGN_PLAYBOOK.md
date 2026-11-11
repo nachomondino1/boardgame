@@ -117,6 +117,9 @@ Reglas (las que sí son firmes):
 - **Hover:** `color-mix(... var(--accent) 10–14%, transparent)`, nunca un segundo color hardcodeado.
 - **Valor numérico continuo "bueno → malo"** (ej. complejidad): interpolar en HSL en vez de paleta fija: `hsl(${120 - (v/max)*120}, 62%, 42%)`.
 
+- **Verificar el contraste con una cuenta, no a ojo** (WCAG: ≥ 4,5:1 en texto, ≥ 3:1 en elementos grandes): texto, secundario, acento y cada badge sobre su fondo real (el tinte al 17% mezclado con la superficie), en claro y en oscuro. En J se hizo con un script corto antes de aplicar cada paleta; el gris de las etiquetas chicas (`--muted-soft`) era el que más fallaba.
+- **Proponer 2–3 paletas con vista previa en claro y oscuro y que elija quien dirige el diseño**, en vez de iterar a ciegas (en J se descartaron un acento azul apagado y un modo oscuro marrón).
+
 ## 5. Tipografía
 
 - Base **14px**, `line-height: 1.55`, `-webkit-font-smoothing: antialiased`. Producto denso: cuerpo y stats entre 0.78–0.95rem.
@@ -136,6 +139,8 @@ Reglas (las que sí son firmes):
 
 **Header sticky con blur:** `position: sticky`, fondo `color-mix` con `--bg` semitransparente + `backdrop-filter: blur(14px)`.
 
+**Nav fijo arriba en desktop:** el `position: sticky` va en el contenedor hijo directo del `<body>` (no en el `<nav>` interior: un sticky solo se mueve dentro de su padre). Altura fija en `--nav-h`; los headers sticky de cada página usan `top: var(--nav-h)` y los anclajes `scroll-margin-top: calc(var(--nav-h) + 24px)`. En mobile el nav va fijo abajo y `--nav-h: 0`. **Tono propio del nav** (`--nav-bg`, `--nav-links-bg`, `--nav-border`), distinto del fondo de la página en claro y en oscuro, para que se lea como otra capa.
+
 **Navegación entre vistas** (elegir según el caso):
 | Caso | Patrón |
 |---|---|
@@ -150,6 +155,14 @@ Reglas (las que sí son firmes):
 - Multi-select: dropdown propio (toggle + menú) con checkboxes y "Todos" arriba; mismo estilo que los selects simples. Decidir y documentar AND vs OR.
 - Select nativo con **chevron custom** (SVG data-uri, uno claro y uno oscuro), nunca la flecha del SO.
 - Inputs numéricos: **steppers circulares** (+/−) en vez de `<input type="number">`; 32px en filtros, 58px como acción hero.
+
+**Filtros como píldoras con menú** (alternativa a la card + panel colapsado de arriba; J, 2026-10-30). Sirve con ≤ ~6 filtros de opciones discretas y cuando se quiere un encabezado bajo:
+- Una **píldora por filtro**, en una sola fila; al tocarla abre un menú chico con **la misma forma en todos** (título + fichas). Elige una opción (ej. cantidad de jugadores) o varias (sin elegir ninguna = todas). Nada de sliders, ni de mezclar fichas con un slider en un solo menú: el valor cambia de largo y la etiqueta salta de alto, y un menú distinto de los demás desconcierta.
+- La píldora resume lo elegido ("⏱ 31 a 60 min", "Tipo · 2") y se pinta de acento **solo si difiere del valor por defecto** (un filtro con default no arranca pintado).
+- Un booleano ("solo lo que quiero comprar") es una píldora sin menú que se prende y apaga.
+- **"Limpiar filtros (N)" no es una píldora**: es una acción de texto con ✕ en la fila de resultados, junto al conteo y con un divisor; aparece solo con filtros activos y vuelve al valor por defecto (no a "todo"). En mobile sube a su propia fila arriba del conteo, y el conteo y el orden van siempre en una sola fila.
+- **Mobile:** la fila de píldoras desliza en horizontal (sin scrollbar) y el menú se abre debajo, a todo el ancho. Un solo componente compartido entre páginas (`filter-pills.js` en J), configurado por página.
+- Alto del encabezado sticky medido a 375×812 en J: 25–31% (la página con un selector hero llega a 31%, apenas sobre el tope de §8).
 
 **Chips / pills (999px):** borde `--border`, fondo `--surface`; activo = fondo y borde `--accent`, texto `--accent-contrast`. Todo lo "etiqueta" es pill (chips, badges, contadores, nav), comparten la misma escala de padding.
 
@@ -180,6 +193,8 @@ Reglas (las que sí son firmes):
 - **Un dato sin soporte no se fuerza:** si nadie metió goles con esos filtros, la card dice "–", no resalta a alguien con 0.
 - Reservar `min-height` en elementos que se llenan de forma asíncrona para evitar CLS.
 
+- **Autoguardado con evidencia visible, no botón "Guardar":** si cada cambio se guarda al instante (ej. `localStorage`), mostrar "✓ Guardado en este navegador a las HH:MM" bajo el título de la lista, y "⚠ No pude guardar…" si el guardado falla (ventana privada). El miedo a perder datos se resuelve mostrando que ya está guardado. Siempre un "Quitar" explícito por ítem y un "Borrar mis datos". Una lista larga (60+ ítems) va **plegada** (`<details>`) con el conteo en el título, y abierta solo si es corta (J, 2026-10-30).
+
 ## 8. Mobile y responsive
 
 - Probar en celular real (no solo achicar el navegador) y en anchos explícitos: **320 / 360 / 375 / 768 / 1280**.
@@ -208,12 +223,19 @@ Reglas (las que sí son firmes):
 - **Foco en el resto** (botones, links, tabs, summary): `:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }`. Nunca sacar el outline sin reemplazo.
 - Si Lighthouse marca CLS en un elemento, buscar la causa real antes de ponerle `min-height` (suele ser el elemento *anterior* que arranca vacío y empuja).
 
+- **Scroll suave en los enlaces internos** solo con CSS: `@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth } }`. Verificar que el destino descuente el nav fijo (`scroll-margin-top`).
+
 ## 10. Trampas de CSS a no repetir
 
 - **Sticky en header de tabla:** `overflow-x: auto` fuerza `overflow-y: auto` y el sticky se pega al contenedor, no al viewport. Patrón correcto: la tabla vive en su propio scroll-container (`overflow: auto; max-height: Nvh`) y `th { position: sticky; top: 0 }` referencia a ese contenedor.
 - Selector `.filter-group label` se filtra a labels anidados (checkboxes de un dropdown hijo). Usar `>` cuando el estilo es solo para el label directo.
 - En media queries mobile, `width: 100%` en hijos no hace nada si el padre sigue en `flex-direction: row`; hace falta `column` en el mismo query.
 - **`flex: 1 1 <Npx>` con flex-basis en píxeles, si el padre cambia a `flex-direction: column` en mobile, ese `Npx` pasa a ser alto, no ancho** (el flex-basis sigue el eje principal, que rota con la dirección) — infla el elemento a esa altura y deja un hueco en blanco enorme. Pasó dos veces (nav de páginas, buscador del header). Al agregar `flex-direction: column` en un media query, revisar todos los hijos directos con flex-basis numérico y resetearlos a `flex-basis: auto` (o `flex: 0 1 auto`) en el mismo query.
+
+- **`justify-content: center` en una fila con `overflow-x: auto` corta el primer ítem** (el desborde sale por la izquierda y no se puede deslizar hasta ahí): en mobile, `flex-start` (J, 2026-10-30).
+- **`position: sticky` necesita recorrido en su padre:** un `<nav>` sticky dentro de un `div` del alto exacto del nav no se mueve; el sticky va en el hijo directo del `body`.
+- **`backdrop-filter` (y `transform`/`filter`) en un ancestro lo convierte en el bloque contenedor de los hijos `position: fixed`:** el nav fijo de abajo en mobile deja de ser fijo al viewport. Aplicar el blur solo donde no hay hijos fijos (desktop).
+- **`display: contents` en un wrapper** sube a sus hijos a la fila del flex padre: sirve para que, solo en mobile, un botón ("Limpiar filtros") pase arriba del conteo con `order: -1; flex: 1 0 100%`, sin tocar el HTML.
 
 ## 11. Identidad visual y micro-visualizaciones
 
@@ -279,3 +301,8 @@ Donde los 3 playbooks se contradecían, esto es lo que se eligió y por qué. Si
 | Filtros en mobile | botón sticky con badge | botón toggle | barra sticky desactivada en mobile | **Botón chico (puede ser sticky) + panel no sticky** |
 | Foco | outline 2px offset 2px | borde acento + ring 3px | no definido | **Ring en inputs, outline en el resto** |
 | Segundo color | semántico solo si es real | badges con alpha 17% | ámbar apagado | **Los tres, con la regla de §4** |
+
+**Decisiones de J al pasar a multiusuario (2026-10-30), que precisan o se apartan de lo de arriba:**
+- Filtros: píldoras con menú en lugar de card + barra colapsada en mobile (§6); el encabezado sticky en mobile queda en 25–31% del alto.
+- Paleta: claro crema (`#fbf6ee`) con acento terracota (`#c2410c`); oscuro pizarra azulada (`#171a21`) con acento durazno (`#f59e6b`). Navbar con tono propio.
+- El modo oscuro sigue automático (`prefers-color-scheme`), sin toggle.

@@ -8,6 +8,8 @@ Guía del patrón de datos usado en este proyecto (catálogo de juegos de mesa),
 
 **Actualización 2026-10-30:** el sitio ya no lee `docs/data/data.json`: el sync genera un catálogo por tramos (`names.json`, `index.json`, `games/NNN.json`, vía `build_catalog.py`) sin `estado` ni `mi_puntaje`, y esos dos campos salen de la colección del visitante (usuario de BGG o carga a mano). Dos ramas: `staging` (se prueba, GitHub Pages) y `mvp` (producción, Cloudflare); el flujo de datos descripto abajo con PR a `main` quedó reemplazado por commit directo a `staging` — ver `MVP.md`.
 
+Detalle general de esta etapa (catálogo compartido + colección del visitante, promoción de datos con guardas, secret de Cloudflare en Runtime): `~/Documents/GitHub/utils/DATA_FLOW_PLAYBOOK_unificado.md` §6.7, §9 y §12.
+
 ## Filosofía
 
 - **La fuente de verdad la edita un humano**, no en código ni en un admin panel — hoy tu colección en BGG (se edita en el sitio de BGG; `bgg_collection.jsonl` es solo su copia cruda, regenerable); en otro proyecto, o en este al principio, puede ser un Google Sheet o un JSON aparte versionado. Cero backend, cero base de datos propia.

@@ -236,3 +236,86 @@
   font-weight: 800;
   letter-spacing: -0.01em;
 }
+
+/* Cómo funciona: tres pasos. */
+.landing__steps {
+  margin-bottom: 48px;
+}
+
+.landing__steps-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing__steps-list li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+}
+
+.landing__steps-list strong {
+  font-size: 1.02rem;
+}
+
+.landing__steps-list p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.landing__step-num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 800;
+}
+
+/* Paso siguiente, cuando ya hay juegos cargados. */
+.landing__next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -20px 0 48px;
+  padding: 20px 24px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.landing__next[hidden] {
+  display: none;
+}
+
+.landing__next-text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.landing__cards--two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 800px) {
+  .landing__steps-list,
+  .landing__cards--two {
+    grid-template-columns: 1fr;
+  }
+}
+
