@@ -16,11 +16,11 @@
     position: sticky;
     top: 0;
     z-index: 30;
-    background: var(--bg);
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    background: var(--nav-bg);
+    background: color-mix(in srgb, var(--nav-bg) 94%, transparent);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--nav-border);
   }
 
   .top-nav {
@@ -56,7 +56,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   gap: 2px;
-  background: var(--bg-subtle);
+  background: var(--nav-links-bg);
   padding: 4px;
   border-radius: 999px;
 }
@@ -106,9 +106,9 @@
     justify-content: center;
     max-width: none;
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
-    background: var(--surface);
-    border-top: 1px solid var(--border-soft);
-    box-shadow: 0 -4px 16px -4px rgba(20, 19, 15, 0.12);
+    background: var(--nav-bg);
+    border-top: 1px solid var(--nav-border);
+    box-shadow: 0 -4px 16px -4px rgba(43, 33, 24, 0.12);
   }
 
   .nav-brand {

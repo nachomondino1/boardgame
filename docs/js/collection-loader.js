@@ -13,7 +13,7 @@ const ESTADOS_MARCABLES = [
 ];
 
 function mountCollectionLoader(container, { onChange }) {
-  let names = []; // [{ id, nombre, norm }] en orden de ranking: los más populares salen primero
+  let names = []; // [{ id, nombre, key, alts }] en orden de ranking: los más populares salen primero
   let nameById = new Map();
   let namesPromise = null;
   let collection = loadCollection();
@@ -99,7 +99,7 @@ function mountCollectionLoader(container, { onChange }) {
     onChange(collection);
   }
 
-  function rowHtml(id, nombre) {
+  function rowHtml(id, nombre, alias) {
     const entry = collection.games[id];
     const activo = flagActivo(entry);
     const botones = ESTADOS_MARCABLES
@@ -109,17 +109,23 @@ function mountCollectionLoader(container, { onChange }) {
     const quitar = entry
       ? `<button type="button" class="col-remove" data-remove="${escapeHtml(id)}" title="Quitar de mi colección (solo en este navegador, no cambia BGG)" aria-label="Quitar ${escapeHtml(nombre)} de mi colección">✕ Quitar</button>`
       : "";
-    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}</span><span class="col-actions">${botones}${quitar}</span></li>`;
+    const tambien = alias ? `<span class="col-alias">también: ${escapeHtml(alias)}</span>` : "";
+    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}${tambien}</span><span class="col-actions">${botones}${quitar}</span></li>`;
   }
 
   function render() {
-    const query = normalize(search.value.trim());
+    const query = search.value.trim();
     if (!query) {
       resultsEl.innerHTML = "";
     } else {
-      const found = names.filter((n) => n.norm.includes(query)).slice(0, MAX_RESULTS);
+      const q = makeQuery(query);
+      // Si lo escrito coincide con un nombre alternativo (y no con el principal), se muestra cuál.
+      const found = names
+        .map((n) => ({ n, alias: keyMatches(n.key, q) ? null : n.alts.find((a) => keyMatches(a, q)) }))
+        .filter(({ n, alias }) => keyMatches(n.key, q) || alias)
+        .slice(0, MAX_RESULTS);
       resultsEl.innerHTML = found.length
-        ? found.map((n) => rowHtml(n.id, n.nombre)).join("")
+        ? found.map(({ n, alias }) => rowHtml(n.id, n.nombre, alias && alias.text)).join("")
         : `<li class="col-empty">${namesPromise && !names.length ? "Cargando juegos…" : "No encontré juegos con ese nombre."}</li>`;
     }
 
@@ -147,8 +153,8 @@ function mountCollectionLoader(container, { onChange }) {
           return r.json();
         })
         .then(({ rows }) => {
-          names = rows.map(([id, nombre]) => ({ id, nombre, norm: normalize(nombre) }));
-          nameById = new Map(rows);
+          names = rows.map(([id, nombre, alt]) => ({ id, nombre, key: textKey(nombre), alts: parseAlts(alt) }));
+          nameById = new Map(rows.map(([id, nombre]) => [id, nombre]));
           render();
         })
         .catch((err) => {

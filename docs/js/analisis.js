@@ -6,18 +6,8 @@
 
 const ANALISIS_JUGADORES_MAX = 7; // la última barra agrupa "7 o más"
 
-const ANALISIS_COMPLEJIDAD = [
-  { label: "Liviano (menos de 2)", match: (c) => c < 2 },
-  { label: "Medio (2 a 3)", match: (c) => c >= 2 && c < 3 },
-  { label: "Pesado (3 o más)", match: (c) => c >= 3 },
-];
-
-const ANALISIS_DURACION = [
-  { label: "Hasta 30 min", match: (d) => d <= 30 },
-  { label: "31 a 60 min", match: (d) => d > 30 && d <= 60 },
-  { label: "61 a 120 min", match: (d) => d > 60 && d <= 120 },
-  { label: "Más de 2 horas", match: (d) => d > 120 },
-];
+const ANALISIS_COMPLEJIDAD = BUCKETS_COMPLEJIDAD.map((b) => ({ label: `${b.label} (${b.hint})`, match: b.match }));
+const ANALISIS_DURACION = BUCKETS_DURACION;
 
 function pluralJuegos(n) {
   return `${n} juego${n === 1 ? "" : "s"}`;

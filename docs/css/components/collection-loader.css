@@ -106,6 +106,14 @@
   font-weight: 600;
 }
 
+.col-alias {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
 .col-actions {
   display: flex;
   flex-wrap: wrap;
@@ -195,4 +203,22 @@
   .col-loader {
     grid-template-columns: 1fr;
   }
+}
+
+/* Panel desplegable "Cargar o editar mis juegos" arriba de la grilla (Mi ludoteca y ¿Qué jugamos hoy?). */
+.col-details {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.col-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.col-details[open] > summary {
+  margin-bottom: 14px;
 }

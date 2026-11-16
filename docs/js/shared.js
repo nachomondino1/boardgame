@@ -1,17 +1,13 @@
 // Helpers compartidos por ludoteca.html (Mi ludoteca), hoy.html y comprar.html.
 
-// Google Analytics (GA4). Vive acá para cargarse una sola vez desde las 4 páginas;
+// GoatCounter (sin cookies). Vive acá para cargarse una sola vez desde las 4 páginas;
 // no mide en localhost para no ensuciar los datos con las pruebas.
 (function () {
-  const GA_ID = "G-6QMST63T71";
   if (["localhost", "127.0.0.1"].includes(location.hostname)) return;
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function () { window.dataLayer.push(arguments); };
-  gtag("js", new Date());
-  gtag("config", GA_ID);
   const s = document.createElement("script");
   s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  s.dataset.goatcounter = "https://boardgames.goatcounter.com/count";
+  s.src = "https://gc.zgo.at/count.js";
   document.head.appendChild(s);
 })();
 
@@ -21,6 +17,77 @@ function normalize(str) {
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase();
+}
+
+// Tramos de complejidad (peso de BGG, 1 a 5) y de duración (minutos): los comparten los filtros de
+// ¿Cuál comprar? y el análisis de Mi ludoteca, para que digan lo mismo.
+const BUCKETS_COMPLEJIDAD = [
+  { id: "liviano", label: "Liviano", hint: "menos de 2", match: (c) => c < 2 },
+  { id: "medio", label: "Medio", hint: "2 a 3", match: (c) => c >= 2 && c < 3 },
+  { id: "pesado", label: "Pesado", hint: "3 o más", match: (c) => c >= 3 },
+];
+
+const BUCKETS_DURACION = [
+  { id: "30", label: "Hasta 30 min", match: (d) => d <= 30 },
+  { id: "60", label: "31 a 60 min", match: (d) => d > 30 && d <= 60 },
+  { id: "120", label: "61 a 120 min", match: (d) => d > 60 && d <= 120 },
+  { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
+];
+
+// --- Búsqueda por nombre ---
+// Se busca en el nombre principal y en los alternativos de BGG (traducciones, ediciones: "Caza Bombas"
+// es "Bomb Busters"). Los alternativos vienen de names.json, que se pide recién cuando alguien busca.
+// Además se compara ignorando espacios y signos: "cazabombas" encuentra "Caza Bombas".
+
+function compactText(str) {
+  return normalize(str).replace(/[^a-z0-9]/g, "");
+}
+
+function makeQuery(text) {
+  return { norm: normalize(text.trim()), compact: compactText(text) };
+}
+
+function textKey(text) {
+  return { text, norm: normalize(text), compact: compactText(text) };
+}
+
+function keyMatches(key, q) {
+  return key.norm.includes(q.norm) || (q.compact.length >= 3 && key.compact.includes(q.compact));
+}
+
+// "Alt 1|Alt 2" (como viene en names.json) -> [{ text, norm, compact }]
+function parseAlts(altString) {
+  return altString ? altString.split("|").map(textKey) : [];
+}
+
+const altByGame = new Map(); // bgg_id -> [{ text, norm, compact }]
+let altPromise = null;
+
+function ensureAltNames() {
+  if (!altPromise) {
+    altPromise = fetch("data/names.json")
+      .then((r) => {
+        if (!r.ok) throw new Error(`names.json: HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(({ rows }) => {
+        rows.forEach(([id, , alt]) => { if (alt) altByGame.set(id, parseAlts(alt)); });
+      })
+      .catch(() => { altPromise = null; }); // sin alternativos, se sigue buscando por el nombre principal
+  }
+  return altPromise;
+}
+
+let lastQuery = { text: null, q: null };
+
+// ¿El juego (de index.json) coincide con lo escrito en el buscador?
+function matchesNombre(g, text) {
+  if (lastQuery.text !== text) lastQuery = { text, q: makeQuery(text) };
+  const q = lastQuery.q;
+  if (!g._nk) g._nk = textKey(g.nombre);
+  if (keyMatches(g._nk, q)) return true;
+  const alts = altByGame.get(g.bgg_id);
+  return !!alts && alts.some((a) => keyMatches(a, q));
 }
 
 function jugBestRange(g) {
@@ -284,19 +351,6 @@ function cardTemplate(g, opts) {
   `;
 }
 
-// En mobile, el panel de filtros arranca colapsado (botón "Filtros") para no
-// tapar los resultados con la pantalla entera de controles; en desktop el
-// botón queda oculto por CSS y el panel se ve siempre expandido.
-function setupFiltersToggle() {
-  const toggle = document.getElementById("filters-toggle");
-  const panel = toggle ? toggle.closest(".filters-panel") : null;
-  if (!toggle || !panel) return;
-  toggle.addEventListener("click", () => {
-    const open = panel.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-}
-
 function navTemplate(active) {
   // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
   const links = [
@@ -315,3 +369,25 @@ function navTemplate(active) {
     </div>
   `;
 }
+
+// Fecha de la última actualización de los datos de BGG, en el pie de cada página (data/meta.json,
+// que genera build_catalog.py). Si no se puede leer, el pie queda como estaba.
+function showDataStamp() {
+  const footers = document.querySelectorAll(".site-footer");
+  if (!footers.length) return;
+  fetch("data/meta.json")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((meta) => {
+      if (!meta || !meta.actualizado) return;
+      const [y, m, d] = meta.actualizado.split("-").map(Number);
+      const fecha = new Date(y, m - 1, d).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
+      const cobertura = meta.juegos_actualizados < meta.juegos_total
+        ? `${meta.juegos_actualizados.toLocaleString("es-AR")} de ${meta.juegos_total.toLocaleString("es-AR")} juegos al día; el resto viene de una copia de BGG de 2025. `
+        : "";
+      const html = `<p class="data-stamp"><strong>Datos de BGG actualizados el ${fecha}.</strong><br>${cobertura}El ranking y los puntajes cambian en cada actualización.</p>`;
+      footers.forEach((f) => f.insertAdjacentHTML("afterbegin", html));
+    })
+    .catch(() => {});
+}
+
+showDataStamp();

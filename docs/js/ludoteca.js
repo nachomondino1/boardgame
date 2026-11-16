@@ -7,13 +7,20 @@ const state = {
   sort: "ranking_bgg_asc",
 };
 
-const ESTADOS = ["Own", "Prev. owned"];
+// Filtros (js/filter-pills.js). Por default se ve lo que tenés; "Limpiar filtros" vuelve a eso.
+const FILTROS = [
+  { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false, numero: true,
+    unidad: (n) => `${n} jugador${n === 1 ? "" : "es"}`,
+    opciones: Array.from({ length: 8 }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })) },
+  { id: "estados", titulo: "Estado", icono: "📚", multiple: true, defecto: ["Own"],
+    opciones: [{ id: "Own", label: "Lo tengo" }, { id: "Prev. owned", label: "Lo tuve" }] },
+];
 
 function matchesFilters(g) {
   // Mi ludoteca es lo que tenés (o tuviste): Watchlist vive solo en ¿Cuál comprar?
   if (g.estado !== "Own" && g.estado !== "Prev. owned") return false;
   if (state.query) {
-    if (!normalize(g.nombre).includes(normalize(state.query))) return false;
+    if (!matchesNombre(g, state.query)) return false;
   }
   if (state.jugadores != null) {
     if (g.jug_min == null || g.jug_max == null) return false;
@@ -54,42 +61,14 @@ function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
     render();
+    ensureAltNames().then(() => { if (state.query) render(); });
   });
 
-  const playerLabel = document.getElementById("player-label");
-  document.getElementById("player-minus").addEventListener("click", () => {
-    state.jugadores = Math.max(1, (state.jugadores ?? 2) - 1);
-    playerLabel.textContent = state.jugadores;
-    render();
-  });
-  document.getElementById("player-plus").addEventListener("click", () => {
-    state.jugadores = Math.min(12, (state.jugadores ?? 1) + 1);
-    playerLabel.textContent = state.jugadores;
-    render();
-  });
-  document.getElementById("player-clear").addEventListener("click", () => {
-    state.jugadores = null;
-    playerLabel.textContent = "todos";
-    render();
-  });
-
-  const estadoChips = document.getElementById("estado-chips");
-  ESTADOS.forEach((estado) => {
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = estado;
-    if (state.estados.has(estado)) chip.classList.add("active");
-    chip.addEventListener("click", () => {
-      if (state.estados.has(estado)) {
-        state.estados.delete(estado);
-        chip.classList.remove("active");
-      } else {
-        state.estados.add(estado);
-        chip.classList.add("active");
-      }
-      render();
-    });
-    estadoChips.appendChild(chip);
+  mountFilterPills(document.getElementById("filter-pills"), {
+    filters: FILTROS,
+    state,
+    clearButton: document.getElementById("clear-filters"),
+    onChange: render,
   });
 
   document.getElementById("sort-select").addEventListener("change", (e) => {
@@ -100,7 +79,6 @@ function setupControls() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("ludoteca.html");
-setupFiltersToggle();
 
 const detailsEl = document.getElementById("col-details");
 mountCollectionLoader(document.getElementById("collection-loader"), {

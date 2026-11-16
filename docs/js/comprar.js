@@ -13,8 +13,8 @@ const PAGE_SIZE = 60;
 const state = {
   query: "",
   tipos: new Set(),
-  duracionMax: 180,
-  complejidadMax: 5,
+  duraciones: new Set(), // ids de BUCKETS_DURACION; vacío = todas
+  complejidades: new Set(), // ids de BUCKETS_COMPLEJIDAD; vacío = todas
   jugadores: null,
   soloMejor: false,
   soloQuieroComprar: false,
@@ -31,11 +31,15 @@ function matchesFilters(g) {
     return false;
   }
   if (state.query) {
-    if (!normalize(g.nombre).includes(normalize(state.query))) return false;
+    if (!matchesNombre(g, state.query)) return false;
   }
   if (state.tipos.size > 0 && !state.tipos.has(g.modo)) return false;
-  if (g.duracion != null && g.duracion > state.duracionMax) return false;
-  if (g.complejidad != null && g.complejidad > state.complejidadMax) return false;
+  if (state.duraciones.size > 0) {
+    if (g.duracion == null || !BUCKETS_DURACION.some((b) => state.duraciones.has(b.id) && b.match(g.duracion))) return false;
+  }
+  if (state.complejidades.size > 0) {
+    if (g.complejidad == null || !BUCKETS_COMPLEJIDAD.some((b) => state.complejidades.has(b.id) && b.match(g.complejidad))) return false;
+  }
   if (state.jugadores != null) {
     if (state.soloMejor) {
       if (g.jug_best_min == null) return false;
@@ -124,119 +128,38 @@ function scheduleFilterChange(delayMs = 150) {
   filterChangeTimer = setTimeout(onFilterChange, delayMs);
 }
 
+// --- Filtros: píldoras con menú (js/filter-pills.js) -------------------------------
+
+const MAX_JUGADORES_FILTRO = 8;
+
+const FILTROS = [
+  { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false, numero: true,
+    unidad: (n) => `${n} jugador${n === 1 ? "" : "es"}`,
+    opciones: Array.from({ length: MAX_JUGADORES_FILTRO }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })),
+    extra: { key: "soloMejor", label: "Solo si es el mejor número", sufijo: "mejor número" } },
+  { id: "duraciones", titulo: "Duración", icono: "⏱", multiple: true, opciones: BUCKETS_DURACION },
+  { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
+    opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
+  { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: t })) },
+];
+
 function setupControls() {
   document.getElementById("search").addEventListener("input", (e) => {
     state.query = e.target.value;
     scheduleFilterChange(200);
+    ensureAltNames().then(() => { if (state.query) scheduleFilterChange(0); });
   });
 
-  const tipoMultiselect = document.getElementById("tipo-multiselect");
-  const tipoButton = document.getElementById("tipo-button");
-  const tipoButtonLabel = document.getElementById("tipo-button-label");
-  const tipoPanel = document.getElementById("tipo-panel");
-
-  function updateTipoButtonLabel() {
-    if (state.tipos.size === 0) tipoButtonLabel.textContent = "Todos";
-    else if (state.tipos.size === 1) tipoButtonLabel.textContent = [...state.tipos][0];
-    else tipoButtonLabel.textContent = `${state.tipos.size} seleccionados`;
-  }
-
-  function closeTipoPanel() {
-    tipoPanel.hidden = true;
-    tipoMultiselect.classList.remove("open");
-    tipoButton.setAttribute("aria-expanded", "false");
-  }
-
-  TIPOS.forEach((tipo) => {
-    const option = document.createElement("label");
-    option.className = "multiselect-option";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = tipo;
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) state.tipos.add(tipo);
-      else state.tipos.delete(tipo);
-      updateTipoButtonLabel();
-      onFilterChange();
-    });
-    option.appendChild(checkbox);
-    option.appendChild(document.createTextNode(tipo));
-    tipoPanel.appendChild(option);
-  });
-
-  tipoButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const willOpen = tipoPanel.hidden;
-    tipoPanel.hidden = !willOpen;
-    tipoMultiselect.classList.toggle("open", willOpen);
-    tipoButton.setAttribute("aria-expanded", String(willOpen));
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!tipoMultiselect.contains(e.target)) closeTipoPanel();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeTipoPanel();
-  });
-
-  const duracionInput = document.getElementById("duracion-max");
-  const duracionLabel = document.getElementById("duracion-max-label");
-  duracionInput.addEventListener("input", (e) => {
-    state.duracionMax = Number(e.target.value);
-    duracionLabel.textContent = state.duracionMax >= 180 ? "180+ min" : `${state.duracionMax} min`;
-    scheduleFilterChange();
-  });
-
-  const complejidadInput = document.getElementById("complejidad-max");
-  const complejidadLabel = document.getElementById("complejidad-max-label");
-  complejidadInput.addEventListener("input", (e) => {
-    state.complejidadMax = Number(e.target.value);
-    complejidadLabel.textContent = state.complejidadMax >= 5 ? "5 (sin límite)" : state.complejidadMax.toFixed(1);
-    scheduleFilterChange();
-  });
-
-  const playerLabel = document.getElementById("player-label");
-  const bestOnlyInput = document.getElementById("best-only");
-
-  function syncBestOnlyAvailability() {
-    bestOnlyInput.disabled = state.jugadores == null;
-    if (state.jugadores == null && state.soloMejor) {
-      state.soloMejor = false;
-      bestOnlyInput.checked = false;
-    }
-  }
-
-  document.getElementById("player-minus").addEventListener("click", () => {
-    state.jugadores = Math.max(1, (state.jugadores ?? 1) - 1);
-    playerLabel.textContent = state.jugadores;
-    syncBestOnlyAvailability();
-    onFilterChange();
-  });
-  document.getElementById("player-plus").addEventListener("click", () => {
-    state.jugadores = Math.min(12, (state.jugadores ?? 0) + 1);
-    playerLabel.textContent = state.jugadores;
-    syncBestOnlyAvailability();
-    onFilterChange();
-  });
-  document.getElementById("player-clear").addEventListener("click", () => {
-    state.jugadores = null;
-    playerLabel.textContent = "todos";
-    syncBestOnlyAvailability();
-    onFilterChange();
-  });
-
-  bestOnlyInput.addEventListener("change", (e) => {
-    state.soloMejor = e.target.checked;
-    onFilterChange();
+  mountFilterPills(document.getElementById("filter-pills"), {
+    filters: FILTROS,
+    toggles: [{ key: "soloQuieroComprar", label: "Solo quiero comprar", icono: "🛒" }],
+    state,
+    clearButton: document.getElementById("clear-filters"),
+    onChange: onFilterChange,
   });
 
   document.getElementById("sort-select").addEventListener("change", (e) => {
     state.sort = e.target.value;
-    onFilterChange();
-  });
-
-  document.getElementById("quiero-comprar-only").addEventListener("change", (e) => {
-    state.soloQuieroComprar = e.target.checked;
     onFilterChange();
   });
 }
@@ -421,7 +344,6 @@ function setupCompareControls() {
 }
 
 document.getElementById("nav").innerHTML = navTemplate("comprar.html");
-setupFiltersToggle();
 
 loadGames()
   .then((data) => {
