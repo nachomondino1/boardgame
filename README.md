@@ -51,7 +51,7 @@ python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_l
 - `docs/` — el sitio tal cual lo sirve GitHub Pages (**Deploy from branch** `staging`, carpeta `/docs`; producción es la rama `mvp` en Cloudflare, ver `MVP.md`):
   - `docs/index.html` / `docs/ludoteca.html` / `docs/hoy.html` / `docs/comprar.html` — las 4 páginas.
   - `docs/css/pages/comparar.css` — estilos de la sección "Comparar dos juegos" dentro de `comprar.html` (ver arriba).
-  - `docs/js/shared.js` — helpers comunes a las 4 páginas (carga de datos, armado de las tarjetas, nav, Google Analytics, etc.).
+  - `docs/js/shared.js` — helpers comunes a las 4 páginas (carga de datos, armado de las tarjetas, nav, GoatCounter, etc.).
   - `docs/css/` (`components/` + `pages/`) / `docs/js/landing.js` / `ludoteca.js` / `hoy.js` / `comprar.js` — estilos y lógica de cada página.
   - `docs/data/data.json` — el universo de juegos, con las columnas derivadas ya calculadas. Se regenera solo, ver abajo.
 - `data/01_data_understanding/bgg_collection.jsonl` — tu colección en BGG, cruda y con los nombres de BGG (`own`, `prevowned`, `wanttobuy`, `rating`…). Es de donde salen `estado` y `mi_puntaje`. Se regenera con `refresh_bgg_data.py`; ya no hay archivo manual de ludoteca.

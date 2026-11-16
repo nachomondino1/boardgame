@@ -1,17 +1,13 @@
 // Helpers compartidos por ludoteca.html (Mi ludoteca), hoy.html y comprar.html.
 
-// Google Analytics (GA4). Vive acá para cargarse una sola vez desde las 4 páginas;
+// GoatCounter (sin cookies). Vive acá para cargarse una sola vez desde las 4 páginas;
 // no mide en localhost para no ensuciar los datos con las pruebas.
 (function () {
-  const GA_ID = "G-6QMST63T71";
   if (["localhost", "127.0.0.1"].includes(location.hostname)) return;
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function () { window.dataLayer.push(arguments); };
-  gtag("js", new Date());
-  gtag("config", GA_ID);
   const s = document.createElement("script");
   s.async = true;
-  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  s.dataset.goatcounter = "https://boardgames.goatcounter.com/count";
+  s.src = "https://gc.zgo.at/count.js";
   document.head.appendChild(s);
 })();
 
