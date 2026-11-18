@@ -331,21 +331,23 @@ function cardTemplate(g, opts) {
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
   return `
-    <div class="card">
+    <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
       ${fondoHtml}
       <div class="card-headline">
         <div class="card-title">${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
-        <span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
+        <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b>${g.reviews_bgg != null ? ` <span class="stat-reviews">(${Number(g.reviews_bgg).toLocaleString("es-AR")})</span>` : ""}</span>
       </div>
       <div class="card-top">
         <div class="card-left">${imagenHtml}</div>
         <div class="card-main">
-          <div class="card-sub">${[g.modo, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</div>
+          <div class="card-meta">
+            ${g.estado && g.estado !== "Watchlist" ? `<span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado)}</span>` : ""}
+            <span class="card-sub">${[g.modo, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</span>
+          </div>
           <div class="stat-row">
             <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
             <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
             <span class="stat">⚙️ ${complejidadHtml}</span>
-            <span class="stat" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(1) : "?"}${g.reviews_bgg != null ? ` <span class="stat-reviews">(${Number(g.reviews_bgg).toLocaleString("es-AR")})</span>` : ""}</span>
           </div>
           ${compraHtml}
         </div>
@@ -356,15 +358,15 @@ function cardTemplate(g, opts) {
 }
 
 function navTemplate(active) {
-  // "Inicio" solo se ve en mobile (en desktop el logo ya lleva a la landing).
+  // En mobile la barra va abajo: el logo (que lleva al inicio) no se ve, y los nombres se acortan.
   const links = [
-    { href: "index.html", emoji: "🏠", label: "Inicio", cls: "nav-home" },
-    { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca" },
-    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?" },
-    { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?" },
+    { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca", short: "Ludoteca" },
+    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?", short: "Jugar hoy" },
+    { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?", short: "Comprar" },
   ];
-  const linksHtml = links
-    .map((l) => `<a href="${l.href}" class="${[l.cls, l.href === active ? "active" : ""].filter(Boolean).join(" ")}">${l.emoji} ${l.label}</a>`)
+  const homeHtml = `<a href="index.html" class="nav-home"><span class="nav-emoji" aria-hidden="true">🏠</span><span class="nav-short">Inicio</span></a>`;
+  const linksHtml = homeHtml + links
+    .map((l) => `<a href="${l.href}"${l.href === active ? ' class="active"' : ""}><span class="nav-emoji" aria-hidden="true">${l.emoji}</span><span class="nav-label">${l.label}</span><span class="nav-short">${l.short}</span></a>`)
     .join("");
   return `
     <div class="top-nav">
@@ -419,3 +421,32 @@ function fitCardTitles() {
   window.addEventListener("resize", schedule);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
 }
+
+// Pie de página común: contacto + "conocé más" + copyright, debajo del logo de BGG que ya trae cada página.
+// Los datos de contacto se arman por partes para que no aparezcan enteros en el código.
+const FOOTER_CONTACTO = [
+  { label: "Email", href: "mailto:" + ["nachomondino1", "gmail.com"].join("@") },
+  { label: "WhatsApp", href: "https://wa.me/" + ["54", "9", "1165848574"].join("") },
+];
+const FOOTER_CONOCE_MAS = [
+  { label: "GitHub", href: "https://github.com/nachomondino1" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ignacio-mondino" },
+  { label: "Portfolio", href: "https://nachomondino1.github.io/portfolio/" },
+];
+
+function mountFooterExtras() {
+  const links = (list) => list
+    .map((l) => `<a href="${escapeHtml(l.href)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`)
+    .join('<span aria-hidden="true">·</span>');
+  const html = `
+    <nav class="site-footer__links" aria-label="Contacto">
+      <span>¿Dudas o ideas? Escribime:</span> ${links(FOOTER_CONTACTO)}
+    </nav>
+    <nav class="site-footer__links site-footer__links--soft" aria-label="Más sobre mí">
+      <span>Conocé más:</span> ${links(FOOTER_CONOCE_MAS)}
+    </nav>
+    <p class="site-footer__copy">© ${new Date().getFullYear()} Juegos de mesa</p>`;
+  document.querySelectorAll(".site-footer").forEach((f) => f.insertAdjacentHTML("beforeend", html));
+}
+
+mountFooterExtras();

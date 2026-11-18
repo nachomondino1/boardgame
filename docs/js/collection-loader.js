@@ -21,18 +21,25 @@ function mountCollectionLoader(container, { onChange }) {
 
   container.innerHTML = `
     <div class="col-loader">
-      <div class="col-loader__block">
-        <h3 class="col-loader__label">Con tu usuario de BGG</h3>
-        <form class="col-user" data-user-form>
-          <input type="text" name="user" placeholder="Tu usuario de BGG" autocomplete="off" maxlength="40" />
-          <button type="submit" class="col-user__btn">Traer mi colección</button>
-        </form>
-        <p class="col-hint" data-user-hint role="status">Tiene que ser público: BGG no deja leer colecciones ocultas.</p>
-      </div>
-      <div class="col-loader__block">
-        <h3 class="col-loader__label">O marcá tus juegos a mano</h3>
-        <input type="text" class="col-search" placeholder="Buscar juego (ej: catan)" autocomplete="off" />
-        <ul class="col-list" data-results></ul>
+      <p class="col-intro">Acá se arma tu ludoteca: los juegos que tenés, los que tuviste y los que querés comprar. Cargalos de <b>una</b> de estas dos formas (después podés combinarlas):</p>
+      <div class="col-options">
+        <section class="col-option">
+          <span class="col-option__tag">Opción 1 · La más rápida</span>
+          <h3 class="col-option__title">Traer mi colección de BGG</h3>
+          <p class="col-option__desc">Si tenés cuenta en BoardGameGeek, escribí tu usuario y traemos todos tus juegos de una vez.</p>
+          <form class="col-user" data-user-form>
+            <input type="text" name="user" placeholder="Tu usuario de BGG" autocomplete="off" maxlength="40" />
+            <button type="submit" class="col-user__btn">Traer mi colección</button>
+          </form>
+          <p class="col-hint" data-user-hint role="status">Tu colección en BGG tiene que ser pública: si es privada, no la podemos leer.</p>
+        </section>
+        <section class="col-option">
+          <span class="col-option__tag">Opción 2 · Sin cuenta</span>
+          <h3 class="col-option__title">Marcar mis juegos a mano</h3>
+          <p class="col-option__desc">Buscá un juego y marcalo como "Lo tengo", "Lo tuve" o "Quiero comprar".</p>
+          <input type="text" class="col-search" placeholder="Buscar juego (ej: catan)" autocomplete="off" />
+          <ul class="col-list col-list--scroll" data-results></ul>
+        </section>
       </div>
       <p class="col-saved" data-saved role="status"></p>
       <details class="col-mine" data-mine-details>
@@ -62,7 +69,7 @@ function mountCollectionLoader(container, { onChange }) {
 
   function savedMessage() {
     if (saveFailed) return "⚠ No pude guardar en este navegador (¿ventana privada?). Si cambiás de página, se pierde.";
-    if (!Object.keys(collection.games).length) return "Todavía no cargaste juegos.";
+    if (!Object.keys(collection.games).length) return "";
     const hora = collection.savedAt
       ? new Date(collection.savedAt).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false })
       : "";
@@ -136,9 +143,9 @@ function mountCollectionLoader(container, { onChange }) {
     container.querySelector("[data-mine-title]").textContent = `Tu colección (${total}) · ${mineDetails.open ? "tocá para ocultar" : "tocá para ver y editar"}`;
     container.querySelector("[data-clear]").hidden = total === 0;
     savedEl.textContent = savedMessage();
-    mineEl.innerHTML = !total
-      ? `<li class="col-empty">Todavía no marcaste ningún juego. Buscá uno arriba.</li>`
-      : ids.length
+    savedEl.hidden = !savedEl.textContent;
+    mineDetails.hidden = total === 0;
+    mineEl.innerHTML = ids.length
         ? ids.map((id) => rowHtml(id, nameById.get(id))).join("")
         : `<li class="col-empty">Cargando tu colección…</li>`;
   }

@@ -105,11 +105,8 @@ function render() {
   const pickHtml = `
     <div class="hoy-pick">
       ${elegido
-        ? `<div class="hoy-pick__card">
-             <p class="hoy-pick__label">Esta vez, probá con…</p>
-             ${cardTemplate(elegido, { jugadores: n })}
-             <button type="button" class="hoy-pick__btn hoy-pick__btn--ghost" data-pick>Elegir otro</button>
-           </div>`
+        ? `<button type="button" class="hoy-pick__btn hoy-pick__btn--ghost" data-pick>🎲 Elegir otro</button>
+           <span class="hoy-pick__hint">Esta vez, probá con <b>${escapeHtml(elegido.nombre)}</b> (marcado en la lista)</span>`
         : `<button type="button" class="hoy-pick__btn" data-pick>🎲 Elegime uno</button>
            <span class="hoy-pick__hint">entre los mejores para ${n}</span>`}
     </div>`;
@@ -127,6 +124,14 @@ function render() {
   grid.innerHTML = pickHtml + tandas.join("");
   grid.dataset.pool = pool.map((g) => g.bgg_id).join(",");
   hydrate(elegido ? [elegido, ...posibles] : posibles).then((cargados) => { if (cargados) render(); });
+  if (elegido) {
+    const card = grid.querySelector(`.card[data-id="${elegido.bgg_id}"]`);
+    if (card) {
+      card.classList.add("card-elegida");
+      if (state.scrollAlElegido) card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+  state.scrollAlElegido = false;
 }
 
 function setJugadores(n) {
@@ -157,6 +162,7 @@ function setupControls() {
     const elegido = elegirUno(pool, state.pickId);
     if (elegido) {
       state.pickId = elegido.bgg_id;
+      state.scrollAlElegido = true;
       render();
     }
   });
