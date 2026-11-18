@@ -31,7 +31,7 @@ GAMES_PER_SHARD = 500
 INDEX_FIELDS = (
     "bgg_id", "nombre", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "grupo", "anio", "modo", "puntaje_ajust_bgg", "precio_ref_usd",
+    "grupo", "anio", "modo", "precio_ref_usd",
 )
 
 
@@ -77,6 +77,18 @@ MECANICAS_CLAVE = [
     ("Paper-and-Pencil", "Paper & Pencil"),
 ]
 MECANICA_ID = {bgg: i for i, (bgg, _) in enumerate(MECANICAS_CLAVE)}
+
+
+# Precisión del índice: la que se ve en el sitio (puntaje y complejidad con 2 decimales, precio entero). Las fichas
+# (games/NNN.json) conservan los valores completos.
+REDONDEO_INDICE = {"puntaje_bgg": 2, "complejidad": 2, "precio_ref_usd": 0}
+
+
+def valor_indice(campo, valor):
+    n = REDONDEO_INDICE.get(campo)
+    if n is None or not isinstance(valor, (int, float)):
+        return valor
+    return int(round(valor)) if n == 0 else round(valor, n)
 
 
 def mecanicas_clave(game):
@@ -140,7 +152,7 @@ def main():
     write_json(OUTPUT_DIR / "index.json", {
         "cols": list(INDEX_FIELDS) + ["mecs", "tramo"],
         "mecanicas": [corto for _, corto in MECANICAS_CLAVE],
-        "rows": [[g.get(c) for c in INDEX_FIELDS] + [mecanicas_clave(g), g["tramo"]] for g in games],
+        "rows": [[valor_indice(c, g.get(c)) for c in INDEX_FIELDS] + [mecanicas_clave(g), g["tramo"]] for g in games],
     })
 
     if SHARDS_DIR.exists():

@@ -109,9 +109,6 @@ header .subtitle {
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: transform 0.12s ease, box-shadow 0.15s ease;
-}
-
-.hoy-pick__btn {
   display: inline-block;
   text-decoration: none;
 }
@@ -140,8 +137,4 @@ header .subtitle {
   color: var(--text);
 }
 
-.card.card-elegida {
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-lg);
-}
 

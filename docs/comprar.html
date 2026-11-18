@@ -16,13 +16,14 @@
   <link rel="stylesheet" href="css/components/base.css" />
   <link rel="stylesheet" href="css/components/nav.css" />
   <link rel="stylesheet" href="css/components/header.css" />
-  <link rel="stylesheet" href="css/components/filters.css" />
+  <link rel="stylesheet" href="css/components/search-box.css" />
   <link rel="stylesheet" href="css/components/results-bar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/filter-pills.css" />
   <link rel="stylesheet" href="css/pages/comprar.css" />
   <link rel="stylesheet" href="css/pages/comparar.css" />
   <link rel="preload" href="data/index.json" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="data/games/000.json" as="fetch" crossorigin="anonymous" />
 
   <script src="js/shared.js" defer></script>
   <script src="js/filter-pills.js" defer></script>
@@ -67,12 +68,10 @@
     </label>
   </div>
   <main>
-    <div class="compare-panel" id="compare-panel">
-      <div class="compare-body" id="compare-body" hidden>
-        <div class="compare-sheet" role="dialog" aria-modal="true" aria-label="Comparación de juegos">
-          <button type="button" class="compare-close" id="compare-close" aria-label="Cerrar comparación">✕</button>
-          <div id="compare-result"></div>
-        </div>
+    <div class="compare-body" id="compare-body" hidden>
+      <div class="compare-sheet" role="dialog" aria-modal="true" aria-label="Comparación de juegos">
+        <button type="button" class="compare-close" id="compare-close" aria-label="Cerrar comparación">✕</button>
+        <div id="compare-result"></div>
       </div>
     </div>
     <div class="grid" id="grid"></div>
