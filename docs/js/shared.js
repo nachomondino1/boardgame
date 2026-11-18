@@ -21,10 +21,13 @@ function normalize(str) {
 
 // Tramos de complejidad (peso de BGG, 1 a 5) y de duración (minutos): los comparten los filtros de
 // ¿Cuál comprar? y el análisis de Mi ludoteca, para que digan lo mismo.
+// Los cinco niveles de peso que usa BGG (Light, Medium Light, Medium, Medium Heavy, Heavy).
 const BUCKETS_COMPLEJIDAD = [
-  { id: "liviano", label: "Liviano", hint: "menos de 2", match: (c) => c < 2 },
-  { id: "medio", label: "Medio", hint: "2 a 3", match: (c) => c >= 2 && c < 3 },
-  { id: "pesado", label: "Pesado", hint: "3 o más", match: (c) => c >= 3 },
+  { id: "liviano", label: "Liviano", hint: "menos de 1,8", match: (c) => c < 1.8 },
+  { id: "medio-liviano", label: "Medio liviano", hint: "1,8 a 2,6", match: (c) => c >= 1.8 && c < 2.6 },
+  { id: "medio", label: "Medio", hint: "2,6 a 3,4", match: (c) => c >= 2.6 && c < 3.4 },
+  { id: "medio-pesado", label: "Medio pesado", hint: "3,4 a 4,2", match: (c) => c >= 3.4 && c < 4.2 },
+  { id: "pesado", label: "Pesado", hint: "4,2 o más", match: (c) => c >= 4.2 },
 ];
 
 const BUCKETS_DURACION = [
@@ -350,6 +353,7 @@ function cardTemplate(g, opts) {
             <span class="stat">⚙️ ${complejidadHtml}</span>
           </div>
           ${compraHtml}
+          ${opts.showComparar ? `<button type="button" class="card-compare-btn" data-compare="${escapeHtml(String(g.bgg_id))}">⚔️ Comparar</button>` : ""}
         </div>
       </div>
       ${variantesHtml}
