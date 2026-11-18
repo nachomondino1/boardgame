@@ -285,3 +285,85 @@
     font-size: 0.8rem;
   }
 }
+
+.cmp-emoji {
+  margin-right: 6px;
+}
+
+@media (max-width: 640px) {
+  /* En mobile la etiqueta es solo el emoji (el nombre queda en el title). */
+  .cmp-label {
+    display: none;
+  }
+
+  .cmp-emoji {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .compare-table {
+    --first: 44px;
+  }
+
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    width: 44px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}
+
+/* Mecánicas y categorías: casi nadie las lee, así que van chicas y en gris. */
+.compare-table td.compare-cell--lista {
+  color: var(--muted-soft);
+  font-size: 0.66rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .compare-table td.compare-cell--lista {
+    font-size: 0.6rem;
+  }
+}
+
+.compare-legend {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.compare-legend summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.compare-legend dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 14px;
+  margin: 10px 0 0;
+}
+
+.compare-legend dt {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.compare-legend dd {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .compare-legend dl {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .compare-legend dd {
+    margin: 0 0 8px;
+  }
+}
