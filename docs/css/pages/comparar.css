@@ -212,7 +212,7 @@
 .compare-sheet {
   position: relative;
   width: 100%;
-  max-width: 760px;
+  max-width: 1000px;
   padding: 44px 18px 18px;
   background: var(--surface);
   border-radius: var(--radius-lg);
@@ -231,4 +231,57 @@
   color: var(--text);
   font: inherit;
   cursor: pointer;
+}
+
+.compare-scroll {
+  overflow-x: auto;
+}
+
+.compare-table th:first-child,
+.compare-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+
+.compare-table thead th:first-child {
+  background: var(--bg-subtle);
+}
+
+/* Ancho mínimo de la tabla: etiquetas + una columna por juego; si no entra, se desliza. */
+.compare-table {
+  --first: 120px;
+  --col: 140px;
+  min-width: calc(var(--first) + var(--n, 2) * var(--col));
+}
+
+@media (max-width: 640px) {
+  .compare-table {
+    --first: 82px;
+    --col: 104px;
+  }
+
+  .compare-body:not([hidden]) {
+    padding: 12px 6px;
+  }
+
+  .compare-sheet {
+    padding: 40px 8px 10px;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding: 8px 4px;
+    font-size: 0.72rem;
+  }
+
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    width: 82px;
+  }
+
+  .compare-name {
+    font-size: 0.8rem;
+  }
 }

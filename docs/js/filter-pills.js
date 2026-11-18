@@ -57,6 +57,7 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
         <div class="pill-pop" hidden>
           <p class="pill-pop__title">${escapeHtml(f.titulo)}</p>
           <div class="pill-pop__chips">${chips}</div>
+          ${f.nota ? `<p class="pill-pop__note">${escapeHtml(f.nota)}</p>` : ""}
           ${extra}
         </div>
       </div>`;
