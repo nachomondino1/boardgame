@@ -389,7 +389,8 @@ function cardTemplate(g, opts) {
           </div>
           ${mecanicasClave(g).length ? `<div class="card-mecs" title="${escapeHtml((g.mecanicas || []).join(" · "))}">${mecanicasClave(g).map(escapeHtml).join(" · ")}</div>` : ""}
           <div class="stat-row">
-            <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
+            <span class="stat" title="Cantidad de jugadores que indica la caja">👥 ${jugRange}</span>
+            ${jugBestLabel ? `<span class="stat${esBest ? " stat-best" : ""}" title="Cantidad ideal de jugadores, según la comunidad de BGG">🎯 Ideal ${jugBestLabel}</span>` : ""}
             <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
             <span class="stat">⚙️ ${complejidadHtml}</span>
           </div>
