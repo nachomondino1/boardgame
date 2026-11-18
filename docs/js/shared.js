@@ -34,6 +34,14 @@ const BUCKETS_DURACION = [
   { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
 ];
 
+const BUCKETS_DECADA = [
+  { id: "2020", label: "2020s", match: (a) => a >= 2020 },
+  { id: "2010", label: "2010s", match: (a) => a >= 2010 && a < 2020 },
+  { id: "2000", label: "2000s", match: (a) => a >= 2000 && a < 2010 },
+  { id: "1990", label: "1990s", match: (a) => a >= 1990 && a < 2000 },
+  { id: "antes", label: "Antes de 1990", match: (a) => a < 1990 },
+];
+
 // --- Búsqueda por nombre ---
 // Se busca en el nombre principal y en los alternativos de BGG (traducciones, ediciones: "Caza Bombas"
 // es "Bomb Busters"). Los alternativos vienen de names.json, que se pide recién cuando alguien busca.
@@ -290,10 +298,6 @@ function cardTemplate(g, opts) {
     ? `<a class="card-title-link" href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">${escapeHtml(g.nombre)}</a>`
     : escapeHtml(g.nombre);
 
-  const bestBadge = esBest
-    ? `<span class="badge badge-best">👥 Best con ${opts.jugadores}</span>`
-    : "";
-
   // link_cazagangas/cazagangas_status ya vienen resueltos desde
   // check_cazagangas_links.py + integrate_data.py: solo se muestra cuando
   // sabemos que el link responde 200 (no uno armado a ciegas que puede
@@ -320,32 +324,36 @@ function cardTemplate(g, opts) {
     : "";
 
   const imagenHtml = g.imagen
-    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" width="56" height="56" onerror="this.remove()">`
+    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" onerror="this.remove()">`
     : "";
+  const fondoHtml = g.imagen
+    ? `<div class="card-bg" style="background-image:url('${escapeHtml(g.imagen)}')"></div>`
+    : "";
+  const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
+  const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
   return `
     <div class="card">
-      <div class="card-title-row">
+      ${fondoHtml}
+      <div class="card-top">
         ${imagenHtml}
-        <div class="card-title-text">
-          <div class="card-title">${nombreHtml}</div>
-          <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}</div>
-          ${g.publisher_principal ? `<div class="card-publisher">${escapeHtml(g.publisher_principal)}</div>` : ""}
+        <div class="card-main">
+          <div class="card-title-row">
+            <div class="card-title-text">
+              <div class="card-title">${nombreHtml}</div>
+              <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}${g.publisher_principal ? " · " + escapeHtml(g.publisher_principal) : ""}</div>
+            </div>
+            <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
+            <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
+            <span class="stat">⚙️ ${complejidadHtml}</span>
+            <span class="stat" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(1) : "?"}</span>
+          </div>
+          ${compraHtml}
         </div>
-        <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
       </div>
-      <div class="stat-row">
-        <span class="stat">👥 ${jugRange}${jugBestLabel ? ` (mejor: ${jugBestLabel})` : ""}</span>
-        <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
-        <span class="stat">⚙️ ${complejidadHtml}</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat">BGG: ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}${g.reviews_bgg != null ? ` (${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews)` : ""}</span>
-        <span class="stat">Ranking BGG: ${g.ranking_bgg != null ? "#" + Number(g.ranking_bgg).toLocaleString("es-AR") : "?"}</span>
-        ${g.mi_puntaje != null ? `<span class="stat">Mi puntaje: ${g.mi_puntaje}/10</span>` : ""}
-      </div>
-      ${bestBadge ? `<div class="stat-row">${bestBadge}</div>` : ""}
-      ${compraHtml}
       ${variantesHtml}
     </div>
   `;
