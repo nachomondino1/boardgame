@@ -50,45 +50,64 @@ function notaSinDato(n) {
   return n ? `${pluralJuegos(n)} sin este dato en BGG.` : "";
 }
 
-function jugadoresCard(own) {
+// Rango "ideal" (mejor con, según la comunidad de BGG) o "posible" (mínimo y máximo de la caja).
+function rangoPosible(g) {
+  return g.jug_min != null && g.jug_max != null ? [g.jug_min, g.jug_max] : null;
+}
+
+function jugadoresCard(own, { titulo, subtitulo, rango, conInsight }) {
   const filas = [];
   for (let n = 1; n <= ANALISIS_JUGADORES_MAX; n++) {
     const ultimo = n === ANALISIS_JUGADORES_MAX;
     filas.push({
       label: ultimo ? `${n} o más` : `${n}`,
       valor: own.filter((g) => {
-        const r = jugBestRange(g);
+        const r = rango(g);
         return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]);
       }).length,
     });
   }
-  const sinDato = own.filter((g) => !jugBestRange(g)).length;
+  const sinDato = own.filter((g) => !rango(g)).length;
   // El hueco más claro: la cantidad (de 2 a 6) con menos juegos, solo si hay con qué comparar.
   const candidatas = filas.slice(1, 6);
   const minimo = Math.min(...candidatas.map((f) => f.valor));
   const huecos = candidatas.filter((f) => f.valor === minimo).map((f) => f.label);
-  const insight = own.length >= 5 && Math.max(...candidatas.map((f) => f.valor)) > minimo
-    ? `Donde menos juegos tenés: <strong>${huecos.join(", ")}</strong> jugadores (${pluralJuegos(minimo)}).`
+  const insight = conInsight && own.length >= 5 && Math.max(...candidatas.map((f) => f.valor)) > minimo
+    ? `Donde menos juegos ideales tenés: <strong>${huecos.join(", ")}</strong> jugadores (${pluralJuegos(minimo)}).`
     : "";
   return barChartHtml({
-    titulo: "¿Para cuántos jugadores?",
-    subtitulo: "Juegos que funcionan mejor con esa cantidad de gente",
+    titulo,
+    subtitulo,
     filas,
     nota: [insight, notaSinDato(sinDato)].filter(Boolean).join(" "),
   });
 }
+
+const JUGADORES_IDEALES = {
+  titulo: "👥 Jugadores ideales",
+  subtitulo: "Tus juegos que funcionan mejor con esa cantidad de gente (según la comunidad de BGG)",
+  rango: jugBestRange,
+  conInsight: true,
+};
+
+const JUGADORES_POSIBLES = {
+  titulo: "👥 Jugadores posibles",
+  subtitulo: "Tus juegos que se pueden jugar con esa cantidad, aunque no sea la ideal",
+  rango: rangoPosible,
+  conInsight: false,
+};
 
 function modoCard(own) {
   const conteo = new Map();
   own.forEach((g) => { if (g.modo) conteo.set(g.modo, (conteo.get(g.modo) || 0) + 1); });
   const filas = [...conteo].map(([label, valor]) => ({ label, valor })).sort((a, b) => b.valor - a.valor);
   if (!filas.length) return "";
-  return barChartHtml({ titulo: "Tipo de juego", filas, nota: notaSinDato(own.filter((g) => !g.modo).length) });
+  return barChartHtml({ titulo: "🎲 Tipo de juego", filas, nota: notaSinDato(own.filter((g) => !g.modo).length) });
 }
 
 function mecanicasCard(own) {
   if (own.some((g) => !g._hydrated)) {
-    return `<article class="analisis-card"><h3 class="analisis-card__title">Mecánicas más frecuentes</h3><p class="analisis-card__sub">Cargando…</p></article>`;
+    return `<article class="analisis-card"><h3 class="analisis-card__title">🧩 Mecánicas más frecuentes</h3><p class="analisis-card__sub">Cargando…</p></article>`;
   }
   const conMecanicas = own.filter((g) => g.mecanicas && g.mecanicas.length);
   const conteo = new Map();
@@ -97,7 +116,7 @@ function mecanicasCard(own) {
     .sort((a, b) => b.valor - a.valor || a.label.localeCompare(b.label, "es")).slice(0, 6);
   if (!filas.length) return "";
   return barChartHtml({
-    titulo: "Mecánicas más frecuentes",
+    titulo: "🧩 Mecánicas más frecuentes",
     subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG`,
     filas,
   });
@@ -118,7 +137,7 @@ function puntajeCard(games) {
     : `Puntuás en promedio <strong>${Math.abs(promedio).toFixed(1)} puntos ${promedio > 0 ? "más alto" : "más bajo"}</strong> que BGG.`;
   return `
     <article class="analisis-card">
-      <h3 class="analisis-card__title">Tu puntaje contra BGG</h3>
+      <h3 class="analisis-card__title">⭐ Tu puntaje contra BGG</h3>
       <p class="analisis-card__sub">${resumen} (${pluralJuegos(puntuados.length)} puntuados)</p>
       ${arriba.length ? `<h4 class="analisis-card__list-title">Los que ponés más alto</h4><ul class="puntaje-list">${lista(arriba)}</ul>` : ""}
       ${abajo.length ? `<h4 class="analisis-card__list-title">Los que ponés más bajo</h4><ul class="puntaje-list">${lista(abajo)}</ul>` : ""}
@@ -128,7 +147,6 @@ function puntajeCard(games) {
 function renderAnalisis(container, games) {
   const own = games.filter((g) => g.estado === "Own");
   const want = games.filter((g) => g.estado === "Want to buy");
-  const prev = games.filter((g) => g.estado === "Prev. owned");
   container.hidden = own.length + want.length === 0;
   if (container.hidden) return;
 
@@ -143,14 +161,14 @@ function renderAnalisis(container, games) {
     <div class="analisis-stats">
       ${statTileHtml(own.length, "juegos en casa")}
       ${statTileHtml(want.length, "en la lista para comprar")}
-      ${statTileHtml(prev.length, "que tuviste")}
       ${statTileHtml(puntuados, "con tu puntaje")}
       ${statTileHtml(ranks.length ? `#${Math.min(...ranks).toLocaleString("es-AR")}` : "–", "mejor ranking BGG")}
     </div>
     <div class="analisis-grid">
-      ${own.length ? jugadoresCard(own) : ""}
-      ${own.length ? barChartHtml({ titulo: "Complejidad", subtitulo: "Peso del juego según BGG, de 1 a 5", filas: complejidad.filas, nota: notaSinDato(complejidad.sinDato) }) : ""}
-      ${own.length ? barChartHtml({ titulo: "Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
+      ${own.length ? jugadoresCard(own, JUGADORES_IDEALES) : ""}
+      ${own.length ? jugadoresCard(own, JUGADORES_POSIBLES) : ""}
+      ${own.length ? barChartHtml({ titulo: "⚙️ Complejidad", subtitulo: "Peso del juego según BGG, de 1 a 5", filas: complejidad.filas, nota: notaSinDato(complejidad.sinDato) }) : ""}
+      ${own.length ? barChartHtml({ titulo: "⏱ Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
       ${own.length ? modoCard(own) : ""}
       ${own.length ? mecanicasCard(own) : ""}
       ${puntajeCard(games)}

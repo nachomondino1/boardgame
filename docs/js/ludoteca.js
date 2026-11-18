@@ -6,8 +6,8 @@ const state = {
 };
 
 function matchesFilters(g) {
-  // Mi ludoteca es lo que tenés (o tuviste): Watchlist vive solo en ¿Cuál comprar?
-  if (g.estado !== "Own" && g.estado !== "Prev. owned") return false;
+  // Mi ludoteca es solo lo que tenés: lo que tuviste o querés comprar no se muestra acá.
+  if (g.estado !== "Own") return false;
   if (state.query) {
     if (!matchesNombre(g, state.query)) return false;
   }
@@ -35,7 +35,7 @@ function render() {
   count.textContent = `${filtered.length} juego${filtered.length === 1 ? "" : "s"}`;
   grid.innerHTML = filtered.length
     ? filtered.map((g) => cardTemplate(g)).join("")
-    : GAMES.some((g) => g.estado === "Own" || g.estado === "Prev. owned")
+    : GAMES.some((g) => g.estado === "Own")
       ? `<div class="empty-state">No encontré juegos con esa búsqueda.</div>`
       : "";
   hydrate(filtered).then((n) => { if (n) render(); });
