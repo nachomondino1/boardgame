@@ -100,7 +100,7 @@ const JUGADORES_POSIBLES = {
 function modoCard(own) {
   const conteo = new Map();
   own.forEach((g) => { if (g.modo) conteo.set(g.modo, (conteo.get(g.modo) || 0) + 1); });
-  const filas = [...conteo].map(([label, valor]) => ({ label, valor })).sort((a, b) => b.valor - a.valor);
+  const filas = [...conteo].map(([label, valor]) => ({ label: modoLabel(label), valor })).sort((a, b) => b.valor - a.valor);
   if (!filas.length) return "";
   return barChartHtml({ titulo: "🎲 Tipo de juego", filas, nota: notaSinDato(own.filter((g) => !g.modo).length) });
 }

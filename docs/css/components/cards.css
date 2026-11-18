@@ -356,10 +356,97 @@ details.variantes li a {
   font-weight: 700;
 }
 
+/* Celular: imagen chica a la izquierda con título, puntaje, tipo y mecánicas; los chips van abajo a todo el ancho. */
 @media (max-width: 640px) {
+  .card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    column-gap: 12px;
+    row-gap: 6px;
+    align-items: start;
+  }
+
+  .card-top,
+  .card-main {
+    display: contents;
+  }
+
+  .card-headline {
+    grid-column: 2;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin: 0;
+  }
+
+  .card-headline .card-title {
+    white-space: normal;
+    font-size: 1rem !important;
+    line-height: 1.2;
+  }
+
+  .card-headline .card-rating {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .card-left {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    align-self: start;
+  }
+
   .card-top .card-thumb {
-    width: 104px;
-    height: 104px;
+    width: 96px;
+    height: 96px;
+  }
+
+  .card-meta {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .card .card-mecs {
+    grid-column: 2;
+    grid-row: 3;
+    white-space: normal;
+    margin: 0;
+  }
+
+  .card-meta {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .card-meta .card-estado {
+    flex-basis: auto;
+    margin-right: 100%;
+  }
+
+  .card-meta .card-sub {
+    flex: 1 1 0;
+  }
+
+  /* El botón de comparar sale de la fila del tipo y va arriba a la derecha de la card. */
+  .card-compare-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    margin: 0;
+  }
+
+  .card-headline {
+    padding-right: 36px;
+  }
+
+  .card-main .stat-row {
+    grid-column: 1 / -1;
+  }
+
+  .card details {
+    grid-column: 1 / -1;
   }
 }
 
@@ -466,4 +553,15 @@ details.variantes li a {
 
 .compare-bar__names b {
   font-weight: 800;
+}
+
+/* Mecánicas clave: una línea chica que cuenta de qué va el juego. */
+.card-mecs {
+  margin-top: -2px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
