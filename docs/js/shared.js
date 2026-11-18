@@ -326,30 +326,26 @@ function cardTemplate(g, opts) {
   const imagenHtml = g.imagen
     ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" onerror="this.remove()">`
     : "";
-  const fondoHtml = g.imagen
-    ? `<div class="card-bg" style="background-image:url('${escapeHtml(g.imagen)}')"></div>`
-    : "";
+  const fondoHtml = `<div class="card-bg"></div>`;
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
   return `
     <div class="card">
       ${fondoHtml}
+      <div class="card-headline">
+        <div class="card-title">${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
+        <span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
+      </div>
       <div class="card-top">
-        ${imagenHtml}
+        <div class="card-left">${imagenHtml}</div>
         <div class="card-main">
-          <div class="card-title-row">
-            <div class="card-title-text">
-              <div class="card-title">${nombreHtml}</div>
-              <div class="card-sub">${escapeHtml(g.modo || "")}${g.anio ? " · " + g.anio : ""}${g.publisher_principal ? " · " + escapeHtml(g.publisher_principal) : ""}</div>
-            </div>
-            <span class="badge ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado || "?")}</span>
-          </div>
+          <div class="card-sub">${[g.modo, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</div>
           <div class="stat-row">
             <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
             <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
             <span class="stat">⚙️ ${complejidadHtml}</span>
-            <span class="stat" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(1) : "?"}</span>
+            <span class="stat" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ ${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(1) : "?"}${g.reviews_bgg != null ? ` <span class="stat-reviews">(${Number(g.reviews_bgg).toLocaleString("es-AR")})</span>` : ""}</span>
           </div>
           ${compraHtml}
         </div>
@@ -399,3 +395,27 @@ function showDataStamp() {
 }
 
 showDataStamp();
+
+// Títulos largos: se achica la letra hasta entrar en la fila (mínimo 12px); si aun así no entra, queda el "…".
+function fitCardTitles() {
+  document.querySelectorAll(".card-headline .card-title").forEach((el) => {
+    el.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth && size > 12) {
+      size -= 0.5;
+      el.style.fontSize = size + "px";
+    }
+  });
+}
+
+{
+  let pending = false;
+  const schedule = () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => { pending = false; fitCardTitles(); });
+  };
+  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener("resize", schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+}
