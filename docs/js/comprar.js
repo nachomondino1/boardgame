@@ -15,6 +15,7 @@ const state = {
   tipos: new Set(),
   duraciones: new Set(), // ids de BUCKETS_DURACION; vacío = todas
   complejidades: new Set(), // ids de BUCKETS_COMPLEJIDAD; vacío = todas
+  decadas: new Set(), // ids de BUCKETS_DECADA; vacío = todas
   jugadores: null,
   soloMejor: false,
   soloQuieroComprar: false,
@@ -39,6 +40,9 @@ function matchesFilters(g) {
   }
   if (state.complejidades.size > 0) {
     if (g.complejidad == null || !BUCKETS_COMPLEJIDAD.some((b) => state.complejidades.has(b.id) && b.match(g.complejidad))) return false;
+  }
+  if (state.decadas.size > 0) {
+    if (g.anio == null || !BUCKETS_DECADA.some((b) => state.decadas.has(b.id) && b.match(g.anio))) return false;
   }
   if (state.jugadores != null) {
     if (state.soloMejor) {
@@ -140,6 +144,7 @@ const FILTROS = [
   { id: "duraciones", titulo: "Duración", icono: "⏱", multiple: true, opciones: BUCKETS_DURACION },
   { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
     opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
+  { id: "decadas", titulo: "Década", icono: "📅", multiple: true, opciones: BUCKETS_DECADA },
   { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: t })) },
 ];
 
