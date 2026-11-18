@@ -44,12 +44,15 @@
   letter-spacing: -0.02em;
 }
 
-@media (max-width: 640px) {
-  /* En celular el encabezado fijo tiene que dejar lugar a los resultados: el subtítulo repite al título. */
-  header .subtitle {
-    display: none;
-  }
+/* Sin título visible, esta frase es la instrucción de la página. */
+header .subtitle {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 
+@media (max-width: 640px) {
   .big-stepper {
     gap: 16px;
   }

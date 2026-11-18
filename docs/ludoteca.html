@@ -28,8 +28,7 @@
   <script src="js/shared.js" defer></script>
   <script src="js/collection-loader.js" defer></script>
   <script src="js/analisis.js" defer></script>
-  <script src="js/filter-pills.js" defer></script>
-  <script src="js/ludoteca.js" defer></script>
+    <script src="js/ludoteca.js" defer></script>
 </head>
 <body>
   <div id="nav"></div>
@@ -37,8 +36,8 @@
     <div class="header-inner">
       <div class="header-top">
         <div class="header-titles">
-          <h1>📚 Mi ludoteca</h1>
-          <p class="subtitle">Lo que tenés (y lo que tuviste) — buscador y filtros</p>
+          <h1 class="sr-only">Mi ludoteca</h1>
+          <p class="subtitle">Lo que tenés y lo que tuviste, con un análisis de tu colección al final.</p>
         </div>
         <div class="header-search">
           <div class="search-box">
@@ -46,15 +45,11 @@
           </div>
         </div>
       </div>
-      <div class="filter-bar">
-        <div class="filter-pills" id="filter-pills"></div>
-      </div>
     </div>
   </header>
   <div class="result-count-row">
     <div class="result-left">
       <span id="result-count"></span>
-      <button type="button" class="clear-filters" id="clear-filters" hidden></button>
     </div>
     <label class="sort-control" for="sort-select">
       <span class="sort-icon" aria-hidden="true">⇅</span>

@@ -448,12 +448,8 @@ details.variantes li a {
 }
 
 .compare-tip {
-  margin: 0 0 14px;
-  padding: 10px 14px;
-  background: var(--accent-soft);
-  border-radius: var(--radius);
-  color: var(--text);
-  font-size: 0.88rem;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .compare-tip[hidden] {

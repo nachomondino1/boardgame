@@ -327,10 +327,7 @@ function syncCompareButtons() {
         renderCompare();
         syncCompareButtons();
       } else if (e.target.closest("[data-bar-open]")) {
-        const body = document.getElementById("compare-body");
-        body.hidden = false;
-        document.getElementById("compare-toggle").setAttribute("aria-expanded", "true");
-        document.getElementById("compare-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("compare-body").hidden = false;
       }
     });
   }
@@ -360,6 +357,10 @@ function toggleCompare(id) {
 }
 
 function setupCompareControls() {
+  const cerrar = () => { document.getElementById("compare-body").hidden = true; };
+  document.getElementById("compare-close").addEventListener("click", cerrar);
+  document.getElementById("compare-body").addEventListener("click", (e) => { if (e.target.id === "compare-body") cerrar(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrar(); });
   document.getElementById("grid").addEventListener("click", (e) => {
     const btn = e.target.closest("[data-compare]");
     if (btn) toggleCompare(btn.dataset.compare);
