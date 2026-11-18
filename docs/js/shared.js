@@ -73,6 +73,20 @@ const BUCKETS_DECADA = [
   { id: "antes", label: "Antes de 1990", match: (a) => a < 1990 },
 ];
 
+// Ordena una lista de juegos por una clave "campo_asc" o "campo_desc" (ej. "ranking_bgg_asc"); los que no tienen el dato van al final.
+function sortGames(list, sortKey) {
+  const dir = sortKey.endsWith("_asc") ? 1 : -1;
+  const field = sortKey.replace(/_(asc|desc)$/, "");
+  return [...list].sort((a, b) => {
+    const av = a[field];
+    const bv = b[field];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return av < bv ? dir * -1 : av > bv ? dir : 0;
+  });
+}
+
 // --- Búsqueda por nombre ---
 // Se busca en el nombre principal y en los alternativos de BGG (traducciones, ediciones: "Caza Bombas"
 // es "Bomb Busters"). Los alternativos vienen de names.json, que se pide recién cuando alguien busca.
@@ -352,9 +366,10 @@ function cardTemplate(g, opts) {
       </div>`
     : "";
 
+  // Mientras llega la ficha (imagen) se reserva el lugar de la imagen, así la card no se reacomoda; al cargar, aparece con un fundido.
   const imagenHtml = g.imagen
-    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" onerror="this.remove()">`
-    : "";
+    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('is-ready')" onerror="this.classList.add('is-ready')">`
+    : `<div class="card-thumb card-thumb--vacio" aria-hidden="true"></div>`;
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
@@ -362,7 +377,7 @@ function cardTemplate(g, opts) {
     <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
       <div class="card-headline">
         <div class="card-title">${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
-        <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}"><span class="card-rating__num">⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b></span>${g.reviews_bgg != null ? `<span class="stat-reviews">${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews</span>` : ""}</span>
+        <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}"><span>⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b></span>${g.reviews_bgg != null ? `<span class="stat-reviews">${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews</span>` : ""}</span>
       </div>
       <div class="card-top">
         <div class="card-left">${imagenHtml}</div>
@@ -428,14 +443,13 @@ function showDataStamp() {
 showDataStamp();
 
 // Títulos largos: se achica la letra hasta entrar en la fila (mínimo 12px); si aun así no entra, queda el "…".
+// Se mide todo junto (una lectura y una escritura) en vez de card por card, para no forzar un re-layout por título.
 function fitCardTitles() {
-  document.querySelectorAll(".card-headline .card-title").forEach((el) => {
-    el.style.fontSize = "";
-    let size = parseFloat(getComputedStyle(el).fontSize);
-    while (el.scrollWidth > el.clientWidth && size > 12) {
-      size -= 0.5;
-      el.style.fontSize = size + "px";
-    }
+  const titulos = [...document.querySelectorAll(".card-headline .card-title")];
+  titulos.forEach((el) => { el.style.fontSize = ""; });
+  const medidas = titulos.map((el) => ({ el, ancho: el.clientWidth, texto: el.scrollWidth, fuente: parseFloat(getComputedStyle(el).fontSize) }));
+  medidas.forEach(({ el, ancho, texto, fuente }) => {
+    if (texto > ancho) el.style.fontSize = Math.max(12, Math.floor((fuente * ancho / texto) * 2) / 2) + "px";
   });
 }
 
@@ -446,7 +460,11 @@ function fitCardTitles() {
     pending = true;
     requestAnimationFrame(() => { pending = false; fitCardTitles(); });
   };
-  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+  // Solo se mira la lista de cards (no todo el documento), y solo cuando cambian sus hijos.
+  document.addEventListener("DOMContentLoaded", () => {
+    const lista = document.getElementById("grid");
+    if (lista) new MutationObserver(schedule).observe(lista, { childList: true, subtree: true });
+  });
   window.addEventListener("resize", schedule);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
 }

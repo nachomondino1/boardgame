@@ -1,203 +1,9 @@
-/* Estilos de la sección "Comparar" dentro de comprar.html (antes una
-   página aparte, comparar.html — ver DATA_PLAYBOOK.md/README.md). */
+/* La comparación de juegos de ¿Cuál comprar?: se arma con el botón ⚔️ de las cards (js/comprar.js), una barra fija abajo
+   y una ventana con la tabla. El botón en sí vive en components/cards.css. Orden: ventana, tabla, filas, leyenda, barra. */
 
-.compare-panel {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-xs);
-  padding: 16px 18px;
-  margin-bottom: 18px;
-}
+/* --- Ventana (sobre toda la página) --- */
 
-.compare-toggle {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.compare-toggle:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.compare-toggle::after {
-  content: "";
-  width: 11px;
-  height: 11px;
-  flex: none;
-  background: var(--select-chevron);
-  background-size: contain;
-  background-repeat: no-repeat;
-  transition: transform 0.15s ease;
-}
-
-.compare-panel:has(#compare-body:not([hidden])) .compare-toggle::after {
-  transform: rotate(180deg);
-}
-
-.compare-body {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-soft);
-}
-
-.compare-pickers {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  margin-top: 4px;
-}
-
-.compare-picker {
-  flex: 1 1 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.compare-picker input[type="text"] {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font: inherit;
-  font-size: 0.9rem;
-  color: var(--text);
-}
-
-.compare-picker input[type="text"]:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.compare-vs {
-  color: var(--muted-soft);
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding-bottom: 11px;
-}
-
-.compare-table {
-  table-layout: fixed;
-  width: 100%;
-  max-width: var(--container);
-  margin: 0 auto;
-  border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-/* Columna de etiquetas con ancho fijo, las dos columnas de juego se
-   reparten el resto siempre por mitades (table-layout: fixed), para que
-   un texto largo (ej. mecánicas) haga wrap en vez de ensanchar una
-   columna más que la otra. */
-.compare-table th:first-child,
-.compare-table td:first-child {
-  width: 140px;
-}
-
-.compare-table th,
-.compare-table td {
-  padding: 12px 16px;
-  text-align: center;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border-soft);
-  overflow-wrap: break-word;
-}
-
-.compare-table thead th {
-  background: var(--bg-subtle);
-  vertical-align: top;
-}
-
-.compare-table tbody th {
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.compare-table tbody tr:last-child th,
-.compare-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.compare-name {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-}
-
-.compare-name--empty {
-  font-weight: 500;
-  color: var(--muted-soft);
-}
-
-.compare-cell--empty {
-  color: var(--muted-soft);
-}
-
-.compare-cell--winner {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-@media (max-width: 640px) {
-  .compare-pickers {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .compare-picker {
-    flex-basis: auto;
-  }
-
-  .compare-vs {
-    align-self: center;
-    padding-bottom: 0;
-  }
-
-  .compare-table th,
-  .compare-table td {
-    padding: 10px 10px;
-    font-size: 0.78rem;
-  }
-
-  .compare-table th:first-child,
-  .compare-table td:first-child {
-    width: 104px;
-  }
-}
-
-/* La comparación se abre como ventana (desde la barra "Ver comparación" de las cards);
-   el panel plegable de arriba ya no se muestra. */
-.compare-panel > .compare-toggle,
-.compare-pickers {
-  display: none;
-}
-
-.compare-panel {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-}
-
-.compare-panel .compare-body:not([hidden]) {
+.compare-body:not([hidden]) {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -233,8 +39,34 @@
   cursor: pointer;
 }
 
+/* --- Tabla: una columna por juego (hasta 4); si no entra, se desliza y la columna de etiquetas queda fija --- */
+
 .compare-scroll {
   overflow-x: auto;
+}
+
+.compare-table {
+  --first: 140px;
+  --col: 140px;
+  table-layout: fixed;
+  width: 100%;
+  min-width: calc(var(--first) + var(--n, 2) * var(--col));
+  max-width: var(--container);
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-soft);
+  overflow-wrap: break-word;
 }
 
 .compare-table th:first-child,
@@ -242,75 +74,48 @@
   position: sticky;
   left: 0;
   z-index: 1;
+  width: var(--first);
   background: var(--surface);
+}
+
+.compare-table thead th {
+  background: var(--bg-subtle);
+  vertical-align: top;
 }
 
 .compare-table thead th:first-child {
   background: var(--bg-subtle);
 }
 
-/* Ancho mínimo de la tabla: etiquetas + una columna por juego; si no entra, se desliza. */
-.compare-table {
-  --first: 120px;
-  --col: 140px;
-  min-width: calc(var(--first) + var(--n, 2) * var(--col));
+.compare-table tbody th {
+  color: var(--muted);
+  font-weight: 600;
 }
 
-@media (max-width: 640px) {
-  .compare-table {
-    --first: 82px;
-    --col: 104px;
-  }
-
-  .compare-body:not([hidden]) {
-    padding: 12px 6px;
-  }
-
-  .compare-sheet {
-    padding: 40px 8px 10px;
-  }
-
-  .compare-table th,
-  .compare-table td {
-    padding: 8px 4px;
-    font-size: 0.72rem;
-  }
-
-  .compare-table th:first-child,
-  .compare-table td:first-child {
-    width: 82px;
-  }
-
-  .compare-name {
-    font-size: 0.8rem;
-  }
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
 }
+
+.compare-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* --- Filas y celdas --- */
 
 .cmp-emoji {
   margin-right: 6px;
 }
 
-@media (max-width: 640px) {
-  /* En mobile la etiqueta es solo el emoji (el nombre queda en el title). */
-  .cmp-label {
-    display: none;
-  }
+.compare-cell--empty {
+  color: var(--muted-soft);
+}
 
-  .cmp-emoji {
-    margin: 0;
-    font-size: 1.1rem;
-  }
-
-  .compare-table {
-    --first: 44px;
-  }
-
-  .compare-table th:first-child,
-  .compare-table td:first-child {
-    width: 44px;
-    padding-left: 2px;
-    padding-right: 2px;
-  }
+.compare-cell--winner {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 /* Mecánicas y categorías: casi nadie las lee, así que van chicas y en gris. */
@@ -321,11 +126,7 @@
   text-align: center;
 }
 
-@media (max-width: 640px) {
-  .compare-table td.compare-cell--lista {
-    font-size: 0.6rem;
-  }
-}
+/* --- Leyenda plegable "¿Qué significa cada fila?" --- */
 
 .compare-legend {
   margin-top: 14px;
@@ -357,7 +158,124 @@
   margin: 0;
 }
 
+/* --- Barra fija de abajo y cartelito de uso --- */
+
+.compare-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 24px);
+  padding: 8px 8px 8px 18px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+}
+
+.compare-bar[hidden] {
+  display: none;
+}
+
+.compare-bar__names {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-bar__names b {
+  font-weight: 800;
+}
+
+.compare-bar__go {
+  flex: none;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.compare-bar__go:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.compare-bar__clear {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.compare-tip {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.compare-tip[hidden] {
+  display: none;
+}
+
+/* --- Celular: tabla más compacta (la etiqueta de cada fila es solo el emoji; el nombre queda en el title) --- */
+
 @media (max-width: 640px) {
+  .compare-body:not([hidden]) {
+    padding: 12px 6px;
+  }
+
+  .compare-sheet {
+    padding: 40px 8px 10px;
+  }
+
+  .compare-table {
+    --first: 44px;
+    --col: 104px;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding: 8px 4px;
+    font-size: 0.72rem;
+  }
+
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .compare-name {
+    font-size: 0.8rem;
+  }
+
+  .cmp-label {
+    display: none;
+  }
+
+  .cmp-emoji {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .compare-table td.compare-cell--lista {
+    font-size: 0.6rem;
+  }
+
   .compare-legend dl {
     grid-template-columns: 1fr;
     gap: 0;
@@ -365,5 +283,9 @@
 
   .compare-legend dd {
     margin: 0 0 8px;
+  }
+
+  .compare-bar {
+    bottom: 64px;
   }
 }

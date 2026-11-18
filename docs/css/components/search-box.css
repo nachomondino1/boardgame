@@ -1,0 +1,35 @@
+/* Buscador de texto de las páginas con lista de juegos (¿Cuál comprar?, Mi ludoteca): el campo con la lupa. */
+
+.search-box {
+  position: relative;
+}
+
+.search-box::before {
+  content: "🔍";
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.82rem;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.search-box input[type="text"] {
+  width: 100%;
+  padding: 11px 14px 11px 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-box input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
