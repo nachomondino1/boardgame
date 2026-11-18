@@ -183,51 +183,53 @@ function setupControls() {
 // comprar?" (comparar candidatos antes de decidir cuál comprar).
 
 const MAX_COMPARE = 4;
+const COMPARE_LISTA_MAX = 5; // mecánicas y categorías que se muestran por juego
 const compareState = { games: [] };
 
 // Cada fila de la tabla: cómo sacar el valor, cómo mostrarlo, y si aplica
 // (y en qué sentido) resaltar cuál de los dos juegos "gana" esa fila.
 const COMPARE_ROWS = [
-  { label: "Estado", get: (g) => g.estado },
-  { label: "Modo", get: (g) => g.modo },
-  { label: "Año", get: (g) => g.anio },
+  { label: "Estado", desc: "Cómo figura el juego en tu colección (en seguimiento, quiero comprar, lo tengo).", emoji: "📌", get: (g) => g.estado },
+  { label: "Modo", desc: "Si se juega compitiendo, en cooperativo o por equipos.", emoji: "🎲", get: (g) => g.modo },
+  { label: "Año", desc: "Año de publicación.", emoji: "📅", get: (g) => g.anio },
   {
-    label: "Jugadores",
+    label: "Jugadores", desc: "Cantidad de jugadores que indica la caja.", emoji: "👥",
     get: (g) => (g.jug_min != null && g.jug_max != null
       ? (g.jug_min === g.jug_max ? `${g.jug_min}` : `${g.jug_min}–${g.jug_max}`)
       : null),
   },
   {
-    label: "Mejor con",
+    label: "Mejor con", desc: "Cantidad ideal de jugadores según la comunidad de BGG, que no siempre coincide con la caja.", emoji: "🎯",
     get: (g) => {
       const range = jugBestRange(g);
       if (!range) return null;
       return range[0] === range[1] ? `${range[0]}` : `${range[0]}–${range[1]}`;
     },
   },
-  { label: "Duración", get: (g) => g.duracion, format: (v) => `${v} min`, better: "lower" },
-  { label: "Complejidad", get: (g) => g.complejidad, format: (v) => v.toFixed(1), better: "lower" },
-  { label: "Puntaje BGG", get: (g) => g.puntaje_bgg, format: (v) => v.toFixed(2), better: "higher" },
-  { label: "Reviews BGG", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
-  { label: "Ranking BGG", get: (g) => g.ranking_bgg, format: (v) => `#${Number(v).toLocaleString("es-AR")}`, better: "lower" },
-  { label: "Mi puntaje", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
-  { label: "Costo", get: (g) => g.costo, format: (v) => `$${v.toLocaleString("es-AR")}`, better: "lower" },
-  { label: "Precio / calidad", get: (g) => g.precio_calidad, format: (v) => v.toFixed(2), better: "higher" },
+  { label: "Duración", desc: "Minutos de una partida. En color, el más corto.", emoji: "⏱", get: (g) => g.duracion, format: (v) => `${v} min`, better: "lower" },
+  { label: "Complejidad", desc: "Peso del juego en BGG, de 1 (liviano) a 5 (pesado). En color, el más simple.", emoji: "⚙️", get: (g) => g.complejidad, format: (v) => v.toFixed(1), better: "lower" },
+  { label: "Puntaje BGG", desc: "Promedio de las notas de la comunidad de BGG, sobre 10. En color, el más alto.", emoji: "⭐", get: (g) => g.puntaje_bgg, format: (v) => v.toFixed(2), better: "higher" },
+  { label: "Reviews BGG", desc: "Cuánta gente lo puntuó: con más reviews, el puntaje es más confiable.", emoji: "💬", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
+  { label: "Ranking BGG", desc: "Posición en el ranking general de BGG (#1 es el mejor). En color, el mejor ubicado.", emoji: "🏆", get: (g) => g.ranking_bgg, format: (v) => `#${Number(v).toLocaleString("es-AR")}`, better: "lower" },
+  { label: "Mi puntaje", desc: "Tu propia nota, si la cargaste.", emoji: "🙋", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
+  { label: "Costo", desc: "Costo registrado del juego.", emoji: "💵", get: (g) => g.costo, format: (v) => `$${v.toLocaleString("es-AR")}`, better: "lower" },
+  { label: "Precio ref. (USD)", desc: "Precio aproximado en dólares, tomado de ofertas recientes en BGG. Es solo una referencia, no un precio local.", emoji: "💵", get: (g) => g.precio_ref_usd, format: (v) => `~$${Math.round(v).toLocaleString("es-AR")}`, better: "lower" },
+  { label: "Precio / calidad", desc: "Qué tan buen puntaje da por lo que cuesta: más alto, mejor.", emoji: "⚖️", get: (g) => g.precio_calidad, format: (v) => v.toFixed(2), better: "higher" },
   {
-    label: "Ficha BGG",
+    label: "Ficha BGG", desc: "Link a la página del juego en BoardGameGeek.", emoji: "🔗",
     html: true,
     get: (g) => (g.bgg_url ? `<a href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">Ver en BGG ↗</a>` : null),
   },
   {
-    label: "Cazagangas",
+    label: "Cazagangas", desc: "Link para ver el precio en Argentina.", emoji: "💰",
     html: true,
     get: (g) => (g.cazagangas_status === "200" && g.link_cazagangas
       ? `<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">Ver en Cazagangas ↗</a>`
       : null),
   },
-  { label: "Diseñador", get: (g) => g.disenador },
-  { label: "Mecánicas", get: (g) => (g.mecanicas && g.mecanicas.length ? g.mecanicas.join(", ") : null) },
-  { label: "Categorías", get: (g) => (g.categorias && g.categorias.length ? g.categorias.join(", ") : null) },
+  { label: "Diseñador", desc: "Quién lo diseñó.", emoji: "✍️", get: (g) => g.disenador },
+  { label: "Mecánicas", desc: "Tipos de reglas que usa (en chico: solo las primeras cinco; la lista completa al pasar el mouse).", emoji: "🧩", lista: true, get: (g) => (g.mecanicas && g.mecanicas.length ? g.mecanicas.join(" · ") : null) },
+  { label: "Categorías", desc: "Temas o géneros del juego.", emoji: "🏷️", lista: true, get: (g) => (g.categorias && g.categorias.length ? g.categorias.join(" · ") : null) },
 ];
 
 function findGame(name) {
@@ -240,6 +242,13 @@ function compareCellHtml(game, row, winner) {
   const raw = row.get(game);
   if (raw == null || raw === "") return `<td class="compare-cell compare-cell--empty">?</td>`;
   const cls = winner ? "compare-cell compare-cell--winner" : "compare-cell";
+  if (row.lista) {
+    // Listas largas (mecánicas, categorías): chicas, solo las primeras y "+N"; la lista completa va en el title.
+    const items = String(raw).split(" · ");
+    const resto = items.length - COMPARE_LISTA_MAX;
+    const texto = items.slice(0, COMPARE_LISTA_MAX).join(" · ") + (resto > 0 ? ` · +${resto}` : "");
+    return `<td class="compare-cell compare-cell--lista" title="${escapeHtml(String(raw))}">${escapeHtml(texto)}</td>`;
+  }
   if (row.html) return `<td class="${cls}">${raw}</td>`;  // raw ya viene con su propio escapeHtml en el valor dinámico (ver get())
   const text = row.format ? row.format(typeof raw === "string" ? Number(raw) : raw) : raw;
   return `<td class="${cls}">${escapeHtml(String(text))}</td>`;
@@ -269,11 +278,16 @@ function renderCompare() {
     return;
   }
 
-  const rowsHtml = COMPARE_ROWS.map((row) => {
+  // Una fila sin dato en ninguno de los juegos no aporta nada: no se muestra.
+  const filasConDato = COMPARE_ROWS.filter((row) => games.some((g) => {
+    const v = row.get(g);
+    return v != null && v !== "";
+  }));
+  const rowsHtml = filasConDato.map((row) => {
     const winners = compareRowWinners(row, games);
     return `
       <tr>
-        <th scope="row">${escapeHtml(row.label)}</th>
+        <th scope="row" title="${escapeHtml(row.label)}"><span class="cmp-emoji" aria-hidden="true">${row.emoji}</span><span class="cmp-label">${escapeHtml(row.label)}</span></th>
         ${games.map((g, i) => compareCellHtml(g, row, winners.has(i))).join("")}
       </tr>
     `;
@@ -291,6 +305,12 @@ function renderCompare() {
         <tbody>${rowsHtml}</tbody>
       </table>
     </div>
+    <details class="compare-legend">
+      <summary>ℹ️ ¿Qué significa cada fila?</summary>
+      <dl>
+        ${filasConDato.map((row) => `<dt>${row.emoji} ${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.desc)}</dd>`).join("")}
+      </dl>
+    </details>
   `;
 }
 
