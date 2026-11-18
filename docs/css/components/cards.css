@@ -8,7 +8,7 @@
 }
 
 .card {
-  background: var(--surface);
+  background: var(--card-bg);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   padding: 18px 20px;
@@ -224,13 +224,6 @@ details.variantes li a {
   position: relative;
 }
 
-.card > .card-bg {
-  position: absolute;
-  inset: 0;
-  background: rgba(194, 65, 12, 0.045);
-  pointer-events: none;
-}
-
 .card-top {
   position: relative;
   display: flex;
@@ -264,7 +257,7 @@ details.variantes li a {
 
 .card-headline {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 10px;
@@ -285,10 +278,15 @@ details.variantes li a {
 
 .card-headline .card-rating {
   flex: none;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
   white-space: nowrap;
+}
+
+.card-headline .card-rating .stat-reviews {
+  font-size: 0.7rem;
 }
 
 .card-headline .card-rating b {
@@ -319,12 +317,17 @@ details.variantes li a {
 }
 
 .card-main .stat-row {
-  gap: 6px;
+  gap: 5px;
 }
 
 .card-main .stat {
-  padding: 3px 8px;
-  font-size: 0.74rem;
+  gap: 3px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
 }
 
 .card-main .card-title {
@@ -360,15 +363,18 @@ details.variantes li a {
 
 /* Prototipo: comparar desde la card. */
 .card-compare-btn {
-  align-self: flex-start;
-  padding: 4px 12px;
+  flex: none;
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 50%;
   background: var(--surface);
   color: var(--muted);
   font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 1;
   cursor: pointer;
 }
 

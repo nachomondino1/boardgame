@@ -37,6 +37,14 @@ const BUCKETS_DURACION = [
   { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
 ];
 
+// Precio de referencia en USD (mediana de publicaciones en el marketplace de BGG): solo lo tienen ~1 de cada 5 juegos.
+const BUCKETS_PRECIO = [
+  { id: "20", label: "Hasta US$20", match: (p) => p <= 20 },
+  { id: "40", label: "US$20 a 40", match: (p) => p > 20 && p <= 40 },
+  { id: "80", label: "US$40 a 80", match: (p) => p > 40 && p <= 80 },
+  { id: "mas", label: "Más de US$80", match: (p) => p > 80 },
+];
+
 const BUCKETS_DECADA = [
   { id: "2020", label: "2020s", match: (a) => a >= 2020 },
   { id: "2010", label: "2010s", match: (a) => a >= 2010 && a < 2020 },
@@ -312,7 +320,7 @@ function cardTemplate(g, opts) {
   // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG
   // (en USD, nuevos o como nuevos) — referencia del exterior, no un precio local.
   const precioRefHtml = opts.showPrecioRef && g.precio_ref_usd != null
-    ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 Ref. USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
+    ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
     : "";
 
   const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda || cazagangasHtml || precioRefHtml)
@@ -329,16 +337,14 @@ function cardTemplate(g, opts) {
   const imagenHtml = g.imagen
     ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" onerror="this.remove()">`
     : "";
-  const fondoHtml = `<div class="card-bg"></div>`;
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
   return `
     <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
-      ${fondoHtml}
       <div class="card-headline">
         <div class="card-title">${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
-        <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}">⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b>${g.reviews_bgg != null ? ` <span class="stat-reviews">(${Number(g.reviews_bgg).toLocaleString("es-AR")})</span>` : ""}</span>
+        <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}"><span class="card-rating__num">⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b></span>${g.reviews_bgg != null ? `<span class="stat-reviews">${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews</span>` : ""}</span>
       </div>
       <div class="card-top">
         <div class="card-left">${imagenHtml}</div>
@@ -346,6 +352,7 @@ function cardTemplate(g, opts) {
           <div class="card-meta">
             ${g.estado && g.estado !== "Watchlist" ? `<span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado)}</span>` : ""}
             <span class="card-sub">${[g.modo, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</span>
+            ${opts.showComparar ? `<button type="button" class="card-compare-btn" data-compare="${escapeHtml(String(g.bgg_id))}" title="Comparar" aria-label="Comparar ${escapeHtml(g.nombre)}">⚔️</button>` : ""}
           </div>
           <div class="stat-row">
             <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
@@ -353,7 +360,6 @@ function cardTemplate(g, opts) {
             <span class="stat">⚙️ ${complejidadHtml}</span>
           </div>
           ${compraHtml}
-          ${opts.showComparar ? `<button type="button" class="card-compare-btn" data-compare="${escapeHtml(String(g.bgg_id))}">⚔️ Comparar</button>` : ""}
         </div>
       </div>
       ${variantesHtml}
