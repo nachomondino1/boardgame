@@ -34,7 +34,7 @@
     <div class="header-inner">
       <div class="header-top">
         <div class="header-titles">
-          <h1>🛒 ¿Cuál comprar?</h1>
+          <h1 class="sr-only">¿Cuál comprar?</h1>
           <a class="price-link" href="https://www.cazagangas.com.ar" target="_blank" rel="noopener">💰 Ver precios en Argentina (Cazagangas) ↗</a>
         </div>
         <div class="header-search">
@@ -51,6 +51,7 @@
   <div class="result-count-row">
     <div class="result-left">
       <span id="result-count"></span>
+      <span class="compare-tip" id="compare-tip">· Tocá <b>⚔️ Comparar</b> en dos juegos para verlos lado a lado</span>
       <button type="button" class="clear-filters" id="clear-filters" hidden></button>
     </div>
     <label class="sort-control" for="sort-select">
@@ -58,6 +59,7 @@
       <select id="sort-select">
         <option value="ranking_bgg_asc">Ranking BGG</option>
         <option value="puntaje_bgg_desc">Puntaje BGG</option>
+        <option value="reviews_bgg_desc">Más populares (reviews)</option>
         <option value="precio_calidad_desc">Precio / calidad</option>
         <option value="costo_asc">Costo (menor primero)</option>
         <option value="complejidad_asc">Complejidad (menor primero)</option>
@@ -70,6 +72,8 @@
     <div class="compare-panel" id="compare-panel">
       <button type="button" class="compare-toggle" id="compare-toggle" aria-expanded="false" aria-controls="compare-body">⚔️ Comparar dos juegos</button>
       <div class="compare-body" id="compare-body" hidden>
+       <div class="compare-sheet" role="dialog" aria-modal="true" aria-label="Comparación de juegos">
+        <button type="button" class="compare-close" id="compare-close" aria-label="Cerrar comparación">✕</button>
         <div class="compare-pickers">
           <div class="compare-picker">
             <label class="filter-label" for="game-a">Juego A</label>
@@ -83,9 +87,9 @@
         </div>
         <datalist id="games-list"></datalist>
         <div id="compare-result"></div>
+       </div>
       </div>
     </div>
-    <p class="compare-tip" id="compare-tip">💡 ¿Dudás entre dos juegos? Tocá <b>⚔️ Comparar</b> en cada uno y los ves lado a lado.</p>
     <div class="grid" id="grid"></div>
     <div class="load-more-row" id="load-more-row"></div>
   </main>

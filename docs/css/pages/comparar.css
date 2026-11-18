@@ -181,3 +181,54 @@
     width: 104px;
   }
 }
+
+/* La comparación se abre como ventana (desde la barra "Ver comparación" de las cards);
+   el panel plegable de arriba ya no se muestra. */
+.compare-panel > .compare-toggle,
+.compare-pickers {
+  display: none;
+}
+
+.compare-panel {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.compare-panel .compare-body:not([hidden]) {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 12px;
+  background: rgba(30, 22, 14, 0.5);
+  overflow-y: auto;
+}
+
+.compare-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  padding: 44px 18px 18px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.compare-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
