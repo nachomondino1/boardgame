@@ -179,10 +179,23 @@ def compute_grupos(rows):
     def familias(row):
         return [f for f in row.get("boardgamefamily") or [] if f.split(":")[0] in GRUPO_FAMILIAS]
 
+    # Las versiones "Duel"/"Duet" (2 jugadores: "7 Wonders Duel", "Azul: Duel",
+    # "Codenames: Duet") son otro juego que el original, no una variante: no se
+    # agrupan con una familia de más jugadores. Sí con una familia que sea
+    # mayormente de 2 jugadores (las expansiones del propio Duel).
+    def es_duel(row):
+        return str(row.get("maxplayers")) == "2" and re.search(r"\b(Duel|Duet)\b", row.get("name") or "")
+
+    por_familia = collections.defaultdict(list)
+    for row in rows:
+        for f in familias(row):
+            por_familia[f].append(str(row.get("maxplayers")) == "2")
+    familia_de_dos = {f: sum(v) * 2 >= len(v) for f, v in por_familia.items()}
+
     tamanio = collections.Counter(f for row in rows for f in familias(row))
     miembros = collections.defaultdict(list)
     for row in rows:
-        fs = familias(row)
+        fs = [f for f in familias(row) if familia_de_dos[f] or not es_duel(row)]
         if fs:
             miembros[max(fs, key=lambda f: (tamanio[f], f))].append(row)
 
