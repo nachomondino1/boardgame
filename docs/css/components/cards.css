@@ -348,8 +348,10 @@ details.variantes li a {
   font-weight: 500;
 }
 
-.stat-best {
+.stat-best,
+.card-main .stat.stat-best {
   background: #2a9d5c;
+  border-color: #2a9d5c;
   color: #fff;
   font-weight: 700;
 }
