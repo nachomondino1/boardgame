@@ -1,1 +1,10 @@
 /* Estilos propios de Mi ludoteca (no se usan en ninguna otra página). */
+
+/* Sin título visible, esta frase explica de qué se trata la página. */
+header .subtitle {
+  margin: 0;
+  padding-top: 8px;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
