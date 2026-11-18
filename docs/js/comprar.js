@@ -66,22 +66,8 @@ function matchesFilters(g) {
   return true;
 }
 
-function sortGames(list) {
-  const key = state.sort;
-  const dir = key.endsWith("_asc") ? 1 : -1;
-  const field = key.replace(/_(asc|desc)$/, "");
-  return [...list].sort((a, b) => {
-    const av = a[field];
-    const bv = b[field];
-    if (av == null && bv == null) return 0;
-    if (av == null) return 1;
-    if (bv == null) return -1;
-    return av < bv ? dir * -1 : av > bv ? dir : 0;
-  });
-}
-
 function render() {
-  const filtered = sortGames(GAMES.filter(matchesFilters));
+  const filtered = sortGames(GAMES.filter(matchesFilters), state.sort);
   const grouped = collapseGrupos(filtered);
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");

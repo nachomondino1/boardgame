@@ -1,5 +1,12 @@
-/* Grilla de tarjetas de juego, badges de estado, y el <details>
-   "Más info". Usado por las 3 páginas que listan juegos. */
+/* La card de juego: un solo lugar para todo su CSS. La arma cardTemplate() (js/shared.js) y la usan
+   ¿Cuál comprar?, Mi ludoteca y ¿Qué jugamos hoy?: no hay estilos de card en ningún otro archivo.
+
+   Escritorio: título y puntaje arriba; imagen cuadrada a la izquierda; tipo, mecánicas, chips y precios a la derecha.
+   Celular (al final): imagen chica a la izquierda con el encabezado; los chips van abajo a todo el ancho.
+   La altura de la card la fija la imagen, no el texto. Orden del archivo: grilla, card, encabezado, cuerpo,
+   chips, estado, botón de comparar, variantes, estados de la card, celular. */
+
+/* --- Grilla --- */
 
 .grid {
   display: grid;
@@ -7,16 +14,24 @@
   gap: 18px;
 }
 
+/* --- Card --- */
+
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  padding: 18px 20px;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow: hidden;
+  padding: 18px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-xs);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.card > * {
+  position: relative;
 }
 
 .card:hover {
@@ -25,48 +40,216 @@
   border-color: transparent;
 }
 
-.card-title-row {
+/* --- Encabezado: título (con año) y puntaje --- */
+
+.card-headline {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
-}
-
-.card-title-text {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.card-thumb {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-soft);
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .card-title {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-weight: 700;
   font-size: 1.04rem;
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
 
+.card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-title-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.card-year {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.card-rating {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.card-rating b {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.stat-reviews {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* --- Cuerpo: imagen a la izquierda, texto a la derecha --- */
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.card-left {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Las miniaturas miden como máximo 150px: la imagen no pasa de ~124px para no verse pixelada. */
+.card-thumb {
+  width: 124px;
+  height: 124px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--bg-subtle);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+img.card-thumb {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img.card-thumb.is-ready {
+  opacity: 1;
+}
+
+.card-thumb--vacio {
+  background: linear-gradient(110deg, var(--bg-subtle) 30%, var(--surface) 50%, var(--bg-subtle) 70%);
+  background-size: 200% 100%;
+  animation: card-thumb-brillo 1.4s linear infinite;
+}
+
+@keyframes card-thumb-brillo {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-thumb--vacio {
+    animation: none;
+  }
+
+  img.card-thumb {
+    transition: none;
+  }
+}
+
+.card-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .card-sub {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 500;
-  margin-top: 2px;
 }
 
-.card-publisher {
+/* Mecánicas clave: una línea chica que cuenta de qué va el juego. */
+.card-mecs {
+  margin-top: -2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+/* --- Chips (jugadores, duración, complejidad, precio, Cazagangas) --- */
+
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Jugadores ideales para la cantidad filtrada. */
+.stat-best {
+  background: #2a9d5c;
+  border-color: #2a9d5c;
+  color: #fff;
+  font-weight: 700;
+}
+
+.stat-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stat-link:hover {
+  text-decoration: underline;
+}
+
+.complexity-pill {
+  padding: 1px 8px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--bg-subtle);
+  border-radius: 999px;
   color: var(--muted);
   font-size: 0.74rem;
-  margin-top: 1px;
-  opacity: 0.85;
+  font-weight: 500;
 }
+
+/* --- Estado (Want to buy, Own, ...): solo se muestra si no es Watchlist --- */
 
 .badge {
   display: inline-flex;
@@ -77,6 +260,12 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   white-space: nowrap;
+}
+
+.card-estado {
+  flex: none;
+  padding: 1px 8px;
+  font-size: 0.66rem;
 }
 
 .badge-own { background: #2a9d5c2b; color: #186b3e; }
@@ -90,53 +279,43 @@
 [data-theme="dark"] .badge-buy { background: #e8a3172b; color: #f2b84b; }
 [data-theme="dark"] .badge-descartado { color: #f0909c; }
 
-.badge-best {
-  background: #2a9d5c;
-  color: #ffffff;
-}
+/* --- Botón ⚔️ de comparar (solo en ¿Cuál comprar?; la barra y la ventana están en pages/comparar.css) --- */
 
-.stat-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 0.78rem;
+.card-compare-btn {
+  flex: none;
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
   color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--bg-subtle);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
+.card-compare-btn:hover {
+  color: var(--text);
+  border-color: var(--muted);
 }
 
-.complexity-pill {
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.74rem;
+.card-compare-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
-.tag {
-  display: inline-block;
-  background: var(--bg-subtle);
-  color: var(--muted);
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 500;
-}
+/* --- "+ N variantes más de ..." --- */
 
 details {
-  font-size: 0.82rem;
-  color: var(--muted);
-  border-top: 1px solid var(--border-soft);
-  padding-top: 8px;
   margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 details summary {
@@ -177,31 +356,22 @@ details.variantes li a {
   color: inherit;
 }
 
+/* --- Estados de la card y de la lista --- */
+
+/* La card que sorteó "Elegime uno" en ¿Qué jugamos hoy?. */
+.card.card-elegida {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-lg);
+}
+
 .empty-state {
+  padding: 64px 20px;
   text-align: center;
   color: var(--muted);
-  padding: 64px 20px;
   font-size: 0.95rem;
 }
 
-.card-title-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.card-title-link:hover {
-  color: var(--accent);
-  text-decoration: underline;
-}
-
-.stat-link {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.stat-link:hover {
-  text-decoration: underline;
-}
+/* --- Celular: imagen chica a la izquierda con título, puntaje, tipo y mecánicas; chips abajo a todo el ancho --- */
 
 @media (max-width: 640px) {
   .grid {
@@ -209,187 +379,33 @@ details.variantes li a {
   }
 
   .card {
-    padding: 15px 16px;
-  }
-}
-
-/* Card con portada cuadrada y fondo teñido con la misma imagen.
-   Las miniaturas miden como máximo 150px: la imagen no pasa de ~124px. */
-.card {
-  position: relative;
-  overflow: hidden;
-}
-
-.card > * {
-  position: relative;
-}
-
-.card-top {
-  position: relative;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.card-top .card-thumb {
-  width: 124px;
-  height: 124px;
-  border: 0;
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
-}
-
-.card-main {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.card-left {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.card-headline {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.card-headline .card-title {
-  min-width: 0;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-year {
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.card-headline .card-rating {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.card-headline .card-rating .stat-reviews {
-  font-size: 0.7rem;
-}
-
-.card-headline .card-rating b {
-  color: var(--text);
-  font-size: 0.95rem;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.card-meta .card-estado {
-  flex: none;
-  padding: 1px 8px;
-  font-size: 0.66rem;
-}
-
-.card-meta .card-sub {
-  margin: 0;
-  min-width: 0;
-}
-
-.card-main .card-sub {
-  margin-top: 0;
-}
-
-.card-main .stat-row {
-  gap: 5px;
-}
-
-.card-main .stat {
-  gap: 3px;
-  padding: 2px 8px;
-  font-size: 0.72rem;
-  white-space: nowrap;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-}
-
-.card-main .card-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-main .card-sub {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.stat-reviews {
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.stat-best,
-.card-main .stat.stat-best {
-  background: #2a9d5c;
-  border-color: #2a9d5c;
-  color: #fff;
-  font-weight: 700;
-}
-
-/* Celular: imagen chica a la izquierda con título, puntaje, tipo y mecánicas; los chips van abajo a todo el ancho. */
-@media (max-width: 640px) {
-  .card {
     display: grid;
     grid-template-columns: 96px 1fr;
     column-gap: 12px;
     row-gap: 6px;
     align-items: start;
+    padding: 15px 16px;
   }
 
+  /* El encabezado, la imagen y el texto pasan a ser celdas de la grilla de la card. */
   .card-top,
   .card-main {
     display: contents;
   }
 
+  /* Título a la izquierda (puede ocupar dos líneas) y puntaje con reviews arriba a la derecha, como en escritorio. */
   .card-headline {
     grid-column: 2;
     grid-row: 1;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    gap: 8px;
     margin: 0;
   }
 
-  .card-headline .card-title {
+  /* !important: fitCardTitles (js/shared.js) pone un font-size en línea para achicar títulos largos en una sola línea. */
+  .card-title {
     white-space: normal;
-    font-size: 1rem !important;
+    font-size: 0.94rem !important;
     line-height: 1.2;
-  }
-
-  .card-headline .card-rating {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 6px;
   }
 
   .card-left {
@@ -398,7 +414,7 @@ details.variantes li a {
     align-self: start;
   }
 
-  .card-top .card-thumb {
+  .card-thumb {
     width: 96px;
     height: 96px;
   }
@@ -406,39 +422,24 @@ details.variantes li a {
   .card-meta {
     grid-column: 2;
     grid-row: 2;
-  }
-
-  .card .card-mecs {
-    grid-column: 2;
-    grid-row: 3;
-    white-space: normal;
-    margin: 0;
-  }
-
-  .card-meta {
     flex-wrap: wrap;
     row-gap: 4px;
   }
 
   .card-meta .card-estado {
     flex-basis: auto;
-    margin-right: 100%;
+    margin-right: 100%; /* el estado va solo en su línea */
   }
 
-  .card-meta .card-sub {
+  .card-sub {
     flex: 1 1 0;
   }
 
-  /* El botón de comparar sale de la fila del tipo y va arriba a la derecha de la card. */
-  .card-compare-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+  .card-mecs {
+    grid-column: 2;
+    grid-row: 3;
     margin: 0;
-  }
-
-  .card-headline {
-    padding-right: 36px;
+    white-space: normal;
   }
 
   .card-main .stat-row {
@@ -448,120 +449,12 @@ details.variantes li a {
   .card details {
     grid-column: 1 / -1;
   }
-}
 
-/* Prototipo: comparar desde la card. */
-.card-compare-btn {
-  flex: none;
-  margin-left: auto;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.8rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.card-compare-btn:hover {
-  color: var(--text);
-  border-color: var(--muted);
-}
-
-.card-compare-btn.selected {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.compare-bar {
-  position: fixed;
-  left: 50%;
-  bottom: 20px;
-  transform: translateX(-50%);
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: calc(100% - 24px);
-  padding: 8px 8px 8px 18px;
-  background: var(--text);
-  color: var(--bg);
-  border-radius: 999px;
-  box-shadow: var(--shadow-md);
-  font-size: 0.85rem;
-}
-
-.compare-bar[hidden] {
-  display: none;
-}
-
-.compare-bar__names {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.compare-bar__go {
-  flex: none;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-contrast);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.compare-bar__go:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.compare-bar__clear {
-  flex: none;
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-@media (max-width: 640px) {
-  .compare-bar {
-    bottom: 64px;
+  /* El botón de comparar va en la esquina inferior derecha de la card, junto a la última fila: no ocupa una fila propia. */
+  .card-compare-btn {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    margin: 0;
   }
-}
-
-.compare-tip {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.compare-tip[hidden] {
-  display: none;
-}
-
-.compare-bar__names b {
-  font-weight: 800;
-}
-
-/* Mecánicas clave: una línea chica que cuenta de qué va el juego. */
-.card-mecs {
-  margin-top: -2px;
-  color: var(--muted);
-  font-size: 0.7rem;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

@@ -24,19 +24,6 @@ const FILTROS = [
 ];
 
 // Ordena por el campo del juego directo, como en ¿Cuál comprar?.
-function sortPosibles(posibles) {
-  const dir = state.sort.endsWith("_asc") ? 1 : -1;
-  const field = state.sort.replace(/_(asc|desc)$/, "");
-  return [...posibles].sort((a, b) => {
-    const av = a[field];
-    const bv = b[field];
-    if (av == null && bv == null) return 0;
-    if (av == null) return 1;
-    if (bv == null) return -1;
-    return av < bv ? dir * -1 : av > bv ? dir : 0;
-  });
-}
-
 function matchesFilters(g) {
   if (state.jugadores == null) return false;
   if (g.jug_min == null || g.jug_max == null) return false;
@@ -83,7 +70,7 @@ function render() {
   }
 
   const n = state.jugadores;
-  const posibles = sortPosibles(GAMES.filter(matchesFilters));
+  const posibles = sortGames(GAMES.filter(matchesFilters), state.sort);
   const ideales = posibles.filter((g) => matchesJugBest(g, n));
   const funcionan = posibles.filter((g) => !matchesJugBest(g, n));
 
