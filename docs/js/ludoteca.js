@@ -51,9 +51,9 @@ function render() {
   count.textContent = `${filtered.length} juego${filtered.length === 1 ? "" : "s"}`;
   grid.innerHTML = filtered.length
     ? filtered.map((g) => cardTemplate(g, { jugadores: state.jugadores })).join("")
-    : `<div class="empty-state">${GAMES.some((g) => g.estado === "Own" || g.estado === "Prev. owned")
-        ? "No encontré juegos con estos filtros."
-        : "Todavía no cargaste tus juegos. Usá \"Cargar o editar mis juegos\", acá arriba."}</div>`;
+    : GAMES.some((g) => g.estado === "Own" || g.estado === "Prev. owned")
+      ? `<div class="empty-state">No encontré juegos con estos filtros.</div>`
+      : "";
   hydrate(filtered).then((n) => { if (n) render(); });
 }
 
