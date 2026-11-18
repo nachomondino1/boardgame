@@ -16,6 +16,7 @@ const state = {
   duraciones: new Set(), // ids de BUCKETS_DURACION; vacío = todas
   complejidades: new Set(), // ids de BUCKETS_COMPLEJIDAD; vacío = todas
   decadas: new Set(), // ids de BUCKETS_DECADA; vacío = todas
+  precios: new Set(), // ids de BUCKETS_PRECIO; vacío = todos. Con alguno elegido, solo entran juegos con precio de referencia
   jugadores: null,
   soloMejor: false,
   soloQuieroComprar: false,
@@ -40,6 +41,9 @@ function matchesFilters(g) {
   }
   if (state.complejidades.size > 0) {
     if (g.complejidad == null || !BUCKETS_COMPLEJIDAD.some((b) => state.complejidades.has(b.id) && b.match(g.complejidad))) return false;
+  }
+  if (state.precios.size > 0) {
+    if (g.precio_ref_usd == null || !BUCKETS_PRECIO.some((b) => state.precios.has(b.id) && b.match(g.precio_ref_usd))) return false;
   }
   if (state.decadas.size > 0) {
     if (g.anio == null || !BUCKETS_DECADA.some((b) => state.decadas.has(b.id) && b.match(g.anio))) return false;
@@ -146,6 +150,8 @@ const FILTROS = [
   { id: "duraciones", titulo: "Duración", icono: "⏱", multiple: true, opciones: BUCKETS_DURACION },
   { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
     opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
+  { id: "precios", titulo: "Precio", icono: "💵", multiple: true,
+    nota: "Solo aparecen los juegos con precio de referencia de BGG (alrededor de 1 de cada 5).", opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Referencia de BGG" })) },
   { id: "decadas", titulo: "Década", icono: "📅", multiple: true, opciones: BUCKETS_DECADA },
   { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: t })) },
 ];
@@ -176,7 +182,8 @@ function setupControls() {
 // una página aparte; se fusionó acá porque se usa siempre junto con "¿Cuál
 // comprar?" (comparar candidatos antes de decidir cuál comprar).
 
-const compareState = { a: null, b: null };
+const MAX_COMPARE = 4;
+const compareState = { games: [] };
 
 // Cada fila de la tabla: cómo sacar el valor, cómo mostrarlo, y si aplica
 // (y en qué sentido) resaltar cuál de los dos juegos "gana" esa fila.
@@ -230,7 +237,6 @@ function findGame(name) {
 }
 
 function compareCellHtml(game, row, winner) {
-  if (!game) return `<td class="compare-cell compare-cell--empty">—</td>`;
   const raw = row.get(game);
   if (raw == null || raw === "") return `<td class="compare-cell compare-cell--empty">?</td>`;
   const cls = winner ? "compare-cell compare-cell--winner" : "compare-cell";
@@ -239,76 +245,77 @@ function compareCellHtml(game, row, winner) {
   return `<td class="${cls}">${escapeHtml(String(text))}</td>`;
 }
 
-function compareRowWinner(row, a, b) {
-  if (!row.better || !a || !b) return null;
-  const av = a ? row.get(a) : null;
-  const bv = b ? row.get(b) : null;
-  if (av == null || bv == null || av === "" || bv === "") return null;
-  const an = Number(av);
-  const bn = Number(bv);
-  if (an === bn) return null;
-  const aWins = row.better === "higher" ? an > bn : an < bn;
-  return aWins ? "a" : "b";
+// Posiciones (en `games`) que "ganan" la fila: el mejor valor, si hay al menos dos con dato y no empatan todos.
+function compareRowWinners(row, games) {
+  if (!row.better) return new Set();
+  const vals = games.map((g) => {
+    const v = row.get(g);
+    return v == null || v === "" ? null : Number(v);
+  });
+  const conDato = vals.filter((v) => v != null && !Number.isNaN(v));
+  if (conDato.length < 2) return new Set();
+  const mejor = row.better === "higher" ? Math.max(...conDato) : Math.min(...conDato);
+  if (conDato.every((v) => v === mejor)) return new Set();
+  return new Set(vals.map((v, i) => (v === mejor ? i : -1)).filter((i) => i >= 0));
 }
 
 function renderCompare() {
-  const { a, b } = compareState;
+  const games = compareState.games;
   const container = document.getElementById("compare-result");
   if (!container) return;
 
-  if (!a && !b) {
-    container.innerHTML = `<div class="empty-state">Elegí dos juegos arriba para compararlos.</div>`;
+  if (!games.length) {
+    container.innerHTML = `<div class="empty-state">Elegí juegos con el botón ⚔️ de cada card para compararlos.</div>`;
     return;
   }
 
-  const nameCell = (game, placeholder) => game
-    ? `<div class="compare-name">${escapeHtml(game.nombre)}</div>`
-    : `<div class="compare-name compare-name--empty">${placeholder}</div>`;
-
   const rowsHtml = COMPARE_ROWS.map((row) => {
-    const winner = compareRowWinner(row, a, b);
+    const winners = compareRowWinners(row, games);
     return `
       <tr>
         <th scope="row">${escapeHtml(row.label)}</th>
-        ${compareCellHtml(a, row, winner === "a")}
-        ${compareCellHtml(b, row, winner === "b")}
+        ${games.map((g, i) => compareCellHtml(g, row, winners.has(i))).join("")}
       </tr>
     `;
   }).join("");
 
   container.innerHTML = `
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">${nameCell(a, "Elegí el Juego A")}</th>
-          <th scope="col">${nameCell(b, "Elegí el Juego B")}</th>
-        </tr>
-      </thead>
-      <tbody>${rowsHtml}</tbody>
-    </table>
+    <div class="compare-scroll">
+      <table class="compare-table" style="--n:${games.length}">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            ${games.map((g) => `<th scope="col"><div class="compare-name">${escapeHtml(g.nombre)}</div></th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
   `;
 }
 
+// Los juegos elegidos viajan en la URL (?g=Brass&g=Ark+Nova...), así un link compartido abre la misma comparación.
 function syncCompareUrl() {
   const params = new URLSearchParams(location.search);
-  if (compareState.a) params.set("a", compareState.a.nombre);
-  else params.delete("a");
-  if (compareState.b) params.set("b", compareState.b.nombre);
-  else params.delete("b");
+  params.delete("a");
+  params.delete("b");
+  params.delete("g");
+  compareState.games.forEach((g) => params.append("g", g.nombre));
   const qs = params.toString();
   history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
 }
 
-// Prototipo: botón "Comparar" en cada card + barra fija abajo (ver card-compare-btn / compare-bar).
+// Botón ⚔️ en cada card + barra fija abajo (card-compare-btn / compare-bar).
 function syncCompareButtons() {
-  const ids = [compareState.a, compareState.b].filter(Boolean).map((g) => String(g.bgg_id));
-  const primero = [compareState.a, compareState.b].filter(Boolean)[0];
+  const sel = compareState.games;
+  const ids = sel.map((g) => String(g.bgg_id));
+  const primero = sel[0];
   const corto = primero && primero.nombre.length > 16 ? primero.nombre.slice(0, 15) + "…" : primero && primero.nombre;
   document.querySelectorAll("[data-compare]").forEach((btn) => {
     const on = ids.includes(btn.dataset.compare);
     btn.classList.toggle("selected", on);
-    btn.textContent = on ? "✓ En comparación" : ids.length === 1 ? `⚔️ Comparar con ${corto}` : "⚔️ Comparar";
+    btn.textContent = on ? "✓" : "⚔️";
+    btn.title = on ? "En comparación (tocá para quitar)" : ids.length === 1 ? `Comparar con ${corto}` : ids.length ? "Sumar a la comparación" : "Comparar";
   });
   const tip = document.getElementById("compare-tip");
   if (tip) tip.hidden = ids.length > 0;
@@ -320,9 +327,7 @@ function syncCompareButtons() {
     document.body.appendChild(bar);
     bar.addEventListener("click", (e) => {
       if (e.target.closest("[data-bar-clear]")) {
-        compareState.a = compareState.b = null;
-        document.getElementById("game-a").value = "";
-        document.getElementById("game-b").value = "";
+        compareState.games = [];
         syncCompareUrl();
         renderCompare();
         syncCompareButtons();
@@ -331,29 +336,27 @@ function syncCompareButtons() {
       }
     });
   }
-  const sel = [compareState.a, compareState.b].filter(Boolean);
   bar.hidden = sel.length === 0;
+  const nombres = sel.length === 1
+    ? `<b>${escapeHtml(sel[0].nombre)}</b> · elegí otro juego para compararlo`
+    : `${sel.map((g) => escapeHtml(g.nombre)).join(", ")}${sel.length < MAX_COMPARE ? ` <i>(podés sumar hasta ${MAX_COMPARE})</i>` : ""}`;
   bar.innerHTML = `
-    <span class="compare-bar__names">${sel.length === 1
-      ? `<b>${escapeHtml(sel[0].nombre)}</b> · elegí otro juego para compararlo`
-      : sel.map((g) => escapeHtml(g.nombre)).join(" <b>vs</b> ")}</span>
-    ${sel.length === 2 ? `<button type="button" class="compare-bar__go" data-bar-open>Ver comparación →</button>` : ""}
+    <span class="compare-bar__names">${nombres}</span>
+    ${sel.length >= 2 ? `<button type="button" class="compare-bar__go" data-bar-open>Ver comparación (${sel.length}) →</button>` : ""}
     <button type="button" class="compare-bar__clear" data-bar-clear aria-label="Limpiar comparación">✕</button>`;
 }
 
 function toggleCompare(id) {
   const game = GAMES.find((g) => String(g.bgg_id) === id);
   if (!game) return;
-  const actual = [compareState.a, compareState.b].filter(Boolean);
-  const ya = actual.find((g) => String(g.bgg_id) === id);
-  const queda = ya ? actual.filter((g) => g !== ya) : [...actual, game].slice(-2);
-  [compareState.a, compareState.b] = [queda[0] || null, queda[1] || null];
-  document.getElementById("game-a").value = compareState.a ? compareState.a.nombre : "";
-  document.getElementById("game-b").value = compareState.b ? compareState.b.nombre : "";
+  const actual = compareState.games;
+  compareState.games = actual.includes(game)
+    ? actual.filter((g) => g !== game)
+    : [...actual, game].slice(-MAX_COMPARE);
   syncCompareUrl();
   renderCompare();
   syncCompareButtons();
-  hydrate(queda).then(renderCompare);
+  hydrate(compareState.games).then(renderCompare);
 }
 
 function setupCompareControls() {
@@ -366,53 +369,16 @@ function setupCompareControls() {
     if (btn) toggleCompare(btn.dataset.compare);
   });
 
-  const inputA = document.getElementById("game-a");
-  const inputB = document.getElementById("game-b");
-
-  const datalist = document.getElementById("games-list");
-  const names = [...new Set(GAMES.map((g) => g.nombre))].sort((x, y) => x.localeCompare(y, "es"));
-  datalist.innerHTML = names.map((n) => `<option value="${escapeHtml(n)}"></option>`).join("");
-
-  inputA.addEventListener("change", () => {
-    compareState.a = findGame(inputA.value);
-    syncCompareUrl();
-    renderCompare();
-    if (compareState.a) hydrate([compareState.a]).then(renderCompare);
-  });
-  inputB.addEventListener("change", () => {
-    compareState.b = findGame(inputB.value);
-    syncCompareUrl();
-    renderCompare();
-    if (compareState.b) hydrate([compareState.b]).then(renderCompare);
-  });
-
-  const toggle = document.getElementById("compare-toggle");
-  const body = document.getElementById("compare-body");
-  toggle.addEventListener("click", () => {
-    const willOpen = body.hidden;
-    body.hidden = !willOpen;
-    toggle.setAttribute("aria-expanded", String(willOpen));
-  });
-
+  // Links compartidos: ?g=Nombre (varios) o los viejos ?a= y ?b=.
   const params = new URLSearchParams(location.search);
-  const presetA = params.get("a");
-  const presetB = params.get("b");
-  if (presetA) {
-    inputA.value = presetA;
-    compareState.a = findGame(presetA);
-    if (compareState.a) hydrate([compareState.a]).then(renderCompare);
+  const nombres = [...params.getAll("g"), params.get("a"), params.get("b")].filter(Boolean);
+  const games = [...new Set(nombres.map(findGame).filter(Boolean))].slice(0, MAX_COMPARE);
+  if (games.length) {
+    compareState.games = games;
+    hydrate(games).then(renderCompare);
+    document.getElementById("compare-body").hidden = false;
   }
-  if (presetB) {
-    inputB.value = presetB;
-    compareState.b = findGame(presetB);
-    if (compareState.b) hydrate([compareState.b]).then(renderCompare);
-  }
-  // Si llegaron presets por URL (ej. un link compartido), el panel arranca
-  // abierto de una en vez de forzar un click extra para ver el resultado.
-  if (presetA || presetB) {
-    body.hidden = false;
-    toggle.setAttribute("aria-expanded", "true");
-  }
+  syncCompareButtons();
 }
 
 document.getElementById("nav").innerHTML = navTemplate("comprar.html");

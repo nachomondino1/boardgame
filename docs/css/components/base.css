@@ -5,6 +5,7 @@
   --bg: #fbf6ee;
   --bg-subtle: #f1e7d8;
   --surface: #ffffff;
+  --card-bg: #f4e8d6; /* fondo de las cards de juego: un tono más profundo que la página */
   --text: #2b2118;
   --muted: #6b5d50;
   --muted-soft: #7e6e5c;
@@ -38,6 +39,7 @@
     --bg: #171a21;
     --bg-subtle: #2a2f3a;
     --surface: #1f232c;
+    --card-bg: #1f232c;
     --text: #ece9e4;
     --muted: #a7a9b3;
     --muted-soft: #8a8f9d;
