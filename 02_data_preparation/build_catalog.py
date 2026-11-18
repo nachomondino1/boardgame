@@ -35,6 +35,56 @@ INDEX_FIELDS = (
 )
 
 
+# Mecánicas que dicen "de qué va" un juego, de más a menos identificatorias (clave de BGG, nombre corto).
+# El índice guarda por juego los números de esta lista (columna "mecs") y la lista misma ("mecanicas"):
+# con eso el sitio muestra las mecánicas en la card y las filtra sin pedir la ficha de cada juego.
+# Las mecánicas técnicas (Hexagon Grid, Modular Board, End Game Bonuses...) quedan afuera a propósito.
+MECANICAS_CLAVE = [
+    ("Worker Placement", "Worker Placement"),
+    ("Deck, Bag, and Pool Building", "Deck Building"),
+    ("Area Majority / Influence", "Area Control"),
+    ("Tile Placement", "Tile Placement"),
+    ("Network and Route Building", "Route Building"),
+    ("Open Drafting", "Drafting"),
+    ("Auction / Bidding", "Auction"),
+    ("Trick-taking", "Trick-taking"),
+    ("Set Collection", "Set Collection"),
+    ("Pick-up and Deliver", "Pick-up & Deliver"),
+    ("Push Your Luck", "Push Your Luck"),
+    ("Hand Management", "Hand Management"),
+    ("Dice Rolling", "Dice Rolling"),
+    ("Pattern Building", "Pattern Building"),
+    ("Trading", "Trading"),
+    ("Deduction", "Deduction"),
+    ("Memory", "Memory"),
+    ("Voting", "Voting"),
+    ("Betting and Bluffing", "Bluffing"),
+    ("Take That", "Take That"),
+    ("Storytelling", "Storytelling"),
+    ("Role Playing", "Role Playing"),
+    ("Scenario / Mission / Campaign Game", "Campaign"),
+    ("Campaign / Battle Card Driven", "Card Driven"),
+    ("Roll / Spin and Move", "Roll & Move"),
+    ("Race", "Race"),
+    ("Stock Holding", "Stock Holding"),
+    ("Real-Time", "Real-Time"),
+    ("Action Queue", "Action Queue"),
+    ("Area Movement", "Area Movement"),
+    ("Action Points", "Action Points"),
+    ("Variable Player Powers", "Player Powers"),
+    ("Simultaneous Action Selection", "Simultaneous Actions"),
+    ("Pattern Recognition", "Pattern Recognition"),
+    ("Paper-and-Pencil", "Paper & Pencil"),
+]
+MECANICA_ID = {bgg: i for i, (bgg, _) in enumerate(MECANICAS_CLAVE)}
+
+
+def mecanicas_clave(game):
+    """Números (en MECANICAS_CLAVE, de más a menos identificatoria) de las mecánicas clave del juego, o None."""
+    ids = sorted({MECANICA_ID[m] for m in game.get("mecanicas") or [] if m in MECANICA_ID})
+    return ids or None
+
+
 def plain(text):
     """Minúsculas y sin acentos, para comparar nombres."""
     return "".join(c for c in unicodedata.normalize("NFD", text.lower()) if unicodedata.category(c) != "Mn")
@@ -88,8 +138,9 @@ def main():
         "juegos_total": len(games),
     })
     write_json(OUTPUT_DIR / "index.json", {
-        "cols": list(INDEX_FIELDS) + ["tramo"],
-        "rows": [[g.get(c) for c in INDEX_FIELDS] + [g["tramo"]] for g in games],
+        "cols": list(INDEX_FIELDS) + ["mecs", "tramo"],
+        "mecanicas": [corto for _, corto in MECANICAS_CLAVE],
+        "rows": [[g.get(c) for c in INDEX_FIELDS] + [mecanicas_clave(g), g["tramo"]] for g in games],
     })
 
     if SHARDS_DIR.exists():

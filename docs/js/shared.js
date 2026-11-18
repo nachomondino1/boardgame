@@ -45,6 +45,26 @@ const BUCKETS_PRECIO = [
   { id: "mas", label: "Más de US$80", match: (p) => p > 80 },
 ];
 
+// Emoji por tipo de juego (no repite ⚔️ comparar, 👥 jugadores ni 🏆 ranking).
+const MODO_EMOJI = {
+  "Competitivo": "🏁",
+  "Cooperativo": "🤝",
+  "Equipos": "🆚",
+  "Cooperativo y competitivo": "🤝🏁",
+};
+
+function modoLabel(modo) {
+  return MODO_EMOJI[modo] ? `${MODO_EMOJI[modo]} ${modo}` : modo;
+}
+
+// Mecánicas clave (nombres cortos): vienen en index.json, en el mismo orden con que build_catalog.py numera
+// la columna "mecs" de cada juego.
+let MECANICAS_VOCAB = [];
+
+function mecanicasClave(g, max = 3) {
+  return (g.mecs || []).slice(0, max).map((i) => MECANICAS_VOCAB[i]).filter(Boolean);
+}
+
 const BUCKETS_DECADA = [
   { id: "2020", label: "2020s", match: (a) => a >= 2020 },
   { id: "2010", label: "2010s", match: (a) => a >= 2010 && a < 2020 },
@@ -196,8 +216,9 @@ function loadGames() {
       if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
       return r.json();
     })
-    .then(({ cols, rows }) =>
-      rows.map((row) => {
+    .then(({ cols, rows, mecanicas }) => {
+      MECANICAS_VOCAB = mecanicas || [];
+      return rows.map((row) => {
         const g = {};
         cols.forEach((c, i) => { g[c] = row[i]; });
         g._tramo = g.tramo;
@@ -207,8 +228,8 @@ function loadGames() {
         g.estado = estadoDe(entry);
         g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
         return g;
-      })
-    );
+      });
+    });
 }
 
 // Vuelve a calcular estado y mi_puntaje de los juegos ya cargados (después de
@@ -323,12 +344,9 @@ function cardTemplate(g, opts) {
     ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
     : "";
 
-  const compraHtml = (g.costo != null || g.precio_calidad != null || g.link_tienda || cazagangasHtml || precioRefHtml)
+  const compraHtml = (cazagangasHtml || precioRefHtml)
     ? `
       <div class="stat-row">
-        ${g.costo != null ? `<span class="stat">💰 $${g.costo.toLocaleString("es-AR")}</span>` : ""}
-        ${g.precio_calidad != null ? `<span class="stat">Precio/calidad: ${g.precio_calidad.toFixed(2)}</span>` : ""}
-        ${g.link_tienda ? `<a class="stat stat-link" href="${escapeHtml(g.link_tienda)}" target="_blank" rel="noopener">Tienda ↗</a>` : ""}
         ${precioRefHtml}
         ${cazagangasHtml}
       </div>`
@@ -351,9 +369,10 @@ function cardTemplate(g, opts) {
         <div class="card-main">
           <div class="card-meta">
             ${g.estado && g.estado !== "Watchlist" ? `<span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado)}</span>` : ""}
-            <span class="card-sub">${[g.modo, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</span>
+            <span class="card-sub">${[g.modo ? modoLabel(g.modo) : null, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</span>
             ${opts.showComparar ? `<button type="button" class="card-compare-btn" data-compare="${escapeHtml(String(g.bgg_id))}" title="Comparar" aria-label="Comparar ${escapeHtml(g.nombre)}">⚔️</button>` : ""}
           </div>
+          ${mecanicasClave(g).length ? `<div class="card-mecs" title="${escapeHtml((g.mecanicas || []).join(" · "))}">${mecanicasClave(g).map(escapeHtml).join(" · ")}</div>` : ""}
           <div class="stat-row">
             <span class="stat${esBest ? " stat-best" : ""}" title="${jugBestLabel ? "Mejor con " + jugBestLabel + " jugadores" : ""}">👥 ${jugRange}${esBest ? " · ideal" : ""}</span>
             <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
