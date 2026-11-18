@@ -55,10 +55,13 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  gap: 2px;
-  background: var(--nav-links-bg);
-  padding: 4px;
-  border-radius: 999px;
+  gap: 28px;
+}
+
+.nav-emoji,
+.nav-short,
+.nav-links a.nav-home {
+  display: none;
 }
 
 .nav-links::-webkit-scrollbar {
@@ -69,16 +72,32 @@
   flex: 0 0 auto;
   white-space: nowrap;
   text-decoration: none;
+  position: relative;
   color: var(--muted);
-  font-size: 0.83rem;
-  font-weight: 600;
-  padding: 7px 14px;
-  border-radius: 999px;
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 8px 0;
+  transition: color 0.15s ease;
 }
 
-.nav-links a.nav-home {
-  display: none;
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  transform: scaleX(1);
 }
 
 .nav-links a:hover {
@@ -91,9 +110,8 @@
 }
 
 .nav-links a.active {
-  background: var(--surface);
-  color: var(--accent);
-  box-shadow: var(--shadow-xs);
+  color: var(--text);
+  font-weight: 700;
 }
 
 @media (max-width: 640px) {
@@ -105,7 +123,7 @@
     z-index: 30;
     justify-content: center;
     max-width: none;
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px));
     background: var(--nav-bg);
     border-top: 1px solid var(--nav-border);
     box-shadow: 0 -4px 16px -4px rgba(43, 33, 24, 0.12);
@@ -118,17 +136,35 @@
   .nav-links {
     width: 100%;
     justify-content: space-around;
-    background: none;
     padding: 0;
     gap: 0;
     overflow-x: visible;
   }
 
-  /* Las 4 páginas tienen que entrar sin scroll horizontal: en vez de
-     truncar u ocultar texto, se deja wrappear a dos líneas (con letra
-     más chica) en vez de un solo renglón que no entra. Si en el futuro
-     se suman más páginas y esto deja de ser legible, ahí conviene pasar
-     a un menú hamburguesa en vez de seguir achicando. */
+  .nav-label {
+    display: none;
+  }
+
+  .nav-short {
+    display: inline;
+  }
+
+  .nav-emoji {
+    display: inline;
+    margin-right: 3px;
+    font-size: 0.95rem;
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a.active {
+    color: var(--accent);
+  }
+
+  /* Barra baja: una sola línea por página (emoji + nombre corto), 4 ítems (Inicio + 3 páginas) sin scroll.
+     Con más páginas habría que pasar a un menú hamburguesa. */
   .nav-links a,
   .nav-links a.nav-home {
     display: flex;
@@ -137,9 +173,8 @@
     flex: 1 1 0;
     min-width: 0;
     text-align: center;
-    white-space: normal;
-    line-height: 1.15;
-    font-size: 0.72rem;
-    padding: 6px 4px;
+    white-space: nowrap;
+    font-size: 0.74rem;
+    padding: 4px 2px;
   }
 }

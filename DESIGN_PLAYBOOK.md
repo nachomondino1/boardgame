@@ -243,6 +243,15 @@ Reglas (las que sí son firmes):
 - **Avatares con color por hash determinístico del nombre** (mismo nombre, mismo color) en vez de depender de fotos.
 - **Fotos / banners full-width = riesgo alto de gusto.** Ya se probó uno y se sacó ("queda muy mal"). Probar visualmente antes de asumir que una foto mejora; importa más el tratamiento (tamaño, ubicación, dentro de una card vs. full-width) que tener la foto.
 
+### Landing: portada + problema (2026-11-18)
+
+Orden de `docs/index.html`: **1) portada** (título "¿A qué jugamos hoy? Elegí en menos de un minuto." + CTA "Cargá tus juegos"), **2) el problema** (`.landing__problem`), 3) cómo funciona, 4) cargar juegos, 5) otras secciones. La receta general está en §12 del playbook unificado; acá, cómo se definió el problema de este proyecto:
+
+- **Titular-escena:** "¿Te suena?" + "Sábado a la noche. Llegaron todos. Nadie sabe a qué jugar."
+- **Escena (`.chat`):** chat de grupo "Juntada del sábado" (Lu y Seba, inventados). "¿A qué jugamos?" → "Lo que quieras" → "Tengo como 40 juegos 😅" → "¿Cuál va bien con 5?" → "La caja dice 2 a 6… ¿pero con 5 es bueno?" → "Buscalo en BGG" → *45 minutos después, 21:47* → "Mejor pedimos pizza 🍕". Los mensajes propios en `--accent`, los ajenos en `--surface`.
+- **Tres dolores (`.pains`):** 📦 Mucho para elegir · 👥 La caja no dice la verdad (la comunidad sí) · ⏳ 45 minutos eligiendo, 0 jugando. Cada uno responde a un punto de `MVP.md` §0.
+- **Puente (`.landing__bridge`):** "Para eso lo hicimos: decinos cuántos son y te decimos qué sacar de tu ludoteca." (la promesa de `MVP.md`).
+
 ## 12. Producto (solo comunidades / hobbies / grupos)
 
 - Mirar qué hacen bien otras apps del mismo nicho antes de inventar features.

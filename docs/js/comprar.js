@@ -92,11 +92,13 @@ function render() {
             grupoNombre: entry.grupoNombre,
             showCazagangas: true,
             showPrecioRef: true,
+            showComparar: true,
           })
         )
         .join("")
     : `<div class="empty-state">No encontré juegos con estos filtros.</div>`;
 
+  syncCompareButtons();
   hydrate(visible.map((entry) => entry.game)).then((n) => { if (n) render(); });
 
   const restantes = grouped.length - visible.length;
@@ -298,7 +300,71 @@ function syncCompareUrl() {
   history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
 }
 
+// Prototipo: botón "Comparar" en cada card + barra fija abajo (ver card-compare-btn / compare-bar).
+function syncCompareButtons() {
+  const ids = [compareState.a, compareState.b].filter(Boolean).map((g) => String(g.bgg_id));
+  const primero = [compareState.a, compareState.b].filter(Boolean)[0];
+  const corto = primero && primero.nombre.length > 16 ? primero.nombre.slice(0, 15) + "…" : primero && primero.nombre;
+  document.querySelectorAll("[data-compare]").forEach((btn) => {
+    const on = ids.includes(btn.dataset.compare);
+    btn.classList.toggle("selected", on);
+    btn.textContent = on ? "✓ En comparación" : ids.length === 1 ? `⚔️ Comparar con ${corto}` : "⚔️ Comparar";
+  });
+  const tip = document.getElementById("compare-tip");
+  if (tip) tip.hidden = ids.length > 0;
+  let bar = document.getElementById("compare-bar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "compare-bar";
+    bar.className = "compare-bar";
+    document.body.appendChild(bar);
+    bar.addEventListener("click", (e) => {
+      if (e.target.closest("[data-bar-clear]")) {
+        compareState.a = compareState.b = null;
+        document.getElementById("game-a").value = "";
+        document.getElementById("game-b").value = "";
+        syncCompareUrl();
+        renderCompare();
+        syncCompareButtons();
+      } else if (e.target.closest("[data-bar-open]")) {
+        const body = document.getElementById("compare-body");
+        body.hidden = false;
+        document.getElementById("compare-toggle").setAttribute("aria-expanded", "true");
+        document.getElementById("compare-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+  const sel = [compareState.a, compareState.b].filter(Boolean);
+  bar.hidden = sel.length === 0;
+  bar.innerHTML = `
+    <span class="compare-bar__names">${sel.length === 1
+      ? `<b>${escapeHtml(sel[0].nombre)}</b> · elegí otro juego para compararlo`
+      : sel.map((g) => escapeHtml(g.nombre)).join(" <b>vs</b> ")}</span>
+    ${sel.length === 2 ? `<button type="button" class="compare-bar__go" data-bar-open>Ver comparación →</button>` : ""}
+    <button type="button" class="compare-bar__clear" data-bar-clear aria-label="Limpiar comparación">✕</button>`;
+}
+
+function toggleCompare(id) {
+  const game = GAMES.find((g) => String(g.bgg_id) === id);
+  if (!game) return;
+  const actual = [compareState.a, compareState.b].filter(Boolean);
+  const ya = actual.find((g) => String(g.bgg_id) === id);
+  const queda = ya ? actual.filter((g) => g !== ya) : [...actual, game].slice(-2);
+  [compareState.a, compareState.b] = [queda[0] || null, queda[1] || null];
+  document.getElementById("game-a").value = compareState.a ? compareState.a.nombre : "";
+  document.getElementById("game-b").value = compareState.b ? compareState.b.nombre : "";
+  syncCompareUrl();
+  renderCompare();
+  syncCompareButtons();
+  hydrate(queda).then(renderCompare);
+}
+
 function setupCompareControls() {
+  document.getElementById("grid").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-compare]");
+    if (btn) toggleCompare(btn.dataset.compare);
+  });
+
   const inputA = document.getElementById("game-a");
   const inputB = document.getElementById("game-b");
 
