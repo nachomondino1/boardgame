@@ -151,7 +151,7 @@ const FILTROS = [
   { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
     opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
   { id: "precios", titulo: "Precio", icono: "💵", multiple: true,
-    nota: "Solo aparecen los juegos con precio de referencia de BGG (alrededor de 1 de cada 5).", opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Referencia de BGG" })) },
+    nota: "⚠️ Solo aparecen los juegos con precio de referencia de BGG (alrededor de 1 de cada 5).", opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Referencia de BGG" })) },
   { id: "decadas", titulo: "Década", icono: "📅", multiple: true, opciones: BUCKETS_DECADA },
   { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: t })) },
 ];
