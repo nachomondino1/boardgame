@@ -454,7 +454,7 @@ function cardTemplate(g, opts) {
 
   // Mientras llega la ficha (imagen) se reserva el lugar de la imagen, así la card no se reacomoda; al cargar, aparece con un fundido.
   const imagenHtml = g.imagen
-    ? `<img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('is-ready')" onerror="this.classList.add('is-ready')">`
+    ? `<span class="card-thumb-box" style="--thumb:url('${escapeHtml(g.imagen)}')"><img class="card-thumb" src="${escapeHtml(g.imagen)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('is-ready');var r=this.naturalWidth/this.naturalHeight;if(r<0.85||r>1.18)this.parentNode.classList.add('is-fit')" onerror="this.classList.add('is-ready')"></span>`
     : `<div class="card-thumb card-thumb--vacio" aria-hidden="true"></div>`;
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";

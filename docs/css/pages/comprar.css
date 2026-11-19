@@ -1,9 +1,7 @@
 /* Estilos propios de comprar.html (no se usan en ninguna otra página). */
 
 .price-link {
-  display: inline-block;
   color: var(--accent);
-  font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
 }
@@ -49,35 +47,16 @@
     flex-wrap: wrap;
   }
 
-  /* Base 0: las píldoras se achican y deslizan, así "Limpiar filtros" queda en su misma fila. */
+  /* Las píldoras ocupan toda la fila y deslizan; "Limpiar filtros" va en su propia fila, abajo (ver filter-pills.css). */
   .filter-bar .filter-pills {
-    flex: 1 1 0;
+    flex: 1 1 100%;
+    min-width: 0;
   }
 
   .filter-bar .header-search {
     order: -1;
     flex: 1 0 100%;
     max-width: none;
-  }
-}
-
-/* Aviso de precios estimados, debajo del header fijo (no es fijo). */
-.precio-aviso {
-  max-width: var(--container);
-  margin: 12px auto 0;
-  padding: 8px 24px;
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
-}
-
-.precio-aviso[hidden] {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .precio-aviso {
-    padding: 8px 16px;
   }
 }
 

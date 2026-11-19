@@ -129,6 +129,42 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
 }
 
+/* Caja de la miniatura: si la imagen no es cuadrada (muy vertical u horizontal) se ve entera sobre la misma imagen difuminada, en vez de recortarla. */
+.card-thumb-box {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 124px;
+  height: 124px;
+  overflow: hidden;
+  background: var(--bg-subtle);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.card-thumb-box .card-thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  background: none; /* si no, el fondo beige de .card-thumb tapa el difuminado en las franjas que sobran */
+}
+
+.card-thumb-box.is-fit::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  /* Estirada al cuadrado (no "cover"): cada fila de los costados toma el color de esa fila de la imagen. */
+  background: var(--thumb) center / 100% 100%;
+  filter: blur(10px) saturate(1.3);
+}
+
+.card-thumb-box.is-fit .card-thumb {
+  object-fit: contain;
+}
+
 img.card-thumb {
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -419,7 +455,8 @@ details.variantes li a {
     align-self: start;
   }
 
-  .card-thumb {
+  .card-thumb,
+  .card-thumb-box {
     width: 96px;
     height: 96px;
   }

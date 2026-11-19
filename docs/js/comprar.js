@@ -421,10 +421,10 @@ function fechaLarga(iso) {
 
 function renderAvisoPrecios() {
   const el = document.getElementById("precio-aviso");
-  const dolar = `dólar oficial a $${Math.round(dolarHoy).toLocaleString("es-AR")}${dolarFecha ? ` (actualizado el ${fechaLarga(dolarFecha)})` : ""}`;
-  const bgg = datosBggFecha ? ` y avisos de venta de BGG al ${fechaLarga(datosBggFecha)}` : "";
-  const real = fechaPreciosCazagangas ? `Los precios sin ~ son los más baratos en Cazagangas al ${fechaLarga(fechaPreciosCazagangas)}. ` : "";
-  el.innerHTML = `💵 ${real}<strong>Los que llevan ~ son totalmente estimados</strong>: no son de tienda y pueden errar un ±25% o más. Se calculan con el ${dolar}${bgg}.`;
+  const fecha = fechaPreciosCazagangas || dolarFecha;
+  if (!fecha) return;
+  const link = `<a class="price-link" href="https://www.cazagangas.com.ar" target="_blank" rel="noopener">Cazagangas ↗</a>`;
+  el.innerHTML = `<strong>Precios actualizados el ${fechaLarga(fecha)}.</strong><br>Los más baratos en ${link}; los que llevan ~ son estimados (±25% o más).`;
   el.hidden = false;
 }
 

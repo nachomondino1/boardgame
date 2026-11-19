@@ -180,6 +180,23 @@
     justify-content: flex-start;
   }
 
+  /* "Limpiar filtros" abajo de las píldoras, en su propia fila: al lado les saca lugar. */
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+
+  .filter-bar .filter-pills {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .clear-filters {
+    flex: 0 0 100%;
+    padding: 2px 0 0;
+    border-left: 0;
+    text-align: left;
+  }
+
   .filter-pills {
     flex-wrap: nowrap;
     overflow-x: auto;

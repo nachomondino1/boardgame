@@ -123,14 +123,23 @@ const MECANICAS_POPULARES = [
   "Campaign", "Simultaneous Actions", "Trick-taking",
 ];
 
+// Cómo las llama BGG a las que el sitio nombra distinto (mismo mapeo que MECANICAS_CLAVE en build_catalog.py):
+// las fichas traen el nombre de BGG, así que sin esto "Area Control" daría siempre cero.
+const MECANICA_NOMBRE_BGG = {
+  "Deck Building": "Deck, Bag, and Pool Building", "Area Control": "Area Majority / Influence",
+  "Route Building": "Network and Route Building", "Drafting": "Open Drafting", "Bluffing": "Betting and Bluffing",
+  "Campaign": "Scenario / Mission / Campaign Game", "Simultaneous Actions": "Simultaneous Action Selection",
+};
+const tieneMecanica = (g, label) => g.mecanicas.includes(label) || g.mecanicas.includes(MECANICA_NOMBRE_BGG[label]);
+
 function mecanicasCard(own) {
   if (own.some((g) => !g._hydrated)) {
     return `<article class="analisis-card"><h3 class="analisis-card__title">🧩 Mecánicas populares</h3><p class="analisis-card__sub">Cargando…</p></article>`;
   }
   const conMecanicas = own.filter((g) => g.mecanicas && g.mecanicas.length);
   const conteo = new Map(MECANICAS_POPULARES.map((m) => [m, 0]));
-  conMecanicas.forEach((g) => g.mecanicas.forEach((m) => { if (conteo.has(m)) conteo.set(m, conteo.get(m) + 1); }));
-  const filas = [...conteo].map(([label, valor]) => ({ label, valor, hint: MECANICAS_HINT[label], juegos: conMecanicas.filter((g) => g.mecanicas.includes(label)).map((g) => g.nombre) }))
+  conMecanicas.forEach((g) => conteo.forEach((n, m) => { if (tieneMecanica(g, m)) conteo.set(m, n + 1); }));
+  const filas = [...conteo].map(([label, valor]) => ({ label, valor, hint: MECANICAS_HINT[label], juegos: conMecanicas.filter((g) => tieneMecanica(g, label)).map((g) => g.nombre) }))
     .sort((a, b) => b.valor - a.valor || a.label.localeCompare(b.label, "es"));
   if (!conMecanicas.length) return "";
   const faltan = filas.filter((f) => !f.valor).length;
