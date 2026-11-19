@@ -208,3 +208,43 @@ html {
 .bar-row--cero .bar-value {
   opacity: 0.5;
 }
+
+/* Fila de barra desplegable: al tocarla se ven los juegos que cuenta. */
+.bar-item {
+  margin: 0;
+}
+
+/* cards.css le da a todo details un borde arriba, margen y tamaño de letra: acá las filas deben verse como las demás. */
+.bar-details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.bar-details summary {
+  list-style: none;
+  cursor: pointer;
+  color: inherit;
+  font-weight: 400;
+}
+
+/* cards.css pone un "+ " / "− " delante de todo summary: acá no. */
+.bar-details summary::before,
+.bar-details[open] summary::before {
+  content: none;
+}
+
+.bar-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.bar-games {
+  margin: 6px 0 4px;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
