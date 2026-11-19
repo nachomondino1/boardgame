@@ -38,6 +38,16 @@ Cada corrida real suma una fila a `01_data_understanding/refresh_log.md` (fecha,
 
 **Cambiar el estado de un juego** (Own, Want to buy, Prev. owned) **o tu puntaje:** se hace en BGG, en tu colección; después corré `refresh_bgg_data.py` (o `./sync_data.sh`) y lo trae solo. Un juego que no marcás en BGG queda como Watchlist.
 
+**Cargar links a Cazagangas** (rápido, ~20 pedidos: cruza BGG contra su sitemap; después regenerar el sitio con `integrate_data.py` y `build_catalog.py`):
+```bash
+python3 01_data_understanding/collect_initial_data/cazagangas/load_cazagangas_sitemap.py --dry-run   # sin --dry-run guarda
+```
+
+**Traer los precios reales de Cazagangas** (un pedido por juego, ~2 s cada uno: ~3 h para todos; retoma donde quedó, empieza por los mejor rankeados; después regenerar el sitio):
+```bash
+python3 01_data_understanding/collect_initial_data/cazagangas/load_cazagangas_prices.py --limit 500
+```
+
 **Rechequear links de Cazagangas** (de a tandas, no bloquea el resto):
 ```bash
 python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py --limit 100
@@ -63,6 +73,8 @@ python3 01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_l
 - `data/01_data_understanding/cazagangas_data.jsonl` — `bgg_id`, `link_cazagangas` y código HTTP real (verificado) de ese link; el link vive solo acá. Lo llena `refresh_bgg_data.py` para todo juego nuevo (probando el nombre principal y los alternativos) y lo re-verifica `check_cazagangas_links.py` (ver abajo).
 - `01_data_understanding/collect_initial_data/bgg/` — `bgg_common.py` (librería: API de BGG con token, dataset de Hugging Face y lectura/escritura de los `.jsonl`), `initialize_bgg_data.py` (bootstrap único, no se vuelve a correr) y `refresh_bgg_data.py` (trae tu colección y actualiza los datos de BGG; `--add` suma un juego, `--discover` busca juegos nuevos en el "hot", `--top N`/`--scope all` amplían qué juegos refresca, `--dry-run` muestra el diff; todo juego nuevo busca su link de Cazagangas).
 - `01_data_understanding/collect_initial_data/cazagangas/` — `cazagangas_common.py` (slug best-effort + verificación HTTP) y `check_cazagangas_links.py` (re-verifica masivamente los links ya cargados, manual).
+- `01_data_understanding/collect_initial_data/cazagangas/load_cazagangas_sitemap.py` — carga links a Cazagangas cruzando los nombres de BGG (incluidos los alternativos en español) contra el sitemap de Cazagangas, en ~20 pedidos en vez de adivinar uno por uno; las filas nuevas llevan `origen`. Reglas en el docstring y en `DATA_PLAYBOOK.md`.
+- `01_data_understanding/collect_initial_data/cazagangas/load_cazagangas_prices.py` — trae el precio más barato de cada juego con link a Cazagangas (`precio_ars`), leyendo el JSON-LD de su ficha, y lo guarda en `cazagangas_data.jsonl`. En la web el precio real va sin `~` y reemplaza a la estimación.
 - `01_data_understanding/collect_initial_data/cazagangas/check_cazagangas_links.py` — verifica con un HEAD real los links ya guardados en `cazagangas_data.jsonl` (no arma ninguna URL) y guarda el código HTTP (`200`/`404`/`error`). Corre a mano (`--limit N` para ir de a tandas), no está en `sync_data.sh` — ver `DATA_PLAYBOOK.md`.
 - `02_data_preparation/integrate_data.py` — junta `bgg_data.jsonl` (base) + `bgg_collection.jsonl`/`cazagangas_data.jsonl` (por `bgg_id`) en un solo archivo (`data/02_data_preparation/integrated_data.jsonl`, gitignored: es un intermedio del build, se regenera siempre). Solo integra, no calcula nada.
 - `02_data_preparation/construct_data.py` — lee `data/02_data_preparation/integrated_data.jsonl`, calcula las columnas derivadas (`duracion`, `modo`, `puntaje_ajust_bgg`, `precio_calidad` — ver "Columnas calculadas" abajo) y escribe `docs/data/data.json`. `transportable`/`bgg_url`/`link_cazagangas`/`grupo`/`cazagangas_status` no se calculan acá, pasan de largo tal cual vienen (`transportable` es 100% manual, ver `01_data_understanding/README.md`; los otros cuatro ya vienen resueltos de `integrate_data.py`).

@@ -31,7 +31,7 @@ GAMES_PER_SHARD = 500
 INDEX_FIELDS = (
     "bgg_id", "nombre", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "grupo", "anio", "modo", "precio_ref_usd",
+    "grupo", "anio", "modo", "precio_ref_usd", "precio_ars",
 )
 
 
@@ -81,7 +81,7 @@ MECANICA_ID = {bgg: i for i, (bgg, _) in enumerate(MECANICAS_CLAVE)}
 
 # Precisión del índice: la que se ve en el sitio (puntaje y complejidad con 2 decimales, precio entero). Las fichas
 # (games/NNN.json) conservan los valores completos.
-REDONDEO_INDICE = {"puntaje_bgg": 2, "complejidad": 2, "precio_ref_usd": 0}
+REDONDEO_INDICE = {"puntaje_bgg": 2, "complejidad": 2, "precio_ref_usd": 0, "precio_ars": 0}
 
 
 def valor_indice(campo, valor):
@@ -148,6 +148,8 @@ def main():
         "actualizado": max(fechas) if fechas else None,
         "juegos_actualizados": sum(1 for d in fechas if d == max(fechas)) if fechas else 0,
         "juegos_total": len(games),
+        # Día del precio de Cazagangas más reciente (los precios reales son de ahí, no de la fecha de BGG).
+        "precios_cazagangas": max((d for d in (raw[g["bgg_id"]].get("fecha_precio_cazagangas") for g in games) if d), default=None),
     })
     write_json(OUTPUT_DIR / "index.json", {
         "cols": list(INDEX_FIELDS) + ["mecs", "tramo"],
