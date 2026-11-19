@@ -4,6 +4,8 @@
   "compatibility_date": "2025-10-01",
   // Los deploys desde GitHub no tienen que borrar las variables cargadas a mano en el panel (BGG_TOKEN).
   "keep_vars": true,
+  // Colección de cada usuario con sesión (ver MVP.md 6b). Namespace creado a mano en el panel.
+  "kv_namespaces": [{ "binding": "COLLECTIONS", "id": "a913e7d40e3c4fc39abf362786415f50" }],
   "assets": {
     "directory": "./docs",
     "binding": "ASSETS"
