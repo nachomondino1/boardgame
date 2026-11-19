@@ -1,14 +1,15 @@
 """Trae el precio más barato en Argentina de cada juego con link a Cazagangas.
 
-De dónde sale: la ficha de cada juego (`/juego/<slug>`) trae un JSON-LD de schema.org con un
-`AggregateOffer` (`lowPrice`, `highPrice` en ARS y `offerCount`, la cantidad de tiendas). El
-sitemap y los feeds RSS no traen precios, así que hace falta un pedido por juego (~2 s cada
-uno: ~2,5 horas para ~4.600 juegos; por eso se corre de a tandas y retoma donde quedó).
+De dónde sale: la ficha de cada juego (`/juego/<slug>`) dice "Disponible en N tiendas entre $A – $B":
+son precios de TIENDAS, o sea juegos nuevos. El JSON-LD de la misma ficha (`AggregateOffer`) NO sirve: mezcla
+las publicaciones de la Feria (usados de particulares) y su `lowPrice` puede ser el de un usado. El sitemap y
+los feeds RSS no traen precios, así que hace falta un pedido por juego (~3,5 s cada uno con la pausa: ~4 horas
+para ~4.600 juegos; por eso se corre de a tandas y retoma donde quedó).
 
 Qué guarda, en las mismas filas de data/01_data_understanding/cazagangas_data.jsonl:
-  - precio_ars: el precio más barato (`lowPrice`), o null si no hay ofertas (sin stock)
-  - precio_ars_max: el más caro (`highPrice`)
-  - tiendas: cantidad de tiendas con el juego (`offerCount`)
+  - precio_ars: el precio más barato en tiendas (nuevo), o null si ninguna tienda lo tiene
+  - precio_ars_max: el más caro en tiendas
+  - tiendas: cantidad de tiendas con el juego
   - fecha_precio: día en que se miró (los precios cambian: ver --refresh)
 
 Empieza por los juegos mejor rankeados en BGG (los que más se miran en la web).
@@ -38,9 +39,6 @@ BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
 USER_AGENT = "boardgame-personal-catalog/1.0 (uso personal)"
 GUARDAR_CADA = 25  # juegos: así una corrida cortada no pierde lo ya mirado
 
-JSON_LD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
-
-
 def fetch(url, reintentos=3):
     espera = CRAWL_DELAY_SECONDS
     for intento in range(1, reintentos + 1):
@@ -63,17 +61,31 @@ def fetch(url, reintentos=3):
     return None
 
 
+TIENDAS_RE = re.compile(r'available-stores-tag">\s*<div>Disponible en (\d+) tiendas?</div>')
+RANGO_RE = re.compile(r'available-price-range-tag">\s*<div>\$([\d.]+)</div>')
+
+
 def parse_precio(html):
-    """(precio_ars, precio_ars_max, tiendas) de la ficha, o (None, None, 0) si no hay ofertas."""
-    for bloque in JSON_LD_RE.findall(html):
-        try:
-            datos = json.loads(bloque)
-        except ValueError:
-            continue
-        ofertas = datos.get("offers") if isinstance(datos, dict) else None
-        if isinstance(ofertas, dict) and ofertas.get("lowPrice") is not None:
-            return ofertas.get("lowPrice"), ofertas.get("highPrice"), ofertas.get("offerCount") or 0
-    return None, None, 0
+    """(precio_ars, precio_ars_max, tiendas) de las TIENDAS de la ficha (juegos nuevos), o (None, None, 0)
+    si ninguna tienda lo tiene.
+
+    No se usa el JSON-LD (`AggregateOffer`): mezcla las publicaciones de la Feria (juegos usados de
+    particulares) con las de las tiendas, así que `lowPrice` puede ser el de un usado (Wingspan: $100.000
+    usado contra $120.950 en tienda). El bloque "Disponible en N tiendas entre $A – $B" del HTML es solo
+    de tiendas."""
+    tiendas = TIENDAS_RE.search(html)
+    if not tiendas:
+        return None, None, 0
+    # Los precios son los del rango que sigue al "Disponible en N tiendas". La Feria tiene su propio bloque
+    # ("N publicaciones en la Feria", con otro rango de precios, que puede ir antes o después): se corta ahí.
+    resto = html[tiendas.end():]
+    corte = resto.find("available-users-tag")
+    if corte >= 0:
+        resto = resto[:corte]
+    precios = [int(p.replace(".", "")) for p in RANGO_RE.findall(resto[:1500])]
+    if not precios:
+        return None, None, 0
+    return min(precios), max(precios), int(tiendas.group(1))
 
 
 def ranking_por_juego():
