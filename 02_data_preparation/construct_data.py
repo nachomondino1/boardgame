@@ -58,9 +58,11 @@ MECANICA_SEMI_COOP = "Semi-Cooperative Game"
 MECANICA_EQUIPOS = "Team-Based Game"
 MECANICA_COOP = "Cooperative Game"
 
-# Marketplace: precio de referencia = mediana de listados recientes en USD
-# y en buen estado (ya filtrados por fecha en bgg_common.py).
-MARKETPLACE_CONDICIONES = {"new", "likenew"}
+# Marketplace: precio de referencia = mediana de listados recientes en USD,
+# solo de juegos NUEVOS (ya filtrados por fecha en bgg_common.py): los "como nuevo"
+# son usados y bajan el precio, y el precio de Cazagangas también es solo de nuevos
+# (comparar peras con peras). Con "new" y "likenew" eran 5.311 juegos con precio; solo "new", 3.618.
+MARKETPLACE_CONDICIONES = {"new"}
 
 PUNTAJE_AJUST_DESVIO = 1.4  # desvío estándar fijo histórico, ver docstring
 
