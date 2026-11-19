@@ -6,7 +6,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { onRequestGet } from "./functions/api/collection.js";
-import { handleAccount } from "./functions/api/account.js";
+import { handleSync } from "./functions/api/sync.js";
 
 const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "docs");
 const PORT = Number(process.argv[2]) || 8766;
@@ -31,11 +31,7 @@ const devKv = {
 const env = { ...process.env, COLLECTIONS: devKv };
 
 function send(res, response, body) {
-  const headers = {};
-  response.headers.forEach((v, k) => { if (k !== "set-cookie") headers[k] = v; });
-  const cookies = response.headers.getSetCookie();
-  if (cookies.length) headers["set-cookie"] = cookies;
-  res.writeHead(response.status, headers);
+  res.writeHead(response.status, Object.fromEntries(response.headers));
   res.end(body);
 }
 
@@ -53,10 +49,10 @@ createServer(async (req, res) => {
     res.end(Buffer.from(await response.arrayBuffer()));
     return;
   }
-  if (url.pathname.startsWith("/api/auth/") || url.pathname === "/api/sync") {
+  if (url.pathname === "/api/sync") {
     const hasBody = req.method !== "GET" && req.method !== "HEAD";
     const request = new Request(url, { method: req.method, headers: req.headers, body: hasBody ? await readBody(req) : undefined });
-    const response = await handleAccount(request, env);
+    const response = await handleSync(request, env);
     if (response) { send(res, response, Buffer.from(await response.arrayBuffer())); return; }
   }
   const path = normalize(url.pathname === "/" ? "/index.html" : url.pathname);

@@ -1,6 +1,6 @@
 // "Cargá tus juegos": panel para armar la colección del visitante. Dos vías:
 // usuario de BGG (se activa con la función /api/collection) y marcar a mano
-// buscando en names.json. Se guarda en localStorage y, con sesión de Google, también en la cuenta (ver shared.js). Cada vez
+// buscando en names.json. Se guarda en localStorage y, con la sincronización activa, también en el servidor (ver shared.js). Cada vez
 // que cambia la colección llama a onChange para que la página se actualice.
 
 const MAX_RESULTS = 20;
@@ -78,29 +78,43 @@ function mountCollectionLoader(container, { onChange }) {
     return `✓ Guardado en este navegador${hora ? ` a las ${hora}` : ""}. Podés cambiar de página tranquilo.`;
   }
 
-  // Cuenta de Google: con sesión, la colección se guarda también en el servidor
-  // (la lógica está en shared.js); acá solo se muestra el estado y los botones.
+  // Sincronización entre dispositivos: la lógica está en shared.js; acá solo se
+  // muestra el estado y los botones.
   const SYNC_LABELS = {
     saving: "Guardando…",
     saved: "✓ Sincronizada",
     error: "⚠ No pude sincronizar: queda guardada solo en este navegador",
-    expired: "Tu sesión venció, volvé a iniciarla",
   };
 
   function renderAccount() {
-    accountEl.hidden = !accountAvailable();
+    accountEl.hidden = !syncAvailable();
     if (accountEl.hidden) return;
-    const email = accountEmail();
-    if (email) {
+    if (getSyncKey()) {
       const state = SYNC_LABELS[window.mvpSyncState] || "";
       accountEl.innerHTML = `
-        <span class="col-account__text">☁ Tu ludoteca se guarda en tu cuenta <b>${escapeHtml(email)}</b>${state ? ` · <span class="col-account__state">${state}</span>` : ""}</span>
-        <button type="button" class="col-account__btn" data-logout>Cerrar sesión</button>`;
+        <span class="col-account__text">☁ Sincronización activa${state ? ` · <span class="col-account__state">${state}</span>` : ""}</span>
+        <span class="col-account__btns">
+          <button type="button" class="col-account__btn col-account__btn--primary" data-sync-copy>Copiar link para otro dispositivo</button>
+          <button type="button" class="col-account__btn" data-sync-off>Desactivar</button>
+        </span>`;
     } else {
-      const next = encodeURIComponent(location.pathname + location.search);
       accountEl.innerHTML = `
-        <span class="col-account__text">☁ Iniciá sesión para guardar tu ludoteca y tenerla en todos tus dispositivos.</span>
-        <a class="col-account__btn col-account__btn--primary" href="/api/auth/google?next=${next}">Iniciar sesión con Google</a>`;
+        <span class="col-account__text">☁ Guardá tu ludoteca para tenerla en todos tus dispositivos.</span>
+        <span class="col-account__btns">
+          <button type="button" class="col-account__btn col-account__btn--primary" data-sync-on>Activar sincronización</button>
+          <button type="button" class="col-account__btn" data-sync-have>Ya tengo un link</button>
+        </span>`;
+    }
+  }
+
+  async function copyLink(key) {
+    const link = syncLink(key);
+    try {
+      await navigator.clipboard.writeText(link);
+      return true;
+    } catch (e) {
+      prompt("Copiá este link (es la llave de tu ludoteca):", link);
+      return false;
     }
   }
 
@@ -264,7 +278,7 @@ function mountCollectionLoader(container, { onChange }) {
     if (remove) removeGame(remove.dataset.remove);
   });
   container.querySelector("[data-clear]").addEventListener("click", () => {
-    const donde = accountEmail() ? "de este navegador y de tu cuenta" : "de este navegador";
+    const donde = getSyncKey() ? "de este navegador y de la sincronización" : "de este navegador";
     if (!confirm(`¿Borrar toda tu colección ${donde}?`)) return;
     collection = emptyCollection();
     persist();
@@ -273,10 +287,26 @@ function mountCollectionLoader(container, { onChange }) {
   });
 
   accountEl.addEventListener("click", async (e) => {
-    if (!e.target.closest("[data-logout]")) return;
-    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-    document.cookie = "mvp_user=; Max-Age=0; Path=/";
-    window.mvpSyncState = null;
+    if (e.target.closest("[data-sync-on]")) {
+      const key = enableSync();
+      const copiado = await copyLink(key);
+      alert(`Sincronización activada.${copiado ? " Copié el link al portapapeles." : ""}\n\n`
+        + "Ese link es la llave de tu ludoteca: abrilo en otro dispositivo para tener ahí lo mismo, y guardalo en un lugar seguro (por ejemplo, mandátelo por mensaje). Quien lo tenga puede ver y cambiar tu ludoteca.");
+    } else if (e.target.closest("[data-sync-have]")) {
+      const key = parseSyncKey(prompt("Pegá el link (o la llave) de tu otro dispositivo:"));
+      if (!key) return;
+      setSyncKey(key);
+      location.reload();
+      return;
+    } else if (e.target.closest("[data-sync-copy]")) {
+      const key = getSyncKey();
+      if (key && await copyLink(key)) setSyncState(window.mvpSyncState); // solo repinta
+    } else if (e.target.closest("[data-sync-off]")) {
+      if (!confirm("¿Desactivar la sincronización en este navegador? Tu ludoteca sigue guardada acá; para volver a conectarla necesitás el link.")) return;
+      disableSync();
+    } else {
+      return;
+    }
     renderAccount();
   });
   window.addEventListener("mvp:sync", renderAccount);
@@ -286,7 +316,7 @@ function mountCollectionLoader(container, { onChange }) {
   renderAccount();
   render();
 
-  // Con sesión, shared.js baja la colección de la cuenta al cargar: si trajo una
+  // Con la llave puesta, shared.js baja la colección del servidor al cargar: si trajo una
   // más nueva, se vuelve a leer y se avisa a la página.
   syncReady.then((changed) => {
     if (!changed) return;

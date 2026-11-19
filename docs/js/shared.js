@@ -204,7 +204,7 @@ function loadCollection() {
 }
 
 // Devuelve false si no se pudo guardar (queda solo en memoria de esta página).
-// Con sesión iniciada, además la sube a la cuenta (ver "Cuenta" más abajo).
+// Con la sincronización activa, además la sube al servidor (ver más abajo).
 function saveCollection(collection) {
   collection.savedAt = new Date().toISOString();
   let saved = true;
@@ -213,41 +213,93 @@ function saveCollection(collection) {
   } catch (e) {
     saved = false;
   }
-  if (accountEmail()) schedulePush(collection);
+  if (getSyncKey()) schedulePush(collection);
   return saved;
 }
 
-// --- Cuenta (Google) y sincronización ---
-// La página sigue leyendo y escribiendo en localStorage (rápido, anda sin
-// conexión); con sesión iniciada la colección además se guarda en el servidor
-// (/api/sync) y se baja al abrir cualquier página. La cookie legible mvp_user
-// (solo el email) avisa si hay sesión sin tener que preguntarle al servidor.
-// Gana la copia con el savedAt más nuevo. Ver MVP.md, sección 6b.
+// --- Sincronización entre dispositivos (sin cuentas) ---
+// La "llave" es una cadena larga al azar que genera este navegador y que
+// identifica tu ludoteca en el servidor (/api/sync, guardada en KV). Quien tiene
+// la llave tiene la ludoteca: se pasa a otro dispositivo con un link
+// (#sync=<llave>; lo que va después del # no viaja al servidor). La página sigue
+// leyendo y escribiendo en localStorage; con la llave puesta, cada cambio se
+// sube y al abrir cualquier página se baja lo del servidor. Gana el savedAt más
+// nuevo. Ver MVP.md, sección 6b.
 
+const SYNC_KEY_STORAGE = "mvp.syncKey";
 const SYNCED_KEY = "mvp.syncedFor";
+const SYNC_KEY_RE = /^[A-Za-z0-9_-]{43}$/;
 let pushTimer = null;
 let pendingPush = null;
 
-function accountEmail() {
-  const m = document.cookie.match(/(?:^|; )mvp_user=([^;]*)/);
-  return m ? decodeURIComponent(m[1]) : null;
+function getSyncKey() {
+  try {
+    const key = localStorage.getItem(SYNC_KEY_STORAGE);
+    return SYNC_KEY_RE.test(key) ? key : null;
+  } catch (e) {
+    return null;
+  }
 }
 
-// En GitHub Pages (staging) no hay servidor: no se ofrece iniciar sesión.
-function accountAvailable() {
+function setSyncKey(key) {
+  try {
+    if (key) localStorage.setItem(SYNC_KEY_STORAGE, key);
+    else localStorage.removeItem(SYNC_KEY_STORAGE);
+  } catch (e) { /* sin memoria local */ }
+}
+
+function newSyncKey() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function syncLink(key) {
+  return `${location.origin}/#sync=${key}`;
+}
+
+// Acepta la llave sola o el link completo.
+function parseSyncKey(text) {
+  const m = String(text || "").trim().match(/(?:^|sync=)([A-Za-z0-9_-]{43})$/);
+  return m ? m[1] : null;
+}
+
+// En GitHub Pages (staging) no hay servidor: no se ofrece sincronizar.
+function syncAvailable() {
   return !location.hostname.endsWith("github.io");
 }
 
-// "saving" | "saved" | "error" | "expired": lo escuchan los paneles que muestran el estado.
+// "saving" | "saved" | "error": lo escuchan los paneles que muestran el estado.
 function setSyncState(state) {
   window.mvpSyncState = state;
   window.dispatchEvent(new CustomEvent("mvp:sync", { detail: { state } }));
 }
 
-function expireSession() {
-  document.cookie = "mvp_user=; Max-Age=0; Path=/";
-  setSyncState("expired");
+// Activa la sincronización en este navegador con una llave nueva y sube lo que hay.
+function enableSync() {
+  const key = newSyncKey();
+  setSyncKey(key);
+  schedulePush(loadCollection());
+  return key;
 }
+
+function disableSync() {
+  setSyncKey(null);
+  pendingPush = null;
+  setSyncState(null);
+}
+
+// Si se abrió un link con la llave (#sync=...), se guarda y se limpia la barra de
+// direcciones. Devuelve true si había una llave.
+function adoptKeyFromLink() {
+  const m = location.hash.match(/^#sync=([A-Za-z0-9_-]{43})$/);
+  if (!m) return false;
+  setSyncKey(m[1]);
+  history.replaceState(null, "", location.pathname + location.search);
+  return true;
+}
+adoptKeyFromLink();
+// Pegar el link en una pestaña del sitio solo cambia el #, sin recargar: se recarga a mano.
+window.addEventListener("hashchange", () => { if (adoptKeyFromLink()) location.reload(); });
 
 function schedulePush(collection) {
   pendingPush = collection;
@@ -260,20 +312,18 @@ async function flushPush() {
   clearTimeout(pushTimer);
   const collection = pendingPush;
   pendingPush = null;
-  if (!collection) return;
-  const email = accountEmail();
-  if (!email) return;
+  const key = getSyncKey();
+  if (!collection || !key) return;
   const body = JSON.stringify({ collection });
   try {
     const r = await fetch("/api/sync", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Sync-Key": key },
       body,
       keepalive: body.length < 60000, // sobrevive al cierre de la pestaña, si entra en el límite
     });
-    if (r.status === 401) return expireSession();
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    try { localStorage.setItem(SYNCED_KEY, email); } catch (e) { /* sin memoria local */ }
+    try { localStorage.setItem(SYNCED_KEY, key.slice(0, 12)); } catch (e) { /* sin memoria local */ }
     setSyncState("saved");
   } catch (e) {
     setSyncState("error");
@@ -291,15 +341,15 @@ function sameGames(a, b) {
     && ka.every((id) => b.games[id] && JSON.stringify(a.games[id]) === JSON.stringify(b.games[id]));
 }
 
-// Al abrir una página con sesión: baja la colección de la cuenta y decide cuál
-// manda. Resuelve true si cambió la colección local (para que la página se
-// vuelva a pintar). Nunca rechaza: si falla, la página sigue con lo local.
-async function pullAccount() {
-  if (!accountEmail()) return false;
+// Al abrir una página con la llave puesta: baja la colección del servidor y
+// decide cuál manda. Resuelve true si cambió la colección local (para que la
+// página se vuelva a pintar). Nunca rechaza: si falla, la página sigue con lo local.
+async function pullSync() {
+  const key = getSyncKey();
+  if (!key) return false;
   let data;
   try {
-    const r = await fetch("/api/sync", { signal: AbortSignal.timeout(4000) });
-    if (r.status === 401) { expireSession(); return false; }
+    const r = await fetch("/api/sync", { headers: { "X-Sync-Key": key }, signal: AbortSignal.timeout(4000) });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     data = await r.json();
   } catch (e) {
@@ -313,16 +363,16 @@ async function pullAccount() {
   let useRemote = false;
   if (remote && !localCount) {
     useRemote = true;
-  } else if (remote && localStorage.getItem(SYNCED_KEY) !== data.email && !sameGames(local, remote)) {
-    // Primera vez que este navegador se conecta a esta cuenta y hay dos ludotecas distintas.
+  } else if (remoteCount && localStorage.getItem(SYNCED_KEY) !== key.slice(0, 12) && !sameGames(local, remote)) {
+    // Primera vez que este navegador usa esta llave y hay dos ludotecas distintas.
     useRemote = confirm(
-      `Tu cuenta (${data.email}) ya tiene una ludoteca guardada con ${remoteCount} juegos, y este navegador tiene otra con ${localCount}.\n\n`
-      + "Aceptar: usar la de tu cuenta (reemplaza la de este navegador).\n"
-      + "Cancelar: quedarme con la de este navegador (reemplaza la de tu cuenta).");
+      `Tu ludoteca sincronizada tiene ${remoteCount} juegos y este navegador tiene otra con ${localCount}.\n\n`
+      + "Aceptar: usar la sincronizada (reemplaza la de este navegador).\n"
+      + "Cancelar: quedarme con la de este navegador (reemplaza la sincronizada).");
   } else if (remote) {
     useRemote = (remote.savedAt || "") > (local.savedAt || "");
   }
-  try { localStorage.setItem(SYNCED_KEY, data.email); } catch (e) { /* sin memoria local */ }
+  try { localStorage.setItem(SYNCED_KEY, key.slice(0, 12)); } catch (e) { /* sin memoria local */ }
   if (useRemote) {
     try { localStorage.setItem(COLLECTION_KEY, JSON.stringify(remote)); } catch (e) { return false; }
     setSyncState("saved");
@@ -333,7 +383,7 @@ async function pullAccount() {
   return false;
 }
 
-const syncReady = pullAccount().catch(() => false);
+const syncReady = pullSync().catch(() => false);
 
 // Misma regla que estado_de() en construct_data.py: Own > Prev. owned >
 // Want to buy, y Watchlist para todo lo que no está marcado.
@@ -350,7 +400,7 @@ function loadGames() {
     return r.json();
   });
   // Con sesión iniciada, antes de calcular estado y mi_puntaje hay que saber si
-  // la cuenta trae una colección más nueva (pullAccount, en paralelo al índice).
+  // la cuenta trae una colección más nueva (pullSync, en paralelo al índice).
   return Promise.all([indexPromise, syncReady]).then(([{ cols, rows, mecanicas }]) => {
     const collection = loadCollection().games;
     MECANICAS_VOCAB = mecanicas || [];

@@ -272,7 +272,7 @@
   margin-bottom: 14px;
 }
 
-/* Cuenta de Google: iniciar sesión / estado de la sincronización. */
+/* Sincronización entre dispositivos: activar / estado. */
 .col-account {
   display: flex;
   flex-wrap: wrap;
@@ -314,4 +314,10 @@
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
+}
+
+.col-account__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
