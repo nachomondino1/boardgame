@@ -33,7 +33,7 @@ Objetivos reales, en orden:
 1. **Aprender a armar y desplegar un MVP** (branch propia + hosting) para repetirlo en otros proyectos.
 2. Que 2 o 3 personas lo prueben con su usuario.
 
-No es un producto: sin cobro. Cuentas con Google (opcionales) desde 2026-11-19, ver sección 6b.
+No es un producto: sin login, sin cuentas, sin cobro.
 
 ## 2. Alcance
 
@@ -45,7 +45,7 @@ No es un producto: sin cobro. Cuentas con Google (opcionales) desde 2026-11-19, 
 - Logo "Powered by BGG" con link, visible.
 
 **Fuera (no se construye)**
-- Contraseñas propias, registro de usuarios, base de datos de usuarios (hay login con Google y la colección en KV, sección 6b).
+- Login, cuentas, contraseñas, base de datos de usuarios.
 - Registro de partidas, grupos, social, mapa de tiendas.
 - Cobro, publicidad, licencia comercial de BGG.
 
@@ -109,16 +109,6 @@ mvp.collection = { source: "bgg" | "manual", user, savedAt, games: { "<bgg_id>":
 - Con username: se baja la colección y se guarda; se refresca si pasaron más de unas horas o con un botón.
 - Botón "borrar mis datos".
 
-## 6b. Cuenta de Google y colección guardada (2026-11-19)
-
-Para usarlo todos los días en varios dispositivos sin perder la colección. **Opcional**: sin sesión todo sigue igual (solo `localStorage`).
-
-- `functions/api/account.js`: `/api/auth/google` (redirige a Google), `/api/auth/callback`, `/api/auth/logout` y `/api/sync` (`GET`/`PUT`). Sesión = cookie HttpOnly firmada con HMAC (180 días), sin tabla de sesiones. La colección va en **Cloudflare KV** (`env.COLLECTIONS`, clave `user:<id de Google>`), validada y reducida a los campos de la sección 6 antes de guardarse.
-- Cliente (`shared.js`): la página sigue leyendo `localStorage`; con sesión (cookie legible `mvp_user`) cada cambio se sube a los 800 ms y al abrir cualquier página se baja la de la cuenta. **Gana el `savedAt` más nuevo.** La primera vez que un navegador se conecta a una cuenta y hay dos ludotecas distintas, pregunta cuál usar. Cerrar sesión no borra lo local.
-- Panel de cuenta: arriba del panel "Cargá tus juegos" (landing y Mi ludoteca). No aparece en `github.io` (staging no tiene servidor).
-- **Configuración (una vez):** en Google Cloud Console, un cliente OAuth "Aplicación web" con redirect `https://<dominio>/api/auth/callback` (y `http://localhost:8766/api/auth/callback` para local); secretos `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `SESSION_SECRET` (una cadena larga al azar) en Cloudflare, y el KV `COLLECTIONS` (creado a mano en el panel de Cloudflare; su id está en `wrangler.jsonc`). En local: los tres en `.env`; el `dev-server.mjs` usa un KV de archivo (`.dev-kv.json`, gitignored).
-- **Límites conocidos:** dos dispositivos editando a la vez, el último en guardar pisa al otro (no hay fusión por juego). Si hay que borrar a alguien: `wrangler kv key delete "user:<id>" --binding COLLECTIONS`.
-
 ## 7. Páginas
 
 Mismas que hoy, copiadas de `docs/` y adaptadas (prioridad en la sección 0: Hoy > Ludoteca > Comprar):
@@ -135,7 +125,7 @@ Diseño: el de `DESIGN_PLAYBOOK.md`. Sin cambios visuales salvo la entrada y el 
 
 - **BGG:** uso no comercial, app registrada, "Powered by BGG" visible, nada de entrenar IA con los datos. Si algún día se cobra, hace falta licencia comercial (ver `escalabilidad.md`).
 - **Cazagangas / precios en USD:** son de Argentina; se dejan porque el público objetivo es Argentina.
-- **Privacidad:** sin sesión, la colección no sale del navegador. Con sesión de Google se guarda en el servidor (KV): solo el email, el id de Google y la colección (sección 6b).
+- **Privacidad:** no se guarda ninguna colección en el servidor más allá del caché temporal.
 - **Datos y secretos:** el token y los datos crudos no se commitean.
 
 ## 9. Orden de construcción
