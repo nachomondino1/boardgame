@@ -5,6 +5,10 @@ Prototipo de página estática para buscar y filtrar la colección de juegos de 
 Vivo en: https://nachomondino1.github.io/boardgame/
 
 ## Comandos
+Push de branch 'staging' a branch 'MVP'
+git push origin staging:mvp
+
+Luego la web se actualiza sola tras el push.
 
 **Correr la web en local:**
 ```bash
