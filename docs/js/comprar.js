@@ -218,7 +218,7 @@ const COMPARE_ROWS = [
   { label: "Reviews BGG", desc: "Cuánta gente lo puntuó: con más reviews, el puntaje es más confiable.", emoji: "💬", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
   { label: "Ranking BGG", desc: "Posición en el ranking general de BGG (#1 es el mejor). En color, el mejor ubicado.", emoji: "🏆", get: (g) => g.ranking_bgg, format: (v) => `#${Number(v).toLocaleString("es-AR")}`, better: "lower" },
   { label: "Mi puntaje", desc: "Tu propia nota, si la cargaste.", emoji: "🙋", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
-  { label: "Precio estimado (ARS)", desc: "Estimación en pesos: precio de ofertas en BGG × dólar oficial × 2,5. Es una referencia gruesa (puede errar ±25% o más), no un precio de tienda.", emoji: "💵", get: (g) => g.precio_ref_usd, format: (v) => `${formatArsEstimado(v)} (est.)`, better: "lower" },
+  { label: "Precio estimado (ARS)", desc: "Estimación en pesos: precio de ofertas en BGG × dólar oficial × 2,5. Es una referencia gruesa (puede errar ±25% o más), no un precio de tienda.", emoji: "💵", get: (g) => g.precio_ref_usd, format: (v) => formatArsEstimado(v), better: "lower" },
   {
     label: "Ficha BGG", desc: "Link a la página del juego en BoardGameGeek.", emoji: "🔗",
     html: true,
@@ -227,11 +227,14 @@ const COMPARE_ROWS = [
   {
     label: "Precio en Argentina", desc: "Link para ver el precio en Argentina: Cazagangas y, si no está ahí, una búsqueda en Mercado Libre.", emoji: "💰",
     html: true,
-    get: (g) => (g.cazagangas_status === "200" && g.link_cazagangas
-      ? `<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">Ver en Cazagangas ↗</a>`
-      : g.nombre
-        ? `<a href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener">Buscar en Mercado Libre ↗</a>`
-        : null),
+    get: (g) => {
+      const links = [];
+      if (g.cazagangas_status === "200" && g.link_cazagangas) {
+        links.push(`<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">Cazagangas ↗</a>`);
+      }
+      if (g.nombre) links.push(`<a href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener">Mercado Libre ↗</a>`);
+      return links.length ? links.join(" · ") : null;
+    },
   },
   { label: "Diseñador", desc: "Quién lo diseñó.", emoji: "✍️", get: (g) => g.disenador },
   { label: "Mecánicas", desc: "Tipos de reglas que usa (en chico: solo las primeras cinco; la lista completa al pasar el mouse).", emoji: "🧩", lista: true, get: (g) => (g.mecanicas && g.mecanicas.length ? g.mecanicas.join(" · ") : null) },
