@@ -37,3 +37,26 @@
   color: var(--accent-contrast);
   box-shadow: var(--shadow-md);
 }
+
+/* El buscador va en la misma fila que los filtros (a la derecha); en celular pasa arriba, a todo el ancho. */
+.filter-bar .header-search {
+  flex: 0 0 300px;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+
+  /* Base 0: las píldoras se achican y deslizan, así "Limpiar filtros" queda en su misma fila. */
+  .filter-bar .filter-pills {
+    flex: 1 1 0;
+  }
+
+  .filter-bar .header-search {
+    order: -1;
+    flex: 1 0 100%;
+    max-width: none;
+  }
+}
