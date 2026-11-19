@@ -215,3 +215,34 @@
     max-width: none;
   }
 }
+
+/* Ayuda desplegable dentro del popover (p. ej. qué es cada mecánica): cerrada por defecto, con scroll propio. */
+.pill-pop__help {
+  max-width: 240px;
+  margin-top: 10px;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.pill-pop__help summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.pill-pop__help dl {
+  max-height: 200px;
+  margin: 8px 0 0;
+  overflow-y: auto;
+  color: var(--muted);
+}
+
+.pill-pop__help dt {
+  margin-top: 6px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pill-pop__help dd {
+  margin: 0;
+}

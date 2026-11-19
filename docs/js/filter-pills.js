@@ -58,6 +58,7 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
           <p class="pill-pop__title">${escapeHtml(f.titulo)}</p>
           <div class="pill-pop__chips">${chips}</div>
           ${f.nota ? `<p class="pill-pop__note">${escapeHtml(f.nota)}</p>` : ""}
+          ${f.ayuda ? `<details class="pill-pop__help"><summary>${escapeHtml(f.ayudaTitulo || "ℹ️ Ayuda")}</summary><dl>${f.ayuda.map(([t, d]) => `<dt>${escapeHtml(t)}</dt><dd>${escapeHtml(d)}</dd>`).join("")}</dl></details>` : ""}
           ${extra}
         </div>
       </div>`;
