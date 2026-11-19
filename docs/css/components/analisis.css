@@ -1,6 +1,8 @@
 /* Análisis de la ludoteca (js/analisis.js): números y gráficos de barras de una sola serie. */
 
 .analisis {
+  /* Al llegar desde "Ver análisis" el nav fijo no debe tapar el título. */
+  scroll-margin-top: calc(var(--nav-h, 0px) + 16px);
   margin: 48px 0 0;
   padding-top: 32px;
   border-top: 1px solid var(--border-soft);
