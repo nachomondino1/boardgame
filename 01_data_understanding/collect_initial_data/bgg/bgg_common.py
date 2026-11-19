@@ -41,6 +41,9 @@ csv.field_size_limit(10_000_000)  # el dataset de origen (Hugging Face) trae des
 ROOT = Path(__file__).resolve().parent.parent.parent.parent
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
 COLLECTION_PATH = ROOT / "data" / "01_data_understanding" / "bgg_collection.jsonl"
+# Juegos que BGG dejó de devolver (fusionados con otra ficha o borrados): salen de bgg_data.jsonl, y por lo tanto
+# del sitio, y quedan acá "en vigilancia" con su última fila cruda + `fecha_deteccion` y `motivo`.
+WATCH_PATH = ROOT / "data" / "01_data_understanding" / "bgg_juegos_en_vigilancia.jsonl"
 
 DATASET_URL = (
     "https://huggingface.co/datasets/mmpa/board_game_analysis/"
@@ -421,6 +424,58 @@ def upsert_bgg_cache(updates_by_id):
             f.write(json.dumps(_ordered_row(row), ensure_ascii=False))
             f.write("\n")
     return added, updated
+
+
+# ---------------------------------------------------------------------------
+# Juegos en vigilancia (BGG ya no los devuelve)
+# ---------------------------------------------------------------------------
+
+def load_watch():
+    if not WATCH_PATH.exists():
+        return []
+    with WATCH_PATH.open(encoding="utf-8") as f:
+        return [json.loads(line) for line in f if line.strip()]
+
+
+def _write_watch(rows):
+    with WATCH_PATH.open("w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False))
+            f.write("\n")
+
+
+def move_to_watch(ids, fecha, motivo="BGG no lo devuelve (fusionado o borrado)"):
+    """Saca `ids` de bgg_data.jsonl y los guarda en vigilancia con su última fila. Devuelve cuántos movió."""
+    ids = set(ids)
+    rows = load_bgg_cache()
+    moved = [r for r in rows if r.get("bgg_id") in ids]
+    if not moved:
+        return 0
+    watch = {r["bgg_id"]: r for r in load_watch()}
+    for r in moved:
+        watch[r["bgg_id"]] = {**r, "fecha_deteccion": fecha, "motivo": motivo}
+    _write_watch(list(watch.values()))
+    with BGG_DATA_PATH.open("w", encoding="utf-8") as f:
+        for r in rows:
+            if r.get("bgg_id") not in ids:
+                f.write(json.dumps(_ordered_row(r), ensure_ascii=False))
+                f.write("\n")
+    return len(moved)
+
+
+def restore_from_watch(attrs_by_id, fecha):
+    """Vuelve a bgg_data.jsonl los juegos en vigilancia que BGG devolvió de nuevo (`attrs_by_id` = lo que trajo la API)."""
+    watch = load_watch()
+    back = {r["bgg_id"]: r for r in watch if r["bgg_id"] in attrs_by_id}
+    if not back:
+        return 0
+    updates = {}
+    for i, old in back.items():
+        old = {k: v for k, v in old.items() if k not in ("fecha_deteccion", "motivo")}
+        updates[i] = {**old, **{k: v for k, v in attrs_by_id[i].items() if v not in (None, "", [])}, "fecha_actualizacion": fecha}
+    upsert_bgg_cache(updates)
+    _write_watch([r for r in watch if r["bgg_id"] not in back])
+    return len(back)
 
 
 # ---------------------------------------------------------------------------

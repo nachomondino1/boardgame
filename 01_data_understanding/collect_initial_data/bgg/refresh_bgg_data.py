@@ -49,6 +49,7 @@ from bgg_common import (  # noqa: E402
     API_URL, BGG_DATA_PATH, BGG_CACHE_FIELDS, COLLECTION_PATH, http_get,
     fetch_collection, fetch_hot_ids, fetch_things, load_collection, load_env,
     load_bgg_cache, upsert_bgg_cache, write_collection,
+    load_watch, move_to_watch, restore_from_watch,
 )
 
 VOLATILE_FIELDS = [
@@ -182,6 +183,7 @@ def main():
     parser.add_argument("--fields", default="volatile", help="coma-separados, o volatile | all")
     parser.add_argument("--dry-run", action="store_true", help="muestra el diff sin escribir")
     parser.add_argument("--skip-fresh", action="store_true", help="saltea los juegos ya actualizados hoy (para retomar una corrida cortada)")
+    parser.add_argument("--stale", action="store_true", help="solo los juegos que todavía no se actualizaron nunca desde la API (vienen de la copia de 2025)")
     parser.add_argument("--limit", type=int, help="solo los primeros N juegos (para probar)")
     args = parser.parse_args()
 
@@ -193,12 +195,24 @@ def main():
     agregados = add_game(args.add, args.dry_run) if args.add else {}
     resolve_cazagangas({**descubiertos, **agregados}, args.dry_run)
 
+    # Los que están en vigilancia se vuelven a preguntar: si BGG los devuelve otra vez, vuelven al catálogo.
+    en_vigilancia = [r["bgg_id"] for r in load_watch()]
+    if en_vigilancia and not args.dry_run:
+        try:
+            vueltos = restore_from_watch(fetch_things(en_vigilancia), hoy)
+            if vueltos:
+                print(f"{vueltos} juego(s) en vigilancia volvieron a aparecer en BGG y se restauraron.")
+        except Exception as e:  # noqa: BLE001 — la vigilancia no frena el refresh
+            print(f"No pude re-chequear los juegos en vigilancia: {e}", file=sys.stderr)
+
     cache = {r["bgg_id"]: r for r in load_bgg_cache() if r.get("bgg_id")}
     ids = [r["bgg_id"] for r in collection] if args.scope == "coleccion" else sorted(cache, key=int)
     if args.top:
         ranked = sorted((r for r in cache.values() if (r.get("Board Game Rank") or "").isdigit()),
                         key=lambda r: int(r["Board Game Rank"]))[: args.top]
         ids += [r["bgg_id"] for r in ranked if r["bgg_id"] not in ids]
+    if args.stale:
+        ids = [i for i in ids if not cache.get(i, {}).get("fecha_actualizacion")]
     if args.skip_fresh:
         ids = [i for i in ids if cache.get(i, {}).get("fecha_actualizacion") != hoy]
     if args.limit:
@@ -219,11 +233,26 @@ def main():
                   "retomar con --skip-fresh.", file=sys.stderr)
             break
         updates = {}
+        mios = {r["bgg_id"] for r in collection}
+        faltan = [i for i in chunk if i not in fetched]
+        if faltan:  # se confirma uno por uno: que falte dentro de un lote no alcanza para darlo por muerto
+            for i in faltan:
+                time.sleep(5)
+                try:
+                    fetched.update(fetch_things([i]))
+                except Exception:  # noqa: BLE001
+                    pass
         for bgg_id in chunk:
             attrs = fetched.get(bgg_id)
             if attrs is None:
-                print(f"  bgg_id={bgg_id}: BGG no lo devolvió, no se toca.", file=sys.stderr)
                 no_devueltos += 1
+                if bgg_id in mios:
+                    print(f"  bgg_id={bgg_id}: BGG no lo devolvió, pero está en TU colección: no se toca.", file=sys.stderr)
+                elif not args.dry_run and bgg_id in cache:
+                    move_to_watch([bgg_id], hoy)
+                    print(f"  bgg_id={bgg_id} ({cache[bgg_id].get('name')}): BGG no lo devuelve; pasa a vigilancia y sale del catálogo.", file=sys.stderr)
+                else:
+                    print(f"  bgg_id={bgg_id}: BGG no lo devolvió, no se toca.", file=sys.stderr)
                 continue
             row_updates = {"fecha_actualizacion": hoy}
             for field in (ALL_FIELDS if bgg_id in nuevos else fields):
