@@ -19,6 +19,12 @@ function normalize(str) {
     .toLowerCase();
 }
 
+// Búsqueda en Mercado Libre Argentina: "<nombre> juego de mesa". Va en lugar del link a Cazagangas cuando ese no existe.
+function mercadoLibreUrl(nombre) {
+  const slug = normalize(`${nombre} juego de mesa`).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return `https://listado.mercadolibre.com.ar/${slug}`;
+}
+
 // Tramos de complejidad (peso de BGG, 1 a 5) y de duración (minutos): los comparten los filtros de
 // ¿Cuál comprar? y el análisis de Mi ludoteca, para que digan lo mismo.
 // Los cinco niveles de peso que usa BGG (Light, Medium Light, Medium, Medium Heavy, Heavy).
@@ -37,12 +43,52 @@ const BUCKETS_DURACION = [
   { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
 ];
 
-// Precio de referencia en USD (mediana de publicaciones en el marketplace de BGG): solo lo tienen ~1 de cada 5 juegos.
+// Precio estimado en pesos: mediana de publicaciones del marketplace de BGG (USD, solo ~1 de cada 5 juegos)
+// × dólar oficial del día × PRECIO_MULT. El multiplicador sale de comparar 16 juegos con su precio más barato en
+// Cazagangas (nov 2026, dólar oficial $1.580): mediana 2,56; la mitad central va de 1,5 a 3,2. Es una estimación
+// gruesa (error típico ~25%, a veces más del doble): sirve para ubicarse, no para presupuestar. Ver DATA_PLAYBOOK.md.
+const PRECIO_MULT = 2.5;
+const DOLAR_FALLBACK = 1580; // si la API del dólar no responde y no hay uno guardado
+const DOLAR_KEY = "dolar.oficial";
+const DOLAR_TTL_MS = 60 * 60 * 1000;
+let dolarHoy = DOLAR_FALLBACK;
+let dolarFecha = null; // "AAAA-MM-DD" de la última actualización del dólar, si se sabe
+
+// Dólar oficial (venta) de dolarapi.com, guardado 1 hora en el navegador. Devuelve true si el valor cambió.
+function loadDolar() {
+  let guardado = null;
+  try { guardado = JSON.parse(localStorage.getItem(DOLAR_KEY)); } catch (e) { /* sin storage */ }
+  if (guardado && guardado.valor > 0) { dolarHoy = guardado.valor; dolarFecha = guardado.fecha || null; }
+  if (guardado && Date.now() - guardado.at < DOLAR_TTL_MS) return Promise.resolve(false);
+  return fetch("https://dolarapi.com/v1/dolares/oficial")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => {
+      if (!d || !(d.venta > 0)) return false;
+      const fecha = d.fechaActualizacion ? String(d.fechaActualizacion).slice(0, 10) : null;
+      const cambio = d.venta !== dolarHoy || fecha !== dolarFecha;
+      dolarHoy = d.venta;
+      dolarFecha = fecha;
+      try { localStorage.setItem(DOLAR_KEY, JSON.stringify({ valor: d.venta, at: Date.now(), fecha })); } catch (e) { /* sin storage */ }
+      return cambio;
+    })
+    .catch(() => false);
+}
+
+// Pesos estimados, redondeados a los 5 mil más cercanos.
+function precioArsEstimado(usd) {
+  return Math.max(5000, Math.round((usd * dolarHoy * PRECIO_MULT) / 5000) * 5000);
+}
+
+function formatArsEstimado(usd) {
+  return `~$${Math.round(precioArsEstimado(usd) / 1000).toLocaleString("es-AR")} mil`;
+}
+
+// Tramos del filtro de Precio, sobre el precio estimado en pesos (solo los juegos con precio de referencia).
 const BUCKETS_PRECIO = [
-  { id: "20", label: "Hasta US$20", match: (p) => p <= 20 },
-  { id: "40", label: "US$20 a 40", match: (p) => p > 20 && p <= 40 },
-  { id: "80", label: "US$40 a 80", match: (p) => p > 40 && p <= 80 },
-  { id: "mas", label: "Más de US$80", match: (p) => p > 80 },
+  { id: "50", label: "Hasta $50 mil", match: (ars) => ars <= 50000 },
+  { id: "100", label: "$50 a 100 mil", match: (ars) => ars > 50000 && ars <= 100000 },
+  { id: "200", label: "$100 a 200 mil", match: (ars) => ars > 100000 && ars <= 200000 },
+  { id: "mas", label: "Más de $200 mil", match: (ars) => ars > 200000 },
 ];
 
 // Emoji por tipo de juego (no repite ⚔️ comparar, 👥 jugadores ni 🏆 ranking).
@@ -353,12 +399,14 @@ function cardTemplate(g, opts) {
   // dar 404 — ver DATA_PLAYBOOK.md).
   const cazagangasHtml = opts.showCazagangas && g.cazagangas_status === "200"
     ? `<a class="stat stat-link" href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
-    : "";
+    : opts.showCazagangas && g.nombre
+      ? `<a class="stat stat-link" href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="No está en Cazagangas: buscarlo en Mercado Libre">🟡 MELI ↗</a>`
+      : "";
 
-  // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG
-  // (en USD, nuevos o como nuevos) — referencia del exterior, no un precio local.
+  // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG (USD, nuevos o como nuevos).
+  // Se muestra convertido a pesos como estimación (ver PRECIO_MULT).
   const precioRefHtml = opts.showPrecioRef && g.precio_ref_usd != null
-    ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
+    ? `<span class="stat" title="Precio estimado en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.">💵 ${formatArsEstimado(g.precio_ref_usd)} (est.)</span>`
     : "";
 
   // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).
