@@ -95,7 +95,7 @@ function jugadoresCard(own, { titulo, subtitulo, rango, conInsight }) {
 
 const JUGADORES_IDEALES = {
   titulo: "👥 Jugadores ideales",
-  subtitulo: "Tus juegos que funcionan mejor con esa cantidad de gente (según la comunidad de BGG)",
+  subtitulo: "Tus juegos que funcionan mejor con esa cantidad de gente (según la comunidad de BGG). Un juego puede tener más de una cantidad ideal, así que cuenta en cada una (por ejemplo, uno ideal para 2 y 3 aparece en las dos).",
   rango: jugBestRange,
   conInsight: true,
 };
@@ -187,15 +187,14 @@ function renderAnalisis(container, games) {
       ${statTileHtml(ranks.length ? `#${Math.min(...ranks).toLocaleString("es-AR")}` : "–", "mejor ranking BGG")}
     </div>
     <div class="analisis-grid">
-      ${own.length ? jugadoresCard(own, JUGADORES_IDEALES) : ""}
       ${own.length ? jugadoresCard(own, JUGADORES_POSIBLES) : ""}
+      ${own.length ? jugadoresCard(own, JUGADORES_IDEALES) : ""}
       ${own.length ? barChartHtml({ titulo: "⚙️ Complejidad", subtitulo: "Peso del juego según BGG, de 1 a 5", filas: complejidad.filas, nota: notaSinDato(complejidad.sinDato) }) : ""}
       ${own.length ? barChartHtml({ titulo: "⏱ Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
       ${own.length ? modoCard(own) : ""}
       ${own.length ? mecanicasCard(own) : ""}
       ${puntajeCard(games)}
-    </div>
-    ${own.length ? mecanicasGuiaHtml() : ""}`;
+    </div>`;
 
   // Las mecánicas salen de la ficha: se piden una vez y se vuelve a dibujar.
   hydrate(own).then((n) => { if (n) renderAnalisis(container, games); });

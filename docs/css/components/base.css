@@ -216,16 +216,3 @@ select:focus {
     navigation: none;
   }
 }
-
-/* Guía desplegable de mecánicas (shared.js → mecanicasGuiaHtml) */
-.mec-guia { margin: 16px 0; background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius); }
-.mec-guia summary { padding: 12px 16px; font-weight: 700; cursor: pointer; }
-.mec-guia__body { padding: 0 16px 16px; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
-.mec-guia__body p { margin: 0 0 10px; }
-.mec-guia__difs { margin: 0 0 10px; padding-left: 20px; }
-.mec-guia__sub { font-weight: 700; color: var(--text); }
-.mec-guia__grupo { margin: 16px 0 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
-.mec-guia__lista { margin: 0; }
-.mec-guia__lista dt { margin-top: 8px; font-weight: 700; color: var(--text); }
-.mec-guia__lista dd { margin: 0; }
-.mec-guia__ej { color: var(--muted-soft); font-style: italic; }
