@@ -59,7 +59,8 @@ export async function onRequestGet({ request, env }) {
   }
 
   const cache = typeof caches !== "undefined" ? caches.default : null;
-  const cacheKey = new Request(`${url.origin}/api/collection?user=${encodeURIComponent(user.toLowerCase())}`);
+  // v2: invalida las respuestas cacheadas antes de que existiera wanttoplay (sin ese campo no se ve "Quiero probar").
+  const cacheKey = new Request(`${url.origin}/api/collection?v=2&user=${encodeURIComponent(user.toLowerCase())}`);
   if (cache) {
     const hit = await cache.match(cacheKey);
     if (hit) return hit;
