@@ -77,6 +77,8 @@ def main():
         cazagangas = cazagangas_index.get(bgg_id)
         row["link_cazagangas"] = cazagangas["link_cazagangas"] if cazagangas else None
         row["cazagangas_status"] = cazagangas["status_http"] if cazagangas else None
+        row["precio_cazagangas"] = cazagangas.get("precio_ars") if cazagangas else None
+        row["fecha_precio_cazagangas"] = cazagangas.get("fecha_precio") if cazagangas else None
 
         integrated.append(row)
 

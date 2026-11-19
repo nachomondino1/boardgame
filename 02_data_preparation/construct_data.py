@@ -303,6 +303,7 @@ def build_game(row, grupo):
         "dependencia_idioma": dependencia_idioma(row.get("suggested_language_dependence")),
         "edad_comunidad": to_int(num(re.sub(r"\D.*", "", edad_comunidad))) if edad_comunidad else None,
         "precio_ref_usd": marketplace_mediana_usd(row.get("marketplacelistings")),
+        "precio_ars": row.get("precio_cazagangas"),  # el más barato hoy en Cazagangas; null si no se miró o no hay stock
     })
     return game
 

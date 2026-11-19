@@ -83,6 +83,27 @@ function formatArsEstimado(usd) {
   return `~$${Math.round(precioArsEstimado(usd) / 1000).toLocaleString("es-AR")} mil`;
 }
 
+// Día del precio de Cazagangas más reciente (data/meta.json, la pone cada página que lo muestra).
+let fechaPreciosCazagangas = null;
+
+// Precio en pesos de un juego: el real (el más barato hoy en Cazagangas, `precio_ars`) si lo tiene; si no, el
+// estimado a partir del marketplace de BGG. null si no hay ninguno. `real` distingue uno del otro.
+function precioDe(g) {
+  if (g.precio_ars != null) return { valor: g.precio_ars, real: true };
+  if (g.precio_ref_usd != null) return { valor: precioArsEstimado(g.precio_ref_usd), real: false };
+  return null;
+}
+
+function fechaLargaCorta(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("es-AR", { day: "numeric", month: "long" });
+}
+
+// Real: "$158.940". Estimado: "~$295 mil" (el ~ avisa que no es un precio de tienda).
+function formatPrecio(p) {
+  return p.real ? `$${Math.round(p.valor).toLocaleString("es-AR")}` : `~$${Math.round(p.valor / 1000).toLocaleString("es-AR")} mil`;
+}
+
 // Tramos del filtro de Precio, sobre el precio estimado en pesos (solo los juegos con precio de referencia).
 const BUCKETS_PRECIO = [
   { id: "50", label: "Hasta $50 mil", match: (ars) => ars <= 50000 },
@@ -405,10 +426,14 @@ function cardTemplate(g, opts) {
     ? `<a class="stat stat-link" href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="Buscar en Mercado Libre">🟡 MELI ↗</a>`
     : "";
 
-  // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG (USD, nuevos o como nuevos).
-  // Se muestra convertido a pesos como estimación (ver PRECIO_MULT).
-  const precioRefHtml = opts.showPrecioRef && g.precio_ref_usd != null
-    ? `<span class="stat" title="Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.">💵 ${formatArsEstimado(g.precio_ref_usd)}</span>`
+  // Precio en pesos: el real de Cazagangas si lo tiene (precio_ars) y, si no, el estimado desde el marketplace
+  // de BGG (precio_ref_usd, USD, nuevos o como nuevos) — ver precioDe() y PRECIO_MULT.
+  const precio = opts.showPrecioRef ? precioDe(g) : null;
+  const precioTitulo = !precio ? "" : precio.real
+    ? `Precio más barato hoy en Cazagangas, entre las tiendas argentinas que lo tienen${fechaPreciosCazagangas ? ` (actualizado el ${fechaLargaCorta(fechaPreciosCazagangas)})` : ""}.`
+    : `Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.`;
+  const precioRefHtml = precio
+    ? `<span class="stat" title="${escapeHtml(precioTitulo)}">💵 ${formatPrecio(precio)}</span>`
     : "";
 
   // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).

@@ -45,9 +45,9 @@ function matchesFilters(g) {
     if (g.complejidad == null || !BUCKETS_COMPLEJIDAD.some((b) => state.complejidades.has(b.id) && b.match(g.complejidad))) return false;
   }
   if (state.precios.size > 0) {
-    if (g.precio_ref_usd == null) return false;
-    const ars = precioArsEstimado(g.precio_ref_usd);
-    if (!BUCKETS_PRECIO.some((b) => state.precios.has(b.id) && b.match(ars))) return false;
+    const precio = precioDe(g);
+    if (!precio) return false;
+    if (!BUCKETS_PRECIO.some((b) => state.precios.has(b.id) && b.match(precio.valor))) return false;
   }
   if (state.mecanicas.size > 0) {
     const tiene = g.mecs || [];
@@ -150,8 +150,8 @@ const FILTROS = [
   { id: "complejidades", titulo: "Complejidad", icono: "⚙️", multiple: true,
     opciones: BUCKETS_COMPLEJIDAD.map((b) => ({ ...b, hint: `Peso en BGG: ${b.hint}` })) },
   { id: "precios", titulo: "Precio", icono: "💵", multiple: true,
-    nota: "⚠️ Precios totalmente estimados (precio de BGG × dólar × 2,5): sirven de referencia, no son de tienda. Además, solo ~1 de cada 5 juegos tiene precio: al elegir un rango, el resto desaparece.",
-    opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Precio estimado en pesos" })) },
+    nota: "Con precio de Cazagangas es el real (el más barato). Sin él es una estimación (con ~: precio de BGG × dólar × 2,5, no de tienda). Algunos juegos no tienen ni una cosa ni la otra: al elegir un rango, esos desaparecen.",
+    opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Precio en pesos (real o estimado)" })) },
   { id: "decadas", titulo: "Década", icono: "📅", multiple: true, opciones: BUCKETS_DECADA },
   { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: modoLabel(t) })) },
 ];
@@ -218,7 +218,7 @@ const COMPARE_ROWS = [
   { label: "Reviews BGG", desc: "Cuánta gente lo puntuó: con más reviews, el puntaje es más confiable.", emoji: "💬", get: (g) => g.reviews_bgg, format: (v) => v.toLocaleString("es-AR") },
   { label: "Ranking BGG", desc: "Posición en el ranking general de BGG (#1 es el mejor). En color, el mejor ubicado.", emoji: "🏆", get: (g) => g.ranking_bgg, format: (v) => `#${Number(v).toLocaleString("es-AR")}`, better: "lower" },
   { label: "Mi puntaje", desc: "Tu propia nota, si la cargaste.", emoji: "🙋", get: (g) => g.mi_puntaje, format: (v) => `${v}/10`, better: "higher" },
-  { label: "Precio estimado (ARS)", desc: "Estimación en pesos: precio de ofertas en BGG × dólar oficial × 2,5. Es una referencia gruesa (puede errar ±25% o más), no un precio de tienda.", emoji: "💵", get: (g) => g.precio_ref_usd, format: (v) => formatArsEstimado(v), better: "lower" },
+  { label: "Precio (ARS)", desc: "Precio en pesos: el más barato hoy en Cazagangas si lo tiene; si no, una estimación (con ~) a partir de las ofertas de BGG × dólar oficial × 2,5, que puede errar ±25% o más.", emoji: "💵", get: (g) => { const p = precioDe(g); return p ? p.valor : null; }, format: (v, g) => formatPrecio(precioDe(g)), better: "lower" },
   {
     label: "Ficha BGG", desc: "Link a la página del juego en BoardGameGeek.", emoji: "🔗",
     html: true,
@@ -259,7 +259,7 @@ function compareCellHtml(game, row, winner) {
     return `<td class="compare-cell compare-cell--lista" title="${escapeHtml(String(raw))}">${escapeHtml(texto)}</td>`;
   }
   if (row.html) return `<td class="${cls}">${raw}</td>`;  // raw ya viene con su propio escapeHtml en el valor dinámico (ver get())
-  const text = row.format ? row.format(typeof raw === "string" ? Number(raw) : raw) : raw;
+  const text = row.format ? row.format(typeof raw === "string" ? Number(raw) : raw, game) : raw;
   return `<td class="${cls}">${escapeHtml(String(text))}</td>`;
 }
 
@@ -423,13 +423,14 @@ function renderAvisoPrecios() {
   const el = document.getElementById("precio-aviso");
   const dolar = `dólar oficial a $${Math.round(dolarHoy).toLocaleString("es-AR")}${dolarFecha ? ` (actualizado el ${fechaLarga(dolarFecha)})` : ""}`;
   const bgg = datosBggFecha ? ` y avisos de venta de BGG al ${fechaLarga(datosBggFecha)}` : "";
-  el.innerHTML = `💵 <strong>Los precios en pesos son totalmente estimados</strong>: no son de tienda y pueden errar un ±25% o más. Se calculan con el ${dolar}${bgg}.`;
+  const real = fechaPreciosCazagangas ? `Los precios sin ~ son los más baratos en Cazagangas al ${fechaLarga(fechaPreciosCazagangas)}. ` : "";
+  el.innerHTML = `💵 ${real}<strong>Los que llevan ~ son totalmente estimados</strong>: no son de tienda y pueden errar un ±25% o más. Se calculan con el ${dolar}${bgg}.`;
   el.hidden = false;
 }
 
 // El dólar guardado se lee ya (antes del primer render); si hay que pedir uno nuevo, se redibuja al llegar.
 const dolarListo = loadDolar();
-fetch("data/meta.json").then((r) => (r.ok ? r.json() : null)).then((m) => { if (m && m.actualizado) { datosBggFecha = m.actualizado; renderAvisoPrecios(); } }).catch(() => {});
+fetch("data/meta.json").then((r) => (r.ok ? r.json() : null)).then((m) => { if (m && m.actualizado) { datosBggFecha = m.actualizado; fechaPreciosCazagangas = m.precios_cazagangas || null; renderAvisoPrecios(); if (GAMES.length) render(); } }).catch(() => {});
 
 loadGames()
   .then((data) => {
