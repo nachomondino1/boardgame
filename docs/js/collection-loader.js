@@ -1,6 +1,6 @@
 // "Cargá tus juegos": panel para armar la colección del visitante. Dos vías:
 // usuario de BGG (se activa con la función /api/collection) y marcar a mano
-// buscando en names.json. Se guarda en localStorage (ver shared.js). Cada vez
+// buscando en names.json. Se guarda en localStorage y, con sesión de Google, también en la cuenta (ver shared.js). Cada vez
 // que cambia la colección llama a onChange para que la página se actualice.
 
 const MAX_RESULTS = 20;
@@ -21,6 +21,7 @@ function mountCollectionLoader(container, { onChange }) {
 
   container.innerHTML = `
     <div class="col-loader">
+      <div class="col-account" data-account hidden></div>
       <p class="col-intro">Acá se arma tu ludoteca: los juegos que tenés, los que tuviste y los que querés comprar. Cargalos de <b>una</b> de estas dos formas (después podés combinarlas):</p>
       <div class="col-options">
         <section class="col-option">
@@ -57,6 +58,7 @@ function mountCollectionLoader(container, { onChange }) {
   const resultsEl = container.querySelector("[data-results]");
   const mineEl = container.querySelector("[data-mine]");
   const savedEl = container.querySelector("[data-saved]");
+  const accountEl = container.querySelector("[data-account]");
   // La lista completa va plegada cuando es larga (con una colección de BGG pueden ser 60+ juegos),
   // para que no empuje hacia abajo el resto de la página; el título muestra cuántos hay.
   const mineDetails = container.querySelector("[data-mine-details]");
@@ -74,6 +76,32 @@ function mountCollectionLoader(container, { onChange }) {
       ? new Date(collection.savedAt).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false })
       : "";
     return `✓ Guardado en este navegador${hora ? ` a las ${hora}` : ""}. Podés cambiar de página tranquilo.`;
+  }
+
+  // Cuenta de Google: con sesión, la colección se guarda también en el servidor
+  // (la lógica está en shared.js); acá solo se muestra el estado y los botones.
+  const SYNC_LABELS = {
+    saving: "Guardando…",
+    saved: "✓ Sincronizada",
+    error: "⚠ No pude sincronizar: queda guardada solo en este navegador",
+    expired: "Tu sesión venció, volvé a iniciarla",
+  };
+
+  function renderAccount() {
+    accountEl.hidden = !accountAvailable();
+    if (accountEl.hidden) return;
+    const email = accountEmail();
+    if (email) {
+      const state = SYNC_LABELS[window.mvpSyncState] || "";
+      accountEl.innerHTML = `
+        <span class="col-account__text">☁ Tu ludoteca se guarda en tu cuenta <b>${escapeHtml(email)}</b>${state ? ` · <span class="col-account__state">${state}</span>` : ""}</span>
+        <button type="button" class="col-account__btn" data-logout>Cerrar sesión</button>`;
+    } else {
+      const next = encodeURIComponent(location.pathname + location.search);
+      accountEl.innerHTML = `
+        <span class="col-account__text">☁ Iniciá sesión para guardar tu ludoteca y tenerla en todos tus dispositivos.</span>
+        <a class="col-account__btn col-account__btn--primary" href="/api/auth/google?next=${next}">Iniciar sesión con Google</a>`;
+    }
   }
 
   function flagActivo(entry) {
@@ -236,14 +264,37 @@ function mountCollectionLoader(container, { onChange }) {
     if (remove) removeGame(remove.dataset.remove);
   });
   container.querySelector("[data-clear]").addEventListener("click", () => {
-    if (!confirm("¿Borrar toda tu colección de este navegador?")) return;
+    const donde = accountEmail() ? "de este navegador y de tu cuenta" : "de este navegador";
+    if (!confirm(`¿Borrar toda tu colección ${donde}?`)) return;
     collection = emptyCollection();
     persist();
     render();
     onChange(collection);
   });
 
+  accountEl.addEventListener("click", async (e) => {
+    if (!e.target.closest("[data-logout]")) return;
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    document.cookie = "mvp_user=; Max-Age=0; Path=/";
+    window.mvpSyncState = null;
+    renderAccount();
+  });
+  window.addEventListener("mvp:sync", renderAccount);
+
   // Si ya había una colección guardada, hace falta names.json para mostrar los nombres.
   if (Object.keys(collection.games).length) ensureNames();
+  renderAccount();
   render();
+
+  // Con sesión, shared.js baja la colección de la cuenta al cargar: si trajo una
+  // más nueva, se vuelve a leer y se avisa a la página.
+  syncReady.then((changed) => {
+    if (!changed) return;
+    collection = loadCollection();
+    mineDetails.open = Object.keys(collection.games).length <= 8;
+    if (Object.keys(collection.games).length) ensureNames();
+    if (collection.source === "bgg" && collection.user) userForm.elements.user.value = collection.user;
+    render();
+    onChange(collection);
+  });
 }

@@ -204,15 +204,136 @@ function loadCollection() {
 }
 
 // Devuelve false si no se pudo guardar (queda solo en memoria de esta página).
+// Con sesión iniciada, además la sube a la cuenta (ver "Cuenta" más abajo).
 function saveCollection(collection) {
   collection.savedAt = new Date().toISOString();
+  let saved = true;
   try {
     localStorage.setItem(COLLECTION_KEY, JSON.stringify(collection));
-    return true;
   } catch (e) {
-    return false;
+    saved = false;
+  }
+  if (accountEmail()) schedulePush(collection);
+  return saved;
+}
+
+// --- Cuenta (Google) y sincronización ---
+// La página sigue leyendo y escribiendo en localStorage (rápido, anda sin
+// conexión); con sesión iniciada la colección además se guarda en el servidor
+// (/api/sync) y se baja al abrir cualquier página. La cookie legible mvp_user
+// (solo el email) avisa si hay sesión sin tener que preguntarle al servidor.
+// Gana la copia con el savedAt más nuevo. Ver MVP.md, sección 6b.
+
+const SYNCED_KEY = "mvp.syncedFor";
+let pushTimer = null;
+let pendingPush = null;
+
+function accountEmail() {
+  const m = document.cookie.match(/(?:^|; )mvp_user=([^;]*)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+// En GitHub Pages (staging) no hay servidor: no se ofrece iniciar sesión.
+function accountAvailable() {
+  return !location.hostname.endsWith("github.io");
+}
+
+// "saving" | "saved" | "error" | "expired": lo escuchan los paneles que muestran el estado.
+function setSyncState(state) {
+  window.mvpSyncState = state;
+  window.dispatchEvent(new CustomEvent("mvp:sync", { detail: { state } }));
+}
+
+function expireSession() {
+  document.cookie = "mvp_user=; Max-Age=0; Path=/";
+  setSyncState("expired");
+}
+
+function schedulePush(collection) {
+  pendingPush = collection;
+  setSyncState("saving");
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(flushPush, 800);
+}
+
+async function flushPush() {
+  clearTimeout(pushTimer);
+  const collection = pendingPush;
+  pendingPush = null;
+  if (!collection) return;
+  const email = accountEmail();
+  if (!email) return;
+  const body = JSON.stringify({ collection });
+  try {
+    const r = await fetch("/api/sync", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: body.length < 60000, // sobrevive al cierre de la pestaña, si entra en el límite
+    });
+    if (r.status === 401) return expireSession();
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    try { localStorage.setItem(SYNCED_KEY, email); } catch (e) { /* sin memoria local */ }
+    setSyncState("saved");
+  } catch (e) {
+    setSyncState("error");
   }
 }
+
+// Si se cierra o se esconde la pestaña con un cambio sin subir, se sube ya.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && pendingPush) flushPush();
+});
+
+function sameGames(a, b) {
+  const ka = Object.keys(a.games);
+  return ka.length === Object.keys(b.games).length
+    && ka.every((id) => b.games[id] && JSON.stringify(a.games[id]) === JSON.stringify(b.games[id]));
+}
+
+// Al abrir una página con sesión: baja la colección de la cuenta y decide cuál
+// manda. Resuelve true si cambió la colección local (para que la página se
+// vuelva a pintar). Nunca rechaza: si falla, la página sigue con lo local.
+async function pullAccount() {
+  if (!accountEmail()) return false;
+  let data;
+  try {
+    const r = await fetch("/api/sync", { signal: AbortSignal.timeout(4000) });
+    if (r.status === 401) { expireSession(); return false; }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    data = await r.json();
+  } catch (e) {
+    setSyncState("error");
+    return false;
+  }
+  const local = loadCollection();
+  const remote = data.collection;
+  const localCount = Object.keys(local.games).length;
+  const remoteCount = remote ? Object.keys(remote.games).length : 0;
+  let useRemote = false;
+  if (remote && !localCount) {
+    useRemote = true;
+  } else if (remote && localStorage.getItem(SYNCED_KEY) !== data.email && !sameGames(local, remote)) {
+    // Primera vez que este navegador se conecta a esta cuenta y hay dos ludotecas distintas.
+    useRemote = confirm(
+      `Tu cuenta (${data.email}) ya tiene una ludoteca guardada con ${remoteCount} juegos, y este navegador tiene otra con ${localCount}.\n\n`
+      + "Aceptar: usar la de tu cuenta (reemplaza la de este navegador).\n"
+      + "Cancelar: quedarme con la de este navegador (reemplaza la de tu cuenta).");
+  } else if (remote) {
+    useRemote = (remote.savedAt || "") > (local.savedAt || "");
+  }
+  try { localStorage.setItem(SYNCED_KEY, data.email); } catch (e) { /* sin memoria local */ }
+  if (useRemote) {
+    try { localStorage.setItem(COLLECTION_KEY, JSON.stringify(remote)); } catch (e) { return false; }
+    setSyncState("saved");
+    return true;
+  }
+  if (localCount && (!remote || !sameGames(local, remote))) schedulePush(local);
+  else setSyncState("saved");
+  return false;
+}
+
+const syncReady = pullAccount().catch(() => false);
 
 // Misma regla que estado_de() en construct_data.py: Own > Prev. owned >
 // Want to buy, y Watchlist para todo lo que no está marcado.
@@ -224,26 +345,27 @@ function estadoDe(entry) {
 }
 
 function loadGames() {
-  const collection = loadCollection().games;
-  return fetch("data/index.json")
-    .then((r) => {
-      if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(({ cols, rows, mecanicas }) => {
-      MECANICAS_VOCAB = mecanicas || [];
-      return rows.map((row) => {
-        const g = {};
-        cols.forEach((c, i) => { g[c] = row[i]; });
-        g._tramo = g.tramo;
-        delete g.tramo;
-        g.bgg_url = `https://boardgamegeek.com/boardgame/${g.bgg_id}`;
-        const entry = collection[g.bgg_id];
-        g.estado = estadoDe(entry);
-        g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
-        return g;
-      });
+  const indexPromise = fetch("data/index.json").then((r) => {
+    if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
+    return r.json();
+  });
+  // Con sesión iniciada, antes de calcular estado y mi_puntaje hay que saber si
+  // la cuenta trae una colección más nueva (pullAccount, en paralelo al índice).
+  return Promise.all([indexPromise, syncReady]).then(([{ cols, rows, mecanicas }]) => {
+    const collection = loadCollection().games;
+    MECANICAS_VOCAB = mecanicas || [];
+    return rows.map((row) => {
+      const g = {};
+      cols.forEach((c, i) => { g[c] = row[i]; });
+      g._tramo = g.tramo;
+      delete g.tramo;
+      g.bgg_url = `https://boardgamegeek.com/boardgame/${g.bgg_id}`;
+      const entry = collection[g.bgg_id];
+      g.estado = estadoDe(entry);
+      g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
+      return g;
     });
+  });
 }
 
 // Vuelve a calcular estado y mi_puntaje de los juegos ya cargados (después de

@@ -14,3 +14,5 @@ data/02_data_preparation/integrated_data.jsonl
 data/01_data_understanding/
 
 .env
+# KV de juguete del dev-server (cuentas en local)
+.dev-kv.json

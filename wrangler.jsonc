@@ -4,6 +4,9 @@
   "compatibility_date": "2025-10-01",
   // Los deploys desde GitHub no tienen que borrar las variables cargadas a mano en el panel (BGG_TOKEN).
   "keep_vars": true,
+  // Colección de cada usuario con sesión (ver MVP.md 6b). Si el deploy no la crea sola:
+  //   npx wrangler kv namespace create COLLECTIONS   y pegar el id acá.
+  "kv_namespaces": [{ "binding": "COLLECTIONS" }],
   "assets": {
     "directory": "./docs",
     "binding": "ASSETS"
