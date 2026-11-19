@@ -1,0 +1,3 @@
+# Cloudflare no acepta assets de más de 25 MiB: data.json (30 MiB) es solo la entrada del build
+# del catálogo y el sitio ya no lo pide (usa names/index/games). GitHub Pages sí lo sigue sirviendo.
+data/data.json
