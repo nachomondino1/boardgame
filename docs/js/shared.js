@@ -399,14 +399,16 @@ function cardTemplate(g, opts) {
   // dar 404 — ver DATA_PLAYBOOK.md).
   const cazagangasHtml = opts.showCazagangas && g.cazagangas_status === "200"
     ? `<a class="stat stat-link" href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
-    : opts.showCazagangas && g.nombre
-      ? `<a class="stat stat-link" href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="No está en Cazagangas: buscarlo en Mercado Libre">🟡 MELI ↗</a>`
-      : "";
+    : "";
+  // Mercado Libre (MELI) va siempre: aunque esté en Cazagangas, ahí se ve si se consigue más barato.
+  const meliHtml = opts.showCazagangas && g.nombre
+    ? `<a class="stat stat-link" href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="Buscar en Mercado Libre">🟡 MELI ↗</a>`
+    : "";
 
   // precio_ref_usd: mediana de publicaciones recientes del marketplace de BGG (USD, nuevos o como nuevos).
   // Se muestra convertido a pesos como estimación (ver PRECIO_MULT).
   const precioRefHtml = opts.showPrecioRef && g.precio_ref_usd != null
-    ? `<span class="stat" title="Precio estimado en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.">💵 ${formatArsEstimado(g.precio_ref_usd)} (est.)</span>`
+    ? `<span class="stat" title="Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.">💵 ${formatArsEstimado(g.precio_ref_usd)}</span>`
     : "";
 
   // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).
@@ -415,11 +417,12 @@ function cardTemplate(g, opts) {
     ? `<a class="stat stat-link" href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" title="Buscar reseñas en YouTube">▶ Reviews ↗</a>`
     : "";
 
-  const compraHtml = (cazagangasHtml || precioRefHtml || youtubeHtml)
+  const compraHtml = (cazagangasHtml || meliHtml || precioRefHtml || youtubeHtml)
     ? `
       <div class="stat-row">
         ${precioRefHtml}
         ${cazagangasHtml}
+        ${meliHtml}
         ${youtubeHtml}
       </div>`
     : "";
