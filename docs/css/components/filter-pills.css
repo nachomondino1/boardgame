@@ -3,9 +3,14 @@
 .filter-bar {
   margin-top: 14px;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .filter-pills {
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -136,7 +141,7 @@
   cursor: not-allowed;
 }
 
-/* "Limpiar filtros": una acción de texto en la fila de resultados, separada de las píldoras. */
+/* Fila de resultados: conteo, avisos y orden. */
 .result-left {
   display: flex;
   align-items: center;
@@ -145,9 +150,11 @@
 }
 
 .clear-filters {
-  padding: 0 0 0 14px;
+  flex: none;
+  padding: 0 0 0 12px;
   border: 0;
   border-left: 1px solid var(--border);
+  white-space: nowrap;
   background: none;
   color: var(--accent);
   font: inherit;
@@ -165,19 +172,6 @@
 }
 
 @media (max-width: 640px) {
-  /* "Limpiar filtros" sube a su propia fila, justo debajo de las píldoras y arriba del conteo. */
-  .result-left {
-    display: contents;
-  }
-
-  .clear-filters {
-    order: -1;
-    flex: 1 0 100%;
-    padding: 0;
-    border-left: 0;
-    text-align: left;
-  }
-
   /* En celular las píldoras corren en una sola fila deslizable (no ocupan alto de más en el
      encabezado fijo) y el menú se abre debajo, a todo el ancho. */
   /* Centrado + fila deslizable cortaría la primera píldora (no se puede deslizar hacia la izquierda):

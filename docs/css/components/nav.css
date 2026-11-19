@@ -13,6 +13,7 @@
 
   /* El sticky va en #nav (hijo directo del body): dentro de .top-nav no tendría recorrido. */
   #nav {
+    min-height: var(--nav-h); /* reserva el lugar antes de que se dibuje el nav */
     position: sticky;
     top: 0;
     z-index: 30;

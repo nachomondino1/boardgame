@@ -79,7 +79,6 @@ body {
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
-  padding-bottom: 64px;
 }
 
 main {
@@ -114,10 +113,6 @@ select:focus {
 }
 
 @media (max-width: 640px) {
-  body {
-    padding-bottom: 76px;
-  }
-
   main {
     padding-left: 16px;
     padding-right: 16px;
@@ -133,6 +128,14 @@ select:focus {
   padding: 2rem 1rem;
   background: var(--nav-bg);
   border-top: 1px solid var(--nav-border);
+}
+
+/* Lugar para la barra de navegación fija de abajo (solo en celular): va dentro del footer, no en el
+   body, para que el color del footer llegue hasta el final de la página. */
+@media (max-width: 640px) {
+  .site-footer {
+    padding-bottom: calc(2rem + 76px);
+  }
 }
 
 .data-stamp {

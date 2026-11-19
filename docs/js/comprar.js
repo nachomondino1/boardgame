@@ -20,18 +20,19 @@ const state = {
   precios: new Set(), // ids de BUCKETS_PRECIO; vacío = todos. Con alguno elegido, solo entran juegos con precio de referencia
   jugadores: null,
   soloMejor: false,
-  soloQuieroComprar: false,
+  estados: new Set(), // "comprar" / "probar"; vacío = todos (en seguimiento, quiero comprar y quiero probar)
   sort: "ranking_bgg_asc",
   visibleCount: PAGE_SIZE,
 };
 
-const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy"]);
+const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy", "Want to play"]);
 
 function matchesFilters(g) {
-  if (state.soloQuieroComprar) {
-    if (g.estado !== "Want to buy") return false;
-  } else if (!ESTADOS_COMPRA.has(g.estado)) {
-    return false;
+  if (!ESTADOS_COMPRA.has(g.estado)) return false;
+  if (state.estados.size > 0) {
+    const coincide = (state.estados.has("comprar") && g.estado === "Want to buy")
+      || (state.estados.has("probar") && g.quiere_probar);
+    if (!coincide) return false;
   }
   if (state.query) {
     if (!matchesNombre(g, state.query)) return false;
@@ -75,7 +76,9 @@ function render() {
   const visible = grouped.slice(0, state.visibleCount);
 
   count.textContent = grouped.length
-    ? `${visible.length} de ${grouped.length} juego${grouped.length === 1 ? "" : "s"}`
+    ? (visible.length === grouped.length
+      ? `${grouped.length} juego${grouped.length === 1 ? "" : "s"}`
+      : `Mostrando ${visible.length} de ${grouped.length} juegos`)
     : "0 juegos";
 
   grid.innerHTML = visible.length
@@ -134,6 +137,9 @@ function scheduleFilterChange(delayMs = 150) {
 const MAX_JUGADORES_FILTRO = 8;
 
 const FILTROS = [
+  { id: "estados", titulo: "Estado", icono: "📌", multiple: true,
+    nota: "Sin elegir ninguno se ven todos, también los que solo tenés en seguimiento.",
+    opciones: [{ id: "comprar", label: "Quiero comprar" }, { id: "probar", label: "Quiero probar" }] },
   { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false, numero: true,
     unidad: (n) => `${n} jugador${n === 1 ? "" : "es"}`,
     opciones: Array.from({ length: MAX_JUGADORES_FILTRO }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })),
@@ -163,7 +169,6 @@ function setupControls() {
 
   mountFilterPills(document.getElementById("filter-pills"), {
     filters: FILTROS,
-    toggles: [{ key: "soloQuieroComprar", label: "Solo quiero comprar", icono: "🛒" }],
     state,
     clearButton: document.getElementById("clear-filters"),
     onChange: onFilterChange,
@@ -396,8 +401,6 @@ function setupCompareControls() {
   }
   syncCompareButtons();
 }
-
-document.getElementById("nav").innerHTML = navTemplate("comprar.html");
 
 loadGames()
   .then((data) => {
