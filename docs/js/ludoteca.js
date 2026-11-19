@@ -41,8 +41,6 @@ function setupControls() {
 
 }
 
-document.getElementById("nav").innerHTML = navTemplate("ludoteca.html");
-
 const detailsEl = document.getElementById("col-details");
 mountCollectionLoader(document.getElementById("collection-loader"), {
   onChange: () => {

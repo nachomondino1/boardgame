@@ -31,12 +31,12 @@
 </head>
 <body>
   <div id="nav"></div>
+  <script src="js/nav.js"></script>
   <header>
     <div class="header-inner">
       <div class="header-top">
         <div class="header-titles">
           <h1 class="sr-only">¿Cuál comprar?</h1>
-          <a class="price-link" href="https://www.cazagangas.com.ar" target="_blank" rel="noopener">💰 Ver precios en Argentina (Cazagangas) ↗</a>
         </div>
         <div class="header-search">
           <div class="search-box">
@@ -46,6 +46,7 @@
       </div>
       <div class="filter-bar">
         <div class="filter-pills" id="filter-pills"></div>
+        <button type="button" class="clear-filters" id="clear-filters" hidden></button>
       </div>
     </div>
   </header>
@@ -53,7 +54,7 @@
     <div class="result-left">
       <span id="result-count"></span>
       <span class="compare-tip" id="compare-tip">· Tocá <b>⚔️</b> en hasta 4 juegos para compararlos lado a lado</span>
-      <button type="button" class="clear-filters" id="clear-filters" hidden></button>
+      <a class="price-link" href="https://www.cazagangas.com.ar" target="_blank" rel="noopener">💰 Ver precios en Argentina (Cazagangas) ↗</a>
     </div>
     <label class="sort-control" for="sort-select">
       <span class="sort-icon" aria-hidden="true">⇅</span>

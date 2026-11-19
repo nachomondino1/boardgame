@@ -1,7 +1,5 @@
 // Landing (index.html): nav, "Cargá tus juegos" y el paso siguiente.
 // Con juegos cargados, el CTA del hero y un bloque debajo del panel llevan a ¿Qué jugamos hoy?.
-document.getElementById("nav").innerHTML = navTemplate("index.html");
-
 function actualizarSiguiente() {
   const own = Object.values(loadCollection().games).filter((g) => g.own).length;
   const siguiente = document.getElementById("siguiente");

@@ -160,8 +160,6 @@ function setupControls() {
   });
 }
 
-document.getElementById("nav").innerHTML = navTemplate("hoy.html");
-
 
 loadGames()
   .then((data) => {
