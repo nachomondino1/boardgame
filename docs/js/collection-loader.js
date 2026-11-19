@@ -10,6 +10,7 @@ const ESTADOS_MARCABLES = [
   { label: "Lo tengo", flag: "own" },
   { label: "Lo tuve", flag: "prevowned" },
   { label: "Quiero comprar", flag: "wanttobuy" },
+  { label: "Quiero probar", flag: "wanttoplay" },
 ];
 
 function mountCollectionLoader(container, { onChange }) {
@@ -93,7 +94,7 @@ function mountCollectionLoader(container, { onChange }) {
   }
 
   function setFlag(id, flag) {
-    const entry = collection.games[id] || { own: false, prevowned: false, wanttobuy: false, rating: null };
+    const entry = collection.games[id] || { own: false, prevowned: false, wanttobuy: false, wanttoplay: false, rating: null };
     const activar = flagActivo(entry) !== flag;
     ESTADOS_MARCABLES.forEach((e) => { entry[e.flag] = activar && e.flag === flag; });
     guardarEntrada(id, entry);
@@ -207,7 +208,7 @@ function mountCollectionLoader(container, { onChange }) {
         return;
       }
       const games = {};
-      result.games.forEach((g) => { games[g.id] = { own: g.own, prevowned: g.prevowned, wanttobuy: g.wanttobuy, rating: g.rating }; });
+      result.games.forEach((g) => { games[g.id] = { own: g.own, prevowned: g.prevowned, wanttobuy: g.wanttobuy, wanttoplay: g.wanttoplay, rating: g.rating }; });
       collection = { source: "bgg", user: result.user, savedAt: null, games };
       persist();
       await ensureNames();

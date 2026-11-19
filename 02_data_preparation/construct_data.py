@@ -19,7 +19,7 @@ duracion y modo: derivadas 100% de datos de BGG (mecánicas, categorías,
 duración mín./máx. — infer_modo, acá abajo).
 
 `estado` y `mi_puntaje` salen de tu colección en BGG (bgg_collection.jsonl):
-Own > Prev. owned > Want to buy, y "Watchlist" para todo lo demás.
+Own > Prev. owned > Want to buy > Want to play, y "Watchlist" para todo lo demás.
 
 `nombre` es el `name` de BGG; `grupo` se arma con las familias de BGG
 (compute_grupos); `link_cazagangas` y `cazagangas_status` ya vienen resueltos
@@ -167,6 +167,8 @@ def estado_de(row):
         return "Prev. owned"
     if row.get("wanttobuy") == "1":
         return "Want to buy"
+    if row.get("wanttoplay") == "1":
+        return "Want to play"
     return "Watchlist"
 
 

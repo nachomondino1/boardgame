@@ -22,9 +22,9 @@ function attr(attrs, name) {
   return m ? m[1] : null;
 }
 
-// xmlapi2/collection (stats=1) -> [{ id, own, prevowned, wanttobuy, rating }].
+// xmlapi2/collection (stats=1) -> [{ id, own, prevowned, wanttobuy, wanttoplay, rating }].
 // El XML es simple y regular, así que no hace falta un parser (en Workers no hay DOMParser).
-// Solo quedan los juegos con alguno de own/prevowned/wanttobuy o con puntaje.
+// Solo quedan los juegos con alguno de own/prevowned/wanttobuy/wanttoplay o con puntaje.
 export function parseCollection(xml) {
   const games = [];
   for (const m of xml.matchAll(/<item\b([^>]*)>([\s\S]*?)<\/item>/g)) {
@@ -38,9 +38,10 @@ export function parseCollection(xml) {
       own: attr(status[1], "own") === "1",
       prevowned: attr(status[1], "prevowned") === "1",
       wanttobuy: attr(status[1], "wanttobuy") === "1",
+      wanttoplay: attr(status[1], "wanttoplay") === "1",
       rating,
     };
-    if (game.own || game.prevowned || game.wanttobuy || game.rating != null) games.push(game);
+    if (game.own || game.prevowned || game.wanttobuy || game.wanttoplay || game.rating != null) games.push(game);
   }
   return games;
 }

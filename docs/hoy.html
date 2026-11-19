@@ -28,6 +28,7 @@
 </head>
 <body>
   <div id="nav"></div>
+  <script src="js/nav.js"></script>
   <header>
     <div class="header-inner">
       <h1 class="sr-only">¿Qué jugamos hoy?</h1>
@@ -39,13 +40,13 @@
       </div>
       <div class="filter-bar">
         <div class="filter-pills filter-pills--center" id="filter-pills"></div>
+        <button type="button" class="clear-filters" id="clear-filters" hidden></button>
       </div>
     </div>
   </header>
   <div class="result-count-row">
     <div class="result-left">
       <span id="result-count"></span>
-      <button type="button" class="clear-filters" id="clear-filters" hidden></button>
     </div>
     <label class="sort-control" for="sort-select">
       <span class="sort-icon" aria-hidden="true">⇅</span>

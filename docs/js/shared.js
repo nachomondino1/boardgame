@@ -215,11 +215,12 @@ function saveCollection(collection) {
 }
 
 // Misma regla que estado_de() en construct_data.py: Own > Prev. owned >
-// Want to buy, y Watchlist para todo lo que no está marcado.
+// Want to buy > Want to play, y Watchlist para todo lo que no está marcado.
 function estadoDe(entry) {
   if (entry && entry.own) return "Own";
   if (entry && entry.prevowned) return "Prev. owned";
   if (entry && entry.wanttobuy) return "Want to buy";
+  if (entry && entry.wanttoplay) return "Want to play";
   return "Watchlist";
 }
 
@@ -240,6 +241,7 @@ function loadGames() {
         g.bgg_url = `https://boardgamegeek.com/boardgame/${g.bgg_id}`;
         const entry = collection[g.bgg_id];
         g.estado = estadoDe(entry);
+        g.quiere_probar = !!(entry && entry.wanttoplay);
         g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
         return g;
       });
@@ -253,6 +255,7 @@ function applyCollection(games) {
   games.forEach((g) => {
     const entry = collection[g.bgg_id];
     g.estado = estadoDe(entry);
+    g.quiere_probar = !!(entry && entry.wanttoplay);
     g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
   });
 }
@@ -405,25 +408,6 @@ function cardTemplate(g, opts) {
         </div>
       </div>
       ${variantesHtml}
-    </div>
-  `;
-}
-
-function navTemplate(active) {
-  // En mobile la barra va abajo: el logo (que lleva al inicio) no se ve, y los nombres se acortan.
-  const links = [
-    { href: "ludoteca.html", emoji: "📚", label: "Mi ludoteca", short: "Ludoteca" },
-    { href: "hoy.html", emoji: "🎲", label: "¿Qué jugamos hoy?", short: "Jugar hoy" },
-    { href: "comprar.html", emoji: "🛒", label: "¿Cuál comprar?", short: "Comprar" },
-  ];
-  const homeHtml = `<a href="index.html" class="nav-home"><span class="nav-emoji" aria-hidden="true">🏠</span><span class="nav-short">Inicio</span></a>`;
-  const linksHtml = homeHtml + links
-    .map((l) => `<a href="${l.href}"${l.href === active ? ' class="active"' : ""}><span class="nav-emoji" aria-hidden="true">${l.emoji}</span><span class="nav-label">${l.label}</span><span class="nav-short">${l.short}</span></a>`)
-    .join("");
-  return `
-    <div class="top-nav">
-      <a href="index.html" class="nav-brand">🎲 Juegos de mesa</a>
-      <div class="nav-links">${linksHtml}</div>
     </div>
   `;
 }
