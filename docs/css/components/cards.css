@@ -86,6 +86,11 @@
   white-space: nowrap;
 }
 
+.card-rank {
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .card-rating b {
   color: var(--text);
   font-size: 0.95rem;

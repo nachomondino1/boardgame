@@ -462,7 +462,7 @@ function cardTemplate(g, opts) {
   return `
     <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
       <div class="card-headline">
-        <div class="card-title">${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
+        <div class="card-title">${g.ranking_bgg != null ? `<span class="card-rank" title="${escapeHtml(rankingTxt)}">#${Number(g.ranking_bgg).toLocaleString("es-AR")}</span> ` : ""}${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
         <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}"><span>⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b></span>${g.reviews_bgg != null ? `<span class="stat-reviews">${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews</span>` : ""}</span>
       </div>
       <div class="card-top">
