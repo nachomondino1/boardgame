@@ -44,6 +44,8 @@ OUTPUT_PATH = ROOT / "docs" / "data" / "data.json"
 # ("Series: Alea Big Box") que no son un mismo sistema de juego.
 GRUPO_FAMILIAS = ("Game", "Series")
 GRUPO_PREFIJO_COMUN_MIN = 0.6
+GRUPO_MECANICAS_MIN = 0.3  # parecido (Jaccard) de mecánicas con el juego principal del grupo
+GRUPO_COMPLEJIDAD_MAX = 1.0  # diferencia máxima de complejidad con el juego principal
 
 PUBLISHER_IGNORADOS = ("(",)  # BGG lista "(Unknown)", "(Self-Published)", etc.
 
@@ -184,7 +186,7 @@ def compute_grupos(rows):
     # agrupan con una familia de más jugadores. Sí con una familia que sea
     # mayormente de 2 jugadores (las expansiones del propio Duel).
     def es_duel(row):
-        return str(row.get("maxplayers")) == "2" and re.search(r"\b(Duel|Duet)\b", row.get("name") or "")
+        return str(row.get("maxplayers")) == "2" and re.search(r"\b(Duel|Duet|Duo|2-Player|Two[- ]Player)\b", row.get("name") or "")
 
     por_familia = collections.defaultdict(list)
     for row in rows:
@@ -195,19 +197,62 @@ def compute_grupos(rows):
     tamanio = collections.Counter(f for row in rows for f in familias(row))
     miembros = collections.defaultdict(list)
     for row in rows:
-        fs = [f for f in familias(row) if familia_de_dos[f] or not es_duel(row)]
-        if fs:
-            miembros[max(fs, key=lambda f: (tamanio[f], f))].append(row)
+        for f in familias(row):
+            if familia_de_dos[f] or not es_duel(row):
+                miembros[f].append(row)
 
+    def coherente(juegos):
+        """Hay un nombre base que comparte al menos el 60% de la familia
+        (palabra completa: "Everdell" cubre "Everdell Farshore")."""
+        bases = [nombre_base(j.get("name") or "") for j in juegos]
+        mejor = max(sum(b == p or b.startswith(p + " ") for b in bases) for p in set(bases))
+        return mejor / len(juegos) >= GRUPO_PREFIJO_COMUN_MIN
+
+    def nombra_la_familia(familia, juegos):
+        """Alternativa para familias grandes con nombres variados ("The Settlers
+        of Catan", "Starfarers of Catan"): el 60% lleva el nombre de la familia."""
+        nombre = re.sub(r"\s*\([^)]*\)$", "", familia.split(":", 1)[1].strip()).lower()
+        if len(nombre) < 5:
+            return False
+        patron = re.compile(r"\b" + re.escape(nombre) + r"\b")
+        return sum(bool(patron.search((j.get("name") or "").lower())) for j in juegos) / len(juegos) >= GRUPO_PREFIJO_COMUN_MIN
+
+    validas = {f for f, juegos in miembros.items() if len(juegos) >= 2 and (coherente(juegos) or nombra_la_familia(f, juegos))}
     grupos = {}
-    for familia, juegos in miembros.items():
-        if len(juegos) < 2:
-            continue
-        comun = collections.Counter(nombre_base(j.get("name") or "") for j in juegos).most_common(1)[0][1]
-        if comun / len(juegos) >= GRUPO_PREFIJO_COMUN_MIN:
-            nombre_grupo = re.sub(r"\s*\([^)]*\)$", "", familia.split(":", 1)[1].strip())  # sin "(Official)", "(Space Cowboys)"
+    for row in rows:
+        fs = [f for f in familias(row) if f in validas and row in miembros[f]]
+        if fs:
+            f = max(fs, key=lambda f: (tamanio[f], f))
+            # sin "(Official)", "(Space Cowboys)"
+            grupos[row["bgg_id"]] = re.sub(r"\s*\([^)]*\)$", "", f.split(":", 1)[1].strip())
+
+    # Dentro de cada grupo, un juego con mecánicas o complejidad muy distintas
+    # a las del principal (el más votado) es otro juego, no una variante.
+    por_grupo = collections.defaultdict(list)
+    for row in rows:
+        if row["bgg_id"] in grupos:
+            por_grupo[grupos[row["bgg_id"]]].append(row)
+
+    def parecido(a, b):
+        ma, mb = set(a.get("boardgamemechanic") or []), set(b.get("boardgamemechanic") or [])
+        if ma and mb and len(ma & mb) / len(ma | mb) < GRUPO_MECANICAS_MIN:
+            return False
+        wa, wb = num(a.get("averageweight"), zero_is_missing=True), num(b.get("averageweight"), zero_is_missing=True)
+        return wa is None or wb is None or abs(wa - wb) <= GRUPO_COMPLEJIDAD_MAX
+
+    for nombre, juegos in por_grupo.items():
+        principal = max(juegos, key=lambda j: num(j.get("usersrated")) or 0)
+        # El nombre tiene que repetir el del juego original (el nombre del grupo o
+        # el del principal, como palabra completa): "Wyrmspan" no es "Wingspan".
+        base = nombre_base(principal.get("name") or "")
+        patrones = [re.compile(r"\b" + re.escape(x.lower()) + r"\b") for x in {nombre, base} if len(x) >= 3]
+        for j in juegos:
+            nombra = any(p.search((j.get("name") or "").lower()) for p in patrones)
+            if j is not principal and (not nombra or not parecido(principal, j)):
+                del grupos[j["bgg_id"]]
+        if sum(g == nombre for g in grupos.values()) < 2:  # quedó uno solo
             for j in juegos:
-                grupos[j["bgg_id"]] = nombre_grupo
+                grupos.pop(j["bgg_id"], None)
     return grupos
 
 
