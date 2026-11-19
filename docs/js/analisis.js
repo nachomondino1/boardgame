@@ -18,12 +18,20 @@ function pluralJuegos(n) {
 function barChartHtml({ titulo, subtitulo, filas, nota, ayuda }) {
   const max = Math.max(1, ...filas.map((f) => f.valor));
   const rows = filas
-    .map((f) => `
-      <li class="bar-row${f.valor ? "" : " bar-row--cero"}" title="${escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`)}">
+    .map((f) => {
+      const title = escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`);
+      const cero = f.valor ? "" : " bar-row--cero";
+      const fila = `
         <span class="bar-label">${escapeHtml(f.label)}</span>
         <span class="bar-track"><span class="bar-fill" style="width:${(f.valor / max) * 100}%"></span></span>
-        <span class="bar-value">${f.valor}</span>
-      </li>`)
+        <span class="bar-value">${f.valor}</span>`;
+      // Con juegos, la fila se despliega para ver cuáles son; sin juegos queda fija.
+      if (f.juegos && f.juegos.length) {
+        const lista = [...f.juegos].sort((a, b) => a.localeCompare(b, "es")).map((n) => `<li>${escapeHtml(n)}</li>`).join("");
+        return `<li class="bar-item"><details class="bar-details"><summary class="bar-row${cero}" title="${title}">${fila}</summary><ul class="bar-games">${lista}</ul></details></li>`;
+      }
+      return `<li class="bar-item"><div class="bar-row${cero}" title="${title}">${fila}</div></li>`;
+    })
     .join("");
   return `
     <article class="analisis-card">
@@ -42,7 +50,10 @@ function statTileHtml(num, label) {
 function bucketCounts(games, buckets, getValue) {
   const conDato = games.filter((g) => getValue(g) != null);
   return {
-    filas: buckets.map((b) => ({ label: b.label, valor: conDato.filter((g) => b.match(getValue(g))).length })),
+    filas: buckets.map((b) => {
+      const juegos = conDato.filter((g) => b.match(getValue(g))).map((g) => g.nombre);
+      return { label: b.label, valor: juegos.length, juegos };
+    }),
     sinDato: games.length - conDato.length,
   };
 }
@@ -60,13 +71,11 @@ function jugadoresCard(own, { titulo, subtitulo, rango, conInsight }) {
   const filas = [];
   for (let n = 1; n <= ANALISIS_JUGADORES_MAX; n++) {
     const ultimo = n === ANALISIS_JUGADORES_MAX;
-    filas.push({
-      label: ultimo ? `${n} o más` : `${n}`,
-      valor: own.filter((g) => {
-        const r = rango(g);
-        return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]);
-      }).length,
-    });
+    const juegos = own.filter((g) => {
+      const r = rango(g);
+      return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]);
+    }).map((g) => g.nombre);
+    filas.push({ label: ultimo ? `${n} o más` : `${n}`, valor: juegos.length, juegos });
   }
   const sinDato = own.filter((g) => !rango(g)).length;
   // El hueco más claro: la cantidad (de 2 a 6) con menos juegos, solo si hay con qué comparar.
@@ -101,7 +110,7 @@ const JUGADORES_POSIBLES = {
 function modoCard(own) {
   const conteo = new Map();
   own.forEach((g) => { if (g.modo) conteo.set(g.modo, (conteo.get(g.modo) || 0) + 1); });
-  const filas = [...conteo].map(([label, valor]) => ({ label: modoLabel(label), valor })).sort((a, b) => b.valor - a.valor);
+  const filas = [...conteo].map(([label, valor]) => ({ label: modoLabel(label), valor, juegos: own.filter((g) => g.modo === label).map((g) => g.nombre) })).sort((a, b) => b.valor - a.valor);
   if (!filas.length) return "";
   return barChartHtml({ titulo: "🎲 Tipo de juego", filas, nota: notaSinDato(own.filter((g) => !g.modo).length) });
 }
@@ -121,7 +130,7 @@ function mecanicasCard(own) {
   const conMecanicas = own.filter((g) => g.mecanicas && g.mecanicas.length);
   const conteo = new Map(MECANICAS_POPULARES.map((m) => [m, 0]));
   conMecanicas.forEach((g) => g.mecanicas.forEach((m) => { if (conteo.has(m)) conteo.set(m, conteo.get(m) + 1); }));
-  const filas = [...conteo].map(([label, valor]) => ({ label, valor, hint: MECANICAS_HINT[label] }))
+  const filas = [...conteo].map(([label, valor]) => ({ label, valor, hint: MECANICAS_HINT[label], juegos: conMecanicas.filter((g) => g.mecanicas.includes(label)).map((g) => g.nombre) }))
     .sort((a, b) => b.valor - a.valor || a.label.localeCompare(b.label, "es"));
   if (!conMecanicas.length) return "";
   const faltan = filas.filter((f) => !f.valor).length;

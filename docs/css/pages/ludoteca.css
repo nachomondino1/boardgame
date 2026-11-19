@@ -8,3 +8,13 @@ header .subtitle {
   font-size: 1.05rem;
   font-weight: 600;
 }
+
+/* El encabezado (texto + buscador) no queda fijo al hacer scroll: acá no hay filtros que justifiquen
+   tenerlo siempre a la vista. Sigue pegado en ¿Cuál comprar?, que sí los tiene. */
+header {
+  position: static;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
