@@ -198,6 +198,10 @@ A diferencia de El Bosque Lúdico (que necesita matchear por texto contra un sit
 
 Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~1000 candidatos, los que tengan link guardado en `cazagangas_data.jsonl` — ya no filtra por estado, porque ese campo ni vive en el mismo archivo): corre con `--limit` para ir de a tandas y mergea por nombre contra corridas anteriores, sin perder lo ya chequeado. A diferencia de Bosque Lúdico, esto **no está pausado**: es una fuente activa (aunque, como el resto de `data/01_data_understanding/`, gitignored desde 2026-10-28 — ver Decisiones clave) y `integrate_data.py` la lee en cada build — pero el chequeo en sí (`check_cazagangas_links.py`) no corre en `sync_data.sh`, se corre a mano cuando hace falta refrescar, por el mismo motivo que Bosque Lúdico: ~1000 requests de red a un tercero es demasiado para colgarlo de un sync automático sin supervisión.
 
+## Precio estimado en pesos (`PRECIO_MULT` en `docs/js/shared.js`)
+
+`precio_ref_usd` (mediana de avisos del marketplace de BGG, mayormente usados de EE.UU.) **no es un precio argentino**: contra Cazagangas dio de 1,2 a 4 veces más caro acá. Se muestra como **estimado en pesos** = USD × dólar oficial del día (dolarapi.com, en el navegador, 1 hora de caché) × `PRECIO_MULT` (2,5; mediana 2,56 sobre 16 juegos comparados a mano en nov 2026, dólar a $1.580). Error típico ~25%, a veces más del doble; los juegos caros tienden a un multiplicador bajo y los baratos a uno alto, pero un ajuste lineal no mejoró el error, así que se dejó el multiplicador simple. Para recalibrar: comparar más juegos y recalcular la mediana de `precio_en_Cazagangas / (USD × dólar)`. El filtro de Precio se mantiene, sobre el estimado en pesos y con una advertencia: solo ~1 de cada 5 juegos tiene precio, así que elegir un rango esconde el resto.
+
 ## Qué evitar
 
 - Pegarle a la API de Google (o hacer `fetch` al Sheet) desde el cliente en cada visita — expone el id/gid del Sheet de forma prominente, agrega latencia, y si el Sheet se pone privado rompe el sitio en producción en vez de romper el próximo sync en CI.

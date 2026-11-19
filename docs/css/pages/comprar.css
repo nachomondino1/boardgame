@@ -60,3 +60,23 @@
     max-width: none;
   }
 }
+
+/* Aviso de precios estimados, debajo del header fijo (no es fijo). */
+.precio-aviso {
+  max-width: var(--container);
+  margin: 12px auto 0;
+  padding: 8px 24px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.precio-aviso[hidden] {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .precio-aviso {
+    padding: 8px 16px;
+  }
+}
