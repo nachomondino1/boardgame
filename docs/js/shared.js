@@ -358,11 +358,18 @@ function cardTemplate(g, opts) {
     ? `<span class="stat" title="Mediana de publicaciones recientes en el marketplace de BGG (USD)">💵 USD ~$${Math.round(g.precio_ref_usd).toLocaleString("es-AR")}</span>`
     : "";
 
-  const compraHtml = (cazagangasHtml || precioRefHtml)
+  // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).
+  const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${g.nombre} board game review`)}`;
+  const youtubeHtml = g.nombre
+    ? `<a class="stat stat-link" href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" title="Buscar reseñas en YouTube">▶ Reviews ↗</a>`
+    : "";
+
+  const compraHtml = (cazagangasHtml || precioRefHtml || youtubeHtml)
     ? `
       <div class="stat-row">
         ${precioRefHtml}
         ${cazagangasHtml}
+        ${youtubeHtml}
       </div>`
     : "";
 
