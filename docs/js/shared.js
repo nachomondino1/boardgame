@@ -99,9 +99,9 @@ function fechaLargaCorta(iso) {
   return new Date(y, m - 1, d).toLocaleDateString("es-AR", { day: "numeric", month: "long" });
 }
 
-// Real: "$158.940". Estimado: "~$295 mil" (el ~ avisa que no es un precio de tienda).
+// Redondeado a miles, sin falsa precisión. Real: "$159 mil". Estimado: "~$295 mil" (el ~ avisa que no es un precio de tienda).
 function formatPrecio(p) {
-  return p.real ? `$${Math.round(p.valor).toLocaleString("es-AR")}` : `~$${Math.round(p.valor / 1000).toLocaleString("es-AR")} mil`;
+  return `${p.real ? "" : "~"}$${Math.round(p.valor / 1000).toLocaleString("es-AR")} mil`;
 }
 
 // Tramos del filtro de Precio, sobre el precio estimado en pesos (solo los juegos con precio de referencia).
@@ -427,7 +427,7 @@ function cardTemplate(g, opts) {
     : "";
 
   // Precio en pesos: el real de Cazagangas si lo tiene (precio_ars) y, si no, el estimado desde el marketplace
-  // de BGG (precio_ref_usd, USD, nuevos o como nuevos) — ver precioDe() y PRECIO_MULT.
+  // de BGG (precio_ref_usd, USD, solo nuevos) — ver precioDe() y PRECIO_MULT.
   const precio = opts.showPrecioRef ? precioDe(g) : null;
   const precioTitulo = !precio ? "" : precio.real
     ? `Precio más barato hoy en Cazagangas, entre las tiendas argentinas que lo tienen${fechaPreciosCazagangas ? ` (actualizado el ${fechaLargaCorta(fechaPreciosCazagangas)})` : ""}.`
