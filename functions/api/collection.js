@@ -8,7 +8,7 @@ const USER_AGENT = "boardgame-mvp/1.0 (+https://github.com/nachomondino1/boardga
 const USERNAME_RE = /^[A-Za-z0-9_. -]{1,40}$/;
 const RETRIES_ON_202 = 3; // BGG responde 202 mientras arma la lista
 const RETRY_DELAY_MS = 3000;
-const CACHE_SECONDS = 6 * 60 * 60; // para no gastar la cuota del token compartido
+const CACHE_SECONDS = 30 * 60; // para no gastar la cuota del token compartido; corto porque quien edita BGG espera verlo reflejado
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {

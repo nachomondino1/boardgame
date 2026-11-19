@@ -94,7 +94,7 @@ Own > Prev. owned > Want to buy > Watchlist (cualquier juego sin marca). `mi_pun
 - BGG a veces responde 202 ("preparando la colección"): la función reintenta unas veces con espera corta; si no está lista, responde 202 al navegador, que reintenta.
 - Errores claros para: usuario inexistente, colección vacía u oculta, límite de BGG (429/503), token inválido.
 - Respetar el `Crawl-delay` de 5 s de BGG y los reintentos de `bgg_common.py` como referencia.
-- Caché en el servidor (Cache API de Cloudflare) de unas horas por usuario, para no gastar la cuota del token compartido.
+- Caché en el servidor (Cache API de Cloudflare) de 30 minutos por usuario (antes 6 horas; se bajó el 2026-11-19 porque quien edita su colección en BGG espera verlo reflejado), para no gastar la cuota del token compartido.
 - Valida el username (largo y caracteres) antes de llamar a BGG. No guarda nada más.
 
 ## 6. Colección en el navegador
