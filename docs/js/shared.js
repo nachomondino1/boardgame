@@ -499,64 +499,8 @@ function mountFooterExtras() {
 
 mountFooterExtras();
 
-// Guía desplegable "¿Qué son las mecánicas?": se pide con un <details> cerrado, para que no estorbe.
-const MECANICAS_GUIA = [
-  { grupo: "Construcción y desarrollo", items: [
-    ["Deck Building (construcción de mazos)", "Empezás con un mazo básico y durante la partida sumás cartas nuevas que mejoran tus posibilidades. Tu mazo evoluciona a medida que jugás.", "Dominion, Star Realms, Clank!"],
-    ["Engine Building (construcción de motores)", "Armás un sistema de cartas, edificios o recursos que genera beneficios cada vez mayores; lo interesante son las combinaciones que se potencian entre sí.", "Wingspan, Terraforming Mars, Gizmos"],
-    ["Tableau Building (tablero personal)", "Vas colocando cartas frente a vos para armar tu propio conjunto. Cada carta aporta puntos, recursos o habilidades.", "7 Wonders, Everdell, Wingspan"],
-    ["Tile Placement (colocación de losetas)", "Colocás piezas para formar un mapa, paisaje o estructura. Dónde las ponés afecta las posibilidades futuras y la puntuación.", "Carcassonne, Cascadia, Kingdomino, Harmonies"],
-  ] },
-  { grupo: "Gestión y toma de decisiones", items: [
-    ["Resource Management (gestión de recursos)", "Tenés recursos limitados y decidís cómo usarlos: construir, mejorar o ahorrar para una acción futura.", "Catán, Agricola, Puerto Rico"],
-    ["Worker Placement (colocación de trabajadores)", "Enviás trabajadores a distintos espacios del tablero para hacer acciones. Si un rival ocupa un espacio, ya no lo podés usar: se compite por las acciones.", "Agricola, Lords of Waterdeep, Viticulture"],
-    ["Set Collection (colección de conjuntos)", "Reunís grupos de elementos para conseguir puntos u objetivos. Puede importar la cantidad, la variedad o la combinación.", "Splendor, Sushi Go!, Ticket to Ride"],
-    ["Card Drafting (selección de cartas)", "Recibís varias cartas, elegís una y pasás el resto al siguiente jugador. Decidís qué te conviene y qué le dejás al rival.", "7 Wonders, Sushi Go!, Blood Rage"],
-  ] },
-  { grupo: "Territorio y competencia", items: [
-    ["Area Control (control de áreas)", "Competís por dominar regiones del tablero. Controlar una zona da puntos, recursos o ventajas.", "Risk, Small World, El Grande"],
-    ["Network Building (construcción de redes)", "Construís conexiones entre puntos del tablero (ciudades, rutas) aprovechando las conexiones disponibles.", "Ticket to Ride, Brass: Birmingham, Pipeline"],
-    ["Abstract Strategy (estrategia abstracta)", "Estrategia y planificación al centro, normalmente con información abierta y poca o ninguna suerte. La temática pesa poco.", "Ajedrez, Go, Azul"],
-  ] },
-  { grupo: "Azar, riesgo e información", items: [
-    ["Dice Rolling (tirada de dados)", "Los dados determinan resultados o acciones. Muchos juegos permiten modificarlos o repetirlos para reducir el azar.", "King of Tokyo, Yahtzee, Sagrada"],
-    ["Push Your Luck (forzar la suerte)", "Decidís si seguir arriesgándote por más beneficio o frenar y asegurar lo conseguido. Más recompensa, pero también más riesgo.", "The Quacks of Quedlinburg, Can't Stop, Deep Sea Adventure"],
-    ["Bluffing (engaño)", "Podés mentir sobre tus cartas, intenciones o acciones; los demás deciden si confiar o desafiarte.", "Coup, Skull, The Resistance"],
-    ["Cooperative Game (cooperativo)", "Todos juegan juntos contra el propio juego, con objetivos compartidos. Ganan o pierden en equipo.", "Pandemic, The Crew, Forbidden Island"],
-  ] },
-  { grupo: "Planificación, lógica y objetivos", items: [
-    ["Pattern Building (construcción de patrones)", "Combinás piezas, colores o símbolos para formar patrones que cumplen condiciones y dan puntos.", "Azul, Sagrada, Calico, Harmonies"],
-    ["Deduction (deducción)", "Reunís pistas para descubrir algo desconocido (un culpable, un lugar, una combinación): analizás evidencias y descartás posibilidades.", "Cluedo, Sherlock Holmes Consulting Detective, Cryptid"],
-    ["Campaign / Legacy (campaña)", "Partidas conectadas: lo que decidís y lográs modifica las siguientes. Algunos juegos cambian de forma permanente sus componentes y reglas.", "Pandemic Legacy, Gloomhaven, Clank! Legacy"],
-    ["Simultaneous Action Selection", "Todos eligen sus acciones a la vez y después se revelan. Reduce esperas y obliga a anticipar a los demás.", "7 Wonders, Race for the Galaxy, Sushi Go!"],
-    ["Trick Taking (juego de bazas)", "Cada jugador juega una carta por turno y según lo jugado alguien gana la baza. Hay que administrar la mano y anticipar.", "The Crew, Wizard, Skull King"],
-  ] },
-];
-
-function mecanicasGuiaHtml() {
-  const grupos = MECANICAS_GUIA.map((gr) => `
-    <h4 class="mec-guia__grupo">${escapeHtml(gr.grupo)}</h4>
-    <dl class="mec-guia__lista">${gr.items.map(([n, d, e]) =>
-      `<dt>${escapeHtml(n)}</dt><dd>${escapeHtml(d)} <span class="mec-guia__ej">Ej.: ${escapeHtml(e)}.</span></dd>`).join("")}</dl>`).join("");
-  return `
-    <details class="mec-guia">
-      <summary>🧩 ¿Qué son las mecánicas?</summary>
-      <div class="mec-guia__body">
-        <p>Las mecánicas son los sistemas y reglas que determinan cómo funciona un juego y qué acciones pueden hacer los jugadores. Un mismo juego suele combinar varias: conocerlas ayuda a entender cómo se juega y qué tipo de decisiones propone.</p>
-        <ul class="mec-guia__difs">
-          <li><strong>Mecánica:</strong> cómo funciona el juego y qué se puede hacer.</li>
-          <li><strong>Temática:</strong> de qué trata (civilizaciones, animales, espacio, detectives…).</li>
-          <li><strong>Complejidad:</strong> cuánto cuesta aprender y dominar sus reglas.</li>
-        </ul>
-        <p>Ejemplo: Harmonies combina colocación de losetas, construcción de patrones y colección de conjuntos; su temática es la naturaleza. Un juego puede tener una temática simple y mecánicas muy complejas, o al revés.</p>
-        <p class="mec-guia__sub">20 de las mecánicas más populares:</p>
-        ${grupos}
-      </div>
-    </details>`;
-}
-
 // Definiciones cortas de las mecánicas del filtro (una por nombre de MECANICAS_VOCAB): tooltip en cada opción del
-// filtro de ¿Cuál comprar? y en la card de mecánicas del análisis, más la lista "¿Qué es cada una?". La guía larga vive en shared.js (mecanicasGuiaHtml).
+// filtro de ¿Cuál comprar? y en la card de mecánicas del análisis, más la lista "¿Qué es cada una?".
 const MECANICAS_HINT = {
   "Worker Placement": "Mandás trabajadores a espacios del tablero para hacer acciones; si un rival ocupa uno, no lo podés usar.",
   "Deck Building": "Empezás con un mazo básico y sumás cartas durante la partida para mejorarlo.",
