@@ -108,7 +108,7 @@
 
 .bar-row {
   display: grid;
-  grid-template-columns: minmax(80px, 38%) 1fr 2ch;
+  grid-template-columns: minmax(80px, 38%) 1fr 6ch;
   align-items: center;
   gap: 10px;
   font-size: 0.85rem;
@@ -130,6 +130,49 @@
   min-width: 0;
   background: var(--accent);
   border-radius: 0 4px 4px 0;
+}
+
+/* Segunda serie superpuesta (ideal): sobre la barra de "posibles", más intensa. */
+.bar-track {
+  position: relative;
+}
+
+.bar-fill--ideal {
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.bar-track--doble .bar-fill:not(.bar-fill--ideal) {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.bar-value strong {
+  font-weight: 700;
+}
+
+.bar-legend {
+  display: flex;
+  gap: 16px;
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.bar-legend__dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.bar-legend__dot--ideal {
+  background: var(--accent);
+}
+
+.bar-game--ideal {
+  font-weight: 700;
 }
 
 .bar-value {
