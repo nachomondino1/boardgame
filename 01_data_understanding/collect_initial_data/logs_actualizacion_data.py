@@ -16,6 +16,10 @@ Pocas columnas, las que importan:
   control              chequeo de que la actualización anduvo: qué tanto cambiaron los datos
                        (si cambia todo, o nada, algo anduvo mal)
   observacion          cualquier otra cosa a anotar, p. ej. por qué no fueron todas las filas (--nota "...")
+
+Los movimientos de BGG (qué juegos subieron o cayeron en el ranking, cuáles sumaron más reviews) no van
+acá: una actualización completa sale en varias corridas y cada fila vería solo su pedazo. Van en
+`resumen_actualizaciones_bgg.csv`, una fila por actualización completa (ver bgg/resumen_actualizacion_bgg.py).
 """
 import csv
 import datetime
