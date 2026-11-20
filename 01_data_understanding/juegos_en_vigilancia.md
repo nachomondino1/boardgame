@@ -22,13 +22,13 @@ Los juegos de TU colección no se mueven nunca (solo avisa).
 | 2026-11-19 | 368041 | Unlock!: Short Adventures – Doo-Arann's Dungeon | 2022 | #7.756 | 283 | |
 | 2026-11-19 | 369749 | Zensū | 2021 | #18.033 | 39 | |
 | 2026-11-19 | 393760 | Fire in the Lake: Second Edition | 2018 | #12.291 | 42 | |
-| 2026-11-19 | 422853 | Quickstop | — | #20.196 | 34 | Es Slingz (ID 419421), confirmado por el usuario |
-| 2026-11-19 | 425533 | Quick Stop | 2024 | #17.314 | 49 | Es Slingz (ID 419421), confirmado por el usuario |
 | 2026-11-19 | 428967 | Kwiz | 2024 | #14.039 | 47 | |
 
 ## Salieron de vigilancia
 
-Ninguno todavía. Cuando un juego vuelva a aparecer en BGG o se resuelva (se agrega su ID nuevo al catálogo), anotarlo acá con la fecha y el motivo.
+Cuando un juego vuelva a aparecer en BGG o se resuelva (se agrega su ID nuevo al catálogo), anotarlo acá con la fecha y el motivo.
 
 | Fecha | ID | Juego | Motivo |
 |---|---|---|---|
+| 2026-11-19 | 422853 | Quickstop | Resuelto: BGG lo fusionó en Slingz (ID 419421), que se agregó al catálogo |
+| 2026-11-19 | 425533 | Quick Stop | Resuelto: ídem, Slingz (419421) |
