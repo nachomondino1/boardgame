@@ -1,6 +1,6 @@
 """Registro de actualizaciones de datos de cualquier fuente (BGG, Cazagangas, ...).
 
-Una fila por corrida en `01_data_understanding/refresh_log.csv` (versionado, a
+Una fila por corrida en `01_data_understanding/logs_actualizacion_data.csv` (versionado, a
 diferencia de `data/`). Es CSV y no .md para abrirlo como tabla (Numbers, Excel,
 Google Sheets) y poder filtrar por fuente. Lo escriben los scripts; no se edita a mano.
 
@@ -21,7 +21,7 @@ import csv
 import datetime
 from pathlib import Path
 
-LOG_PATH = Path(__file__).resolve().parents[1] / "refresh_log.csv"
+LOG_PATH = Path(__file__).resolve().parents[1] / "logs_actualizacion_data.csv"
 COLUMNAS = ["fecha", "fuente", "metodo", "motivo", "filas_total", "filas_actualizadas", "pct_actualizadas", "duracion", "control", "observacion"]
 
 
@@ -35,7 +35,7 @@ def pct(parte, total):
     return f"{100 * parte / total:.1f}%" if total else ""
 
 
-def write_refresh_log(fuente, metodo, filas_total, filas_actualizadas, segundos, control="", motivo="", observacion=""):
+def write_logs_actualizacion_data(fuente, metodo, filas_total, filas_actualizadas, segundos, control="", motivo="", observacion=""):
     fila = {
         "fecha": datetime.date.today().isoformat(),
         "fuente": fuente,

@@ -46,7 +46,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "cazagangas"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from refresh_log import LOG_PATH, write_refresh_log  # noqa: E402
+from logs_actualizacion_data import LOG_PATH, write_logs_actualizacion_data  # noqa: E402
 from cazagangas_common import load_cazagangas_cache, resolver_link  # noqa: E402
 from bgg_common import (  # noqa: E402
     API_URL, BGG_DATA_PATH, BGG_CACHE_FIELDS, COLLECTION_PATH, http_get,
@@ -177,8 +177,8 @@ def main():
     parser.add_argument("--skip-fresh", action="store_true", help="saltea los juegos ya actualizados hoy (para retomar una corrida cortada)")
     parser.add_argument("--stale", action="store_true", help="solo los juegos que todavía no se actualizaron nunca desde la API (vienen de la copia de 2025)")
     parser.add_argument("--limit", type=int, help="solo los primeros N juegos (para probar)")
-    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de refresh_log.csv)")
-    parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
+    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de logs_actualizacion_data.csv)")
+    parser.add_argument("--nota", default="", help="observación para logs_actualizacion_data.csv (por qué se corre)")
     args = parser.parse_args()
 
     inicio = time.time()
@@ -280,7 +280,7 @@ def main():
     print(f"{changes} cambio(s) en {con_cambios} juego(s), {updated_total} con fecha_actualizacion al día"
           + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
     if updated_total and not args.dry_run:
-        write_refresh_log("BGG", "API xmlapi2 (con token)", len(load_bgg_cache()), updated_total, time.time() - inicio,
+        write_logs_actualizacion_data("BGG", "API xmlapi2 (con token)", len(load_bgg_cache()), updated_total, time.time() - inicio,
                           resumen_control(con_cambios, updated_total, deltas), args.motivo, args.nota)
         print(f"OK: datos en {BGG_DATA_PATH.name}, colección en {COLLECTION_PATH.name}, registro en {LOG_PATH}")
 

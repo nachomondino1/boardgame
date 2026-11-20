@@ -41,7 +41,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from refresh_log import write_refresh_log  # noqa: E402
+from logs_actualizacion_data import write_logs_actualizacion_data  # noqa: E402
 from cazagangas_common import CRAWL_DELAY_SECONDS, ROOT, load_cazagangas_cache, slugify, write_cazagangas_cache
 
 BASE_URL = "https://www.cazagangas.com.ar"
@@ -109,8 +109,8 @@ def elegir_links(juegos, slugs):
 def main():
     parser = argparse.ArgumentParser(description="Carga links a Cazagangas cruzando BGG contra su sitemap")
     parser.add_argument("--dry-run", action="store_true", help="no escribe cazagangas_data.jsonl, solo muestra los números")
-    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de refresh_log.csv)")
-    parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
+    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de logs_actualizacion_data.csv)")
+    parser.add_argument("--nota", default="", help="observación para logs_actualizacion_data.csv (por qué se corre)")
     args = parser.parse_args()
 
     inicio = time.time()
@@ -147,7 +147,7 @@ def main():
         print(f"--dry-run: no se escribió nada (quedarían {len(filas)} filas, {ok} con 200).")
         return
     write_cazagangas_cache(filas)
-    write_refresh_log("Cazagangas", "sitemap.xml del sitio (lista pública de sus páginas) cruzado con los nombres de BGG", len(juegos),
+    write_logs_actualizacion_data("Cazagangas", "sitemap.xml del sitio (lista pública de sus páginas) cruzado con los nombres de BGG", len(juegos),
                       nuevos + reemplazados, time.time() - inicio, f"{len(elegidos)} juegos con página en el sitemap; {nuevos} links nuevos, {respetados} ya tenían uno que responde 200",
                       motivo=args.motivo, observacion=args.nota)
     print(f"Guardado: {len(filas)} filas, {ok} con 200.")
