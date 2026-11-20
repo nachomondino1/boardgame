@@ -37,6 +37,7 @@ Uso:
 """
 import argparse
 import datetime
+import statistics
 import sys
 import time
 import urllib.parse
@@ -61,14 +62,17 @@ VOLATILE_FIELDS = [
 CHUNK_SIZE = 500  # juegos por tanda (25 requests): se guarda al terminar cada una
 ALL_FIELDS = [f for f in BGG_CACHE_FIELDS if f not in ("bgg_id", "description", "fecha_actualizacion")]
 
-def write_log(args, consultados, con_cambios, columnas, nuevos, no_devueltos, n_campos, segundos, total):
-    """Suma una fila a refresh_log.csv (ver refresh_log.py)."""
-    opciones = " ".join(a for a in (f"--scope {args.scope}", f"--top {args.top}" if args.top else "",
-                                    "--discover" if args.discover else "", f"--add {args.add}" if args.add else "", f"--fields {args.fields}",
-                                    f"--limit {args.limit}" if args.limit else "", "--skip-fresh" if args.skip_fresh else "",
-                                    "--stale" if args.stale else "") if a)
-    return write_refresh_log("BGG API", opciones, total, consultados, con_cambios, nuevos, no_devueltos,
-                             len(ALL_FIELDS), n_campos, columnas, segundos, args.nota)
+def resumen_control(con_cambios, actualizados, deltas):
+    """Texto de control: qué tanto cambiaron los datos. Si cambia todo o nada, algo anduvo mal."""
+    partes = [f"cambiaron valores en {con_cambios} de {actualizados} filas"]
+    r, v, p = deltas["Board Game Rank"], deltas["usersrated"], deltas["average"]
+    if r:
+        partes.append(f"ranking: se movió en {len(r)} filas, mediana {statistics.median(abs(x) for x in r):.0f} puestos")
+    if v:
+        partes.append(f"votos: {statistics.mean(v):+.0f} en promedio")
+    if p:
+        partes.append(f"puntaje: {statistics.mean(p):+.3f} en promedio")
+    return "; ".join(partes)
 
 
 def resolve_fields(spec):
@@ -212,7 +216,7 @@ def main():
     # Por tandas: cada una se guarda apenas termina, así un corte (red, BGG)
     # no pierde lo ya traído — y con --skip-fresh se retoma donde quedó.
     updated_total, changes, con_cambios, no_devueltos = 0, 0, 0, 0
-    columnas_cambiadas = {}
+    deltas = {"Board Game Rank": [], "usersrated": [], "average": []}  # nuevo - viejo, para el control del log
     fetched_nuevos = {}
     for start in range(0, len(ids), CHUNK_SIZE):
         chunk = ids[start:start + CHUNK_SIZE]
@@ -255,7 +259,11 @@ def main():
                 if new != old:
                     row_updates[field] = new
                     changes += 1
-                    columnas_cambiadas[field] = columnas_cambiadas.get(field, 0) + 1
+                    if field in deltas and old not in (None, ""):
+                        try:
+                            deltas[field].append(float(new) - float(old))
+                        except ValueError:
+                            pass
                     if changes <= 40:
                         print(f"  {bgg_id} {field}: {str(old)[:40]!r} -> {str(new)[:40]!r}")
             updates[bgg_id] = row_updates
@@ -271,7 +279,8 @@ def main():
     print(f"{changes} cambio(s) en {con_cambios} juego(s), {updated_total} con fecha_actualizacion al día"
           + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
     if updated_total and not args.dry_run:
-        write_log(args, updated_total, con_cambios, columnas_cambiadas, len(descubiertos) + len(agregados) + len(nuevos), no_devueltos, len(fields), time.time() - inicio, len(load_bgg_cache()))
+        write_refresh_log("BGG", "API xmlapi2 (con token)", len(load_bgg_cache()), updated_total,
+                          resumen_control(con_cambios, updated_total, deltas), args.nota)
         print(f"OK: datos en {BGG_DATA_PATH.name}, colección en {COLLECTION_PATH.name}, registro en {LOG_PATH}")
 
 

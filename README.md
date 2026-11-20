@@ -34,7 +34,7 @@ Busca el nombre en la API de BGG, trae todos sus datos y prueba el link de Cazag
 ```bash
 python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py --discover --top 5000 --fields all
 ```
-Cada corrida real suma una fila a `01_data_understanding/refresh_log.csv` (fecha, fuente BGG/Cazagangas, opciones, filas consultadas/cambiadas/nuevas, columnas cambiadas, duración; también la suman los scripts de Cazagangas), y cada juego guarda su `fecha_actualizacion`. Para actualizar el catálogo entero: `--scope all --fields all` (~2-3 horas; guarda cada 500 juegos y se retoma con `--skip-fresh`). Con `--dry-run` muestra qué cambiaría sin escribir. Necesita `BGG_TOKEN` y `BGG_USERNAME` en `.env` (ver `.env.example`).
+Cada corrida real suma una fila a `01_data_understanding/refresh_log.csv` (fecha, fuente, método, filas actualizadas de cuántas había, control y observación; también la suman los scripts de Cazagangas), y cada juego guarda su `fecha_actualizacion`. Para actualizar el catálogo entero: `--scope all --fields all` (~2-3 horas; guarda cada 500 juegos y se retoma con `--skip-fresh`). Con `--dry-run` muestra qué cambiaría sin escribir. Necesita `BGG_TOKEN` y `BGG_USERNAME` en `.env` (ver `.env.example`).
 
 **Cambiar el estado de un juego** (Own, Want to buy, Prev. owned) **o tu puntaje:** se hace en BGG, en tu colección; después corré `refresh_bgg_data.py` (o `./sync_data.sh`) y lo trae solo. Un juego que no marcás en BGG queda como Watchlist.
 

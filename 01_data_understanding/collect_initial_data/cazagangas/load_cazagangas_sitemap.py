@@ -146,8 +146,9 @@ def main():
         print(f"--dry-run: no se escribió nada (quedarían {len(filas)} filas, {ok} con 200).")
         return
     write_cazagangas_cache(filas)
-    write_refresh_log("Cazagangas (sitemap)", " ".join(sys.argv[1:]), len(juegos), len(juegos), nuevos + reemplazados,
-                      nuevos, 0, 2, 2, {"link_cazagangas": nuevos + reemplazados} if nuevos + reemplazados else {}, time.time() - inicio, args.nota)
+    write_refresh_log("Cazagangas", "sitemap.xml del sitio (lista pública de sus páginas) cruzado con los nombres de BGG", len(juegos),
+                      nuevos + reemplazados, f"{len(elegidos)} juegos con página en el sitemap; {nuevos} links nuevos, {respetados} ya tenían uno que responde 200",
+                      args.nota)
     print(f"Guardado: {len(filas)} filas, {ok} con 200.")
 
 
