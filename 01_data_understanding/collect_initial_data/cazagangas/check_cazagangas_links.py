@@ -25,7 +25,12 @@ varias tiendas por juego, no es un único vendedor) — ver README.md,
 """
 import argparse
 import datetime
+import sys
 import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from refresh_log import write_refresh_log  # noqa: E402
 
 from cazagangas_common import CRAWL_DELAY_SECONDS, OUTPUT_PATH, check_status, load_cazagangas_cache, write_cazagangas_cache
 
@@ -48,14 +53,19 @@ def main():
         return
 
     hoy = datetime.date.today().isoformat()
+    inicio = time.time()
+    cambiaron = 0
     for i, entry in enumerate(pendientes):
         status = check_status(entry["link_cazagangas"])
         print(f"[{i + 1}/{len(pendientes)}] bgg_id={entry['bgg_id']}: {entry['link_cazagangas']} -> {status}")
+        cambiaron += entry.get("status_http") != status
         entry["status_http"], entry["fecha_chequeado"] = status, hoy
         if i < len(pendientes) - 1:
             time.sleep(CRAWL_DELAY_SECONDS)
 
     write_cazagangas_cache(entries)
+    write_refresh_log("Cazagangas (links)", "check_cazagangas_links.py", " ".join(sys.argv[1:]), len(pendientes), cambiaron, 0, 0, 2,
+                      {"status_http": cambiaron} if cambiaron else {}, time.time() - inicio)
     ok = sum(1 for v in entries.values() if v["status_http"] == "200")
     print(f"\nGuardado en {OUTPUT_PATH} ({len(entries)} link(s) en total, {ok} responden 200).")
 

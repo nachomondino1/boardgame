@@ -137,7 +137,7 @@ def http_get(url, authorized=False, retries=5):
             with urllib.request.urlopen(req) as resp:
                 return resp.read().decode("utf-8", errors="replace")
         except urllib.error.HTTPError as e:
-            if e.code in (429, 503) and attempt < retries:
+            if e.code in (429, 502, 503, 504) and attempt < retries:
                 print(f"  HTTP {e.code}, reintento {attempt}/{retries} en {delay}s...", file=sys.stderr)
                 time.sleep(delay)
                 delay *= 2
@@ -331,10 +331,14 @@ def fetch_collection(username, retries=6):
             f"{COLLECTION_URL}?{query}",
             headers={"User-Agent": USER_AGENT, "Authorization": f"Bearer {load_bgg_token()}"},
         )
-        with urllib.request.urlopen(req) as resp:
-            if resp.status == 200:
-                body = resp.read().decode("utf-8", errors="replace")
-                break
+        try:
+            with urllib.request.urlopen(req) as resp:
+                if resp.status == 200:
+                    body = resp.read().decode("utf-8", errors="replace")
+                    break
+        except urllib.error.HTTPError as e:  # BGG tira 502/503/504 cuando está caído un rato: se reintenta
+            if e.code not in (502, 503, 504):
+                raise
         time.sleep(CRAWL_DELAY_SECONDS)
     else:
         raise RuntimeError("BGG no devolvió la colección (siguió en 202); reintentar en un rato")

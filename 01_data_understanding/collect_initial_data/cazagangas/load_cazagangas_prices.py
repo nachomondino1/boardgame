@@ -25,6 +25,8 @@ Después hay que regenerar el sitio: `python3 02_data_preparation/integrate_data
 `python3 02_data_preparation/build_catalog.py`.
 """
 import argparse
+import sys
+from pathlib import Path
 import datetime
 import json
 import re
@@ -32,6 +34,8 @@ import time
 import urllib.error
 import urllib.request
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from refresh_log import write_refresh_log  # noqa: E402
 from cazagangas_common import CRAWL_DELAY_SECONDS, ROOT, load_cazagangas_cache, write_cazagangas_cache
 
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
@@ -128,13 +132,21 @@ def main():
         return
     print(f"{total} juego(s) pendientes; esta corrida mira {len(pendientes)}.")
 
-    con_precio = 0
+    con_precio = sin_respuesta = cambiaron = 0
+    inicio = time.time()
+    cols = {}
     for i, fila in enumerate(pendientes, 1):
         html = fetch(fila["link_cazagangas"])
         if html is None:
+            sin_respuesta += 1
             print(f"[{i}/{len(pendientes)}] bgg_id={fila['bgg_id']}: sin respuesta, se reintenta en la próxima corrida")
         else:
             precio, maximo, tiendas = parse_precio(html)
+            nuevo = {"precio_ars": precio, "precio_ars_max": maximo, "tiendas": tiendas, "fecha_precio": hoy.isoformat()}
+            dist = [c for c in ("precio_ars", "precio_ars_max", "tiendas") if fila.get(c) != nuevo[c]]
+            cambiaron += bool(dist)
+            for c in dist:
+                cols[c] = cols.get(c, 0) + 1
             fila.update({"precio_ars": precio, "precio_ars_max": maximo, "tiendas": tiendas, "fecha_precio": hoy.isoformat()})
             con_precio += precio is not None
             print(f"[{i}/{len(pendientes)}] bgg_id={fila['bgg_id']}: {'$' + format(precio, ',').replace(',', '.') + f' ({tiendas} tiendas)' if precio is not None else 'sin ofertas'}")
@@ -144,6 +156,8 @@ def main():
             time.sleep(CRAWL_DELAY_SECONDS)
 
     write_cazagangas_cache(filas)
+    write_refresh_log("Cazagangas (precios)", "load_cazagangas_prices.py", " ".join(sys.argv[1:]), len(pendientes), cambiaron, 0,
+                      sin_respuesta, 3, cols, time.time() - inicio, f"{con_precio} con precio")
     print(f"\nListo: {con_precio} de {len(pendientes)} con precio. Guardado en cazagangas_data.jsonl.")
 
 

@@ -44,10 +44,10 @@ const BUCKETS_DURACION = [
 ];
 
 // Precio estimado en pesos: mediana de publicaciones del marketplace de BGG (USD, solo ~1 de cada 5 juegos)
-// × dólar oficial del día × PRECIO_MULT. El multiplicador sale de comparar 16 juegos con su precio más barato en
-// Cazagangas (nov 2026, dólar oficial $1.580): mediana 2,56; la mitad central va de 1,5 a 3,2. Es una estimación
-// gruesa (error típico ~25%, a veces más del doble): sirve para ubicarse, no para presupuestar. Ver DATA_PLAYBOOK.md.
-const PRECIO_MULT = 2.5;
+// × dólar oficial del día × PRECIO_MULT. El multiplicador sale de comparar 612 juegos con su precio más barato en
+// Cazagangas (nov 2026, dólar oficial $1.580): mediana 2,14; la mitad central va de 1,4 a 3,0. Es una estimación
+// gruesa (error típico ~35%, a veces más del doble): sirve para ubicarse, no para presupuestar. Ver DATA_PLAYBOOK.md.
+const PRECIO_MULT = 2.1;
 const DOLAR_FALLBACK = 1580; // si la API del dólar no responde y no hay uno guardado
 const DOLAR_KEY = "dolar.oficial";
 const DOLAR_TTL_MS = 60 * 60 * 1000;

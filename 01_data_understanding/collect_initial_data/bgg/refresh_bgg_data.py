@@ -44,6 +44,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "cazagangas"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from refresh_log import LOG_PATH, write_refresh_log  # noqa: E402
 from cazagangas_common import load_cazagangas_cache, resolver_link  # noqa: E402
 from bgg_common import (  # noqa: E402
     API_URL, BGG_DATA_PATH, BGG_CACHE_FIELDS, COLLECTION_PATH, http_get,
@@ -59,28 +61,14 @@ VOLATILE_FIELDS = [
 CHUNK_SIZE = 500  # juegos por tanda (25 requests): se guarda al terminar cada una
 ALL_FIELDS = [f for f in BGG_CACHE_FIELDS if f not in ("bgg_id", "description", "fecha_actualizacion")]
 
-LOG_PATH = BGG_DATA_PATH.parents[2] / "01_data_understanding" / "refresh_log.md"
-LOG_HEADER = (
-    "# Registro de actualizaciones de BGG\n\n"
-    "Una fila por cada corrida de `refresh_bgg_data.py` (la escribe el script solo, no a mano).\n\n"
-    "| Fecha | Opciones | Juegos consultados | Con datos distintos | Cambios de campos | Juegos nuevos | No devueltos por BGG | Colección | Duración |\n"
-    "|---|---|---|---|---|---|---|---|---|\n"
-)
-
-
-def write_log(args, consultados, con_cambios, cambios, nuevos, no_devueltos, coleccion, segundos):
-    """Suma una fila al registro de corridas (data/ está gitignored; este log vive
-    junto a los scripts y se versiona)."""
-    if not LOG_PATH.exists():
-        LOG_PATH.write_text(LOG_HEADER, encoding="utf-8")
+def write_log(args, consultados, con_cambios, columnas, nuevos, no_devueltos, n_campos, segundos):
+    """Suma una fila a refresh_log.csv (ver refresh_log.py)."""
     opciones = " ".join(a for a in (f"--scope {args.scope}", f"--top {args.top}" if args.top else "",
                                     "--discover" if args.discover else "", f"--add {args.add}" if args.add else "", f"--fields {args.fields}",
-                                    f"--limit {args.limit}" if args.limit else "", "--skip-fresh" if args.skip_fresh else "") if a)
-    minutos, seg = divmod(int(segundos), 60)
-    with LOG_PATH.open("a", encoding="utf-8") as f:
-        f.write(f"| {datetime.date.today().isoformat()} | `{opciones}` | {consultados} | {con_cambios} | {cambios} | "
-                f"{nuevos} | {no_devueltos} | {coleccion} | {minutos} min {seg} s |\n")
-
+                                    f"--limit {args.limit}" if args.limit else "", "--skip-fresh" if args.skip_fresh else "",
+                                    "--stale" if args.stale else "") if a)
+    return write_refresh_log("BGG API", "refresh_bgg_data.py", opciones, consultados, con_cambios, nuevos, no_devueltos,
+                             n_campos, columnas, segundos)
 
 
 def resolve_fields(spec):
@@ -223,6 +211,7 @@ def main():
     # Por tandas: cada una se guarda apenas termina, así un corte (red, BGG)
     # no pierde lo ya traído — y con --skip-fresh se retoma donde quedó.
     updated_total, changes, con_cambios, no_devueltos = 0, 0, 0, 0
+    columnas_cambiadas = {}
     fetched_nuevos = {}
     for start in range(0, len(ids), CHUNK_SIZE):
         chunk = ids[start:start + CHUNK_SIZE]
@@ -235,18 +224,21 @@ def main():
         updates = {}
         mios = {r["bgg_id"] for r in collection}
         faltan = [i for i in chunk if i not in fetched]
+        dudosos = set()  # la confirmación falló por un error (red, BGG): no es lo mismo que "BGG no lo devuelve"
         if faltan:  # se confirma uno por uno: que falte dentro de un lote no alcanza para darlo por muerto
             for i in faltan:
                 time.sleep(5)
                 try:
                     fetched.update(fetch_things([i]))
                 except Exception:  # noqa: BLE001
-                    pass
+                    dudosos.add(i)
         for bgg_id in chunk:
             attrs = fetched.get(bgg_id)
             if attrs is None:
                 no_devueltos += 1
-                if bgg_id in mios:
+                if bgg_id in dudosos:
+                    print(f"  bgg_id={bgg_id}: no pude confirmarlo (error de red/BGG), no se toca.", file=sys.stderr)
+                elif bgg_id in mios:
                     print(f"  bgg_id={bgg_id}: BGG no lo devolvió, pero está en TU colección: no se toca.", file=sys.stderr)
                 elif not args.dry_run and bgg_id in cache:
                     move_to_watch([bgg_id], hoy)
@@ -262,6 +254,7 @@ def main():
                 if new != old:
                     row_updates[field] = new
                     changes += 1
+                    columnas_cambiadas[field] = columnas_cambiadas.get(field, 0) + 1
                     if changes <= 40:
                         print(f"  {bgg_id} {field}: {str(old)[:40]!r} -> {str(new)[:40]!r}")
             updates[bgg_id] = row_updates
@@ -277,7 +270,7 @@ def main():
     print(f"{changes} cambio(s) en {con_cambios} juego(s), {updated_total} con fecha_actualizacion al día"
           + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
     if updated_total and not args.dry_run:
-        write_log(args, updated_total, con_cambios, changes, len(descubiertos) + len(agregados) + len(nuevos), no_devueltos, len(collection), time.time() - inicio)
+        write_log(args, updated_total, con_cambios, columnas_cambiadas, len(descubiertos) + len(agregados) + len(nuevos), no_devueltos, len(fields), time.time() - inicio)
         print(f"OK: datos en {BGG_DATA_PATH.name}, colección en {COLLECTION_PATH.name}, registro en {LOG_PATH}")
 
 

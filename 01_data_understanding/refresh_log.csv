@@ -1,0 +1,6 @@
+fecha,fuente,opciones,filas_consultadas,filas_con_cambios,filas_nuevas,filas_no_devueltas,columnas_con_cambios,columnas_detalle,celdas_cambiadas,duracion_seg
+2026-10-29,BGG API,--scope coleccion --top 5000 --discover --fields all,5011,4573,8,2,,,60186,1808
+2026-10-29,BGG API,--scope coleccion --fields volatile,64,1,0,0,,,1,23
+2026-10-29,BGG API,--scope all --fields all,7997,7075,0,3,,,71196,3188
+2026-11-19,BGG API,--scope all --fields all,11492,11492,0,8,,,120025,4173
+2026-11-19,BGG API,--scope all --fields all,4156,4156,0,9,,,52121,1464

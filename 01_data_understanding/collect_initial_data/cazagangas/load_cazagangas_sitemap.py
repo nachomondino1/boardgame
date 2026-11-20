@@ -34,9 +34,14 @@ import collections
 import datetime
 import json
 import re
+import sys
 import time
 import urllib.request
 
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from refresh_log import write_refresh_log  # noqa: E402
 from cazagangas_common import CRAWL_DELAY_SECONDS, ROOT, load_cazagangas_cache, slugify, write_cazagangas_cache
 
 BASE_URL = "https://www.cazagangas.com.ar"
@@ -106,6 +111,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="no escribe cazagangas_data.jsonl, solo muestra los números")
     args = parser.parse_args()
 
+    inicio = time.time()
     slugs = sitemap_slugs()
     with BGG_DATA_PATH.open(encoding="utf-8") as f:
         juegos = [json.loads(line) for line in f if line.strip()]
@@ -139,6 +145,9 @@ def main():
         print(f"--dry-run: no se escribió nada (quedarían {len(filas)} filas, {ok} con 200).")
         return
     write_cazagangas_cache(filas)
+    write_refresh_log("Cazagangas (sitemap)", "load_cazagangas_sitemap.py", " ".join(sys.argv[1:]), len(juegos), nuevos + reemplazados,
+                      nuevos, 0, 2, {"link_cazagangas": nuevos + reemplazados} if nuevos + reemplazados else {}, time.time() - inicio,
+                      f"{len(elegidos)} con página en el sitemap; {respetados} ya tenían 200")
     print(f"Guardado: {len(filas)} filas, {ok} con 200.")
 
 
