@@ -144,6 +144,30 @@ def add_game(term, dry_run):
     return {bgg_id: attrs}
 
 
+def agregar_por_ids(ids, dry_run=False):
+    """Agrega al catálogo los juegos de BGG `ids` que todavía no están (con todos sus campos). Solo `boardgame`: una
+    expansión (`boardgameexpansion`) u otro tipo no entra al catálogo. Es lo que usa load_cazagangas_prices.py para los
+    juegos que Cazagangas tiene en stock y el catálogo no (el id sale de la tarjeta del listado).
+
+    Devuelve {bgg_id: (estado, nombre)}, con estado "agregado", "expansion" (otro tipo) o "no_devuelto" (BGG no lo
+    devuelve)."""
+    hoy = datetime.date.today().isoformat()
+    fetched = fetch_things(list(ids), marketplace=True)
+    resultado, nuevos = {}, {}
+    for bgg_id in ids:
+        attrs = fetched.get(bgg_id)
+        if attrs is None:
+            resultado[bgg_id] = ("no_devuelto", None)
+        elif attrs.get("type") != "boardgame":
+            resultado[bgg_id] = ("expansion", attrs.get("name"))
+        else:
+            nuevos[bgg_id] = {**attrs, "fecha_actualizacion": hoy}
+            resultado[bgg_id] = ("agregado", attrs.get("name"))
+    if nuevos and not dry_run:
+        upsert_bgg_cache(nuevos)
+    return resultado
+
+
 def discover_hot(top, dry_run):
     """Agrega a bgg_data.jsonl los juegos del "hot" de BGG que todavía no
     están, si están dentro del top N del ranking (o todos, sin top)."""

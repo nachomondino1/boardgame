@@ -6,7 +6,7 @@ corridas de refresh_bgg_data.py (BGG corta, se retoma, etc.), y cada corrida ver
 la tabla entera contra una "foto" (ranking y votos de cada juego) guardada al cerrar la actualización anterior.
 
 Cuándo correrlo: UNA vez, cuando la actualización de BGG ya está completa (todos los juegos con la fecha de
-hoy). Suma una fila a `01_data_understanding/resumen_actualizaciones_bgg.csv` y guarda la foto nueva
+hoy). Suma una fila a `01_data_understanding/actualizaciones/resumen_actualizaciones_bgg.csv` y guarda la foto nueva
 (`data/01_data_understanding/bgg_foto.json`, no se versiona) para la próxima vez.
 
 Columnas del CSV:
@@ -36,7 +36,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 BGG_DATA_PATH = ROOT / "data" / "01_data_understanding" / "bgg_data.jsonl"
 FOTO_PATH = ROOT / "data" / "01_data_understanding" / "bgg_foto.json"
-CSV_PATH = ROOT / "01_data_understanding" / "resumen_actualizaciones_bgg.csv"
+CSV_PATH = ROOT / "01_data_understanding" / "actualizaciones" / "resumen_actualizaciones_bgg.csv"
 COLUMNAS = ["fecha", "desde", "juegos_comparados", "mayores_subidas_ranking", "mayores_caidas_ranking",
             "mas_reviews_nuevas", "observacion"]
 
