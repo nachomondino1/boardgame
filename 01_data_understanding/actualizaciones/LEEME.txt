@@ -1,0 +1,20 @@
+Registros que dejan las actualizaciones de datos (todos versionados en git).
+
+logs_actualizacion_data.csv
+  Una fila por corrida real de un script (BGG o Cazagangas): fecha, fuente, método,
+  motivo, cuántas filas se actualizaron de cuántas había, duración, control y observación.
+  Sirve para saber qué se corrió y cuándo. Lo escriben refresh_bgg_data.py y los scripts
+  de Cazagangas.
+
+resumen_actualizaciones_bgg.csv
+  Una fila por actualización COMPLETA de BGG (la mensual): qué juegos subieron o bajaron
+  más en ranking y qué juegos ganaron más reviews, comparado con la foto anterior.
+  Sirve para decidir con qué frecuencia actualizar cada grupo de juegos. Lo escribe
+  resumen_actualizacion_bgg.py.
+
+cazagangas_sin_catalogo.csv
+  Una fila por juego que Cazagangas tiene en stock y no estaba en nuestro catálogo:
+  id de BGG, página de Cazagangas, nombre, estado (agregado / expansión), fecha en que se
+  detectó. Los "agregado" ya se sumaron al catálogo con todos sus datos de BGG; las
+  "expansión" no se agregan y quedan anotadas para no volver a consultarlas. Lo escribe
+  load_cazagangas_prices.py --rapido.

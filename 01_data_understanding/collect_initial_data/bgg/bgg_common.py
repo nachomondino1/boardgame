@@ -252,6 +252,9 @@ def parse_item(item, marketplace=False):
     primary = next((n.get("value") for n in item.findall("name") if n.get("type") == "primary"), "")
 
     return {
+        # `type` (boardgame, boardgameexpansion, ...) no se guarda en bgg_data.jsonl (_ordered_row solo escribe
+        # BGG_CACHE_FIELDS): sirve para no agregar expansiones al catálogo (ver refresh_bgg_data.agregar_por_ids).
+        "type": item.get("type"),
         "yearpublished": attr("yearpublished"), "minage": attr("minage"),
         "minplayers": attr("minplayers"), "maxplayers": attr("maxplayers"),
         "playingtime": attr("playingtime"), "minplaytime": attr("minplaytime"), "maxplaytime": attr("maxplaytime"),

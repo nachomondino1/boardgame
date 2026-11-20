@@ -55,8 +55,8 @@ python3 02_data_preparation/build_catalog.py
 
 git add docs/data/names.json docs/data/index.json docs/data/meta.json docs/data/games
 # Los registros de actualización (versionados) viajan con el catálogo.
-git add 01_data_understanding/logs_actualizacion_data.csv
-[ -f 01_data_understanding/resumen_actualizaciones_bgg.csv ] && git add 01_data_understanding/resumen_actualizaciones_bgg.csv
+git add 01_data_understanding/actualizaciones/logs_actualizacion_data.csv
+[ -f 01_data_understanding/actualizaciones/resumen_actualizaciones_bgg.csv ] && git add 01_data_understanding/actualizaciones/resumen_actualizaciones_bgg.csv
 if git diff --cached --quiet; then
   echo "== Sin cambios en el catálogo, nada que commitear =="
 else
