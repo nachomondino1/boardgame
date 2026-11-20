@@ -434,7 +434,7 @@ function cardTemplate(g, opts) {
     : `Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.`;
   const precioRefHtml = precio
     ? `<span class="stat" title="${escapeHtml(precioTitulo)}">💵 ${formatPrecio(precio)}</span>`
-    : "";
+    : (opts.showPrecioRef && opts.marcarSinPrecio ? `<span class="stat" title="No hay precio de Cazagangas ni de referencia de BGG.">💵 sin precio</span>` : "");
 
   // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).
   const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${g.nombre} board game review`)}`;
@@ -499,8 +499,9 @@ function showDataStamp() {
       if (!meta || !meta.actualizado) return;
       const [y, m, d] = meta.actualizado.split("-").map(Number);
       const fecha = new Date(y, m - 1, d).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
-      const cobertura = meta.juegos_actualizados < meta.juegos_total
-        ? `${meta.juegos_actualizados.toLocaleString("es-AR")} de ${meta.juegos_total.toLocaleString("es-AR")} juegos al día; el resto viene de una copia de BGG de 2025. `
+      const larga = (iso) => { const [yy, mm, dd] = iso.split("-").map(Number); return new Date(yy, mm - 1, dd).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" }); };
+      const cobertura = meta.juegos_actualizados < meta.juegos_total && meta.fecha_mas_antigua
+        ? `${meta.juegos_actualizados.toLocaleString("es-AR")} de ${meta.juegos_total.toLocaleString("es-AR")} juegos son de esa fecha; el resto, del ${larga(meta.fecha_mas_antigua)} o antes. `
         : "";
       const html = `<p class="data-stamp"><strong>Datos de BGG actualizados el ${fecha}.</strong><br>${cobertura}El ranking y los puntajes cambian en cada actualización.</p>`;
       footers.forEach((f) => f.insertAdjacentHTML("afterbegin", html));

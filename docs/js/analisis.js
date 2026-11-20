@@ -15,7 +15,7 @@ function pluralJuegos(n) {
 
 // Una barra por fila: etiqueta, barra proporcional al máximo y el valor al final.
 // Una sola serie, así que no lleva leyenda: el título dice qué se está contando.
-function barChartHtml({ titulo, subtitulo, filas, nota, ayuda }) {
+function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda }) {
   const max = Math.max(1, ...filas.map((f) => f.valor));
   const rows = filas
     .map((f) => {
@@ -23,11 +23,14 @@ function barChartHtml({ titulo, subtitulo, filas, nota, ayuda }) {
       const cero = f.valor ? "" : " bar-row--cero";
       const fila = `
         <span class="bar-label">${escapeHtml(f.label)}</span>
-        <span class="bar-track"><span class="bar-fill" style="width:${(f.valor / max) * 100}%"></span></span>
-        <span class="bar-value">${f.valor}</span>`;
+        <span class="bar-track${f.ideal != null ? " bar-track--doble" : ""}"><span class="bar-fill" style="width:${(f.valor / max) * 100}%"></span>${f.ideal != null ? `<span class="bar-fill bar-fill--ideal" style="width:${(f.ideal / max) * 100}%"></span>` : ""}</span>
+        <span class="bar-value">${f.ideal != null ? `<strong>${f.ideal}</strong> / ${f.valor}` : f.valor}</span>`;
       // Con juegos, la fila se despliega para ver cuáles son; sin juegos queda fija.
       if (f.juegos && f.juegos.length) {
-        const lista = [...f.juegos].sort((a, b) => a.localeCompare(b, "es")).map((n) => `<li>${escapeHtml(n)}</li>`).join("");
+        const ordenar = (arr) => [...arr].sort((a, b) => a.localeCompare(b, "es"));
+        const ideales = new Set(f.idealJuegos || []);
+        const lista = [...ordenar(f.juegos.filter((n) => ideales.has(n))).map((n) => `<li class="bar-game--ideal">${escapeHtml(n)}</li>`),
+          ...ordenar(f.juegos.filter((n) => !ideales.has(n))).map((n) => `<li>${escapeHtml(n)}</li>`)].join("");
         return `<li class="bar-item"><details class="bar-details"><summary class="bar-row${cero}" title="${title}">${fila}</summary><ul class="bar-games">${lista}</ul></details></li>`;
       }
       return `<li class="bar-item"><div class="bar-row${cero}" title="${title}">${fila}</div></li>`;
@@ -37,6 +40,7 @@ function barChartHtml({ titulo, subtitulo, filas, nota, ayuda }) {
     <article class="analisis-card">
       <h3 class="analisis-card__title">${escapeHtml(titulo)}</h3>
       ${subtitulo ? `<p class="analisis-card__sub">${escapeHtml(subtitulo)}</p>` : ""}
+      ${leyenda ? `<p class="bar-legend"><span class="bar-legend__item"><i class="bar-legend__dot"></i>Se puede jugar</span><span class="bar-legend__item"><i class="bar-legend__dot bar-legend__dot--ideal"></i>Ideal</span></p>` : ""}
       <ul class="bar-list">${rows}</ul>
       ${nota ? `<p class="analisis-card__note">${nota}</p>` : ""}
       ${ayuda ? `<details class="analisis-card__help"><summary>ℹ️ ¿Qué es cada una?</summary><dl>${ayuda.map(([t, d]) => `<dt>${escapeHtml(t)}</dt><dd>${escapeHtml(d)}</dd>`).join("")}</dl></details>` : ""}
@@ -62,50 +66,48 @@ function notaSinDato(n) {
   return n ? `${pluralJuegos(n)} sin este dato en BGG.` : "";
 }
 
-// Rango "ideal" (mejor con, según la comunidad de BGG) o "posible" (mínimo y máximo de la caja).
+// Rango "posible": mínimo y máximo de la caja. El "ideal" (mejor con, según BGG) es jugBestRange.
 function rangoPosible(g) {
   return g.jug_min != null && g.jug_max != null ? [g.jug_min, g.jug_max] : null;
 }
 
-function jugadoresCard(own, { titulo, subtitulo, rango, conInsight }) {
+function jugadoresCard(own) {
   const filas = [];
+  const enRango = (r, n, ultimo) => r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]);
   for (let n = 1; n <= ANALISIS_JUGADORES_MAX; n++) {
     const ultimo = n === ANALISIS_JUGADORES_MAX;
-    const juegos = own.filter((g) => {
-      const r = rango(g);
-      return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]);
-    }).map((g) => g.nombre);
-    filas.push({ label: ultimo ? `${n} o más` : `${n}`, valor: juegos.length, juegos });
+    const posibles = own.filter((g) => enRango(rangoPosible(g), n, ultimo));
+    const ideales = posibles.filter((g) => enRango(jugBestRange(g), n, ultimo));
+    filas.push({
+      label: ultimo ? `${n} o más` : `${n}`,
+      valor: posibles.length,
+      ideal: ideales.length,
+      juegos: posibles.map((g) => g.nombre),
+      idealJuegos: ideales.map((g) => g.nombre),
+    });
   }
-  const sinDato = own.filter((g) => !rango(g)).length;
-  // El hueco más claro: la cantidad (de 2 a 6) con menos juegos, solo si hay con qué comparar.
+  const sinPosible = own.filter((g) => !rangoPosible(g)).length;
+  const sinIdeal = own.filter((g) => !jugBestRange(g)).length;
+  // El hueco más claro: la cantidad (de 2 a 6) con menos juegos ideales, solo si hay con qué comparar.
   const candidatas = filas.slice(1, 6);
-  const minimo = Math.min(...candidatas.map((f) => f.valor));
-  const huecos = candidatas.filter((f) => f.valor === minimo).map((f) => f.label);
-  const insight = conInsight && own.length >= 5 && Math.max(...candidatas.map((f) => f.valor)) > minimo
+  const minimo = Math.min(...candidatas.map((f) => f.ideal));
+  const huecos = candidatas.filter((f) => f.ideal === minimo).map((f) => f.label);
+  const insight = own.length >= 5 && Math.max(...candidatas.map((f) => f.ideal)) > minimo
     ? `Donde menos juegos ideales tenés: <strong>${huecos.join(", ")}</strong> jugadores (${pluralJuegos(minimo)}).`
     : "";
+  const notas = [
+    insight,
+    sinPosible ? `${pluralJuegos(sinPosible)} sin cantidad de jugadores en BGG.` : "",
+    sinIdeal ? `${pluralJuegos(sinIdeal)} sin cantidad ideal en BGG.` : "",
+  ];
   return barChartHtml({
-    titulo,
-    subtitulo,
+    titulo: "👥 Jugadores posibles e ideales",
+    subtitulo: "Cuántos de tus juegos se pueden jugar con esa cantidad de gente y, de esos, cuántos son ideales según la comunidad de BGG. Un juego puede tener más de una cantidad ideal, así que cuenta en cada una.",
+    leyenda: true,
     filas,
-    nota: [insight, notaSinDato(sinDato)].filter(Boolean).join(" "),
+    nota: notas.filter(Boolean).join(" "),
   });
 }
-
-const JUGADORES_IDEALES = {
-  titulo: "👥 Jugadores ideales",
-  subtitulo: "Tus juegos que funcionan mejor con esa cantidad de gente (según la comunidad de BGG). Un juego puede tener más de una cantidad ideal, así que cuenta en cada una (por ejemplo, uno ideal para 2 y 3 aparece en las dos).",
-  rango: jugBestRange,
-  conInsight: true,
-};
-
-const JUGADORES_POSIBLES = {
-  titulo: "👥 Jugadores posibles",
-  subtitulo: "Tus juegos que se pueden jugar con esa cantidad, aunque no sea la ideal",
-  rango: rangoPosible,
-  conInsight: false,
-};
 
 function modoCard(own) {
   const conteo = new Map();
@@ -196,8 +198,7 @@ function renderAnalisis(container, games) {
       ${statTileHtml(ranks.length ? `#${Math.min(...ranks).toLocaleString("es-AR")}` : "–", "mejor ranking BGG")}
     </div>
     <div class="analisis-grid">
-      ${own.length ? jugadoresCard(own, JUGADORES_POSIBLES) : ""}
-      ${own.length ? jugadoresCard(own, JUGADORES_IDEALES) : ""}
+      ${own.length ? jugadoresCard(own) : ""}
       ${own.length ? barChartHtml({ titulo: "⚙️ Complejidad", subtitulo: "Peso del juego según BGG, de 1 a 5", filas: complejidad.filas, nota: notaSinDato(complejidad.sinDato) }) : ""}
       ${own.length ? barChartHtml({ titulo: "⏱ Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
       ${own.length ? modoCard(own) : ""}
