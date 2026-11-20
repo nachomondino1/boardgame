@@ -109,6 +109,7 @@ def elegir_links(juegos, slugs):
 def main():
     parser = argparse.ArgumentParser(description="Carga links a Cazagangas cruzando BGG contra su sitemap")
     parser.add_argument("--dry-run", action="store_true", help="no escribe cazagangas_data.jsonl, solo muestra los números")
+    parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
     args = parser.parse_args()
 
     inicio = time.time()
@@ -146,7 +147,7 @@ def main():
         return
     write_cazagangas_cache(filas)
     write_refresh_log("Cazagangas (sitemap)", " ".join(sys.argv[1:]), len(juegos), len(juegos), nuevos + reemplazados,
-                      nuevos, 0, 2, 2, {"link_cazagangas": nuevos + reemplazados} if nuevos + reemplazados else {}, time.time() - inicio)
+                      nuevos, 0, 2, 2, {"link_cazagangas": nuevos + reemplazados} if nuevos + reemplazados else {}, time.time() - inicio, args.nota)
     print(f"Guardado: {len(filas)} filas, {ok} con 200.")
 
 

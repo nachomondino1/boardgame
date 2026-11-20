@@ -22,6 +22,7 @@ Columnas (las de filas se leen contra el total de la tabla, para saber si fue mu
   columnas_detalle     cuáles, con su cantidad de cambios (columna:n;columna:n)
   celdas_cambiadas     total de valores (fila x columna) que cambiaron
   duracion_seg         duración de la corrida
+  observacion          texto libre: por qué se corrió, qué quedó afuera y por qué (se pasa con --nota "...")
 """
 import csv
 import datetime
@@ -31,7 +32,7 @@ LOG_PATH = Path(__file__).resolve().parents[1] / "refresh_log.csv"
 COLUMNAS = [
     "fecha", "fuente", "opciones", "filas_total", "filas_consultadas", "pct_consultadas", "filas_con_cambios", "pct_con_cambios",
     "filas_nuevas", "filas_no_devueltas", "columnas_total", "columnas_consultadas", "columnas_con_cambios", "columnas_detalle",
-    "celdas_cambiadas", "duracion_seg",
+    "celdas_cambiadas", "duracion_seg", "observacion",
 ]
 
 
@@ -40,7 +41,7 @@ def pct(parte, total):
 
 
 def write_refresh_log(fuente, opciones, filas_total, filas_consultadas, filas_con_cambios, filas_nuevas, filas_no_devueltas,
-                      columnas_total, columnas_consultadas, columnas_cambiadas, duracion_seg):
+                      columnas_total, columnas_consultadas, columnas_cambiadas, duracion_seg, observacion=""):
     """`columnas_cambiadas`: dict columna -> cantidad de filas donde cambió (vacío si no cambió nada)."""
     cambiadas = columnas_cambiadas or {}
     fila = {
@@ -60,6 +61,7 @@ def write_refresh_log(fuente, opciones, filas_total, filas_consultadas, filas_co
         "columnas_detalle": ";".join(f"{c}:{n}" for c, n in sorted(cambiadas.items(), key=lambda x: -x[1])),
         "celdas_cambiadas": sum(cambiadas.values()),
         "duracion_seg": int(duracion_seg),
+        "observacion": observacion,
     }
     nuevo = not LOG_PATH.exists()
     with LOG_PATH.open("a", encoding="utf-8", newline="") as f:

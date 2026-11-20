@@ -39,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description="Verifica los links guardados en cazagangas_data.jsonl")
     parser.add_argument("--limit", type=int, default=None, help="chequear como máximo N links pendientes")
     parser.add_argument("--refresh", action="store_true", help="re-chequear también los que ya tienen un resultado guardado")
+    parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
     args = parser.parse_args()
 
     entries = load_cazagangas_cache()
@@ -65,7 +66,7 @@ def main():
 
     write_cazagangas_cache(entries)
     write_refresh_log("Cazagangas (links)", " ".join(sys.argv[1:]), len(entries), len(pendientes), cambiaron, 0, 0,
-                      2, 2, {"status_http": cambiaron} if cambiaron else {}, time.time() - inicio)
+                      2, 2, {"status_http": cambiaron} if cambiaron else {}, time.time() - inicio, args.nota)
     ok = sum(1 for v in entries.values() if v["status_http"] == "200")
     print(f"\nGuardado en {OUTPUT_PATH} ({len(entries)} link(s) en total, {ok} responden 200).")
 

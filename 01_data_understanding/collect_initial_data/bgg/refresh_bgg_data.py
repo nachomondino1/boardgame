@@ -68,7 +68,7 @@ def write_log(args, consultados, con_cambios, columnas, nuevos, no_devueltos, n_
                                     f"--limit {args.limit}" if args.limit else "", "--skip-fresh" if args.skip_fresh else "",
                                     "--stale" if args.stale else "") if a)
     return write_refresh_log("BGG API", opciones, total, consultados, con_cambios, nuevos, no_devueltos,
-                             len(ALL_FIELDS), n_campos, columnas, segundos)
+                             len(ALL_FIELDS), n_campos, columnas, segundos, args.nota)
 
 
 def resolve_fields(spec):
@@ -173,6 +173,7 @@ def main():
     parser.add_argument("--skip-fresh", action="store_true", help="saltea los juegos ya actualizados hoy (para retomar una corrida cortada)")
     parser.add_argument("--stale", action="store_true", help="solo los juegos que todavía no se actualizaron nunca desde la API (vienen de la copia de 2025)")
     parser.add_argument("--limit", type=int, help="solo los primeros N juegos (para probar)")
+    parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
     args = parser.parse_args()
 
     inicio = time.time()
