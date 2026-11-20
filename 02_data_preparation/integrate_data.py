@@ -79,6 +79,9 @@ def main():
         row["cazagangas_status"] = cazagangas["status_http"] if cazagangas else None
         row["precio_cazagangas"] = cazagangas.get("precio_ars") if cazagangas else None
         row["fecha_precio_cazagangas"] = cazagangas.get("fecha_precio") if cazagangas else None
+        # Crudos: construct_data.py decide con esto si se muestra el último precio de un juego sin stock.
+        row["tiendas_cazagangas"] = cazagangas.get("tiendas") if cazagangas else None
+        row["fecha_con_stock_cazagangas"] = (cazagangas.get("fecha_con_stock") or cazagangas.get("fecha_precio")) if cazagangas and cazagangas.get("precio_ars") is not None else None
 
         integrated.append(row)
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Wrapper para el LaunchAgent (~/Library/LaunchAgents/com.nachomondino.boardgame-sync.plist):
-# corre sync_data.sh una vez por mes, pero no depende de que la Mac esté
+# corre sync_data.sh --mensual (todo BGG + Cazagangas, ~2,5-3 h) una vez por mes, pero no depende de que la Mac esté
 # prendida justo el día 1 — launchd dispara este script en el horario
 # programado Y en cada login/wake (RunAtLoad), y acá se chequea si ya pasó
 # ~1 mes desde la última corrida real antes de hacer algo. Así, si la Mac
@@ -33,7 +33,8 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') == corriendo sync_data.sh ==" >> "$LOG_FILE"
 cd "$REPO_DIR"
 # PATH explícito: launchd no hereda el shell interactivo (sin Homebrew en PATH por default)
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-if ./sync_data.sh >> "$LOG_FILE" 2>&1; then
+# --mensual: todo BGG + resumen + Cazagangas (~2,5-3 h); caffeinate -i evita que la Mac se duerma por inactividad mientras corre.
+if caffeinate -i ./sync_data.sh --mensual >> "$LOG_FILE" 2>&1; then
   echo "$now_epoch" > "$STATE_FILE"
   echo "$(date '+%Y-%m-%d %H:%M:%S') == listo ==" >> "$LOG_FILE"
 else
