@@ -434,7 +434,7 @@ function cardTemplate(g, opts) {
     : `Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.`;
   const precioRefHtml = precio
     ? `<span class="stat" title="${escapeHtml(precioTitulo)}">💵 ${formatPrecio(precio)}</span>`
-    : "";
+    : (opts.showPrecioRef && opts.marcarSinPrecio ? `<span class="stat" title="No hay precio de Cazagangas ni de referencia de BGG.">💵 sin precio</span>` : "");
 
   // Búsqueda de reseñas en YouTube con el nombre principal (el que usan los canales).
   const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${g.nombre} board game review`)}`;
