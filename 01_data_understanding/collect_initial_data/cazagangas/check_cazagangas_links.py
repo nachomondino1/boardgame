@@ -39,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description="Verifica los links guardados en cazagangas_data.jsonl")
     parser.add_argument("--limit", type=int, default=None, help="chequear como máximo N links pendientes")
     parser.add_argument("--refresh", action="store_true", help="re-chequear también los que ya tienen un resultado guardado")
+    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de refresh_log.csv)")
     parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
     args = parser.parse_args()
 
@@ -66,8 +67,8 @@ def main():
 
     write_cazagangas_cache(entries)
     ok = sum(1 for v in entries.values() if v["status_http"] == "200")
-    write_refresh_log("Cazagangas", "chequeo HTTP del link de cada juego", len(entries), len(pendientes),
-                      f"{ok} de {len(entries)} links responden 200; el resultado cambió en {cambiaron} de {len(pendientes)}", args.nota)
+    write_refresh_log("Cazagangas", "chequeo HTTP del link de cada juego", len(entries), len(pendientes), time.time() - inicio,
+                      f"{ok} de {len(entries)} links responden 200; el resultado cambió en {cambiaron} de {len(pendientes)}", motivo=args.motivo, observacion=args.nota)
     print(f"\nGuardado en {OUTPUT_PATH} ({len(entries)} link(s) en total, {ok} responden 200).")
 
 

@@ -118,6 +118,7 @@ def main():
     parser = argparse.ArgumentParser(description="Trae el precio más barato de Cazagangas para cada juego con link")
     parser.add_argument("--limit", type=int, default=None, help="mirar como máximo N juegos en esta corrida")
     parser.add_argument("--refresh", type=int, default=None, metavar="DIAS", help="volver a mirar los precios de hace DIAS días o más")
+    parser.add_argument("--motivo", default="", help="por qué corrés esto (columna motivo de refresh_log.csv)")
     parser.add_argument("--nota", default="", help="observación para refresh_log.csv (por qué se corre)")
     args = parser.parse_args()
 
@@ -159,9 +160,9 @@ def main():
     write_cazagangas_cache(filas)
     visitados = len(pendientes) - sin_respuesta
     write_refresh_log("Cazagangas", "scraping del precio en la página de cada juego",
-                      sum(f.get("status_http") == "200" for f in filas.values()), visitados,
+                      sum(f.get("status_http") == "200" for f in filas.values()), visitados, time.time() - inicio,
                       f"{con_precio} de {visitados} con precio; el precio cambió en {cols.get('precio_ars', 0)}; {sin_respuesta} sin respuesta (se reintentan)",
-                      args.nota)
+                      motivo=args.motivo, observacion=args.nota)
     print(f"\nListo: {con_precio} de {len(pendientes)} con precio. Guardado en cazagangas_data.jsonl.")
 
 
