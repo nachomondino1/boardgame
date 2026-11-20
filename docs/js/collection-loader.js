@@ -16,6 +16,7 @@ const ESTADOS_MARCABLES = [
 function mountCollectionLoader(container, { onChange }) {
   let names = []; // [{ id, nombre, key, alts }] en orden de ranking: los más populares salen primero
   let nameById = new Map();
+  let yearById = new Map();
   let namesPromise = null;
   let collection = loadCollection();
   let saveFailed = false;
@@ -108,6 +109,7 @@ function mountCollectionLoader(container, { onChange }) {
   }
 
   function rowHtml(id, nombre, alias) {
+    const anio = yearById.get(id);
     const entry = collection.games[id];
     const activo = flagActivo(entry);
     const botones = ESTADOS_MARCABLES
@@ -118,7 +120,7 @@ function mountCollectionLoader(container, { onChange }) {
       ? `<button type="button" class="col-remove" data-remove="${escapeHtml(id)}" title="Quitar de mi colección (solo en este navegador, no cambia BGG)" aria-label="Quitar ${escapeHtml(nombre)} de mi colección">✕ Quitar</button>`
       : "";
     const tambien = alias ? `<span class="col-alias">también: ${escapeHtml(alias)}</span>` : "";
-    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}${tambien}</span><span class="col-actions">${botones}${quitar}</span></li>`;
+    return `<li class="col-row"><span class="col-name">${escapeHtml(nombre)}${anio ? ` <span class="col-year">(${anio})</span>` : ""}${tambien}</span><span class="col-actions">${botones}${quitar}</span></li>`;
   }
 
   function render() {
@@ -139,7 +141,7 @@ function mountCollectionLoader(container, { onChange }) {
 
     const ids = Object.keys(collection.games)
       .filter((id) => nameById.has(id))
-      .sort((a, b) => nameById.get(a).localeCompare(nameById.get(b), "es"));
+      .sort((a, b) => nameById.get(a).localeCompare(nameById.get(b), "es") || (yearById.get(a) || 0) - (yearById.get(b) || 0));
     const total = Object.keys(collection.games).length;
     container.querySelector("[data-mine-title]").textContent = `Tu colección (${total}) · ${mineDetails.open ? "tocá para ocultar" : "tocá para ver y editar"}`;
     container.querySelector("[data-clear]").hidden = total === 0;
@@ -163,6 +165,7 @@ function mountCollectionLoader(container, { onChange }) {
         .then(({ rows }) => {
           names = rows.map(([id, nombre, alt]) => ({ id, nombre, key: textKey(nombre), alts: parseAlts(alt) }));
           nameById = new Map(rows.map(([id, nombre]) => [id, nombre]));
+          yearById = new Map(rows.filter((r) => r[3]).map((r) => [r[0], r[3]]));
           render();
         })
         .catch((err) => {

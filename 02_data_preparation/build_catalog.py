@@ -4,8 +4,8 @@ depende de una colección en particular (`estado`, `mi_puntaje`). Esos dos
 campos los pone el navegador a partir de la colección del visitante.
 
 Escribe, en docs/data/:
-- names.json: [bgg_id, nombre] de todos los juegos (buscador), con un tercer elemento (nombres
-  alternativos en alfabeto latino, separados por "|") cuando el juego los tiene: así se encuentra
+- names.json: [bgg_id, nombre, alternativos, anio] de todos los juegos (buscador; el año distingue
+  homónimos, p. ej. dos "Gaudí"). Los alternativos (alfabeto latino, separados por "|", "" si no hay): así se encuentra
   "Cazabombas" aunque el nombre principal sea "Bomb Busters".
 - meta.json: fecha de la última actualización de datos de BGG y cuántos juegos la tienen.
 - index.json: los campos para filtrar, ordenar y armar tarjetas, como listas,
@@ -137,8 +137,8 @@ def main():
     names = []
     for g in games:
         alts = latin_alternates(g["nombre"], raw[g["bgg_id"]].get("alternate"))
-        names.append([g["bgg_id"], g["nombre"], "|".join(alts)] if alts else [g["bgg_id"], g["nombre"]])
-    write_json(OUTPUT_DIR / "names.json", {"cols": ["bgg_id", "nombre", "alternativos"], "rows": names})
+        names.append([g["bgg_id"], g["nombre"], "|".join(alts), g.get("anio")])
+    write_json(OUTPUT_DIR / "names.json", {"cols": ["bgg_id", "nombre", "alternativos", "anio"], "rows": names})
 
     # Fecha de los datos de BGG: la de la actualización principal (la más frecuente). Los pocos juegos
     # agregados después (p. ej. los que aparecen en Cazagangas) tienen una fecha posterior y no la cambian.

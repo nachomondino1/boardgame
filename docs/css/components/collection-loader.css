@@ -157,6 +157,11 @@
   font-weight: 600;
 }
 
+.col-year {
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .col-alias {
   display: block;
   margin-top: 2px;
