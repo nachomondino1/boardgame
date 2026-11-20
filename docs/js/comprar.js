@@ -444,7 +444,7 @@ function renderAvisoPrecios() {
   const fecha = fechaPreciosCazagangas || dolarFecha;
   if (!fecha) return;
   const link = `<a class="price-link" href="https://www.cazagangas.com.ar" target="_blank" rel="noopener">Cazagangas ↗</a>`;
-  el.innerHTML = `<strong>Precios actualizados el ${fechaLarga(fecha)}.</strong><br>Los más baratos en ${link}; los que llevan ~ son estimados (±35% o más).`;
+  el.innerHTML = `<strong>Precios actualizados el ${fechaLarga(fecha)}.</strong><br>Los más baratos en ${link}; los que dicen "últ." no tienen stock hoy (es el último precio visto, de hasta 6 meses); los que llevan ~ son estimados (±35% o más).`;
   el.hidden = false;
 }
 

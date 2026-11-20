@@ -89,7 +89,8 @@ let fechaPreciosCazagangas = null;
 // Precio en pesos de un juego: el real (el más barato hoy en Cazagangas, `precio_ars`) si lo tiene; si no, el
 // estimado a partir del marketplace de BGG. null si no hay ninguno. `real` distingue uno del otro.
 function precioDe(g) {
-  if (g.precio_ars != null) return { valor: g.precio_ars, real: true };
+  // `visto`: fecha del último precio visto, si el juego está sin stock hoy en Cazagangas (hasta 6 meses).
+  if (g.precio_ars != null) return { valor: g.precio_ars, real: true, visto: g.precio_ars_visto || null };
   if (g.precio_ref_usd != null) return { valor: precioArsEstimado(g.precio_ref_usd), real: false };
   return null;
 }
@@ -101,7 +102,7 @@ function fechaLargaCorta(iso) {
 
 // Redondeado a miles, sin falsa precisión. Real: "$159 mil". Estimado: "~$295 mil" (el ~ avisa que no es un precio de tienda).
 function formatPrecio(p) {
-  return `${p.real ? "" : "~"}$${Math.round(p.valor / 1000).toLocaleString("es-AR")} mil`;
+  return `${p.visto ? "últ. " : ""}${p.real ? "" : "~"}$${Math.round(p.valor / 1000).toLocaleString("es-AR")} mil`;
 }
 
 // Tramos del filtro de Precio, sobre el precio estimado en pesos (solo los juegos con precio de referencia).
@@ -429,7 +430,9 @@ function cardTemplate(g, opts) {
   // Precio en pesos: el real de Cazagangas si lo tiene (precio_ars) y, si no, el estimado desde el marketplace
   // de BGG (precio_ref_usd, USD, solo nuevos) — ver precioDe() y PRECIO_MULT.
   const precio = opts.showPrecioRef ? precioDe(g) : null;
-  const precioTitulo = !precio ? "" : precio.real
+  const precioTitulo = !precio ? "" : precio.visto
+    ? `Hoy no hay stock en Cazagangas. Último precio visto: el más barato entre las tiendas, el ${fechaLargaCorta(precio.visto)}. Puede haber cambiado.`
+    : precio.real
     ? `Precio más barato hoy en Cazagangas, entre las tiendas argentinas que lo tienen${fechaPreciosCazagangas ? ` (actualizado el ${fechaLargaCorta(fechaPreciosCazagangas)})` : ""}.`
     : `Precio ESTIMADO en Argentina: mediana del marketplace de BGG (US$${Math.round(g.precio_ref_usd)}) × dólar oficial × ${PRECIO_MULT} por importación e impuestos. Es una referencia gruesa, puede errar por ±25% o más.`;
   const precioRefHtml = precio

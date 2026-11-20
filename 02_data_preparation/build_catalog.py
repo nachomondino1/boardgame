@@ -31,7 +31,7 @@ GAMES_PER_SHARD = 500
 INDEX_FIELDS = (
     "bgg_id", "nombre", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
     "duracion", "complejidad", "puntaje_bgg", "reviews_bgg", "ranking_bgg",
-    "grupo", "anio", "modo", "precio_ref_usd", "precio_ars",
+    "grupo", "anio", "modo", "precio_ref_usd", "precio_ars", "precio_ars_visto",
 )
 
 

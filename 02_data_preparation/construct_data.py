@@ -26,6 +26,7 @@ Own > Prev. owned > Want to buy > Want to play, y "Watchlist" para todo lo demá
 por integrate_data.py y pasan de largo.
 """
 import collections
+import datetime
 import json
 import math
 import re
@@ -132,6 +133,29 @@ def dependencia_idioma(entries):
     no siempre es confiable."""
     votes = [int(e.get("@numvotes", 0)) for e in entries or []]
     return votes.index(max(votes)) + 1 if votes and max(votes) > 0 else None
+
+
+PRECIO_SIN_STOCK_MAX_DIAS = 180  # un juego sin stock mantiene su último precio visto hasta 6 meses (decisión 2026-11-20)
+
+
+def precio_cazagangas(row):
+    """`precio_ars`: el más barato en tiendas de Cazagangas. Con stock hoy es ese precio; sin stock, el último que
+    se vio, mientras no tenga más de PRECIO_SIN_STOCK_MAX_DIAS. `precio_ars_visto`: la fecha en que se vio ese
+    último precio, solo si el juego está sin stock (null si el precio es de hoy): la web lo marca como "últ.".
+    Sin precio visto nunca, o más viejo que el límite, queda sin precio real (la web cae a la estimación)."""
+    precio = row.get("precio_cazagangas")
+    if precio is None:
+        return {"precio_ars": None, "precio_ars_visto": None}
+    if row.get("tiendas_cazagangas"):
+        return {"precio_ars": precio, "precio_ars_visto": None}
+    visto = row.get("fecha_con_stock_cazagangas")
+    try:
+        dias = (datetime.date.today() - datetime.date.fromisoformat(visto)).days
+    except (TypeError, ValueError):
+        return {"precio_ars": None, "precio_ars_visto": None}
+    if dias > PRECIO_SIN_STOCK_MAX_DIAS:
+        return {"precio_ars": None, "precio_ars_visto": None}
+    return {"precio_ars": precio, "precio_ars_visto": visto}
 
 
 def marketplace_mediana_usd(listings):
@@ -305,7 +329,7 @@ def build_game(row, grupo):
         "dependencia_idioma": dependencia_idioma(row.get("suggested_language_dependence")),
         "edad_comunidad": to_int(num(re.sub(r"\D.*", "", edad_comunidad))) if edad_comunidad else None,
         "precio_ref_usd": marketplace_mediana_usd(row.get("marketplacelistings")),
-        "precio_ars": row.get("precio_cazagangas"),  # el más barato hoy en Cazagangas; null si no se miró o no hay stock
+        **precio_cazagangas(row),
     })
     return game
 
