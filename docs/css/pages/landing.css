@@ -57,6 +57,11 @@
   color: #f4efe6;
 }
 
+/* Palabras clave del título: naranja claro, legible sobre el fondo oscuro del hero en ambos modos. */
+.landing__hl {
+  color: #f59e6b;
+}
+
 .landing__lead {
   margin: 20px 0 0;
   font-size: 1.1rem;
