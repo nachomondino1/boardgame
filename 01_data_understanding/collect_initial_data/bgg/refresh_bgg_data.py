@@ -61,14 +61,14 @@ VOLATILE_FIELDS = [
 CHUNK_SIZE = 500  # juegos por tanda (25 requests): se guarda al terminar cada una
 ALL_FIELDS = [f for f in BGG_CACHE_FIELDS if f not in ("bgg_id", "description", "fecha_actualizacion")]
 
-def write_log(args, consultados, con_cambios, columnas, nuevos, no_devueltos, n_campos, segundos):
+def write_log(args, consultados, con_cambios, columnas, nuevos, no_devueltos, n_campos, segundos, total):
     """Suma una fila a refresh_log.csv (ver refresh_log.py)."""
     opciones = " ".join(a for a in (f"--scope {args.scope}", f"--top {args.top}" if args.top else "",
                                     "--discover" if args.discover else "", f"--add {args.add}" if args.add else "", f"--fields {args.fields}",
                                     f"--limit {args.limit}" if args.limit else "", "--skip-fresh" if args.skip_fresh else "",
                                     "--stale" if args.stale else "") if a)
-    return write_refresh_log("BGG API", "refresh_bgg_data.py", opciones, consultados, con_cambios, nuevos, no_devueltos,
-                             n_campos, columnas, segundos)
+    return write_refresh_log("BGG API", opciones, total, consultados, con_cambios, nuevos, no_devueltos,
+                             len(ALL_FIELDS), n_campos, columnas, segundos)
 
 
 def resolve_fields(spec):
@@ -270,7 +270,7 @@ def main():
     print(f"{changes} cambio(s) en {con_cambios} juego(s), {updated_total} con fecha_actualizacion al día"
           + (" (dry-run, no se escribió nada)" if args.dry_run else ""))
     if updated_total and not args.dry_run:
-        write_log(args, updated_total, con_cambios, columnas_cambiadas, len(descubiertos) + len(agregados) + len(nuevos), no_devueltos, len(fields), time.time() - inicio)
+        write_log(args, updated_total, con_cambios, columnas_cambiadas, len(descubiertos) + len(agregados) + len(nuevos), no_devueltos, len(fields), time.time() - inicio, len(load_bgg_cache()))
         print(f"OK: datos en {BGG_DATA_PATH.name}, colección en {COLLECTION_PATH.name}, registro en {LOG_PATH}")
 
 

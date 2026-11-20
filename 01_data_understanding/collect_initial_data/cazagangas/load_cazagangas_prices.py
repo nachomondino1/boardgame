@@ -156,8 +156,8 @@ def main():
             time.sleep(CRAWL_DELAY_SECONDS)
 
     write_cazagangas_cache(filas)
-    write_refresh_log("Cazagangas (precios)", "load_cazagangas_prices.py", " ".join(sys.argv[1:]), len(pendientes), cambiaron, 0,
-                      sin_respuesta, 3, cols, time.time() - inicio, f"{con_precio} con precio")
+    write_refresh_log("Cazagangas (precios)", " ".join(sys.argv[1:]), sum(f.get("status_http") == "200" for f in filas.values()),
+                      len(pendientes), cambiaron, 0, sin_respuesta, 3, 3, cols, time.time() - inicio)
     print(f"\nListo: {con_precio} de {len(pendientes)} con precio. Guardado en cazagangas_data.jsonl.")
 
 

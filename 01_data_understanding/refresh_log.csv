@@ -1,6 +1,7 @@
-fecha,fuente,opciones,filas_consultadas,filas_con_cambios,filas_nuevas,filas_no_devueltas,columnas_con_cambios,columnas_detalle,celdas_cambiadas,duracion_seg
-2026-10-29,BGG API,--scope coleccion --top 5000 --discover --fields all,5011,4573,8,2,,,60186,1808
-2026-10-29,BGG API,--scope coleccion --fields volatile,64,1,0,0,,,1,23
-2026-10-29,BGG API,--scope all --fields all,7997,7075,0,3,,,71196,3188
-2026-11-19,BGG API,--scope all --fields all,11492,11492,0,8,,,120025,4173
-2026-11-19,BGG API,--scope all --fields all,4156,4156,0,9,,,52121,1464
+fecha,fuente,opciones,filas_total,filas_consultadas,pct_consultadas,filas_con_cambios,pct_con_cambios,filas_nuevas,filas_no_devueltas,columnas_total,columnas_consultadas,columnas_con_cambios,columnas_detalle,celdas_cambiadas,duracion_seg
+2026-10-29,BGG API,--scope coleccion --top 5000 --discover --fields all,27788,5011,18.0%,4573,91.3%,8,2,27,27,,,60186,1808
+2026-10-29,BGG API,--scope coleccion --fields volatile,27796,64,0.2%,1,1.6%,0,0,27,8,,,1,23
+2026-10-29,BGG API,--scope all --fields all,27796,7997,28.8%,7075,88.5%,0,3,27,27,,,71196,3188
+2026-11-19,BGG API,--scope all --fields all,27796,11492,41.3%,11492,100.0%,0,8,27,27,,,120025,4173
+2026-11-19,BGG API,--scope all --fields all,27796,4156,15.0%,4156,100.0%,0,9,27,27,,,52121,1464
+2026-11-19,Cazagangas (precios),"(corrida completa, solo tiendas/nuevos)",4641,4641,100.0%,4641,100.0%,0,0,4,4,4,fecha_precio:4641;precio_ars:1011;precio_ars_max:1011;tiendas:1011,7674,16400

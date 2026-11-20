@@ -64,8 +64,8 @@ def main():
             time.sleep(CRAWL_DELAY_SECONDS)
 
     write_cazagangas_cache(entries)
-    write_refresh_log("Cazagangas (links)", "check_cazagangas_links.py", " ".join(sys.argv[1:]), len(pendientes), cambiaron, 0, 0, 2,
-                      {"status_http": cambiaron} if cambiaron else {}, time.time() - inicio)
+    write_refresh_log("Cazagangas (links)", " ".join(sys.argv[1:]), len(entries), len(pendientes), cambiaron, 0, 0,
+                      2, 2, {"status_http": cambiaron} if cambiaron else {}, time.time() - inicio)
     ok = sum(1 for v in entries.values() if v["status_http"] == "200")
     print(f"\nGuardado en {OUTPUT_PATH} ({len(entries)} link(s) en total, {ok} responden 200).")
 
