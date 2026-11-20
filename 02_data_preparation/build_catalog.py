@@ -140,15 +140,15 @@ def main():
         names.append([g["bgg_id"], g["nombre"], "|".join(alts)] if alts else [g["bgg_id"], g["nombre"]])
     write_json(OUTPUT_DIR / "names.json", {"cols": ["bgg_id", "nombre", "alternativos"], "rows": names})
 
-    # Última actualización de datos de BGG: la fecha más reciente, y cuántos juegos tienen fecha
-    # (el resto tiene su propia fecha anterior: `fecha_mas_antigua`).
+    # Fecha de los datos de BGG: la de la actualización principal (la más frecuente). Los pocos juegos
+    # agregados después (p. ej. los que aparecen en Cazagangas) tienen una fecha posterior y no la cambian.
     fechas = [raw[g["bgg_id"]].get("fecha_actualizacion") for g in games]
     fechas = [d for d in fechas if d]
+    principal = max(set(fechas), key=fechas.count) if fechas else None
     write_json(OUTPUT_DIR / "meta.json", {
-        "actualizado": max(fechas) if fechas else None,
-        "juegos_actualizados": sum(1 for d in fechas if d == max(fechas)) if fechas else 0,
+        "actualizado": principal,
+        "juegos_actualizados": fechas.count(principal) if fechas else 0,
         "juegos_total": len(games),
-        "fecha_mas_antigua": min(fechas) if fechas else None,
         # Día del precio de Cazagangas más reciente (los precios reales son de ahí, no de la fecha de BGG).
         "precios_cazagangas": max((d for d in (raw[g["bgg_id"]].get("fecha_precio_cazagangas") for g in games) if d), default=None),
     })

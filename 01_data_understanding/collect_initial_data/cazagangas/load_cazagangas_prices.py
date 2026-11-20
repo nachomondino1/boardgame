@@ -34,6 +34,7 @@ Después hay que regenerar el sitio: `python3 02_data_preparation/integrate_data
 `python3 02_data_preparation/build_catalog.py`.
 """
 import argparse
+import csv
 import sys
 from pathlib import Path
 import datetime
@@ -106,32 +107,36 @@ PAGINAS_RE = re.compile(r'pagination-link hide-mobile"[^>]*>\s*<div>(\d+)</div>'
 TARJETA_SLUG_RE = re.compile(r'href="/juego/([a-z0-9-]+)"')
 TARJETA_PRECIO_RE = re.compile(r'game-price">\$([\d.]+)<')
 TARJETA_TIENDAS_RE = re.compile(r'seller-count">(\d+) tienda')
+TARJETA_BGG_RE = re.compile(r'data-bgg-url="https://boardgamegeek.com/boardgame/(\d+)/')
 
 
 def parse_listado(html):
-    """({slug: (precio, tiendas)}, {slug sin cantidad de tiendas}, ultima_pagina) de una página del listado.
+    """({slug: (precio, tiendas)}, {slug sin cantidad de tiendas}, ultima_pagina, {slug: bgg_id}) de una página del listado.
 
     Una tarjeta con "N tiendas" muestra el precio "desde" de TIENDAS. Una sin esa cantidad muestra un precio de la
     Feria (usados): no se usa, el juego queda como dudoso para mirar su ficha."""
     trozos = html.split("game-prices-options")
-    con_tiendas, dudosos = {}, set()
+    con_tiendas, dudosos, ids = {}, set(), {}
     for anterior, cuerpo in zip(trozos, trozos[1:]):
         slugs = TARJETA_SLUG_RE.findall(anterior)
         if not slugs:
             continue
+        bgg = TARJETA_BGG_RE.findall(anterior)
+        if bgg:  # el id de BGG de la tarjeta es exacto: no hay que adivinar el juego por su nombre
+            ids[slugs[-1]] = bgg[-1]
         precio, tiendas = TARJETA_PRECIO_RE.search(cuerpo[:1500]), TARJETA_TIENDAS_RE.search(cuerpo[:1500])
         if precio and tiendas:
             con_tiendas[slugs[-1]] = (int(precio.group(1).replace(".", "")), int(tiendas.group(1)))
         else:
             dudosos.add(slugs[-1])
     paginas = [int(p) for p in PAGINAS_RE.findall(html)]
-    return con_tiendas, dudosos, max(paginas) if paginas else 1
+    return con_tiendas, dudosos, max(paginas) if paginas else 1, ids
 
 
 def recorrer_listado():
-    """Recorre todo el listado "sólo en stock". Devuelve (con_tiendas, dudosos, completo): `completo` es False si
+    """Recorre todo el listado "sólo en stock". Devuelve (con_tiendas, dudosos, ids, completo): `completo` es False si
     alguna página no respondió (entonces no se puede afirmar que un juego que no aparece no tiene stock)."""
-    con_tiendas, dudosos, completo = {}, set(), True
+    con_tiendas, dudosos, ids, completo = {}, set(), {}, True
     pagina, ultima = 1, 1
     while pagina <= ultima:
         html = fetch(LISTADO_URL.format(pagina="" if pagina == 1 else f"/{pagina}"))
@@ -139,25 +144,114 @@ def recorrer_listado():
             completo = False
             print(f"  listado, página {pagina}: sin respuesta")
         else:
-            ct, du, ultima_pag = parse_listado(html)
+            ct, du, ultima_pag, idp = parse_listado(html)
             con_tiendas.update(ct)
             dudosos |= du
+            ids.update(idp)
             ultima = max(ultima, ultima_pag)
         if pagina % 20 == 0 or pagina == ultima:
             print(f"  listado: {pagina}/{ultima} páginas, {len(con_tiendas)} juegos con precio de tiendas")
         pagina += 1
         if pagina <= ultima:
             time.sleep(CRAWL_DELAY_SECONDS)
-    return con_tiendas, dudosos, completo
+    return con_tiendas, dudosos, ids, completo
+
+
+SIN_CATALOGO_PATH = ROOT / "01_data_understanding" / "actualizaciones" / "cazagangas_sin_catalogo.csv"
+SIN_CATALOGO_COLS = ["bgg_id", "slug_cazagangas", "nombre", "estado", "fecha_detectado", "fecha_resuelto"]
+LINK_BASE = "https://www.cazagangas.com.ar/juego/"
+ORIGEN_LISTADO = "listado en stock (bgg_id de la tarjeta)"
+
+
+def leer_sin_catalogo():
+    """{bgg_id: fila} de los juegos que Cazagangas tiene en stock y el catálogo de BGG no tenía."""
+    if not SIN_CATALOGO_PATH.exists():
+        return {}
+    with SIN_CATALOGO_PATH.open(encoding="utf-8", newline="") as f:
+        return {r["bgg_id"]: r for r in csv.DictReader(f)}
+
+
+def escribir_sin_catalogo(filas):
+    with SIN_CATALOGO_PATH.open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=SIN_CATALOGO_COLS)
+        w.writeheader()
+        for r in sorted(filas.values(), key=lambda r: (r["fecha_detectado"], int(r["bgg_id"]))):
+            w.writerow({c: r.get(c, "") for c in SIN_CATALOGO_COLS})
+
+
+def vincular_y_agregar(filas, ids, hoy_txt, stats):
+    """Usa el id de BGG de cada tarjeta del listado en stock (exacto, no por nombre) para dos cosas:
+
+    1. Juegos que ya están en el catálogo: si no tenían link, o estaban linkeados a OTRA página de Cazagangas que no
+       aparece en el listado (Magical Athlete: el stock está en `magical-athlete-2025`), se guarda la página con stock.
+       Si la actual también tiene stock se respeta.
+    2. Juegos que NO están en el catálogo (Orloj): se agregan con todos sus datos de BGG (`agregar_por_ids`) y su link
+       exacto, salvo las expansiones y lo que BGG no devuelve. Todo queda anotado en cazagangas_sin_catalogo.csv
+       (versionado), con su estado, para no volver a preguntarle a BGG por las expansiones."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bgg"))
+    from refresh_bgg_data import agregar_por_ids  # noqa: PLC0415 — solo hace falta en este modo
+
+    catalogo = set(ranking_por_juego())
+    por_id = {}  # varias páginas pueden ser del mismo juego: queda la que tiene más tiendas
+    for slug, bgg_id in ids.items():
+        mejor = por_id.get(bgg_id)
+        if mejor is None or stats["tiendas_listado"].get(slug, 0) > stats["tiendas_listado"].get(mejor, 0):
+            por_id[bgg_id] = slug
+    faltan = {}
+    for bgg_id, slug in por_id.items():
+        if bgg_id not in catalogo:
+            faltan[bgg_id] = slug
+            continue
+        fila = filas.get(bgg_id)
+        actual = fila["link_cazagangas"].rstrip("/").rsplit("/", 1)[-1] if fila and fila.get("link_cazagangas") and fila.get("status_http") == "200" else None
+        if actual == slug or (actual is not None and actual in ids):
+            continue
+        nueva = {"link_cazagangas": LINK_BASE + slug, "status_http": "200", "fecha_chequeado": hoy_txt, "origen": ORIGEN_LISTADO}
+        if fila is None:
+            filas[bgg_id] = {"bgg_id": bgg_id, **nueva}
+        else:
+            fila.update(nueva)
+        stats["relinkeados" if actual else "vinculados"] += 1
+
+    previos = leer_sin_catalogo()
+    consultar = [i for i in faltan if previos.get(i, {}).get("estado") != "expansion"]
+    if not consultar:
+        return
+    print(f"Juegos en stock que no están en el catálogo: {len(faltan)}; se consulta a BGG por {len(consultar)}.")
+    try:
+        resultado = agregar_por_ids(consultar)
+    except Exception as e:  # noqa: BLE001 — BGG caído o con error: el resto del rastreo sigue, se reintenta en la próxima corrida
+        print(f"  no se pudo consultar a BGG ({e}); se reintenta en la próxima corrida.")
+        return
+    estados = {"agregado": "agregado", "expansion": "expansion", "no_devuelto": "no_devuelto_por_bgg"}
+    for bgg_id, (estado, nombre) in resultado.items():
+        fila = previos.get(bgg_id) or {"bgg_id": bgg_id, "fecha_detectado": hoy_txt}
+        fila.update({"slug_cazagangas": faltan[bgg_id], "nombre": nombre or fila.get("nombre") or faltan[bgg_id],
+                     "estado": estados[estado], "fecha_resuelto": hoy_txt if estado != "no_devuelto" else ""})
+        previos[bgg_id] = fila
+        if estado == "agregado":
+            filas[bgg_id] = {"bgg_id": bgg_id, "link_cazagangas": LINK_BASE + faltan[bgg_id], "status_http": "200",
+                             "fecha_chequeado": hoy_txt, "origen": ORIGEN_LISTADO}
+            stats["agregados"].append(nombre)
+        elif estado == "expansion":
+            stats["expansiones"] += 1
+        else:
+            stats["no_devueltos"] += 1
+    escribir_sin_catalogo(previos)
+    print(f"  agregados al catálogo: {len(stats['agregados'])}; expansiones (no se agregan): {stats['expansiones']}; BGG no los devuelve: {stats['no_devueltos']}.")
 
 
 def rapido(filas, hoy):
     """Pasada rápida: el listado dice qué juegos tienen stock y su precio "desde"; solo se visita la ficha de los
     que cambiaron respecto de lo guardado o de los dudosos (el precio del listado no siempre coincide con el de la
     ficha: Toy Battle $14.400 en el listado contra $71.900 en la ficha). Devuelve contadores para el log."""
-    con_tiendas, dudosos, completo = recorrer_listado()
+    con_tiendas, dudosos, ids, completo = recorrer_listado()
     hoy_txt = hoy.isoformat()
-    stats = {"confirmados": 0, "fichas": 0, "sin_stock": 0, "perdieron_stock": 0, "sin_respuesta": 0, "completo": completo, "cols": {}}
+    stats = {"confirmados": 0, "fichas": 0, "sin_stock": 0, "perdieron_stock": 0, "sin_respuesta": 0, "completo": completo, "cols": {},
+             "vinculados": 0, "relinkeados": 0, "agregados": [], "expansiones": 0, "no_devueltos": 0,
+             "tiendas_listado": {slug: t for slug, (_, t) in con_tiendas.items()}}
+    vincular_y_agregar(filas, ids, hoy_txt, stats)
+    write_cazagangas_cache(filas)  # lo vinculado y agregado queda guardado aunque el resto se corte
     a_visitar = []
     for fila in filas.values():
         if fila.get("status_http") != "200":
@@ -253,8 +347,14 @@ def main():
         tocados = s["confirmados"] + s["sin_stock"] + s["fichas"]
         write_logs_actualizacion_data("Cazagangas", "listado de juegos en stock + ficha de los que cambiaron", total, tocados, time.time() - inicio,
                           f"{s['confirmados']} confirmados por el listado, {s['fichas']} fichas verificadas, {s['sin_stock']} sin stock ({s['perdieron_stock']} lo perdieron hoy, conservan su último precio); "
-                          f"el precio cambió en {s['cols'].get('precio_ars', 0)}; {s['sin_respuesta']} sin respuesta (se reintentan)",
+                          f"el precio cambió en {s['cols'].get('precio_ars', 0)}; {s['sin_respuesta']} sin respuesta (se reintentan); "
+                          f"links por id de la tarjeta: {s['vinculados']} nuevos, {s['relinkeados']} corregidos, {len(s['agregados'])} juegos agregados al catálogo",
                           motivo=args.motivo, observacion=args.nota + ("" if s["completo"] else " Listado incompleto: no se marcó sin stock a los que no aparecieron."))
+        if s["agregados"]:
+            write_logs_actualizacion_data("BGG", "API xmlapi2 (con token), ids tomados del listado de Cazagangas en stock", len(ranking_por_juego()), len(s["agregados"]), time.time() - inicio,
+                              f"{len(s['agregados'])} juegos nuevos en el catálogo; {s['expansiones']} expansiones no agregadas; {s['no_devueltos']} que BGG no devuelve",
+                              motivo="Juegos que Cazagangas tiene en stock y el catálogo no tenía (ver cazagangas_sin_catalogo.csv)",
+                              observacion="Agregados: " + "; ".join(sorted(n for n in s["agregados"] if n))[:900])
         print(f"\nListo (rápido): {tocados} de {total} juegos al día. Guardado en cazagangas_data.jsonl.")
         return
     ranking = ranking_por_juego()
