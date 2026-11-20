@@ -70,7 +70,18 @@ function matchesFilters(g) {
 }
 
 function render() {
-  const filtered = sortGames(GAMES.filter(matchesFilters), state.sort);
+  const porPrecio = state.sort === "precio_asc";
+  const matched = GAMES.filter(matchesFilters);
+  // Por precio: el más barato primero y los que no tienen dato siempre al final (no son "baratos", son desconocidos).
+  const filtered = porPrecio
+    ? [...matched].sort((a, b) => {
+        const pa = precioDe(a), pb = precioDe(b);
+        if (!pa && !pb) return 0;
+        if (!pa) return 1;
+        if (!pb) return -1;
+        return pa.valor - pb.valor;
+      })
+    : sortGames(matched, state.sort);
   const grouped = collapseGrupos(filtered);
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
@@ -82,6 +93,14 @@ function render() {
       ? `${grouped.length} juego${grouped.length === 1 ? "" : "s"}`
       : `Mostrando ${visible.length} de ${grouped.length} juegos`)
     : "0 juegos";
+  const nota = document.getElementById("orden-nota");
+  if (porPrecio && grouped.length) {
+    const conPrecio = grouped.filter((e) => precioDe(e.game)).length;
+    nota.textContent = `Ordenado por precio: ${conPrecio.toLocaleString("es-AR")} de ${grouped.length.toLocaleString("es-AR")} con dato; el resto va al final.`;
+    nota.hidden = false;
+  } else {
+    nota.hidden = true;
+  }
 
   grid.innerHTML = visible.length
     ? visible
@@ -92,6 +111,7 @@ function render() {
             grupoNombre: entry.grupoNombre,
             showCazagangas: true,
             showPrecioRef: true,
+            marcarSinPrecio: porPrecio,
             showComparar: true,
           })
         )

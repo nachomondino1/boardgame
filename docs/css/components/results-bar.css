@@ -22,6 +22,15 @@
   font-weight: 500;
 }
 
+/* Aclaración bajo la fila de conteo + orden (ej. cuántos juegos tienen precio al ordenar por precio). */
+.orden-nota {
+  max-width: var(--container);
+  margin: 6px auto 0;
+  padding: 0 24px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .sort-control {
   display: flex;
   align-items: center;
@@ -45,7 +54,8 @@
 
 @media (max-width: 640px) {
   .result-count,
-  .result-count-row {
+  .result-count-row,
+  .orden-nota {
     padding-left: 16px;
     padding-right: 16px;
   }
