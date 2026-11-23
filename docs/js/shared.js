@@ -292,12 +292,18 @@ function estadoDe(entry) {
   return "Watchlist";
 }
 
-// Notas personales (data/notas.json): solo existe en la máquina del autor, está gitignored y no se
-// despliega. Sin el archivo (404, o cualquier error) el sitio funciona igual, sin notas.
+// Notas personales del autor. En su máquina vienen de data/notas.json (gitignored, ver build_catalog.py); en
+// producción, de /api/notas, que solo las devuelve si el usuario de BGG de la colección cargada es el del autor
+// (functions/api/notas.js). Cualquier otro caso (404, {}, error) = sin notas, y el sitio funciona igual.
 function cargarNotas() {
+  const vacio = (n) => !n || !Object.keys(n).length;
+  const user = loadCollection().user;
   return fetch("data/notas.json")
     .then((r) => (r.ok ? r.json() : {}))
-    .catch(() => ({}));
+    .catch(() => ({}))
+    .then((n) => (!vacio(n) || !user ? n : fetch(`/api/notas?user=${encodeURIComponent(user)}`)
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => ({}))));
 }
 
 function loadGames() {
