@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "docs" / "data"
 SHARDS_DIR = OUTPUT_DIR / "games"
 USER_FIELDS = ("estado", "mi_puntaje")
+NOTAS_PATH = ROOT / "data" / "01_data_understanding" / "mis_notas.jsonl"
 GAMES_PER_SHARD = 500
 INDEX_FIELDS = (
     "bgg_id", "nombre", "jug_min", "jug_max", "jug_best_min", "jug_best_max",
@@ -157,6 +158,17 @@ def main():
         "mecanicas": [corto for _, corto in MECANICAS_CLAVE],
         "rows": [[valor_indice(c, g.get(c)) for c in INDEX_FIELDS] + [mecanicas_clave(g), g["tramo"]] for g in games],
     })
+
+    # Notas personales (mis_notas.jsonl, gitignored como todo data/01_data_understanding/): solo se
+    # sirven en local. docs/data/notas.json también está gitignored, así que nunca llega al sitio publicado.
+    notas = {}
+    if NOTAS_PATH.exists():
+        with NOTAS_PATH.open(encoding="utf-8") as f:
+            for n in (json.loads(line) for line in f if line.strip()):
+                notas.setdefault(n["bgg_id"], []).append({"fecha": n["fecha"], "texto": n["texto"]})
+        for lista in notas.values():
+            lista.sort(key=lambda n: n["fecha"], reverse=True)
+    write_json(OUTPUT_DIR / "notas.json", notas)
 
     if SHARDS_DIR.exists():
         shutil.rmtree(SHARDS_DIR)  # que no queden tramos de una corrida anterior con más juegos

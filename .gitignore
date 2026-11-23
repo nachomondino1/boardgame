@@ -14,3 +14,6 @@ data/02_data_preparation/integrated_data.jsonl
 data/01_data_understanding/
 
 .env
+
+# Notas personales: solo locales, nunca se publican (ver DATA_PLAYBOOK.md, "Notas personales").
+docs/data/notas.json

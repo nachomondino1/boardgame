@@ -500,3 +500,10 @@ details.variantes li a {
     margin: 0;
   }
 }
+
+/* Notas personales (solo en local, ver cargarNotas en shared.js) */
+.card-notas { margin-top: 10px; border-top: 1px solid var(--border, rgba(0,0,0,.12)); padding-top: 8px; font-size: 13px; }
+.card-notas summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.card-nota { margin-top: 8px; }
+.card-nota time { display: block; font-size: 11px; color: var(--muted); }
+.card-nota p { margin: 2px 0 0; white-space: pre-line; color: var(--text); }

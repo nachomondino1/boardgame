@@ -36,6 +36,12 @@ python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py --dis
 ```
 Cada corrida real suma una fila a `01_data_understanding/actualizaciones/logs_actualizacion_data.csv` (fecha, fuente, método, filas actualizadas de cuántas había, control y observación; también la suman los scripts de Cazagangas), y cada juego guarda su `fecha_actualizacion`. Para actualizar el catálogo entero: `--scope all --fields all` (~2-3 horas; guarda cada 500 juegos y se retoma con `--skip-fresh`). Con `--dry-run` muestra qué cambiaría sin escribir. Necesita `BGG_TOKEN` y `BGG_USERNAME` en `.env` (ver `.env.example`).
 
+**Agregar una nota personal a un juego** (solo para vos: se ve en local, no en el sitio publicado). Se guarda con fecha en `data/01_data_understanding/mis_notas.jsonl`; después regenerá el catálogo y recargá la web:
+```bash
+python3 scripts/nota.py "Heat" "texto de la nota"      # o bgg_id; sin texto lo lee de stdin
+python3 02_data_preparation/build_catalog.py
+```
+
 **Cambiar el estado de un juego** (Own, Want to buy, Prev. owned) **o tu puntaje:** se hace en BGG, en tu colección; después corré `refresh_bgg_data.py` (o `./sync_data.sh`) y lo trae solo. Un juego que no marcás en BGG queda como Watchlist.
 
 **Cargar links a Cazagangas** (rápido, ~20 pedidos: cruza BGG contra su sitemap; después regenerar el sitio con `integrate_data.py` y `build_catalog.py`):

@@ -292,14 +292,23 @@ function estadoDe(entry) {
   return "Watchlist";
 }
 
+// Notas personales (data/notas.json): solo existe en la máquina del autor, está gitignored y no se
+// despliega. Sin el archivo (404, o cualquier error) el sitio funciona igual, sin notas.
+function cargarNotas() {
+  return fetch("data/notas.json")
+    .then((r) => (r.ok ? r.json() : {}))
+    .catch(() => ({}));
+}
+
 function loadGames() {
   const collection = loadCollection().games;
-  return fetch("data/index.json")
+  const indice = fetch("data/index.json")
     .then((r) => {
       if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
       return r.json();
-    })
-    .then(({ cols, rows, mecanicas }) => {
+    });
+  return Promise.all([indice, cargarNotas()])
+    .then(([{ cols, rows, mecanicas }, notas]) => {
       MECANICAS_VOCAB = mecanicas || [];
       return rows.map((row) => {
         const g = {};
@@ -311,6 +320,7 @@ function loadGames() {
         g.estado = estadoDe(entry);
         g.quiere_probar = !!(entry && entry.wanttoplay);
         g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
+        g.notas = notas[g.bgg_id] || null;
         return g;
       });
     });
@@ -462,6 +472,11 @@ function cardTemplate(g, opts) {
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
+  // Notas personales (solo en la máquina del autor, ver cargarNotas): fecha y texto, la más reciente arriba.
+  const notasHtml = g.notas && g.notas.length
+    ? `<details class="card-notas"><summary>📝 Notas (${g.notas.length})</summary>${g.notas.map((n) => `<div class="card-nota"><time>${escapeHtml(n.fecha)}</time><p>${escapeHtml(n.texto)}</p></div>`).join("")}</details>`
+    : "";
+
   return `
     <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
       <div class="card-headline">
@@ -487,6 +502,7 @@ function cardTemplate(g, opts) {
         </div>
       </div>
       ${variantesHtml}
+      ${notasHtml}
     </div>
   `;
 }

@@ -216,3 +216,7 @@ Igual que `collect_bosque_precios.py`, es un chequeo de red por juego (hasta ~10
 - Mezclar lógica de negocio hardcodeada (overrides, excepciones puntuales) sin un comentario que diga de dónde salió el dato — a los seis meses nadie se acuerda por qué "Memotest (Ruibal)" busca "Memory".
 - Commitear igual aunque no haya cambios (ensucia el historial) o commitear datos a medias cuando el build detecta algo raro (preferir cortar con `exit 1` y dejar el `data.json` viejo tal cual).
 - Que el frontend asuma que el fetch siempre funciona: sin un `.catch` que muestre algo legible, un `data.json` roto o un typo en la ruta deja la página en blanco sin pista de qué pasó.
+
+## Notas personales (2026-11-22)
+
+Notas con fecha por juego (`scripts/nota.py` → `data/01_data_understanding/mis_notas.jsonl`, gitignored como el resto de esa carpeta). `build_catalog.py` las vuelca a `docs/data/notas.json`, también gitignored: se ven en el `localhost` del autor y nunca se publican. El front hace `fetch` de ese archivo y, si no existe (producción), no muestra nada. **Por qué así y no con el comentario de BGG:** el comentario viaja en el mismo llamado de colección, pero es público en BGG y sin fecha ni historial. **Si más adelante se abre a los visitantes:** parsear `<comment>` en `functions/api/collection.js` (cero requests extra) para que cada uno vea el de su propia colección.
