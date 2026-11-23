@@ -292,29 +292,34 @@ function estadoDe(entry) {
   return "Watchlist";
 }
 
-// Notas personales del autor. En su máquina vienen de data/notas.json (gitignored, ver build_catalog.py); en
-// producción, de /api/notas, que solo las devuelve si el usuario de BGG de la colección cargada es el del autor
-// (functions/api/notas.js). Cualquier otro caso (404, {}, error) = sin notas, y el sitio funciona igual.
-function cargarNotas() {
-  const vacio = (n) => !n || !Object.keys(n).length;
+// Notas personales: columna `notas` de bgg_data, que viaja en las fichas. Se muestran solo si el usuario de BGG
+// de la colección cargada es el del autor. Se compara un hash (no el usuario en claro). Ojo: no es privacidad,
+// el dato está en las fichas públicas; la página solo decide mostrarlo o no.
+const AUTOR_HASH = 6397894987034369;
+const cyrb53 = (str) => {
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 2654435761);
+    h2 = Math.imul(h2 ^ c, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
+function esAutor() {
   const user = loadCollection().user;
-  return fetch("data/notas.json")
-    .then((r) => (r.ok ? r.json() : {}))
-    .catch(() => ({}))
-    .then((n) => (!vacio(n) || !user ? n : fetch(`/api/notas?user=${encodeURIComponent(user)}`)
-      .then((r) => (r.ok ? r.json() : {}))
-      .catch(() => ({}))));
+  return !!user && cyrb53(String(user).trim().toLowerCase()) === AUTOR_HASH;
 }
 
 function loadGames() {
   const collection = loadCollection().games;
-  const indice = fetch("data/index.json")
+  return fetch("data/index.json")
     .then((r) => {
       if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
       return r.json();
-    });
-  return Promise.all([indice, cargarNotas()])
-    .then(([{ cols, rows, mecanicas }, notas]) => {
+    })
+    .then(({ cols, rows, mecanicas }) => {
       MECANICAS_VOCAB = mecanicas || [];
       return rows.map((row) => {
         const g = {};
@@ -326,7 +331,6 @@ function loadGames() {
         g.estado = estadoDe(entry);
         g.quiere_probar = !!(entry && entry.wanttoplay);
         g.mi_puntaje = entry && entry.rating != null ? entry.rating : null;
-        g.notas = notas[g.bgg_id] || null;
         return g;
       });
     });
@@ -478,8 +482,8 @@ function cardTemplate(g, opts) {
   const reviewsTxt = g.reviews_bgg != null ? `${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews` : "";
   const rankingTxt = g.ranking_bgg != null ? `Ranking BGG #${Number(g.ranking_bgg).toLocaleString("es-AR")}` : "";
 
-  // Notas personales (solo en la máquina del autor, ver cargarNotas): fecha y texto, la más reciente arriba.
-  const notasHtml = g.notas && g.notas.length
+  // Notas personales (solo con el usuario del autor, ver esAutor): fecha y texto, la más reciente arriba.
+  const notasHtml = g.notas && g.notas.length && esAutor()
     ? `<details class="card-notas"><summary>📝 Notas (${g.notas.length})</summary>${g.notas.map((n) => `<div class="card-nota"><time>${escapeHtml(n.fecha)}</time><p>${escapeHtml(n.texto)}</p></div>`).join("")}</details>`
     : "";
 

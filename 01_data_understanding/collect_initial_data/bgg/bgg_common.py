@@ -75,14 +75,17 @@ BGG_CACHE_FIELDS = [
     "name", "alternate", "thumbnail",
     "suggested_num_players", "poll_summary", "suggested_playerage", "suggested_language_dependence",
     "marketplacelistings", "fecha_actualizacion", "description",
+    "notas",
 ]
+# `notas` tampoco viene de BGG: son TUS notas, una lista [{"fecha", "texto"}] que escribe scripts/nota.py; un refresh
+# nunca la toca (upsert_bgg_cache solo pisa los campos que trae la API) y _ordered_row la conserva por estar acá.
 # `fecha_actualizacion` (AAAA-MM-DD) no viene de BGG: es el día que refresh_bgg_data.py
 # trajo por última vez los datos de ese juego desde la API.
 # Campos cuyo valor es una lista (vacía si BGG no devuelve nada); el resto son strings.
 LIST_FIELDS = {
     "boardgamedesigner", "boardgamepublisher", "boardgamemechanic", "boardgamecategory", "boardgamefamily",
     "alternate", "suggested_num_players", "poll_summary", "suggested_playerage",
-    "suggested_language_dependence", "marketplacelistings",
+    "suggested_language_dependence", "marketplacelistings", "notas",
 }
 # poll_summary (el "Best with 3–4 players" ya calculado por BGG) y
 # marketplacelistings solo los llena la API (el dataset no los trae);

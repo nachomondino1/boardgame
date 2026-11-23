@@ -291,6 +291,8 @@ def build_game(row, grupo):
     for key in PASSTHROUGH:
         value = row.get(key)
         game[key] = (value.strip() if isinstance(value, str) else value) or None
+    if row.get("notas"):  # tus notas (ver nota.py); el sitio las muestra solo con tu usuario de BGG. Sin notas no hay clave (no engorda las 28.000 fichas).
+        game["notas"] = row["notas"]
     game["nombre"] = (row.get("name") or "").strip()
     game["bgg_url"] = f"https://boardgamegeek.com/boardgame/{game['bgg_id']}"
     game["estado"] = estado_de(row)

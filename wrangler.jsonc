@@ -4,8 +4,6 @@
   "compatibility_date": "2025-10-01",
   // Los deploys desde GitHub no tienen que borrar las variables cargadas a mano en el panel (BGG_TOKEN).
   "keep_vars": true,
-  // Notas personales del autor (functions/api/notas.js); el contenido se sube con scripts/subir_notas.sh, no vive en el repo.
-  "kv_namespaces": [{ "binding": "NOTAS", "id": "4396933d7d5c4546b193d484a78f0baf" }],
   "assets": {
     "directory": "./docs",
     "binding": "ASSETS"
