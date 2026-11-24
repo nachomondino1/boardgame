@@ -19,6 +19,18 @@ Acá vive **collect_initial_data**: recolectar, sin integrar nada todavía (eso 
 - `collect_initial_data/cazagangas/` — `cazagangas_common.py` (slugs best-effort con el nombre completo y sin subtítulo, y verificación HTTP; lo usa `refresh_bgg_data.py`), `load_cazagangas_sitemap.py` (carga links cruzando BGG contra el sitemap de Cazagangas: ~20 pedidos, con `--dry-run`), `load_cazagangas_prices.py` (precio más barato en tiendas, solo nuevos; `--rapido` recorre el listado de juegos en stock y verifica en la ficha solo los que cambiaron: ~25 min contra ~4,5 h; un juego sin stock conserva su último precio; con el id de BGG de las tarjetas linkea juegos sin link y agrega al catálogo los que Cazagangas tiene en stock y no estaban, sin expansiones, anotados en `actualizaciones/cazagangas_sin_catalogo.csv`) y `check_cazagangas_links.py` (re-verifica con un HEAD real los links ya guardados; manual, con `--limit N`/`--refresh`).
 - `actualizaciones/` — los registros que dejan las actualizaciones (versionados): `logs_actualizacion_data.csv` (una fila por corrida), `resumen_actualizaciones_bgg.csv` (movimientos de cada actualización completa) y `cazagangas_sin_catalogo.csv` (juegos de Cazagangas agregados al catálogo).
 - `verify_data_quality.py` — chequeos de integridad sobre los tres archivos (schema, `bgg_id` único, min ≤ max, rangos, listas, ranking repetido). No modifica nada. `ERROR` sale con exit code 1; `WARNING` con 0.
+- EDA de `bgg_data.jsonl`/`cazagangas_data.jsonl` con `eda-site` (instalado con `pipx install -e ~/Documents/GitHub/utils/data_understanding/eda-site`, comando `eda`): sale en `../data/01_data_understanding/eda/` (gitignoreado con el resto de la carpeta, no en `01_data_understanding/eda/` — ver `DATA_PLAYBOOK.md`). Como las listas anidadas (mecánicas, categorías, polls) no las lee `eda` directo, primero aplanarlas a CSV:
+
+  ```bash
+  python3 -c "..."  # ver DATA_PLAYBOOK.md por el script de aplanado (num_mechanics, main_category, etc.)
+  eda report --data data/01_data_understanding/eda/bgg_data.csv data/01_data_understanding/eda/cazagangas_data.csv \
+             --out data/01_data_understanding/eda --name boardgame   # -> eda/boardgame.html, una pestaña por dataset
+  ```
+
+```bash
+python3 01_data_understanding/verify_data_quality.py
+python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py --dry-run
+```
 
 ## `bgg_data.jsonl`: campos crudos
 

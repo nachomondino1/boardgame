@@ -165,7 +165,11 @@ def marketplace_mediana_usd(listings):
             p = num(l.get("price"))
             if p is not None:
                 precios.append(p)
-    return round(statistics.median(precios), 2) if precios else None
+    if not precios:
+        return None
+    # Con menos de 3 avisos la mediana es el promedio y un solo disparate la arrastra (Wondrous Creatures:
+    # 55 y 500 USD daban 277,5): ahí se toma el más bajo.
+    return round(min(precios) if len(precios) < 3 else statistics.median(precios), 2)
 
 
 def infer_modo(mecanicas, categorias):
