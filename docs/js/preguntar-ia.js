@@ -84,26 +84,32 @@ function masOpcionesIA() {
 const IA_MAX_FILTRADOS = 30;
 function filtradosIA(games, filtrados) {
   if (!filtrados || !filtrados.length || filtrados.length > games.length * 0.9) return null; // sin filtros (casi todo el catálogo)
-  if (filtrados.length > games.length * 0.5) return { total: filtrados.length, lista: [], muchos: true };
+  const ids = new Set(filtrados.map((g) => g.bgg_id)); // también filtra a mis candidatos (Want to buy / Want to play)
+  if (filtrados.length > games.length * 0.5) return { total: filtrados.length, lista: [], muchos: true, ids };
   const vistos = new Set();
   const lista = filtrados
-    .filter((g) => g.estado !== "Own" && g.estado !== "Descartado")
+    .filter((g) => !["Own", "Descartado", "Want to buy", "Want to play"].includes(g.estado)) // los candidatos van aparte
     .sort((a, b) => (a.ranking_bgg ?? 1e9) - (b.ranking_bgg ?? 1e9))
     .filter((g) => { const k = g.grupo || g.bgg_id; if (vistos.has(k)) return false; vistos.add(k); return true; });
-  return { total: lista.length, lista: lista.slice(0, IA_MAX_FILTRADOS) };
+  return { total: lista.length, lista: lista.slice(0, IA_MAX_FILTRADOS), ids };
+}
+
+// Mis candidatos: con filtros puestos, solo los que los cumplen; sin filtros, todos.
+function candidatosIA(games, filtr) {
+  return games.filter((g) => (g.estado === "Want to buy" || g.estado === "Want to play") && (!filtr || filtr.ids.has(g.bgg_id)));
 }
 
 function armarPromptIA(games, top, filtr) {
   const tengo = games.filter((g) => g.estado === "Own");
-  const quiero = games.filter((g) => g.estado === "Want to buy" || g.estado === "Want to play");
+  const quiero = candidatosIA(games, filtr);
   return [
     "Sos un asesor de juegos de mesa. Tengo esta ludoteca y esta lista de candidatos. Ayudame a decidir qué comprar: " +
       "recomendá solo juegos de las listas que te paso (no inventes juegos ni precios), explicá por qué, " +
       "y decime qué me aporta cada uno que no tenga ya, mirando el análisis para ver qué huecos o puntos flacos tiene mi ludoteca. Si te falta algo (cuántos jugadores somos, tiempo, presupuesto), preguntame.",
     `ANÁLISIS DE MI LUDOTECA (${tengo.length} juegos):\n${perfilIA(tengo)}`,
     `JUEGOS QUE TENGO:\n${tengo.map(lineaTengoIA).join("\n") || "(ninguno)"}`,
-    `CANDIDATOS A COMPRAR O PROBAR (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
-    filtr && filtr.lista.length ? `JUEGOS QUE CUMPLEN LOS FILTROS QUE PUSE (${filtr.total}${filtr.total > filtr.lista.length ? `; te paso los ${filtr.lista.length} mejores por ranking de BGG` : ""}). Recomendame principalmente de acá:\n${filtr.lista.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}${g.estado ? ` [${g.estado}]` : ""}`).join("\n")}` : null,
+    `CANDIDATOS A COMPRAR O PROBAR${filtr ? " QUE CUMPLEN LOS FILTROS QUE PUSE" : ""} (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
+    filtr && filtr.lista.length ? `OTROS JUEGOS QUE CUMPLEN LOS FILTROS QUE PUSE, QUE NO ESTÁN EN MIS CANDIDATOS (${filtr.total}${filtr.total > filtr.lista.length ? `; te paso los ${filtr.lista.length} mejores por ranking de BGG` : ""}). Sugerí de acá si aportan algo:\n${filtr.lista.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}${g.estado ? ` [${g.estado}]` : ""}`).join("\n")}` : null,
     !(filtr && filtr.lista.length) && top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
     "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español. " +
       "Priorizá mis candidatos; sugerí de los otros solo si aportan algo que me falta.",
@@ -140,11 +146,14 @@ function mountPreguntarIA(btn, getGames, getFiltrados) {
     const top = topBggIA(games);
     const filtr = filtradosIA(games, getFiltrados && getFiltrados());
     const rel = games.filter((g) => g.estado === "Own" || g.estado === "Want to buy" || g.estado === "Want to play").concat(top, filtr ? filtr.lista : []);
+    const nCand = candidatosIA(games, filtr).length;
+    const nCandTot = candidatosIA(games, null).length;
+    const aviso = `Los juegos que tenés quedan siempre completos, para que la IA vea qué te falta.`;
     tip.innerHTML = filtr && filtr.muchos
-      ? `💡 Tus filtros todavía dejan <strong>${filtr.total}</strong> juegos, demasiados para listarlos. Sumá más (jugadores, duración, complejidad…) para achicar el mundo de opciones y que la IA elija entre los mejores que cumplen.`
+      ? `💡 Tus filtros todavía dejan <strong>${filtr.total}</strong> juegos, demasiados para listarlos. Sumá más (jugadores, duración, complejidad…) para achicar el mundo de opciones. Filtran también a tus candidatos (<strong>${nCand}</strong> de ${nCandTot}). ${aviso}`
       : filtr
-      ? `🎯 Tus filtros achican el mundo: incluí los <strong>${filtr.lista.length}</strong> mejores de los <strong>${filtr.total}</strong> juegos que los cumplen, y la IA va a elegir principalmente entre ellos.`
-      : `💡 Tip: antes de tocar este botón, poné filtros (jugadores, duración, complejidad…). Así la IA elige solo entre los juegos que te sirven, en vez de todo el catálogo.`;
+      ? `🎯 Tus filtros achican el mundo: van tus candidatos que los cumplen (<strong>${nCand}</strong> de ${nCandTot}) y los <strong>${filtr.lista.length}</strong> mejores de los otros <strong>${filtr.total}</strong> juegos que los cumplen. ${aviso}`
+      : `💡 Tip: antes de tocar este botón, poné filtros (jugadores, duración, complejidad…). Se filtran tus candidatos (Want to buy / Want to play) y se suman los mejores que los cumplen, así la IA elige solo entre lo que te sirve. ${aviso}`;
     ta.value = "Cargando…";
     dlg.showModal();
     await hydrate(rel).catch(() => {});

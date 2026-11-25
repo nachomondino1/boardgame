@@ -194,7 +194,7 @@ Lo que falta o está pensado, ordenado por página del sitio. Al terminar algo s
 - Falta confirmar con gente real (M5) que alcanza.
 
 ### ¿Cuál comprar?
-- Hecho (2026-11-25): "Preguntale a una IA" vive acá y arma el texto con tu ludoteca, tus candidatos y los 30 mejores (por ranking de BGG) que pasan los filtros puestos; sin filtros usa el top de BGG. Sin API ni servidor: texto para copiar y pegar en un chat.
+- Hecho (2026-11-25): "Preguntale a una IA" vive acá y arma el texto con tu ludoteca, tus candidatos y los 30 mejores (por ranking de BGG) que pasan los filtros puestos; sin filtros usa el top de BGG. Los filtros también achican tus candidatos (Want to buy / Want to play): van solo los que los cumplen, y tu ludoteca va siempre completa. El diálogo lo explica según los filtros puestos. Sin API ni servidor: texto para copiar y pegar en un chat.
 - El comparador usa un `<datalist>` con ~27.000 nombres; es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
 
 ### Todo el sitio
