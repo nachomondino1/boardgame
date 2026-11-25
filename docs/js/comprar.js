@@ -20,7 +20,7 @@ const state = {
   mecanicas: new Set(), // posiciones en MECANICAS_VOCAB; el juego tiene que tener todas las elegidas
   jugadores: null,
   soloMejor: false,
-  estados: new Set(), // "comprar" / "probar"; vacío = todos (en seguimiento, quiero comprar y quiero probar)
+  estados: new Set(), // "comprar" / "probar" / "tengo"; vacío = todos menos los que ya tenés (en seguimiento, quiero comprar y quiero probar)
   sort: "ranking_bgg_asc",
   visibleCount: PAGE_SIZE,
 };
@@ -28,10 +28,12 @@ const state = {
 const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy", "Want to play"]);
 
 function matchesFilters(g) {
-  if (!ESTADOS_COMPRA.has(g.estado)) return false;
+  // Los que ya tenés (Own) solo entran si se elige "Lo tengo": sirve para compararlos con uno que querés comprar.
+  if (!ESTADOS_COMPRA.has(g.estado) && !(g.estado === "Own" && state.estados.has("tengo"))) return false;
   if (state.estados.size > 0) {
     const coincide = (state.estados.has("comprar") && g.estado === "Want to buy")
-      || (state.estados.has("probar") && g.quiere_probar);
+      || (state.estados.has("probar") && g.quiere_probar)
+      || (state.estados.has("tengo") && g.estado === "Own");
     if (!coincide) return false;
   }
   if (state.query) {
@@ -160,8 +162,8 @@ const MAX_JUGADORES_FILTRO = 8;
 
 const FILTROS = [
   { id: "estados", titulo: "Estado", icono: "📌", multiple: true,
-    nota: "Sin elegir ninguno se ven todos, también los que solo tenés en seguimiento.",
-    opciones: [{ id: "comprar", label: "Quiero comprar" }, { id: "probar", label: "Quiero probar" }] },
+    nota: "Sin elegir ninguno se ven todos, también los que solo tenés en seguimiento, pero no los que ya tenés. Sumá \"Lo tengo\" para compararlos con otros.",
+    opciones: [{ id: "comprar", label: "Quiero comprar" }, { id: "probar", label: "Quiero probar" }, { id: "tengo", label: "Lo tengo" }] },
   { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false, numero: true,
     unidad: (n) => `${n} jugador${n === 1 ? "" : "es"}`,
     opciones: Array.from({ length: MAX_JUGADORES_FILTRO }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })),
@@ -245,7 +247,7 @@ const COMPARE_ROWS = [
     get: (g) => (g.bgg_url ? `<a href="${escapeHtml(g.bgg_url)}" target="_blank" rel="noopener">Ver en BGG ↗</a>` : null),
   },
   {
-    label: "Precio en Argentina", desc: "Link para ver el precio en Argentina: Cazagangas y, si no está ahí, una búsqueda en Mercado Libre.", emoji: "💰",
+    label: "Precio en Argentina", desc: "Link para ver el precio en Argentina: Cazagangas y búsquedas en Mercado Libre y Amazon EE.UU.", emoji: "💰",
     html: true,
     get: (g) => {
       const links = [];
@@ -253,6 +255,7 @@ const COMPARE_ROWS = [
         links.push(`<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">Cazagangas ↗</a>`);
       }
       if (g.nombre) links.push(`<a href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener">Mercado Libre ↗</a>`);
+      if (g.nombre) links.push(`<a href="${escapeHtml(amazonUrl(g.nombre))}" target="_blank" rel="noopener">Amazon ↗</a>`);
       return links.length ? links.join(" · ") : null;
     },
   },

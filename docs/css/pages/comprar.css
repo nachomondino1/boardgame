@@ -42,12 +42,12 @@
   margin: 0;
 }
 
-@media (max-width: 640px) {
+/* Buscador arriba y píldoras abajo (el diseño del celular) hasta 1000px: más ancho se amontonaban en vertical al lado del buscador. */
+@media (max-width: 1000px) {
   .filter-bar {
     flex-wrap: wrap;
   }
 
-  /* Las píldoras ocupan toda la fila y deslizan; "Limpiar filtros" va en su propia fila, abajo (ver filter-pills.css). */
   .filter-bar .filter-pills {
     flex: 1 1 100%;
     min-width: 0;

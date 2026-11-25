@@ -225,14 +225,34 @@ img.card-thumb.is-ready {
 .card-mecs {
   margin-top: -2px;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   color: var(--muted);
   font-size: 0.7rem;
   line-height: 1.25;
 }
 
+.mec-mas {
+  padding: 0 6px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
 /* --- Chips (jugadores, duración, complejidad, precio, Cazagangas) --- */
+
+/* Todos los chips (datos, precio, Comprar, Reviews) fluyen juntos en una sola fila que se ajusta: así no queda un chip solo con un hueco al lado. */
+.stat-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.stat-block .stat-row {
+  display: contents;
+}
 
 .stat-row {
   display: flex;
@@ -272,6 +292,18 @@ img.card-thumb.is-ready {
   text-decoration: underline;
 }
 
+/* "Comprar ▾": botón que abre una lista flotante con las tiendas (popover; no mueve ni se corta con la card). */
+.stat-menu-btn { font-family: inherit; cursor: pointer; }
+.stat-popover {
+  position: fixed; inset: auto; margin: 0; padding: 6px;
+  flex-direction: column; gap: 2px; min-width: 160px;
+  background: var(--surface); border: 1px solid var(--border-soft); border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.14);
+}
+.stat-popover:popover-open { display: flex; }
+.stat-popover a { padding: 6px 10px; border-radius: 6px; color: var(--text); text-decoration: none; white-space: nowrap; font-size: 0.85rem; }
+.stat-popover a:hover { background: var(--border-soft); }
+
 .complexity-pill {
   padding: 1px 8px;
   border-radius: 999px;
@@ -303,10 +335,12 @@ img.card-thumb.is-ready {
   white-space: nowrap;
 }
 
+/* La etiqueta de estado va al final del título, en línea: se acomoda sola según cuántas líneas ocupe el nombre y no agrega alto a la fila. */
 .card-estado {
-  flex: none;
+  margin-left: 6px;
   padding: 1px 8px;
   font-size: 0.66rem;
+  vertical-align: 2px;
 }
 
 .badge-own { background: #2a9d5c2b; color: #186b3e; }
@@ -412,10 +446,12 @@ details.variantes li a {
   font-size: 0.95rem;
 }
 
-/* --- Celular: imagen chica a la izquierda con título, puntaje, tipo y mecánicas; chips abajo a todo el ancho --- */
+/* --- Celular y tablet (hasta 940px): imagen chica a la izquierda con título, puntaje, tipo y mecánicas; chips abajo a todo el ancho.
+   En tablet las cards pasan a dos columnas desde ~700px, así no hay una sola card demasiado ancha. --- */
 
-@media (max-width: 640px) {
+@media (max-width: 940px) {
   .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
     gap: 12px;
   }
 
@@ -468,11 +504,6 @@ details.variantes li a {
     row-gap: 4px;
   }
 
-  .card-meta .card-estado {
-    flex-basis: auto;
-    margin-right: 100%; /* el estado va solo en su línea */
-  }
-
   .card-sub {
     flex: 1 1 0;
   }
@@ -484,7 +515,7 @@ details.variantes li a {
     white-space: normal;
   }
 
-  .card-main .stat-row {
+  .card-main .stat-block {
     grid-column: 1 / -1;
   }
 

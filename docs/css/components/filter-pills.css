@@ -92,7 +92,7 @@
 }
 
 .pill-pop__note {
-  max-width: 240px;
+  max-width: none;
   margin: 10px 0 0;
   color: var(--muted);
   font-size: 0.76rem;

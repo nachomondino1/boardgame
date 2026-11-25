@@ -25,6 +25,11 @@ function mercadoLibreUrl(nombre) {
   return `https://listado.mercadolibre.com.ar/${slug}`;
 }
 
+// Búsqueda en Amazon EE.UU. "<nombre> board game": no todos los vendedores envían a Argentina, se ve con la dirección puesta en Amazon.
+function amazonUrl(nombre) {
+  return `https://www.amazon.com/s?k=${encodeURIComponent(`${nombre} board game`)}`;
+}
+
 // Tramos de complejidad (peso de BGG, 1 a 5) y de duración (minutos): los comparten los filtros de
 // ¿Cuál comprar? y el análisis de Mi ludoteca, para que digan lo mismo.
 // Los cinco niveles de peso que usa BGG (Light, Medium Light, Medium, Medium Heavy, Heavy).
@@ -129,8 +134,21 @@ function modoLabel(modo) {
 // la columna "mecs" de cada juego.
 let MECANICAS_VOCAB = [];
 
-function mecanicasClave(g, max = 3) {
+function mecanicasClave(g, max = 12) {
   return (g.mecs || []).slice(0, max).map((i) => MECANICAS_VOCAB[i]).filter(Boolean);
+}
+
+// Mecánicas de la card: las 3 más importantes y, si hay más, un "+N" que al tocarlo muestra las que faltan.
+function mecanicasHtml(g) {
+  const todas = mecanicasClave(g).map(escapeHtml);
+  if (!todas.length) return "";
+  const titulo = escapeHtml((g.mecanicas || []).join(" · "));
+  const principales = todas.slice(0, 3).join(" · ");
+  const resto = todas.slice(3);
+  const mas = resto.length
+    ? ` <button type="button" class="mec-mas" aria-expanded="false" onclick="var r=this.nextElementSibling;r.hidden=!r.hidden;this.setAttribute('aria-expanded',String(!r.hidden));this.textContent=r.hidden?'+${resto.length}':'−'">+${resto.length}</button><span class="mec-resto" hidden> · ${resto.join(" · ")}</span>`
+    : "";
+  return `<div class="card-mecs" title="${titulo}">${principales}${mas}</div>`;
 }
 
 const BUCKETS_DECADA = [
@@ -440,11 +458,15 @@ function cardTemplate(g, opts) {
   // sabemos que el link responde 200 (no uno armado a ciegas que puede
   // dar 404 — ver DATA_PLAYBOOK.md).
   const cazagangasHtml = opts.showCazagangas && g.cazagangas_status === "200"
-    ? `<a class="stat stat-link" href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
+    ? `<a href="${escapeHtml(g.link_cazagangas)}" target="_blank" rel="noopener">💰 Cazagangas ↗</a>`
     : "";
   // Mercado Libre (MELI) va siempre: aunque esté en Cazagangas, ahí se ve si se consigue más barato.
   const meliHtml = opts.showCazagangas && g.nombre
-    ? `<a class="stat stat-link" href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="Buscar en Mercado Libre">🟡 MELI ↗</a>`
+    ? `<a href="${escapeHtml(mercadoLibreUrl(g.nombre))}" target="_blank" rel="noopener" title="Buscar en Mercado Libre">🟡 Mercado Libre ↗</a>`
+    : "";
+
+  const amazonHtml = opts.showCazagangas && g.nombre
+    ? `<a href="${escapeHtml(amazonUrl(g.nombre))}" target="_blank" rel="noopener" title="Buscar en Amazon EE.UU. (no todos los vendedores envían a Argentina)">📦 Amazon ↗</a>`
     : "";
 
   // Precio en pesos: el real de Cazagangas si lo tiene (precio_ars) y, si no, el estimado desde el marketplace
@@ -465,14 +487,14 @@ function cardTemplate(g, opts) {
     ? `<a class="stat stat-link" href="${escapeHtml(youtubeUrl)}" target="_blank" rel="noopener" title="Buscar reseñas en YouTube">▶ Reviews ↗</a>`
     : "";
 
-  const compraHtml = (cazagangasHtml || meliHtml || precioRefHtml || youtubeHtml)
-    ? `
-      <div class="stat-row">
-        ${precioRefHtml}
-        ${cazagangasHtml}
-        ${meliHtml}
-        ${youtubeHtml}
-      </div>`
+  // Las tiendas van juntas en un solo botón desplegable para no llenar la card de links.
+  // Las tiendas van juntas en un solo botón desplegable para no llenar la card de links.
+  const tiendasHtml = (cazagangasHtml || meliHtml || amazonHtml)
+    ? `<button type="button" class="stat stat-link stat-menu-btn" popovertarget="tiendas-${g.bgg_id}">🛒 Comprar ▾</button><div popover id="tiendas-${g.bgg_id}" class="stat-popover">${cazagangasHtml}${meliHtml}${amazonHtml}</div>`
+    : "";
+
+  const compraHtml = (tiendasHtml || precioRefHtml || youtubeHtml)
+    ? `<div class="stat-row">${precioRefHtml}${tiendasHtml}${youtubeHtml}</div>`
     : "";
 
   // Mientras llega la ficha (imagen) se reserva el lugar de la imagen, así la card no se reacomoda; al cargar, aparece con un fundido.
@@ -490,25 +512,26 @@ function cardTemplate(g, opts) {
   return `
     <div class="card" data-id="${escapeHtml(String(g.bgg_id ?? ""))}">
       <div class="card-headline">
-        <div class="card-title">${g.ranking_bgg != null ? `<span class="card-rank" title="${escapeHtml(rankingTxt)}">#${Number(g.ranking_bgg).toLocaleString("es-AR")}</span> ` : ""}${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}</div>
+        <div class="card-title">${g.ranking_bgg != null ? `<span class="card-rank" title="${escapeHtml(rankingTxt)}">#${Number(g.ranking_bgg).toLocaleString("es-AR")}</span> ` : ""}${nombreHtml}${g.anio ? ` <span class="card-year">(${g.anio})</span>` : ""}${g.estado && g.estado !== "Watchlist" ? `<span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado)}</span>` : ""}</div>
         <span class="card-rating" title="${escapeHtml([reviewsTxt, rankingTxt].filter(Boolean).join(" · "))}"><span>⭐ <b>${g.puntaje_bgg != null ? g.puntaje_bgg.toFixed(2) : "?"}</b></span>${g.reviews_bgg != null ? `<span class="stat-reviews">${Number(g.reviews_bgg).toLocaleString("es-AR")} reviews</span>` : ""}</span>
       </div>
       <div class="card-top">
         <div class="card-left">${imagenHtml}</div>
         <div class="card-main">
           <div class="card-meta">
-            ${g.estado && g.estado !== "Watchlist" ? `<span class="badge card-estado ${estadoBadgeClass(g.estado)}">${escapeHtml(g.estado)}</span>` : ""}
             <span class="card-sub">${[g.modo ? modoLabel(g.modo) : null, g.publisher_principal].filter(Boolean).map(escapeHtml).join(" · ")}</span>
             ${opts.showComparar ? `<button type="button" class="card-compare-btn" data-compare="${escapeHtml(String(g.bgg_id))}" title="Comparar" aria-label="Comparar ${escapeHtml(g.nombre)}">⚔️</button>` : ""}
           </div>
-          ${mecanicasClave(g).length ? `<div class="card-mecs" title="${escapeHtml((g.mecanicas || []).join(" · "))}">${mecanicasClave(g).map(escapeHtml).join(" · ")}</div>` : ""}
-          <div class="stat-row">
-            <span class="stat" title="Cantidad de jugadores que indica la caja">👥 ${jugRange}</span>
-            ${jugBestLabel ? `<span class="stat${esBest ? " stat-best" : ""}" title="Cantidad ideal de jugadores, según la comunidad de BGG">🎯 Ideal ${jugBestLabel}</span>` : ""}
-            <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
-            <span class="stat">⚙️ ${complejidadHtml}</span>
+          ${mecanicasHtml(g)}
+          <div class="stat-block">
+            <div class="stat-row">
+              <span class="stat" title="Cantidad de jugadores que indica la caja">👥 ${jugRange}</span>
+              ${jugBestLabel ? `<span class="stat${esBest ? " stat-best" : ""}" title="Cantidad ideal de jugadores, según la comunidad de BGG">🎯 Ideal ${jugBestLabel}</span>` : ""}
+              <span class="stat">⏱ ${g.duracion != null ? g.duracion + " min" : "?"}</span>
+              <span class="stat">⚙️ ${complejidadHtml}</span>
+            </div>
+            ${compraHtml}
           </div>
-          ${compraHtml}
         </div>
       </div>
       ${variantesHtml}
@@ -631,3 +654,15 @@ const MECANICAS_HINT = {
   "Pattern Recognition": "Hay que detectar patrones o combinaciones en lo que se ve.",
   "Paper & Pencil": "Se anota y dibuja sobre una hoja o planilla.",
 };
+
+// Lista de tiendas de "Comprar": flota sobre la card (popover nativo, no la corta ni mueve nada); se ubica bajo el botón.
+document.addEventListener("toggle", (e) => {
+  const pop = e.target;
+  if (!pop.classList || !pop.classList.contains("stat-popover") || e.newState !== "open") return;
+  const btn = document.querySelector(`[popovertarget="${pop.id}"]`);
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  pop.style.top = `${r.bottom + 4}px`;
+  pop.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - pop.offsetWidth - 8))}px`;
+}, true);
+window.addEventListener("scroll", () => document.querySelectorAll(".stat-popover:popover-open").forEach((p) => p.hidePopover()), { passive: true });
