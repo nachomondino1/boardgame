@@ -293,3 +293,9 @@ html {
   font-size: 0.8rem;
   line-height: 1.5;
 }
+
+/* "Ver N más" de una tarjeta con muchas filas. */
+.bar-more { margin-top: 8px; padding: 0; border: 0; }
+.bar-more > summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--accent); }
+.bar-more > summary::before { content: none; }
+.bar-more > .bar-list { margin-top: 8px; }

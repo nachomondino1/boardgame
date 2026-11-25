@@ -248,6 +248,7 @@ function estadoBadgeClass(estado) {
     case "Own": return "badge-own";
     case "Watchlist": return "badge-watch";
     case "Want to buy": return "badge-buy";
+    case "Want to play": return "badge-play";
     case "Descartado": return "badge-descartado";
     default: return "badge-other";
   }

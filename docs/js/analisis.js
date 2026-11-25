@@ -15,9 +15,9 @@ function pluralJuegos(n) {
 
 // Una barra por fila: etiqueta, barra proporcional al máximo y el valor al final.
 // Una sola serie, así que no lleva leyenda: el título dice qué se está contando.
-function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda }) {
+function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles }) {
   const max = Math.max(1, ...filas.map((f) => f.valor));
-  const rows = filas
+  const rowHtml = (filas) => filas
     .map((f) => {
       const title = escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`);
       const cero = f.valor ? "" : " bar-row--cero";
@@ -36,12 +36,15 @@ function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda }) {
       return `<li class="bar-item"><div class="bar-row${cero}" title="${title}">${fila}</div></li>`;
     })
     .join("");
+  const rows = rowHtml(filas.slice(0, visibles || filas.length));
+  const resto = visibles && filas.length > visibles ? filas.slice(visibles) : [];
   return `
     <article class="analisis-card">
       <h3 class="analisis-card__title">${escapeHtml(titulo)}</h3>
       ${subtitulo ? `<p class="analisis-card__sub">${escapeHtml(subtitulo)}</p>` : ""}
       ${leyenda ? `<p class="bar-legend"><span class="bar-legend__item"><i class="bar-legend__dot"></i>Se puede jugar</span><span class="bar-legend__item"><i class="bar-legend__dot bar-legend__dot--ideal"></i>Ideal</span></p>` : ""}
       <ul class="bar-list">${rows}</ul>
+      ${resto.length ? `<details class="bar-more"><summary>Ver ${resto.length} más</summary><ul class="bar-list">${rowHtml(resto)}</ul></details>` : ""}
       ${nota ? `<p class="analisis-card__note">${nota}</p>` : ""}
       ${ayuda ? `<details class="analisis-card__help"><summary>ℹ️ ¿Qué es cada una?</summary><dl>${ayuda.map(([t, d]) => `<dt>${escapeHtml(t)}</dt><dd>${escapeHtml(d)}</dd>`).join("")}</dl></details>` : ""}
     </article>`;
@@ -136,19 +139,25 @@ const tieneMecanica = (g, label) => g.mecanicas.includes(label) || g.mecanicas.i
 
 function mecanicasCard(own) {
   if (own.some((g) => !g._hydrated)) {
-    return `<article class="analisis-card"><h3 class="analisis-card__title">🧩 Mecánicas populares</h3><p class="analisis-card__sub">Cargando…</p></article>`;
+    return `<article class="analisis-card"><h3 class="analisis-card__title">🧩 Mecánicas</h3><p class="analisis-card__sub">Cargando…</p></article>`;
   }
   const conMecanicas = own.filter((g) => g.mecanicas && g.mecanicas.length);
-  const conteo = new Map(MECANICAS_POPULARES.map((m) => [m, 0]));
-  conMecanicas.forEach((g) => conteo.forEach((n, m) => { if (tieneMecanica(g, m)) conteo.set(m, n + 1); }));
-  const filas = [...conteo].map(([label, valor]) => ({ label, valor, hint: MECANICAS_HINT[label], juegos: conMecanicas.filter((g) => tieneMecanica(g, label)).map((g) => g.nombre) }))
+  // Todas las mecánicas de las fichas (con el nombre del sitio si lo tiene) + las populares en cero.
+  const nombreSitio = new Map(Object.entries(MECANICA_NOMBRE_BGG).map(([sitio, bgg]) => [bgg, sitio]));
+  const juegosPor = new Map(MECANICAS_POPULARES.map((m) => [m, []]));
+  conMecanicas.forEach((g) => new Set(g.mecanicas.map((m) => nombreSitio.get(m) || m)).forEach((m) => {
+    if (!juegosPor.has(m)) juegosPor.set(m, []);
+    juegosPor.get(m).push(g.nombre);
+  }));
+  const filas = [...juegosPor].map(([label, juegos]) => ({ label, valor: juegos.length, hint: MECANICAS_HINT[label], juegos }))
     .sort((a, b) => b.valor - a.valor || a.label.localeCompare(b.label, "es"));
   if (!conMecanicas.length) return "";
   const faltan = filas.filter((f) => !f.valor).length;
   return barChartHtml({
-    titulo: "🧩 Mecánicas populares",
-    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? ` · las que están en cero son las que no tenés` : ""}`,
+    titulo: "🧩 Mecánicas",
+    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? ` · las populares en cero son las que no tenés` : ""}`,
     filas,
+    visibles: 12,
     ayuda: filas.filter((f) => f.hint).map((f) => [f.label, f.hint]),
   });
 }
