@@ -141,6 +141,20 @@
   color: var(--accent-contrast);
 }
 
+/* Mecánica excluida (filtro con `excluir`): tachada y en rojo. */
+.fchip[data-excluida="true"] {
+  background: var(--bg-subtle);
+  border-color: var(--danger, #b3261e);
+  color: var(--danger, #b3261e);
+  text-decoration: line-through;
+}
+
+.fchip[data-excluida="true"]::before {
+  content: "🚫 ";
+  text-decoration: none;
+  display: inline-block;
+}
+
 .fchip:disabled {
   color: var(--muted-soft);
   cursor: not-allowed;

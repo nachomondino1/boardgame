@@ -18,7 +18,7 @@ function pluralJuegos(n) {
 function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles, escala }) {
   const max = escala || Math.max(1, ...filas.map((f) => f.valor));
   let grupoActual = null;
-  const rowHtml = (filas) => filas
+  const rowHtml = (filas) => (grupoActual = null, filas)
     .map((f) => {
       const cab = f.grupo && f.grupo !== grupoActual ? (grupoActual = f.grupo, `<li class="bar-group">${escapeHtml(f.grupo)}</li>`) : "";
       const title = escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`);
@@ -171,12 +171,37 @@ function mecanicasCard(own) {
     const juegos = conMecanicas.filter((g) => g.mecs.includes(i)).map((g) => g.nombre);
     return { label, grupo: MECANICAS_GRUPOS[i], valor: juegos.length, hint: MECANICAS_HINT[label], juegos };
   }).sort((a, b) => orden.indexOf(a.grupo) - orden.indexOf(b.grupo) || b.valor - a.valor || a.label.localeCompare(b.label, "es"));
+  // La card se achica: arriba las primeras filas (por grupo, en cada uno las que tenés primero); el resto, también por grupo, en "Ver N más".
   const faltan = filas.filter((f) => !f.valor).length;
+  const VISIBLES = 12;
   return barChartHtml({
+    visibles: VISIBLES,
     titulo: "🧩 Mecánicas",
-    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? " · las que están en cero son las que no tenés" : ""}`,
+    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? " · las que están en cero son las que no tenés" : ""} · "Ver más" despliega el resto de los grupos`,
     filas,
     ayuda: filas.filter((f) => f.hint).map((f) => [f.label, f.hint]),
+  });
+}
+
+// Qué te gusta más: promedio de tu puntaje por mecánica, con lo que tenés o tuviste y puntuaste.
+function gustosCard(games) {
+  const puntuados = games.filter((g) => (g.estado === "Own" || g.estado === "Prev. owned") && g.mi_puntaje != null && g.mecs && g.mecs.length);
+  if (puntuados.length < 6) return "";
+  const media = puntuados.reduce((a, g) => a + g.mi_puntaje, 0) / puntuados.length;
+  const filas = MECANICAS_VOCAB.map((label, i) => {
+    const juegos = puntuados.filter((g) => g.mecs.includes(i));
+    const prom = juegos.length ? juegos.reduce((a, g) => a + g.mi_puntaje, 0) / juegos.length : null;
+    return { label, prom, juegos };
+  }).filter((f) => f.juegos.length >= 2)
+    .sort((a, b) => b.prom - a.prom || b.juegos.length - a.juegos.length)
+    .map((f) => ({ label: f.label, valor: f.prom, valorTxt: `${f.prom.toFixed(1)} <small>(${f.juegos.length})</small>`, hint: `${f.label}: ${f.prom.toFixed(1)} de promedio en ${pluralJuegos(f.juegos.length)}`, juegos: f.juegos.map((g) => g.nombre) }));
+  if (filas.length < 3) return "";
+  const visibles = Math.min(6, filas.length);
+  return barChartHtml({
+    titulo: "❤️ Qué mecánicas te gustan más",
+    subtitulo: `Tu puntaje promedio en los juegos que tenés o tuviste con cada mecánica (entre paréntesis, cuántos; mínimo 2). Tu promedio general es ${media.toFixed(1)}.`,
+    filas, visibles, escala: 10,
+    nota: `Las que más puntuás: <strong>${filas.slice(0, 3).map((f) => escapeHtml(f.label)).join(", ")}</strong>.`,
   });
 }
 
@@ -231,9 +256,10 @@ function renderAnalisis(container, games) {
       ${own.length ? barChartHtml({ titulo: "⏱ Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
       ${own.length ? modoCard(own) : ""}
       ${own.length ? mecanicasCard(own) : ""}
+      ${gustosCard(games)}
       ${puntajeCard(games)}
     </div>`;
 
   // Las mecánicas salen de la ficha: se piden una vez y se vuelve a dibujar.
-  hydrate(own).then((n) => { if (n) renderAnalisis(container, games); });
+  hydrate(games.filter((g) => g.estado === "Own" || g.estado === "Prev. owned")).then((n) => { if (n) renderAnalisis(container, games); });
 }

@@ -12,6 +12,8 @@
 //               numero?: true         (las opciones de una sola elección son números),
 //               unidad?: (n) => str   (cómo se resume la elección, ej. "4 jugadores"),
 //               defecto?: [ids],      (selección por defecto de un filtro de varias; si no, vacía)
+//               excluir?: "clave"   (filtro de varias con exclusión: cada ficha rota neutral → incluir → excluir → neutral;
+//                                    las excluidas quedan en state[clave], un Set de ids)
 //               extra?: { key, label, sufijo } }   (ficha booleana que se habilita al elegir un valor)
 //   toggles: [{ key, label, icono }]
 // Devuelve { sync }.
@@ -24,13 +26,22 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
     return state[f.id] == null ? [] : [String(state[f.id])];
   }
 
+  const excluidas = (f) => (f.excluir ? [...state[f.excluir]].map(String) : []);
+
   function difiereDelDefecto(f) {
     const sel = seleccion(f).sort().join("|");
-    return sel !== defectoDe(f).sort().join("|");
+    return sel !== defectoDe(f).sort().join("|") || excluidas(f).length > 0;
   }
 
   function etiqueta(f) {
     const sel = seleccion(f);
+    const no = excluidas(f);
+    if (no.length) {
+      const nombre = (id) => f.opciones.find((o) => String(o.id) === id).label;
+      const sin = no.length === 1 ? `sin ${nombre(no[0])}` : `sin ${no.length}`;
+      if (!sel.length) return `${f.icono} ${sin}`;
+      return `${f.icono} ${f.titulo} · ${sel.length} · ${sin}`;
+    }
     if (!sel.length) return `${f.icono} ${f.titulo}`;
     if (!f.multiple) {
       const op = f.opciones.find((o) => String(o.id) === sel[0]);
@@ -72,7 +83,11 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
       const sel = seleccion(f);
       wrap.querySelector(".pill").classList.toggle("on", difiereDelDefecto(f));
       wrap.querySelector(".pill__label").textContent = etiqueta(f);
-      wrap.querySelectorAll(".fchip[data-opcion]").forEach((c) => c.setAttribute("aria-pressed", String(sel.includes(c.dataset.opcion))));
+      const no = excluidas(f);
+      wrap.querySelectorAll(".fchip[data-opcion]").forEach((c) => {
+        c.setAttribute("aria-pressed", String(sel.includes(c.dataset.opcion)));
+        if (f.excluir) c.dataset.excluida = String(no.includes(c.dataset.opcion));
+      });
       if (f.extra) {
         const extra = wrap.querySelector("[data-extra]");
         extra.disabled = state[f.id] == null;
@@ -120,7 +135,12 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
     } else {
       const f = filters.find((x) => x.id === chip.dataset.filtro);
       const opcion = chip.dataset.opcion;
-      if (f.multiple) {
+      if (f.multiple && f.excluir) {
+        // neutral → incluir → excluir → neutral
+        if (state[f.excluir].has(opcion)) state[f.excluir].delete(opcion);
+        else if (state[f.id].has(opcion)) { state[f.id].delete(opcion); state[f.excluir].add(opcion); }
+        else state[f.id].add(opcion);
+      } else if (f.multiple) {
         if (state[f.id].has(opcion)) state[f.id].delete(opcion);
         else state[f.id].add(opcion);
       } else {
@@ -139,6 +159,7 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
       if (f.multiple) state[f.id] = new Set(defectoDe(f));
       else state[f.id] = null;
       if (f.extra) state[f.extra.key] = false;
+      if (f.excluir) state[f.excluir] = new Set();
     });
     toggles.forEach((t) => { state[t.key] = false; });
     sync();

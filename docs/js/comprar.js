@@ -18,6 +18,7 @@ const state = {
   precios: new Set(), // ids de BUCKETS_PRECIO (sobre el precio estimado en pesos); vacío = todos. Con alguno elegido, solo entran juegos con precio de referencia
   decadas: new Set(), // ids de BUCKETS_DECADA; vacío = todas
   mecanicas: new Set(), // posiciones en MECANICAS_VOCAB; el juego tiene que tener todas las elegidas
+  mecanicasNo: new Set(), // mecánicas que NO quiero: se descartan los juegos que tengan alguna
   jugadores: null,
   soloMejor: false,
   estados: new Set(), // "comprar" / "probar" / "tengo"; vacío = todos menos los que ya tenés (en seguimiento, quiero comprar y quiero probar)
@@ -50,6 +51,10 @@ function matchesFilters(g) {
     const precio = precioDe(g);
     if (!precio) return false;
     if (!BUCKETS_PRECIO.some((b) => state.precios.has(b.id) && b.match(precio.valor))) return false;
+  }
+  if (state.mecanicasNo.size > 0) {
+    const tiene = g.mecs || [];
+    for (const id of state.mecanicasNo) if (tiene.includes(Number(id))) return false;
   }
   if (state.mecanicas.size > 0) {
     const tiene = g.mecs || [];
@@ -181,7 +186,8 @@ const FILTROS = [
 function setupControls() {
   FILTROS.push({
     id: "mecanicas", titulo: "Mecánicas", icono: "🧩", multiple: true,
-    nota: "Muestra los juegos que tienen todas las mecánicas que elijas.",
+    excluir: "mecanicasNo",
+    nota: "Tocá una mecánica para pedirla (queda marcada). Tocala de nuevo para excluirla (🚫): no te muestra ningún juego que la tenga, por ejemplo Take That. Una tercera vez la saca.",
     opciones: (() => {
       const orden = MECANICAS_GRUPOS_ORDEN;
       return MECANICAS_VOCAB.map((label, i) => ({ id: String(i), label, grupo: MECANICAS_GRUPOS[i], hint: MECANICAS_HINT[label] }))

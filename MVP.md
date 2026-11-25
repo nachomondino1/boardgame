@@ -187,6 +187,7 @@ Lo que falta o está pensado, ordenado por página del sitio. Al terminar algo s
 
 ### Mi ludoteca
 - Hecho (2026-11-25): el gráfico "Calidad según cantidad de jugadores" usa el rango que la comunidad recomienda (`jug_min`–`jug_max`), no solo la cantidad ideal; así un Just One cuenta para 5.
+- Hecho (2026-11-25): la card de Mecánicas muestra solo las 10 que más tenés y pliega el resto en "Ver más"; las cards de una fila ya no se estiran entre sí; nueva card "Qué mecánicas te gustan más" (tu puntaje promedio por mecánica).
 - Pendiente: revisar si el gráfico "Jugadores" (ideal vs. se puede jugar) sigue claro al lado del anterior.
 
 ### ¿Qué jugamos hoy?
@@ -195,6 +196,7 @@ Lo que falta o está pensado, ordenado por página del sitio. Al terminar algo s
 
 ### ¿Cuál comprar?
 - Hecho (2026-11-25): "Preguntale a una IA" vive acá y arma el texto con tu ludoteca, tus candidatos y los 30 mejores (por ranking de BGG) que pasan los filtros puestos; sin filtros usa el top de BGG. Los filtros también achican tus candidatos (Want to buy / Want to play): van solo los que los cumplen, y tu ludoteca va siempre completa. El diálogo lo explica según los filtros puestos. Sin API ni servidor: texto para copiar y pegar en un chat.
+- Hecho (2026-11-25): el filtro de Mecánicas permite excluir. Cada ficha rota neutral → pedida → excluida (🚫, ej. Take That) → neutral; los juegos con una mecánica excluida no aparecen. Los juegos sin mecánicas cargadas no se descartan.
 - El comparador usa un `<datalist>` con ~27.000 nombres; es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
 
 ### Todo el sitio
