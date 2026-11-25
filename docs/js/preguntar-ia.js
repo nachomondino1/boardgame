@@ -25,7 +25,19 @@ function lineaJuegoIA(g, conMiPuntaje) {
   return `- ${g.nombre}${g.anio ? ` (${g.anio})` : ""}: ${partes.join(" · ")}`;
 }
 
-function armarPromptIA(games) {
+// Los mejores del ranking de BGG que no tenés ni tuviste ni descartaste (uno por grupo de ediciones).
+const IA_TOP_BGG = 40;
+function topBggIA(games) {
+  const excluidos = new Set(["Own", "Prev. owned", "Descartado", "Want to buy", "Want to play"]);
+  const vistos = new Set();
+  return games
+    .filter((g) => g.ranking_bgg != null && !excluidos.has(g.estado))
+    .sort((a, b) => a.ranking_bgg - b.ranking_bgg)
+    .filter((g) => { const k = g.grupo || g.bgg_id; if (vistos.has(k)) return false; vistos.add(k); return true; })
+    .slice(0, IA_TOP_BGG);
+}
+
+function armarPromptIA(games, top) {
   const tengo = games.filter((g) => g.estado === "Own");
   const quiero = games.filter((g) => g.estado === "Want to buy" || g.estado === "Want to play");
   return [
@@ -34,8 +46,10 @@ function armarPromptIA(games) {
       "y decime qué me aporta cada uno que no tenga ya. Si te falta algo (cuántos jugadores somos, tiempo, presupuesto), preguntame.",
     `MI LUDOTECA (${tengo.length}):\n${tengo.map((g) => lineaJuegoIA(g, true)).join("\n") || "(vacía)"}`,
     `CANDIDATOS A COMPRAR O PROBAR (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
-    "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español.",
-  ].join("\n\n");
+    top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
+    "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español. " +
+      "Priorizá mis candidatos; sugerí de los otros solo si aportan algo que me falta. Si necesitás más opciones que las listadas, pedímelas o buscalas en BoardGameGeek.",
+  ].filter(Boolean).join("\n\n");
 }
 
 function mountPreguntarIA(btn, getGames) {
@@ -62,10 +76,11 @@ function mountPreguntarIA(btn, getGames) {
   });
   btn.addEventListener("click", async () => {
     const games = getGames();
-    const rel = games.filter((g) => g.estado === "Own" || g.estado === "Want to buy" || g.estado === "Want to play");
+    const top = topBggIA(games);
+    const rel = games.filter((g) => g.estado === "Own" || g.estado === "Want to buy" || g.estado === "Want to play").concat(top);
     ta.value = "Cargando…";
     dlg.showModal();
     await hydrate(rel).catch(() => {});
-    ta.value = armarPromptIA(games);
+    ta.value = armarPromptIA(games, top);
   });
 }
