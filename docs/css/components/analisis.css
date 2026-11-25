@@ -297,5 +297,18 @@ html {
 /* "Ver N más" de una tarjeta con muchas filas. */
 .bar-more { margin-top: 8px; padding: 0; border: 0; }
 .bar-more > summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--accent); }
-.bar-more > summary::before { content: none; }
+.bar-more > summary::before,
+details.bar-more[open] summary::before { content: none; }
 .bar-more > .bar-list { margin-top: 8px; }
+
+/* "Preguntale a una IA" (Mi ludoteca). */
+.ia-btn { border: 0; background: none; font: inherit; cursor: pointer; }
+.ia-dialog { width: min(640px, calc(100vw - 32px)); padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); }
+.ia-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+.ia-dialog h3 { margin: 0 0 6px; }
+.ia-help { margin: 0 0 10px; color: var(--muted); font-size: 0.85rem; }
+.ia-close { position: absolute; top: 10px; right: 12px; border: 0; background: none; font-size: 1rem; color: var(--muted); cursor: pointer; }
+.ia-text { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle); color: var(--text); font: 0.78rem/1.4 ui-monospace, monospace; resize: vertical; }
+.ia-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ia-copy, .ia-link { padding: 7px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.ia-copy { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
