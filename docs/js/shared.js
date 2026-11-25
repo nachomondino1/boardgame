@@ -133,6 +133,8 @@ function modoLabel(modo) {
 // Mecánicas clave (nombres cortos): vienen en index.json, en el mismo orden con que build_catalog.py numera
 // la columna "mecs" de cada juego.
 let MECANICAS_VOCAB = [];
+let MECANICAS_GRUPOS_ORDEN = []; // grupos en el orden en que se muestran
+let MECANICAS_GRUPOS = []; // grupo de cada mecánica de MECANICAS_VOCAB (mismo orden)
 
 function mecanicasClave(g, max = 12) {
   return (g.mecs || []).slice(0, max).map((i) => MECANICAS_VOCAB[i]).filter(Boolean);
@@ -338,8 +340,10 @@ function loadGames() {
       if (!r.ok) throw new Error(`index.json: HTTP ${r.status}`);
       return r.json();
     })
-    .then(({ cols, rows, mecanicas }) => {
+    .then(({ cols, rows, mecanicas, mecanicas_grupos, grupos_mecanicas }) => {
       MECANICAS_VOCAB = mecanicas || [];
+      MECANICAS_GRUPOS = mecanicas_grupos || [];
+      MECANICAS_GRUPOS_ORDEN = grupos_mecanicas || [];
       return rows.map((row) => {
         const g = {};
         cols.forEach((c, i) => { g[c] = row[i]; });

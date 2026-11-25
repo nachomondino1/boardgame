@@ -182,7 +182,11 @@ function setupControls() {
   FILTROS.push({
     id: "mecanicas", titulo: "Mecánicas", icono: "🧩", multiple: true,
     nota: "Muestra los juegos que tienen todas las mecánicas que elijas.",
-    opciones: MECANICAS_VOCAB.map((label, i) => ({ id: String(i), label, hint: MECANICAS_HINT[label] })),
+    opciones: (() => {
+      const orden = MECANICAS_GRUPOS_ORDEN;
+      return MECANICAS_VOCAB.map((label, i) => ({ id: String(i), label, grupo: MECANICAS_GRUPOS[i], hint: MECANICAS_HINT[label] }))
+        .sort((a, b) => orden.indexOf(a.grupo) - orden.indexOf(b.grupo));
+    })(),
     ayudaTitulo: "ℹ️ ¿Qué es cada una?",
     ayuda: MECANICAS_VOCAB.filter((l) => MECANICAS_HINT[l]).map((l) => [l, MECANICAS_HINT[l]]),
   });

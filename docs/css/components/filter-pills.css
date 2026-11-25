@@ -257,3 +257,7 @@
 .pill-pop__help dd {
   margin: 0;
 }
+
+/* Título de grupo dentro de un menú de fichas (p. ej. las mecánicas). */
+.pill-pop__group { flex-basis: 100%; margin: 8px 0 0; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-soft); }
+.pill-pop__group:first-child { margin-top: 0; }

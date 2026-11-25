@@ -78,6 +78,20 @@ MECANICAS_CLAVE = [
 ]
 MECANICA_ID = {bgg: i for i, (bgg, _) in enumerate(MECANICAS_CLAVE)}
 
+# Grupo de cada mecánica clave (por nombre corto): el sitio las agrupa así en el filtro de ¿Cuál comprar? y en el
+# análisis de Mi ludoteca, en vez de una lista plana de 35.
+GRUPOS_MECANICAS = [
+    ("Cartas", ["Deck Building", "Hand Management", "Drafting", "Trick-taking", "Card Driven"]),
+    ("Colocar y optimizar", ["Tile Placement", "Pattern Building", "Set Collection", "Route Building", "Worker Placement",
+                             "Action Points", "Action Queue", "Pick-up & Deliver", "Area Movement", "Player Powers"]),
+    ("Competir e interactuar", ["Area Control", "Take That", "Auction", "Trading", "Voting", "Race", "Stock Holding"]),
+    ("Azar y riesgo", ["Dice Rolling", "Push Your Luck", "Roll & Move"]),
+    ("Deducción y engaño", ["Deduction", "Bluffing", "Memory", "Pattern Recognition"]),
+    ("Campaña y ritmo", ["Campaign", "Storytelling", "Role Playing", "Real-Time", "Simultaneous Actions", "Paper & Pencil"]),
+]
+_GRUPO_DE = {m: g for g, ms in GRUPOS_MECANICAS for m in ms}
+assert set(_GRUPO_DE) == {corto for _, corto in MECANICAS_CLAVE}, "toda mecánica clave necesita un grupo"
+
 
 # Precisión del índice: la que se ve en el sitio (puntaje y complejidad con 2 decimales, precio entero). Las fichas
 # (games/NNN.json) conservan los valores completos.
@@ -233,6 +247,8 @@ def main():
     write_json(OUTPUT_DIR / "index.json", {
         "cols": list(INDEX_FIELDS) + ["mecs", "tramo"],
         "mecanicas": [corto for _, corto in MECANICAS_CLAVE],
+        "mecanicas_grupos": [_GRUPO_DE[corto] for _, corto in MECANICAS_CLAVE],
+        "grupos_mecanicas": [g for g, _ in GRUPOS_MECANICAS],  # orden en que se muestran
         "rows": [[valor_indice(c, g.get(c)) for c in INDEX_FIELDS] + [mecanicas_clave(g), g["tramo"]] for g in games],
     })
 

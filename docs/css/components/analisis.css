@@ -312,3 +312,7 @@ details.bar-more[open] summary::before { content: none; }
 .ia-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .ia-copy, .ia-link { padding: 7px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--accent); font: inherit; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; }
 .ia-copy { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+
+/* Título de grupo dentro de un gráfico (p. ej. las mecánicas). */
+.bar-group { margin: 6px 0 -2px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-soft); }
+.bar-group:first-child { margin-top: 0; }

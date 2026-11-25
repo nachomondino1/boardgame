@@ -17,8 +17,10 @@ function pluralJuegos(n) {
 // Una sola serie, así que no lleva leyenda: el título dice qué se está contando.
 function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles, escala }) {
   const max = escala || Math.max(1, ...filas.map((f) => f.valor));
+  let grupoActual = null;
   const rowHtml = (filas) => filas
     .map((f) => {
+      const cab = f.grupo && f.grupo !== grupoActual ? (grupoActual = f.grupo, `<li class="bar-group">${escapeHtml(f.grupo)}</li>`) : "";
       const title = escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`);
       const cero = f.valor ? "" : " bar-row--cero";
       const fila = `
@@ -31,9 +33,9 @@ function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles
         const ideales = new Set(f.idealJuegos || []);
         const lista = [...ordenar(f.juegos.filter((n) => ideales.has(n))).map((n) => `<li class="bar-game--ideal">${escapeHtml(n)}</li>`),
           ...ordenar(f.juegos.filter((n) => !ideales.has(n))).map((n) => `<li>${escapeHtml(n)}</li>`)].join("");
-        return `<li class="bar-item"><details class="bar-details"><summary class="bar-row${cero}" title="${title}">${fila}</summary><ul class="bar-games">${lista}</ul></details></li>`;
+        return `${cab}<li class="bar-item"><details class="bar-details"><summary class="bar-row${cero}" title="${title}">${fila}</summary><ul class="bar-games">${lista}</ul></details></li>`;
       }
-      return `<li class="bar-item"><div class="bar-row${cero}" title="${title}">${fila}</div></li>`;
+      return `${cab}<li class="bar-item"><div class="bar-row${cero}" title="${title}">${fila}</div></li>`;
     })
     .join("");
   const rows = rowHtml(filas.slice(0, visibles || filas.length));
@@ -157,44 +159,22 @@ function modoCard(own) {
   return barChartHtml({ titulo: "🎲 Tipo de juego", filas, nota: notaSinDato(own.filter((g) => !g.modo).length) });
 }
 
-// Las mecánicas populares que salen en el filtro (las de la guía que están en el vocabulario de BGG): se
-// muestran todas, también las que no tenés (en cero), para ver qué tipo de juego te falta.
-const MECANICAS_POPULARES = [
-  "Deck Building", "Tile Placement", "Worker Placement", "Set Collection", "Drafting", "Area Control",
-  "Route Building", "Dice Rolling", "Push Your Luck", "Bluffing", "Pattern Building", "Deduction",
-  "Campaign", "Simultaneous Actions", "Trick-taking",
-];
-
-// Cómo las llama BGG a las que el sitio nombra distinto (mismo mapeo que MECANICAS_CLAVE en build_catalog.py):
-// las fichas traen el nombre de BGG, así que sin esto "Area Control" daría siempre cero.
-const MECANICA_NOMBRE_BGG = {
-  "Deck Building": "Deck, Bag, and Pool Building", "Area Control": "Area Majority / Influence",
-  "Route Building": "Network and Route Building", "Drafting": "Open Drafting", "Bluffing": "Betting and Bluffing",
-  "Campaign": "Scenario / Mission / Campaign Game", "Simultaneous Actions": "Simultaneous Action Selection",
-};
-const tieneMecanica = (g, label) => g.mecanicas.includes(label) || g.mecanicas.includes(MECANICA_NOMBRE_BGG[label]);
-
+// Mecánicas curadas: la columna `mecs` del índice (MECANICAS_CLAVE en build_catalog.py) deja afuera las que ya
+// dice la card (cooperativo, equipos) y las técnicas. Se muestran todas, también las que no tenés (en cero),
+// para ver qué tipo de juego te falta.
 function mecanicasCard(own) {
-  if (own.some((g) => !g._hydrated)) {
-    return `<article class="analisis-card"><h3 class="analisis-card__title">🧩 Mecánicas</h3><p class="analisis-card__sub">Cargando…</p></article>`;
-  }
-  const conMecanicas = own.filter((g) => g.mecanicas && g.mecanicas.length);
-  // Todas las mecánicas de las fichas (con el nombre del sitio si lo tiene) + las populares en cero.
-  const nombreSitio = new Map(Object.entries(MECANICA_NOMBRE_BGG).map(([sitio, bgg]) => [bgg, sitio]));
-  const juegosPor = new Map(MECANICAS_POPULARES.map((m) => [m, []]));
-  conMecanicas.forEach((g) => new Set(g.mecanicas.map((m) => nombreSitio.get(m) || m)).forEach((m) => {
-    if (!juegosPor.has(m)) juegosPor.set(m, []);
-    juegosPor.get(m).push(g.nombre);
-  }));
-  const filas = [...juegosPor].map(([label, juegos]) => ({ label, valor: juegos.length, hint: MECANICAS_HINT[label], juegos }))
-    .sort((a, b) => b.valor - a.valor || a.label.localeCompare(b.label, "es"));
+  const conMecanicas = own.filter((g) => g.mecs && g.mecs.length);
   if (!conMecanicas.length) return "";
+  const orden = MECANICAS_GRUPOS_ORDEN;
+  const filas = MECANICAS_VOCAB.map((label, i) => {
+    const juegos = conMecanicas.filter((g) => g.mecs.includes(i)).map((g) => g.nombre);
+    return { label, grupo: MECANICAS_GRUPOS[i], valor: juegos.length, hint: MECANICAS_HINT[label], juegos };
+  }).sort((a, b) => orden.indexOf(a.grupo) - orden.indexOf(b.grupo) || b.valor - a.valor || a.label.localeCompare(b.label, "es"));
   const faltan = filas.filter((f) => !f.valor).length;
   return barChartHtml({
     titulo: "🧩 Mecánicas",
-    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? ` · las populares en cero son las que no tenés` : ""}`,
+    subtitulo: `Sobre ${pluralJuegos(conMecanicas.length)} con mecánicas cargadas en BGG${faltan ? " · las que están en cero son las que no tenés" : ""}`,
     filas,
-    visibles: 12,
     ayuda: filas.filter((f) => f.hint).map((f) => [f.label, f.hint]),
   });
 }

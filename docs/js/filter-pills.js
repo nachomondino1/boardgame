@@ -8,6 +8,7 @@
 //
 // mountFilterPills(container, { filters, toggles, state, clearButton, onChange })
 //   filters (opcional): [{ id, titulo, icono, multiple, opciones: [{ id, label, hint? }],
+//               (opcional `grupo` en cada opción: las opciones, ya ordenadas, se muestran bajo el título de su grupo)
 //               numero?: true         (las opciones de una sola elección son números),
 //               unidad?: (n) => str   (cómo se resume la elección, ej. "4 jugadores"),
 //               defecto?: [ids],      (selección por defecto de un filtro de varias; si no, vacía)
@@ -45,8 +46,9 @@ function mountFilterPills(container, { filters = [], toggles = [], state, clearB
   }
 
   function pillHtml(f) {
+    let grupoActual = null;
     const chips = f.opciones
-      .map((o) => `<button type="button" class="fchip" data-filtro="${f.id}" data-opcion="${escapeHtml(String(o.id))}" aria-pressed="false"${o.hint ? ` title="${escapeHtml(o.hint)}"` : ""}>${escapeHtml(o.label)}</button>`)
+      .map((o) => (o.grupo && o.grupo !== grupoActual ? (grupoActual = o.grupo, `<p class="pill-pop__group">${escapeHtml(o.grupo)}</p>`) : "") + `<button type="button" class="fchip" data-filtro="${f.id}" data-opcion="${escapeHtml(String(o.id))}" aria-pressed="false"${o.hint ? ` title="${escapeHtml(o.hint)}"` : ""}>${escapeHtml(o.label)}</button>`)
       .join("");
     const extra = f.extra
       ? `<div class="pill-pop__extra"><button type="button" class="fchip" data-extra="${f.extra.key}" aria-pressed="false">${escapeHtml(f.extra.label)}</button></div>`
