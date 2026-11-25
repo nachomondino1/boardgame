@@ -559,33 +559,6 @@ function showDataStamp() {
 
 showDataStamp();
 
-// Títulos largos: se achica la letra hasta entrar en la fila (mínimo 12px); si aun así no entra, queda el "…".
-// Se mide todo junto (una lectura y una escritura) en vez de card por card, para no forzar un re-layout por título.
-function fitCardTitles() {
-  const titulos = [...document.querySelectorAll(".card-headline .card-title")];
-  titulos.forEach((el) => { el.style.fontSize = ""; });
-  const medidas = titulos.map((el) => ({ el, ancho: el.clientWidth, texto: el.scrollWidth, fuente: parseFloat(getComputedStyle(el).fontSize) }));
-  medidas.forEach(({ el, ancho, texto, fuente }) => {
-    if (texto > ancho) el.style.fontSize = Math.max(12, Math.floor((fuente * ancho / texto) * 2) / 2) + "px";
-  });
-}
-
-{
-  let pending = false;
-  const schedule = () => {
-    if (pending) return;
-    pending = true;
-    requestAnimationFrame(() => { pending = false; fitCardTitles(); });
-  };
-  // Solo se mira la lista de cards (no todo el documento), y solo cuando cambian sus hijos.
-  document.addEventListener("DOMContentLoaded", () => {
-    const lista = document.getElementById("grid");
-    if (lista) new MutationObserver(schedule).observe(lista, { childList: true, subtree: true });
-  });
-  window.addEventListener("resize", schedule);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
-}
-
 // Pie de página común: contacto + "conocé más" + copyright, debajo del logo de BGG que ya trae cada página.
 // Los datos de contacto se arman por partes para que no aparezcan enteros en el código.
 const FOOTER_CONTACTO = [

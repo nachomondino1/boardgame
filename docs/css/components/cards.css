@@ -50,12 +50,11 @@
   margin-bottom: 10px;
 }
 
+/* El título puede ocupar dos líneas (así la etiqueta de estado nunca queda cortada). */
 .card-title {
   min-width: 0;
   display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
   font-weight: 700;
   font-size: 1.04rem;
   line-height: 1.3;
