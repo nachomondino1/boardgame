@@ -116,6 +116,84 @@ def latin_alternates(name, alternates):
     return result
 
 
+IA_DIR = OUTPUT_DIR / "ia"
+IA_MAX_CATALOGO = 2000  # los mejores por ranking; el resto no entra para que el archivo siga siendo liviano
+IA_MAX_TAJADA = 300
+IA_JUGADORES_MAX = 6  # la última tajada es "6 o más"
+IA_ENCABEZADO = (
+    "Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Una línea por juego: "
+    "ranking BGG, nombre (año), puntaje BGG, complejidad de 1 a 5, jugadores posibles (ideal), duración, tipo y mecánicas, "
+    "y precio en Argentina (en pesos si hay precio real de una tienda; si no, el precio de referencia del marketplace de BGG en USD, "
+    "que es solo una guía)."
+)
+
+
+def linea_ia(g):
+    jug = None
+    if g.get("jug_min") is not None and g.get("jug_max") is not None:
+        jug = f"{g['jug_min']}" if g["jug_min"] == g["jug_max"] else f"{g['jug_min']}-{g['jug_max']}"
+        lo, hi = g.get("jug_best_min"), g.get("jug_best_max")
+        if lo is None:
+            lo = hi
+        if hi is None:
+            hi = lo
+        if lo is not None:
+            jug += f" jug. (ideal {lo if lo == hi else f'{lo}-{hi}'})"
+        else:
+            jug += " jug."
+    ids = mecanicas_clave(g) or []
+    mecs = ", ".join(MECANICAS_CLAVE[i][1] for i in ids[:3])
+    if g.get("precio_ars") is not None:
+        precio = f"${round(g['precio_ars']):,}".replace(",", ".") + " ARS"
+    elif g.get("precio_ref_usd") is not None:
+        precio = f"ref. US${round(g['precio_ref_usd'])}"
+    else:
+        precio = None
+    partes = [
+        f"BGG {g['puntaje_bgg']:.1f}" if g.get("puntaje_bgg") is not None else None,
+        f"complejidad {g['complejidad']:.1f}" if g.get("complejidad") is not None else None,
+        jug,
+        f"{g['duracion']} min" if g.get("duracion") else None,
+        g["modo"].replace("_", " ") if g.get("modo") else None,
+        mecs or None,
+        precio,
+    ]
+    rank = f"#{g['ranking_bgg']} " if g.get("ranking_bgg") is not None else ""
+    anio = f" ({g['anio']})" if g.get("anio") else ""
+    return f"{rank}{g['nombre']}{anio}: " + " · ".join(p for p in partes if p)
+
+
+def escribir_catalogo_ia(games):
+    """Archivos de texto para que un chat de IA con acceso a links lea el catálogo: catalogo.txt (los mejores por ranking)
+    y una tajada por cantidad ideal de jugadores (jugadores-N.txt)."""
+    if IA_DIR.exists():
+        shutil.rmtree(IA_DIR)
+    IA_DIR.mkdir(parents=True)
+    vistos = set()
+    unicos = []
+    for g in games:  # ya vienen por ranking; una sola edición por grupo
+        clave = g.get("grupo") or g["bgg_id"]
+        if g.get("ranking_bgg") is None or clave in vistos:
+            continue
+        vistos.add(clave)
+        unicos.append(g)
+
+    def escribir(nombre, titulo, lista):
+        texto = f"{titulo}\n{IA_ENCABEZADO}\n\n" + "\n".join(linea_ia(g) for g in lista) + "\n"
+        (IA_DIR / nombre).write_text(texto, encoding="utf-8")
+
+    escribir("catalogo.txt", f"{min(len(unicos), IA_MAX_CATALOGO)} mejores juegos por ranking de BGG.", unicos[:IA_MAX_CATALOGO])
+    for n in range(1, IA_JUGADORES_MAX + 1):
+        def ideal(g):
+            lo, hi = g.get("jug_best_min"), g.get("jug_best_max")
+            lo = hi if lo is None else lo
+            hi = lo if hi is None else hi
+            return lo is not None and (hi >= n if n == IA_JUGADORES_MAX else lo <= n <= hi)
+        etiqueta = f"{n} o más" if n == IA_JUGADORES_MAX else f"{n}"
+        escribir(f"jugadores-{n}.txt", f"Mejores juegos por ranking de BGG que son ideales para {etiqueta} jugadores.",
+                 [g for g in unicos if ideal(g)][:IA_MAX_TAJADA])
+
+
 def write_json(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
@@ -165,6 +243,7 @@ def main():
     for shard in range(n_shards):
         ficha = {g["bgg_id"]: g for g in games[shard * GAMES_PER_SHARD:(shard + 1) * GAMES_PER_SHARD]}
         write_json(SHARDS_DIR / f"{shard:03d}.json", ficha)
+    escribir_catalogo_ia(games)
     print(f"OK: {len(games)} juegos en names.json, index.json y {n_shards} tramos en {SHARDS_DIR}")
 
 

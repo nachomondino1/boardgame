@@ -40,11 +40,11 @@ function perfilIA(own) {
   own.forEach((g) => { if (g.modo) modos.set(g.modo, (modos.get(g.modo) || 0) + 1); });
   if (modos.size) lineas.push(`Tipo de juego: ${[...modos].sort((a, b) => b[1] - a[1]).map(([m, n]) => `${modoLabel(m)} ${n}`).join(" · ")}`);
   const mecs = new Map();
-  own.forEach((g) => new Set(g.mecanicas || []).forEach((m) => mecs.set(m, (mecs.get(m) || 0) + 1)));
+  own.forEach((g) => mecanicasClave(g, 99).forEach((m) => mecs.set(m, (mecs.get(m) || 0) + 1)));
   if (mecs.size) {
     lineas.push(`Mecánicas más frecuentes: ${[...mecs].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([m, n]) => `${m} ${n}`).join(", ")}`);
-    const faltan = MECANICAS_POPULARES.filter((m) => !own.some((g) => tieneMecanica(g, m)));
-    if (faltan.length) lineas.push(`Mecánicas populares que no tengo: ${faltan.join(", ")}`);
+    const faltan = MECANICAS_VOCAB.filter((m) => !mecs.has(m));
+    if (faltan.length) lineas.push(`Mecánicas que no tengo: ${faltan.join(", ")}`);
   }
   return lineas.join("\n");
 }
@@ -71,6 +71,14 @@ function lineaTengoIA(g) {
   return `- ${g.nombre}${partes.length ? `: ${partes.join(" · ")}` : ""}`;
 }
 
+// Dónde puede leer la IA el resto del catálogo (archivos de texto que genera build_catalog.py).
+function masOpcionesIA() {
+  const url = (f) => new URL(`data/ia/${f}`, location.href).href;
+  return "Si necesitás más opciones que las listadas, podés leer el catálogo completo en texto (una línea por juego, ordenado por ranking de BGG): " +
+    `${url("catalogo.txt")} . También hay una lista por cantidad ideal de jugadores: ${url("jugadores-N.txt")} (N de 1 a 6; el 6 incluye 6 o más). ` +
+    "Si no podés abrir links, decímelo y pedime las opciones a mí.";
+}
+
 function armarPromptIA(games, top) {
   const tengo = games.filter((g) => g.estado === "Own");
   const quiero = games.filter((g) => g.estado === "Want to buy" || g.estado === "Want to play");
@@ -83,7 +91,8 @@ function armarPromptIA(games, top) {
     `CANDIDATOS A COMPRAR O PROBAR (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
     top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
     "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español. " +
-      "Priorizá mis candidatos; sugerí de los otros solo si aportan algo que me falta. Si necesitás más opciones que las listadas, pedímelas o buscalas en BoardGameGeek.",
+      "Priorizá mis candidatos; sugerí de los otros solo si aportan algo que me falta.",
+    masOpcionesIA(),
   ].filter(Boolean).join("\n\n");
 }
 

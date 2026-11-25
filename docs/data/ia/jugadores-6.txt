@@ -1,0 +1,303 @@
+Mejores juegos por ranking de BGG que son ideales para 6 o más jugadores.
+Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Una línea por juego: ranking BGG, nombre (año), puntaje BGG, complejidad de 1 a 5, jugadores posibles (ideal), duración, tipo y mecánicas, y precio en Argentina (en pesos si hay precio real de una tienda; si no, el precio de referencia del marketplace de BGG en USD, que es solo una guía).
+
+#7 Twilight Imperium: Fourth Edition (2017): BGG 8.6 · complejidad 4.4 · 3-6 jug. (ideal 6) · 360 min · Competitivo · Dice Rolling, Trading, Voting · $509.150 ARS
+#23 Eclipse: Second Dawn for the Galaxy (2020): BGG 8.4 · complejidad 3.7 · 2-6 jug. (ideal 4-6) · 130 min · Competitivo · Area Control, Dice Rolling, Player Powers
+#49 Heat: Pedal to the Metal (2022): BGG 8.0 · complejidad 2.2 · 1-6 jug. (ideal 5-6) · 45 min · Competitivo · Deck Building, Push Your Luck, Hand Management · $215.000 ARS
+#61 Blood on the Clocktower (2022): BGG 8.3 · complejidad 3.0 · 7-16 jug. (ideal 9-12) · 75 min · Equipos · Deduction, Voting, Bluffing · ref. US$170
+#117 Decrypto (2018): BGG 7.8 · complejidad 1.8 · 4-8 jug. (ideal 4-6) · 30 min · Equipos · Paper & Pencil · ref. US$15
+#158 Just One (2018): BGG 7.6 · complejidad 1.0 · 4-7 jug. (ideal 6-7) · 40 min · Cooperativo · Deduction, Paper & Pencil · $69.520 ARS
+#162 Codenames (2015): BGG 7.5 · complejidad 1.3 · 4-8 jug. (ideal 6-8) · 15 min · Equipos · Deduction, Memory, Race · $59.000 ARS
+#218 Dune (2019): BGG 7.9 · complejidad 4.0 · 5-6 jug. (ideal 6) · 150 min · Competitivo · Area Control, Auction, Take That · ref. US$80
+#241 The Resistance: Avalon (2012): BGG 7.5 · complejidad 1.7 · 5-10 jug. (ideal 7-8) · 30 min · Equipos · Voting, Player Powers, Simultaneous Actions · $42.000 ARS
+#242 A Game of Thrones: The Board Game (Second Edition) (2011): BGG 7.5 · complejidad 3.7 · 4-6 jug. (ideal 6) · 180 min · Competitivo · Area Control, Auction, Hand Management · ref. US$25
+#250 Captain Sonar (2016): BGG 7.5 · complejidad 2.2 · 6-8 jug. (ideal 8) · 52 min · Equipos · Deduction, Role Playing, Real-Time
+#265 Magical Athlete (2025): BGG 7.7 · complejidad 1.2 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Drafting, Dice Rolling, Roll & Move · $76.490 ARS
+#268 Camel Up (Second Edition) (2018): BGG 7.5 · complejidad 1.5 · 3-8 jug. (ideal 5-6) · 38 min · Competitivo · Dice Rolling, Bluffing, Roll & Move · $160.000 ARS
+#269 Secret Hitler (2016): BGG 7.5 · complejidad 1.7 · 6-10 jug. (ideal 8-10) · 45 min · Equipos · Voting · $89.990 ARS
+#283 Hot Streak (2025): BGG 7.8 · complejidad 1.2 · 3-8 jug. (ideal 5-6) · 20 min · Competitivo · Drafting, Bluffing · $125.910 ARS
+#285 Skull King (2013): BGG 7.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Trick-taking, Hand Management · $41.810 ARS
+#302 Deception: Murder in Hong Kong (2014): BGG 7.4 · complejidad 1.6 · 5-12 jug. (ideal 6-8) · 20 min · Equipos · Deduction, Storytelling · ref. US$34
+#306 Monikers (2015): BGG 7.8 · complejidad 1.1 · 4-16 jug. (ideal 6-10) · 45 min · Equipos · Drafting, Role Playing
+#356 Telestrations (2009): BGG 7.4 · complejidad 1.1 · 5-8 jug. (ideal 8) · 30 min · Competitivo · Paper & Pencil · $99.990 ARS
+#362 Dixit: Odyssey (2011): BGG 7.4 · complejidad 1.2 · 4-12 jug. (ideal 6) · 30 min · Competitivo · Voting, Storytelling · $176.000 ARS
+#387 Feed the Kraken (2022): BGG 7.8 · complejidad 2.2 · 6-11 jug. (ideal 8-11) · 68 min · Equipos · Voting, Bluffing, Role Playing · $380.000 ARS
+#399 Sidereal Confluence (2017): BGG 7.8 · complejidad 3.6 · 4-9 jug. (ideal 6) · 150 min · Competitivo · Trading, Real-Time, Player Powers · ref. US$8
+#454 Ready Set Bet (2022): BGG 7.5 · complejidad 1.3 · 4-9 jug. (ideal 6-8) · 52 min · Competitivo · Dice Rolling, Bluffing, Real-Time · ref. US$150
+#469 Mysterium (2015): BGG 7.2 · complejidad 1.9 · 3-7 jug. (ideal 5-6) · 42 min · Cooperativo · Hand Management, Deduction, Voting · $113.310 ARS
+#473 Hitster (2022): BGG 7.5 · complejidad 1.0 · 2-10 jug. (ideal 4-6) · 30 min · Competitivo · $62.390 ARS
+#481 The Resistance (2009): BGG 7.2 · complejidad 1.6 · 5-10 jug. (ideal 7) · 30 min · Equipos · Memory, Voting, Simultaneous Actions · $47.940 ARS
+#509 Skull (2011): BGG 7.2 · complejidad 1.1 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Auction, Hand Management · $55.990 ARS
+#519 Flip 7 (2024): BGG 7.2 · complejidad 1.0 · 3-9 jug. (ideal 5-6) · 20 min · Competitivo · Push Your Luck, Take That · $25.999 ARS
+#523 Libertalia: Winds of Galecrest (2022): BGG 7.4 · complejidad 2.2 · 1-6 jug. (ideal 4-6) · 52 min · Competitivo · Set Collection, Hand Management, Take That
+#529 Downforce (2017): BGG 7.2 · complejidad 1.7 · 2-6 jug. (ideal 3-6) · 30 min · Competitivo · Auction, Hand Management, Bluffing · $170.000 ARS
+#536 PitchCar (1995): BGG 7.3 · complejidad 1.1 · 2-8 jug. (ideal 5-6) · 30 min · Competitivo · Race · ref. US$130
+#546 Wavelength (2019): BGG 7.2 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 38 min · Equipos · Race · $89.991 ARS
+#551 Civilization (1980): BGG 7.5 · complejidad 3.6 · 4-7 jug. (ideal 6-7) · 360 min · Competitivo · Area Control, Set Collection, Hand Management
+#566 Colt Express (2014): BGG 7.1 · complejidad 1.8 · 3-6 jug. (ideal 5-6) · 40 min · Competitivo · Hand Management, Memory, Take That · ref. US$41
+#567 Here I Stand (2006): BGG 7.9 · complejidad 4.2 · 3-6 jug. (ideal 6) · 540 min · Competitivo · Hand Management, Dice Rolling, Campaign
+#603 Shadows over Camelot (2005): BGG 7.1 · complejidad 2.6 · 4-7 jug. (ideal 5-7) · 75 min · Cooperativo y competitivo · Set Collection, Hand Management, Dice Rolling · ref. US$375
+#651 Charterstone (2017): BGG 7.2 · complejidad 2.9 · 2-6 jug. (ideal 6) · 60 min · Competitivo · Worker Placement, Drafting, Hand Management · ref. US$48
+#660 Jamaica (2007): BGG 7.1 · complejidad 1.7 · 3-6 jug. (ideal 5-6) · 45 min · Competitivo · Hand Management, Dice Rolling, Take That · ref. US$25
+#662 RoboRally (1994): BGG 7.0 · complejidad 2.4 · 3-8 jug. (ideal 5-6) · 82 min · Competitivo · Campaign, Race, Action Queue · ref. US$52
+#675 Take 5 (1994): BGG 7.0 · complejidad 1.2 · 3-10 jug. (ideal 5-6) · 45 min · Competitivo · Push Your Luck, Hand Management, Simultaneous Actions · $22.481 ARS
+#692 One Night Ultimate Werewolf (2014): BGG 7.0 · complejidad 1.4 · 4-10 jug. (ideal 6-8) · 10 min · Competitivo · Voting, Role Playing, Player Powers · $45.590 ARS
+#733 Medici (1995): BGG 7.2 · complejidad 2.2 · 4-6 jug. (ideal 5-6) · 60 min · Competitivo · Auction, Set Collection, Push Your Luck · ref. US$32
+#742 Time's Up! Title Recall! (2008): BGG 7.7 · complejidad 1.2 · 4-12 jug. (ideal 6) · 60 min · Equipos · Memory
+#770 Struggle of Empires (2004): BGG 7.5 · complejidad 3.6 · 4-7 jug. (ideal 5-7) · 210 min · Competitivo · Area Control, Auction, Dice Rolling · ref. US$35
+#780 A Fake Artist Goes to New York (2011): BGG 7.1 · complejidad 1.1 · 5-10 jug. (ideal 6-7) · 20 min · Competitivo · $53.990 ARS
+#787 Between Two Castles of Mad King Ludwig (2018): BGG 7.2 · complejidad 2.2 · 3-7 jug. (ideal 6) · 52 min · Equipos · Tile Placement, Set Collection, Simultaneous Actions
+#790 Formula D (2008): BGG 7.0 · complejidad 2.0 · 3-10 jug. (ideal 5-8) · 60 min · Competitivo · Push Your Luck, Dice Rolling, Roll & Move · $385.000 ARS
+#800 Guards of Atlantis II (2022): BGG 8.3 · complejidad 3.3 · 4-10 jug. (ideal 4-6) · 105 min · Equipos · Hand Management, Card Driven, Area Movement · ref. US$175
+#811 Time's Up! (1999): BGG 7.3 · complejidad 1.2 · 4-12 jug. (ideal 6-8) · 90 min · Equipos · Memory · $59.000 ARS
+#813 Top Ten (2020): BGG 7.4 · complejidad 1.1 · 4-9 jug. (ideal 6-7) · 30 min · Cooperativo · Deduction · $44.990 ARS
+#865 The Republic of Rome (1990): BGG 7.5 · complejidad 4.4 · 4-6 jug. (ideal 5-6) · 300 min · Cooperativo y competitivo · Hand Management, Dice Rolling, Voting · ref. US$280
+#875 Liar's Dice (1800): BGG 6.9 · complejidad 1.2 · 3-7 jug. (ideal 5-6) · 22 min · Competitivo · Dice Rolling, Bluffing · ref. US$24
+#882 Wits & Wagers (2005): BGG 6.9 · complejidad 1.2 · 4-7 jug. (ideal 6-7) · 25 min · Competitivo · Bluffing, Paper & Pencil · ref. US$20
+#895 Diplomacy (1959): BGG 7.0 · complejidad 3.3 · 6-7 jug. (ideal 7) · 360 min · Competitivo · Area Control, Area Movement, Simultaneous Actions · $79.900 ARS
+#901 Detective Club (2018): BGG 7.3 · complejidad 1.2 · 5-8 jug. (ideal 6-7) · 45 min · Equipos · Voting, Storytelling · ref. US$80
+#904 BANG! The Dice Game (2013): BGG 6.9 · complejidad 1.3 · 5-8 jug. (ideal 6-7) · 15 min · Equipos · Push Your Luck, Dice Rolling, Player Powers · $59.500 ARS
+#906 Diamant (2005): BGG 6.8 · complejidad 1.1 · 3-8 jug. (ideal 6-8) · 30 min · Competitivo · Push Your Luck, Simultaneous Actions · $165.000 ARS
+#911 Tumblin' Dice (2004): BGG 7.3 · complejidad 1.0 · 2-6 jug. (ideal 4-6) · 32 min · Competitivo · Dice Rolling
+#925 Between Two Cities (2015): BGG 7.0 · complejidad 1.8 · 3-7 jug. (ideal 5-6) · 25 min · Competitivo · Tile Placement, Set Collection, Simultaneous Actions · ref. US$25
+#935 Ricochet Robots (1999): BGG 7.0 · complejidad 2.4 · 1-12 jug. (ideal 3-6) · 30 min · Competitivo · Real-Time
+#973 Challengers! (2022): BGG 7.0 · complejidad 1.8 · 2-8 jug. (ideal 4-8) · 45 min · Competitivo · Deck Building, Drafting, Hand Management · ref. US$25
+#992 Stella: Dixit Universe (2021): BGG 7.3 · complejidad 1.2 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Push Your Luck, Deduction, Race · ref. US$29
+#1002 ito (2019): BGG 7.3 · complejidad 1.0 · 3-9 jug. (ideal 5-6) · 10 min · Cooperativo · Deduction · $129.999 ARS
+#1009 Celestia (2015): BGG 6.9 · complejidad 1.3 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Push Your Luck, Hand Management, Dice Rolling · $63.990 ARS
+#1015 Letter Jam (2019): BGG 7.1 · complejidad 2.0 · 3-6 jug. (ideal 6) · 45 min · Cooperativo · ref. US$15
+#1026 Werewords (2017): BGG 7.1 · complejidad 1.1 · 4-10 jug. (ideal 6-7) · 10 min · Competitivo · Voting, Player Powers · ref. US$8
+#1049 The Thing: The Boardgame (2022): BGG 7.6 · complejidad 3.0 · 5-8 jug. (ideal 7-8) · 75 min · Cooperativo y competitivo · Voting · ref. US$289
+#1101 Ca$h 'n Guns: Second Edition (2014): BGG 6.8 · complejidad 1.2 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Drafting, Take That, Player Powers · ref. US$18
+#1113 Pictomania (Second Edition) (2018): BGG 7.6 · complejidad 1.4 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Paper & Pencil
+#1133 Pictomania (2011): BGG 7.3 · complejidad 1.5 · 3-6 jug. (ideal 5-6) · 25 min · Competitivo · ref. US$12
+#1144 Spyfall (2014): BGG 6.7 · complejidad 1.2 · 4-8 jug. (ideal 6) · 15 min · Competitivo · Memory, Voting, Role Playing · ref. US$10
+#1161 Concept (2013): BGG 6.7 · complejidad 1.4 · 3-12 jug. (ideal 6) · 40 min · Equipos · Race · $94.900 ARS
+#1203 Virgin Queen (2012): BGG 8.0 · complejidad 4.5 · 4-6 jug. (ideal 6) · 420 min · Competitivo · Dice Rolling, Card Driven, Player Powers · ref. US$60
+#1208 Tempel des Schreckens (2016): BGG 7.2 · complejidad 1.1 · 4-10 jug. (ideal 6-7) · 15 min · Equipos
+#1227 Here I Stand: 500th Anniversary Edition (2017): BGG 8.4 · complejidad 4.6 · 2-6 jug. (ideal 6) · 270 min · Competitivo · Hand Management, Dice Rolling, Card Driven · ref. US$100
+#1238 Two Rooms and a Boom (2013): BGG 7.0 · complejidad 1.5 · 8-30 jug. (ideal 14-22) · 14 min · Equipos · Voting, Real-Time, Player Powers · ref. US$30
+#1247 Winner's Circle (2001): BGG 7.0 · complejidad 1.6 · 3-6 jug. (ideal 5-6) · 52 min · Competitivo · Bluffing, Roll & Move
+#1273 Tsuro (2005): BGG 6.7 · complejidad 1.2 · 2-8 jug. (ideal 4-6) · 18 min · Competitivo · Tile Placement, Route Building, Hand Management · $115.000 ARS
+#1298 Phantom Ink (2022): BGG 7.4 · complejidad 1.2 · 4-8 jug. (ideal 4-6) · 12 min · Equipos · Deduction · ref. US$25
+#1301 Werewords Deluxe Edition (2018): BGG 7.5 · complejidad 1.3 · 4-12 jug. (ideal 6-8) · 10 min · Competitivo · Voting, Player Powers
+#1309 Insider (2016): BGG 7.0 · complejidad 1.1 · 4-8 jug. (ideal 5-6) · 15 min · Equipos · Voting
+#1310 History of the World (1991): BGG 7.1 · complejidad 2.8 · 4-6 jug. (ideal 6) · 202 min · Competitivo · Area Control, Hand Management, Dice Rolling
+#1353 Obscurio (2019): BGG 7.1 · complejidad 1.9 · 4-8 jug. (ideal 5-8) · 40 min · Cooperativo · Voting, Player Powers · ref. US$26
+#1360 Seas of Strife (2015): BGG 7.4 · complejidad 1.3 · 4-6 jug. (ideal 5-6) · 45 min · Competitivo · Trick-taking, Hand Management · ref. US$40
+#1374 6 nimmt! 25 Jahre (2019): BGG 7.2 · complejidad 1.2 · 3-8 jug. (ideal 4-6) · 45 min · Competitivo · Hand Management, Simultaneous Actions
+#1378 When I Dream (2016): BGG 6.9 · complejidad 1.2 · 4-10 jug. (ideal 6) · 30 min · Equipos · Memory, Storytelling, Role Playing · ref. US$13
+#1382 Shadow Hunters (2005): BGG 6.8 · complejidad 1.8 · 5-8 jug. (ideal 7-8) · 60 min · Equipos · Dice Rolling, Player Powers · ref. US$175
+#1414 Rex: Final Days of an Empire (2012): BGG 7.0 · complejidad 3.3 · 4-6 jug. (ideal 6) · 150 min · Equipos · Area Control, Auction, Hand Management
+#1426 Poker (1810): BGG 6.7 · complejidad 2.4 · 3-9 jug. (ideal 5-6) · 60 min · Competitivo · Set Collection, Bluffing · ref. US$18
+#1432 Challengers! Beach Cup (2023): BGG 7.6 · complejidad 2.1 · 2-8 jug. (ideal 4-8) · 45 min · Competitivo · Deck Building, Drafting, Hand Management · ref. US$12
+#1474 Escape from the Aliens in Outer Space (2010): BGG 6.9 · complejidad 2.0 · 4-8 jug. (ideal 6) · 32 min · Equipos · Player Powers, Paper & Pencil
+#1524 Veiled Fate (2022): BGG 7.5 · complejidad 2.2 · 3-8 jug. (ideal 6) · 75 min · Competitivo · Hand Management, Deduction, Voting · ref. US$140
+#1533 Welcome To...: Collector's Edition (2023): BGG 8.3 · complejidad 2.1 · 1-6 jug. (ideal 2-6) · 25 min · Competitivo · Pattern Building, Simultaneous Actions, Paper & Pencil
+#1543 Time's Up! Party (2008): BGG 7.6 · complejidad 1.1 · 4-12 jug. (ideal 6-10) · 30 min · Equipos · Memory · $59.000 ARS
+#1558 Quartermaster General (2014): BGG 7.2 · complejidad 2.3 · 2-6 jug. (ideal 6) · 90 min · Equipos · Area Control, Hand Management, Card Driven · ref. US$24
+#1581 The Werewolves of Miller's Hollow (2001): BGG 6.7 · complejidad 1.3 · 8-18 jug. (ideal 10-14) · 30 min · Equipos · Voting, Role Playing, Player Powers · $33.905 ARS
+#1584 Saboteur (2004): BGG 6.5 · complejidad 1.3 · 5-10 jug. (ideal 7-8) · 30 min · Competitivo · Route Building, Hand Management, Take That · $22.491 ARS
+#1587 TransAmerica (2001): BGG 6.7 · complejidad 1.3 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Race
+#1610 Fief: France 1429 (2015): BGG 7.4 · complejidad 3.8 · 4-6 jug. (ideal 5-6) · 180 min · Equipos · Area Control, Dice Rolling, Trading · ref. US$55
+#1646 Trapwords (2018): BGG 7.0 · complejidad 1.4 · 4-8 jug. (ideal 6) · 38 min · Equipos · ref. US$24
+#1667 New Angeles (2016): BGG 7.0 · complejidad 3.2 · 4-6 jug. (ideal 6) · 180 min · Cooperativo y competitivo · Voting, Player Powers
+#1689 Fun Facts (2022): BGG 7.0 · complejidad 1.0 · 4-8 jug. (ideal 6-8) · 30 min · Cooperativo · $78.990 ARS
+#1701 Ultimate Werewolf: Ultimate Edition (2008): BGG 6.9 · complejidad 1.5 · 8-27 jug. (ideal 11-16) · 60 min · Equipos · Voting, Role Playing
+#1711 Dark Moon (2011): BGG 7.0 · complejidad 2.4 · 4-7 jug. (ideal 5-7) · 68 min · Equipos · Dice Rolling, Role Playing, Player Powers · $179.000 ARS
+#1738 Salem 1692 (2015): BGG 7.1 · complejidad 2.0 · 6-12 jug. (ideal 7-8) · 30 min · Competitivo · Hand Management, Voting · ref. US$20
+#1750 Room 25 (2013): BGG 6.7 · complejidad 1.9 · 3-6 jug. (ideal 4-6) · 30 min · Equipos · Memory, Action Queue, Simultaneous Actions
+#1764 Kites (2022): BGG 6.8 · complejidad 1.1 · 2-6 jug. (ideal 4-6) · 10 min · Cooperativo · $41.990 ARS
+#1777 Say Anything (2008): BGG 6.7 · complejidad 1.1 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Bluffing, Paper & Pencil
+#1786 Ca$h 'n Gun$ (2005): BGG 6.5 · complejidad 1.3 · 4-6 jug. (ideal 6) · 30 min · Competitivo · Player Powers, Simultaneous Actions
+#1819 Imagine (2015): BGG 6.8 · complejidad 1.1 · 3-8 jug. (ideal 4-6) · 20 min · Equipos · $63.290 ARS
+#1821 Mascarade (2013): BGG 6.5 · complejidad 1.5 · 4-11 jug. (ideal 6-8) · 30 min · Competitivo · Memory, Player Powers · ref. US$20
+#1829 Green Team Wins (2022): BGG 6.9 · complejidad 1.0 · 5-12 jug. (ideal 7-11) · 15 min · Equipos · Paper & Pencil
+#1837 BANG! (2002): BGG 6.5 · complejidad 1.6 · 5-7 jug. (ideal 7) · 30 min · Equipos · Hand Management, Take That, Player Powers · $39.000 ARS
+#1855 Eat Poop You Cat: BGG 7.4 · complejidad 1.1 · 5-13 jug. (ideal 7-9) · 20 min · Competitivo · Paper & Pencil
+#1857 Happy Salmon (2016): BGG 6.6 · complejidad 1.1 · 4-8 jug. (ideal 5-8) · 2 min · Competitivo · Real-Time · $27.863 ARS
+#1862 Mega Civilization (2015): BGG 8.1 · complejidad 3.7 · 5-18 jug. (ideal 7-9) · 540 min · Competitivo · Set Collection, Hand Management, Trading · ref. US$395
+#1867 Tortuga 1667 (2017): BGG 6.9 · complejidad 2.0 · 5-9 jug. (ideal 5-7) · 30 min · Equipos · Hand Management, Voting, Area Movement · ref. US$15
+#1888 The Great Dalmuti (1995): BGG 6.6 · complejidad 1.3 · 5-8 jug. (ideal 6-7) · 60 min · Competitivo · Hand Management, Player Powers
+#1929 Anomia (2010): BGG 6.7 · complejidad 1.0 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Pattern Recognition · ref. US$15
+#1952 Coup: Rebellion G54 (2014): BGG 7.0 · complejidad 1.9 · 3-6 jug. (ideal 5-6) · 15 min · Competitivo · Memory, Take That, Player Powers
+#1953 Junta (1979): BGG 6.7 · complejidad 2.9 · 5-7 jug. (ideal 7) · 240 min · Competitivo · Hand Management, Dice Rolling, Trading · ref. US$40
+#1957 Kremlin (1986): BGG 7.0 · complejidad 2.8 · 4-6 jug. (ideal 5-6) · 75 min · Competitivo · Voting · ref. US$50
+#1971 I'm the Boss! (1994): BGG 6.8 · complejidad 2.0 · 4-6 jug. (ideal 6) · 60 min · Competitivo · Set Collection, Hand Management, Dice Rolling
+#1973 Hitster: Music Bingo (2024): BGG 7.4 · complejidad 1.0 · 2-10 jug. (ideal 4-6) · 45 min · Competitivo
+#1977 Time Bomb (2016): BGG 7.2 · complejidad 1.1 · 4-8 jug. (ideal 6-7) · 16 min · Equipos · Role Playing · $23.400 ARS
+#1987 Ave Caesar (1989): BGG 6.7 · complejidad 1.4 · 4-6 jug. (ideal 5-6) · 30 min · Competitivo · Hand Management, Race
+#2093 Beyond Balderdash (1993): BGG 6.8 · complejidad 1.5 · 4-6 jug. (ideal 6) · 45 min · Competitivo · Voting, Paper & Pencil
+#2123 Belratti (2018): BGG 7.0 · complejidad 1.1 · 3-7 jug. (ideal 5-6) · 25 min · Cooperativo · $34.700 ARS
+#2124 Jungle Speed (1997): BGG 6.4 · complejidad 1.1 · 3-8 jug. (ideal 5-6) · 10 min · Competitivo · Real-Time, Pattern Recognition
+#2148 Duplik (2005): BGG 7.0 · complejidad 1.2 · 3-10 jug. (ideal 5-6) · 45 min · Competitivo
+#2156 Age of Renaissance (1996): BGG 7.1 · complejidad 3.9 · 4-6 jug. (ideal 5-6) · 210 min · Competitivo · Auction, Area Movement · ref. US$70
+#2166 Exploding Kittens: Party Pack (2017): BGG 7.0 · complejidad 1.1 · 2-10 jug. (ideal 5-7) · 15 min · Competitivo · Set Collection, Push Your Luck, Hand Management · $123.900 ARS
+#2173 Time's Up! Edición Azul (2006): BGG 7.4 · complejidad 1.2 · 4-12 jug. (ideal 6-8) · 45 min · Equipos · Memory
+#2201 World in Flames (1985): BGG 7.7 · complejidad 4.6 · 2-6 jug. (ideal 5-6) · 3060 min · Competitivo · Dice Rolling, Area Movement
+#2202 Panda Royale (2024): BGG 7.3 · complejidad 1.2 · 3-10 jug. (ideal 5-7) · 25 min · Competitivo · Drafting, Dice Rolling, Take That · $62.975 ARS
+#2216 Fuji Flush (2016): BGG 6.7 · complejidad 1.1 · 4-8 jug. (ideal 6-8) · 15 min · Competitivo · Hand Management, Take That
+#2239 Mind the Lines (2024): BGG 7.3 · complejidad 1.1 · 3-6 jug. (ideal 4-6) · 30 min · Cooperativo
+#2250 Night of the Ninja (2021): BGG 7.1 · complejidad 1.8 · 5-11 jug. (ideal 6-8) · 22 min · Equipos · ref. US$20
+#2274 Pit (1903): BGG 6.4 · complejidad 1.2 · 4-8 jug. (ideal 6-8) · 60 min · Competitivo · Set Collection, Trading, Real-Time · ref. US$10
+#2284 Bristol 1350 (2021): BGG 6.9 · complejidad 1.6 · 4-9 jug. (ideal 6-7) · 30 min · Cooperativo y competitivo · Dice Rolling, Deduction, Race
+#2288 The Thing: Infection at Outpost 31 (2017): BGG 7.2 · complejidad 2.3 · 5-8 jug. (ideal 8) · 90 min · Equipos · Hand Management, Dice Rolling, Voting · ref. US$109
+#2294 Space Cadets: Dice Duel (2013): BGG 6.7 · complejidad 2.1 · 4-8 jug. (ideal 8) · 30 min · Equipos · Dice Rolling, Real-Time, Action Queue
+#2318 Empires in Arms (1983): BGG 7.6 · complejidad 4.4 · 5-7 jug. (ideal 7) · 6060 min · Competitivo · Dice Rolling, Campaign, Area Movement
+#2329 La Cuenta (2025): BGG 7.4 · complejidad 1.2 · 4-8 jug. (ideal 6) · 10 min · Competitivo · Set Collection, Push Your Luck, Hand Management · $48.700 ARS
+#2356 Samurai Sword (2012): BGG 6.7 · complejidad 1.8 · 5-7 jug. (ideal 7) · 30 min · Equipos · Hand Management, Player Powers
+#2358 Trans Europa (2005): BGG 6.7 · complejidad 1.4 · 3-6 jug. (ideal 5-6) · 20 min · Competitivo · Race
+#2361 Secret Identity (2022): BGG 7.3 · complejidad 1.2 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Deduction, Voting · ref. US$30
+#2371 Dodos Riding Dinos (2021): BGG 7.4 · complejidad 1.7 · 3-8 jug. (ideal 4-6) · 20 min · Competitivo · Dice Rolling, Take That, Roll & Move · ref. US$100
+#2401 Snake Oil (2010): BGG 6.6 · complejidad 1.1 · 4-8 jug. (ideal 5-6) · 25 min · Competitivo · Hand Management, Storytelling
+#2405 Poetry for Neanderthals (2020): BGG 6.6 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 15 min · Equipos · Real-Time · ref. US$15
+#2408 The Chameleon (2017): BGG 6.5 · complejidad 1.0 · 4-8 jug. (ideal 6-7) · 15 min · Equipos · Voting · ref. US$12
+#2416 Exodus: Proxima Centauri (2012): BGG 7.1 · complejidad 3.6 · 2-6 jug. (ideal 6) · 180 min · Competitivo · Area Control, Auction, Dice Rolling
+#2417 Quest (2021): BGG 7.3 · complejidad 1.9 · 4-10 jug. (ideal 6-8) · 30 min · Equipos · Deduction, Memory, Voting
+#2453 Taco Cat Goat Cheese Pizza (2018): BGG 6.4 · complejidad 1.0 · 3-8 jug. (ideal 4-6) · 20 min · Competitivo · Race, Real-Time, Pattern Recognition · $14.990 ARS
+#2462 Bootleggers (2004): BGG 6.7 · complejidad 2.6 · 4-6 jug. (ideal 6) · 90 min · Competitivo · Area Control, Drafting, Trading
+#2474 Lifeboats (1993): BGG 6.6 · complejidad 1.8 · 5-6 jug. (ideal 6) · 90 min · Competitivo · Voting, Simultaneous Actions · ref. US$80
+#2482 Don't Get Got! (2018): BGG 6.9 · complejidad 1.1 · 4-10 jug. (ideal 6-8) · Competitivo
+#2485 Mafia de Cuba (2015): BGG 6.5 · complejidad 1.5 · 6-12 jug. (ideal 8-10) · 15 min · Equipos · Role Playing, Player Powers
+#2489 Hues and Cues (2020): BGG 6.4 · complejidad 1.1 · 3-10 jug. (ideal 6-8) · 30 min · Competitivo · Deduction · $130.900 ARS
+#2492 Herd Mentality (2020): BGG 6.6 · complejidad 1.0 · 5-14 jug. (ideal 7-8) · 25 min · Competitivo · Voting · $44.900 ARS
+#2510 Taboo (1989): BGG 6.3 · complejidad 1.2 · 4-10 jug. (ideal 6-8) · 20 min · Equipos
+#2515 City of Horror (2012): BGG 6.7 · complejidad 2.4 · 4-6 jug. (ideal 5-6) · 90 min · Competitivo · Voting, Area Movement, Simultaneous Actions
+#2519 Fiesta de los Muertos (2019): BGG 7.0 · complejidad 1.1 · 4-8 jug. (ideal 6-8) · 15 min · Cooperativo
+#2523 Cutthroat Caverns (2007): BGG 6.5 · complejidad 2.1 · 3-6 jug. (ideal 5-6) · 90 min · Cooperativo y competitivo · Hand Management, Take That, Simultaneous Actions
+#2540 Show Manager (1996): BGG 7.0 · complejidad 2.1 · 3-6 jug. (ideal 5-6) · 60 min · Competitivo · Drafting, Set Collection
+#2553 Snailed It! (2023): BGG 6.9 · complejidad 1.1 · 4-6 jug. (ideal 4-6) · 20 min · Competitivo · ref. US$7
+#2562 Take it Easy! (1983): BGG 6.6 · complejidad 1.5 · 1-8 jug. (ideal 2-8) · 20 min · Competitivo · Tile Placement, Pattern Building · ref. US$30
+#2566 Conquest of the Empire (2005): BGG 6.7 · complejidad 3.1 · 3-6 jug. (ideal 4-6) · 210 min · Competitivo · Area Control, Dice Rolling, Area Movement
+#2576 GoodCritters (2018): BGG 7.0 · complejidad 1.5 · 4-8 jug. (ideal 6-8) · 38 min · Competitivo · Voting, Simultaneous Actions
+#2591 Once Upon a Time: The Storytelling Card Game (1993): BGG 6.4 · complejidad 1.4 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Hand Management, Voting, Storytelling · ref. US$28
+#2602 Nuns on the Run (2010): BGG 6.5 · complejidad 2.1 · 4-8 jug. (ideal 5-6) · 52 min · Equipos · Pick-up & Deliver, Dice Rolling, Player Powers
+#2609 Hellapagos (2017): BGG 6.6 · complejidad 1.3 · 5-12 jug. (ideal 7-9) · 20 min · Cooperativo y competitivo · Set Collection, Push Your Luck, Voting · $69.700 ARS
+#2610 Human Punishment: Social Deduction 2.0 (2018): BGG 7.3 · complejidad 2.6 · 4-9 jug. (ideal 5-7) · 52 min · Equipos · Bluffing, Take That, Player Powers
+#2627 Durian (2020): BGG 6.9 · complejidad 1.1 · 3-7 jug. (ideal 5-7) · 20 min · Competitivo · Push Your Luck, Hand Management, Deduction · ref. US$30
+#2703 Avalon: Big Box (2022): BGG 8.0 · complejidad 2.2 · 6-10 jug. (ideal 7-8) · 30 min · Equipos · Voting, Simultaneous Actions
+#2704 Mall of Horror (2005): BGG 6.6 · complejidad 1.9 · 4-6 jug. (ideal 6) · 60 min · Competitivo · Dice Rolling, Voting, Simultaneous Actions
+#2736 Time's Up! Deluxe (2008): BGG 7.4 · complejidad 1.3 · 4-12 jug. (ideal 4-8) · 60 min · Equipos · Memory
+#2757 Landmarks (2024): BGG 6.8 · complejidad 1.5 · 2-8 jug. (ideal 4-6) · 20 min · Cooperativo · ref. US$10
+#2760 Panic on Wall Street! (2011): BGG 7.0 · complejidad 1.7 · 5-11 jug. (ideal 7-11) · 38 min · Competitivo · Auction, Dice Rolling, Stock Holding · ref. US$60
+#2761 River Dragons (2000): BGG 6.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Action Queue, Simultaneous Actions · ref. US$25
+#2765 Time's Up! Family (2010): BGG 7.3 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 30 min · Equipos · Memory · $59.850 ARS
+#2768 Good Cop Bad Cop (2014): BGG 6.5 · complejidad 1.3 · 4-8 jug. (ideal 6-8) · 15 min · Competitivo · Hand Management, Memory, Take That
+#2776 Scattergories (1988): BGG 6.3 · complejidad 1.4 · 2-6 jug. (ideal 4-6) · 30 min · Competitivo · Dice Rolling, Paper & Pencil
+#2779 Pick Picknic (2001): BGG 6.6 · complejidad 1.2 · 3-6 jug. (ideal 5-6) · 20 min · Competitivo · Hand Management, Dice Rolling, Simultaneous Actions
+#2812 Word on the Street (2009): BGG 6.6 · complejidad 1.3 · 2-8 jug. (ideal 4-6) · 20 min · Equipos
+#2845 Colt Super Express (2020): BGG 6.8 · complejidad 1.1 · 3-7 jug. (ideal 5-6) · 18 min · Competitivo · Hand Management, Memory, Action Queue
+#2867 First Contact (2018): BGG 6.9 · complejidad 2.0 · 4-7 jug. (ideal 5-6) · 28 min · Competitivo · Deduction · ref. US$15
+#2876 Duck & Cover (2024): BGG 6.7 · complejidad 1.0 · 2-7 jug. (ideal 6) · 18 min · Competitivo · Simultaneous Actions · ref. US$13
+#2891 Werewolf (1986): BGG 6.4 · complejidad 1.4 · 8-24 jug. (ideal 13) · 60 min · Equipos · Voting, Role Playing, Player Powers
+#2952 Krazy Wordz: Nicht 100% jugendfrei (2016): BGG 7.3 · complejidad 1.1 · 4-7 jug. (ideal 5-6) · 45 min · Competitivo · Simultaneous Actions
+#2956 Monikers: Serious Nonsense (2019): BGG 8.2 · complejidad 1.0 · 6-14 jug. (ideal 8-10) · 60 min · Competitivo · Drafting, Role Playing
+#2985 Powerboats (2008): BGG 6.7 · complejidad 1.7 · 2-6 jug. (ideal 5-6) · 60 min · Competitivo · Dice Rolling, Race
+#3025 MonsDRAWsity (2020): BGG 7.0 · complejidad 1.1 · 4-8 jug. (ideal 6) · 18 min · Competitivo · Memory, Voting · ref. US$20
+#3041 Pack & Stack (2008): BGG 6.4 · complejidad 1.3 · 3-6 jug. (ideal 4-6) · 38 min · Competitivo · Dice Rolling, Simultaneous Actions
+#3045 [kosmopoli:t] (2020): BGG 7.6 · complejidad 1.3 · 4-8 jug. (ideal 8) · 6 min · Cooperativo
+#3056 Don't Mess with Cthulhu (2014): BGG 6.8 · complejidad 1.2 · 4-6 jug. (ideal 6) · 16 min · Equipos
+#3070 Muse (2017): BGG 6.6 · complejidad 1.1 · 4-8 jug. (ideal 4-6) · 30 min · Equipos · Voting · $42.000 ARS
+#3071 Dragon's Gold (2001): BGG 6.4 · complejidad 1.7 · 3-6 jug. (ideal 6) · 45 min · Competitivo · Set Collection, Hand Management, Trading · ref. US$20
+#3082 Deckscape: Heist in Venice (2018): BGG 6.6 · complejidad 1.6 · 2-6 jug. (ideal 6) · 60 min · Cooperativo · Memory, Player Powers
+#3085 Funny Friends (2005): BGG 6.5 · complejidad 2.3 · 3-6 jug. (ideal 5-6) · 60 min · Competitivo · Drafting, Auction, Hand Management
+#3094 TurfMaster (1998): BGG 7.2 · complejidad 1.9 · 3-8 jug. (ideal 6-8) · 75 min · Competitivo · Hand Management, Dice Rolling, Roll & Move
+#3112 Cosmic Encounter (1991): BGG 7.2 · complejidad 2.6 · 4-6 jug. (ideal 5-6) · 60 min · Competitivo · Player Powers
+#3115 Doodle Dash (2021): BGG 7.3 · complejidad 1.0 · 4-7 jug. (ideal 5-7) · 18 min · Competitivo · ref. US$10
+#3158 Bezzerwizzer (2007): BGG 6.4 · complejidad 1.5 · 3-12 jug. (ideal 4-8) · 45 min · Competitivo · Bluffing, Simultaneous Actions
+#3227 Coyote (2003): BGG 6.6 · complejidad 1.2 · 4-6 jug. (ideal 5-6) · 25 min · Competitivo · $34.600 ARS
+#3232 Circus Maximus (1979): BGG 6.8 · complejidad 2.6 · 4-9 jug. (ideal 6-8) · 120 min · Competitivo · Push Your Luck, Dice Rolling, Bluffing
+#3238 Unanimo (1990): BGG 7.1 · complejidad 1.1 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Paper & Pencil · $23.445 ARS
+#3241 Sounds Fishy (2022): BGG 6.7 · complejidad 1.0 · 5-10 jug. (ideal 6-8) · 30 min · Competitivo · Bluffing
+#3261 Gunslinger (1982): BGG 7.2 · complejidad 3.3 · 2-7 jug. (ideal 4-7) · 90 min · Competitivo · Campaign, Action Queue, Player Powers
+#3266 Monikers: More Monikers (2018): BGG 8.2 · complejidad 1.0 · 4-12 jug. (ideal 8) · 60 min · Competitivo · Drafting, Role Playing
+#3275 Gemblo (2003): BGG 6.8 · complejidad 1.8 · 2-6 jug. (ideal 4-6) · 30 min · Competitivo · Tile Placement, Hand Management
+#3278 Time's Up! Party Edition (2004): BGG 7.6 · complejidad 1.1 · 6-12 jug. (ideal 6-12) · 68 min · Equipos · Memory
+#3308 TTMC?: Tu te mets combien? (2016): BGG 7.1 · complejidad 1.1 · 3-9 jug. (ideal 6) · 70 min · Competitivo · Race
+#3314 Unusual Suspects (2015): BGG 6.4 · complejidad 1.1 · 2-8 jug. (ideal 4-6) · 20 min · Equipos · Voting
+#3321 JinxO (2024): BGG 7.3 · complejidad 1.0 · 4-7 jug. (ideal 5-6) · 38 min · Competitivo · Paper & Pencil · $61.900 ARS
+#3322 Shadows: Amsterdam (2018): BGG 6.6 · complejidad 1.3 · 2-8 jug. (ideal 6) · 20 min · Equipos · Deduction, Race, Real-Time · $76.505 ARS
+#3325 Don't Mess with Cthulhu Deluxe (2018): BGG 7.3 · complejidad 1.4 · 4-8 jug. (ideal 7) · 16 min · Equipos · ref. US$20
+#3326 Hollywood 1947 (2023): BGG 7.1 · complejidad 2.0 · 5-9 jug. (ideal 7-9) · 30 min · Equipos · Hand Management, Dice Rolling, Deduction · ref. US$20
+#3336 Funemployed (2013): BGG 6.6 · complejidad 1.1 · 4-7 jug. (ideal 5-6) · 30 min · Competitivo · Drafting, Storytelling, Role Playing · ref. US$24
+#3381 Tapple (2012): BGG 6.4 · complejidad 1.0 · 2-8 jug. (ideal 4-6) · 30 min · Competitivo · Memory · $25.000 ARS
+#3394 Cursed Court (2017): BGG 7.1 · complejidad 1.6 · 4-6 jug. (ideal 5-6) · 45 min · Competitivo · Area Control, Bluffing
+#3399 Cloud 9 (1999): BGG 6.5 · complejidad 1.2 · 3-6 jug. (ideal 6) · 25 min · Competitivo · Push Your Luck, Hand Management, Dice Rolling
+#3420 Spaceteam (2015): BGG 6.5 · complejidad 1.1 · 4-6 jug. (ideal 6) · 5 min · Cooperativo · Hand Management, Trading, Memory · ref. US$25
+#3422 Wings of Glory: WW1 Rules and Accessories Pack (2012): BGG 8.0 · complejidad 2.0 · 2-8 jug. (ideal 2-6) · 30 min · Equipos · Action Queue, Simultaneous Actions
+#3430 Splito (2022): BGG 6.7 · complejidad 1.3 · 3-8 jug. (ideal 5-6) · 18 min · Competitivo · Simultaneous Actions · ref. US$10
+#3435 Secrets (2017): BGG 6.4 · complejidad 1.5 · 4-8 jug. (ideal 6) · 25 min · Equipos · Drafting, Push Your Luck, Take That · ref. US$10
+#3444 Machiavelli (1977): BGG 7.1 · complejidad 3.2 · 4-8 jug. (ideal 6-8) · 480 min · Competitivo · Dice Rolling, Area Movement, Player Powers
+#3447 Scrawl (2016): BGG 7.1 · complejidad 1.0 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · $44.900 ARS
+#3460 Krazy Wordz (2016): BGG 7.2 · complejidad 1.2 · 4-7 jug. (ideal 5-6) · 45 min · Competitivo · Simultaneous Actions
+#3502 Word Slam (2016): BGG 6.9 · complejidad 1.1 · 4-10 jug. (ideal 6) · 45 min · Equipos
+#3504 Get Bit! (2007): BGG 6.1 · complejidad 1.1 · 3-6 jug. (ideal 5-6) · 15 min · Competitivo · Hand Management, Race, Simultaneous Actions · $54.810 ARS
+#3538 Gift Trap (2006): BGG 6.4 · complejidad 1.2 · 4-8 jug. (ideal 5-6) · 60 min · Competitivo · Voting, Simultaneous Actions
+#3592 World Championship Russian Roulette (2017): BGG 6.9 · complejidad 1.3 · 3-6 jug. (ideal 4-6) · 25 min · Competitivo · Push Your Luck, Bluffing
+#3603 Nobody Is Perfect (1992): BGG 6.8 · complejidad 1.5 · 4-10 jug. (ideal 5-8) · 45 min · Competitivo · Voting, Simultaneous Actions
+#3641 Top Race (1996): BGG 6.7 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 45 min · Competitivo · Auction, Hand Management, Bluffing
+#3659 VivaJava: The Coffee Game (2012): BGG 6.8 · complejidad 2.5 · 4-8 jug. (ideal 7-8) · 90 min · Competitivo · Worker Placement, Trading, Memory
+#3660 Lifeboat (2002): BGG 6.3 · complejidad 1.8 · 5-6 jug. (ideal 6) · 60 min · Equipos · Drafting, Set Collection, Hand Management
+#3666 Monikers: The Shut Up & Sit Down Nonsense Box (2017): BGG 8.0 · complejidad 1.0 · 6-12 jug. (ideal 8-10) · 45 min · Competitivo · Drafting, Role Playing
+#3668 Speed Circuit (1971): BGG 6.9 · complejidad 2.1 · 3-6 jug. (ideal 6) · 120 min · Competitivo · Dice Rolling, Action Points, Simultaneous Actions
+#3671 Deadwood 1876 (2018): BGG 6.6 · complejidad 1.9 · 4-9 jug. (ideal 6-7) · 30 min · Equipos · Drafting, Hand Management, Dice Rolling
+#3690 Linq (2004): BGG 6.8 · complejidad 1.4 · 5-8 jug. (ideal 6) · 45 min · Equipos · Voting, Pattern Recognition
+#3700 Dungeons & Dragons Starter Set (2008): BGG 7.7 · complejidad 3.1 · 3-6 jug. (ideal 5-6) · 60 min · Competitivo · Dice Rolling, Storytelling, Role Playing
+#3708 Blood Bound (2013): BGG 6.6 · complejidad 1.6 · 6-12 jug. (ideal 8-12) · 30 min · Equipos · Role Playing, Player Powers
+#3747 Iliad (2006): BGG 6.5 · complejidad 2.1 · 3-6 jug. (ideal 6) · 45 min · Equipos · Set Collection, Hand Management
+#3749 Half Truth (2020): BGG 6.9 · complejidad 1.3 · 2-6 jug. (ideal 4-6) · 38 min · Competitivo · Push Your Luck, Bluffing, Simultaneous Actions · ref. US$30
+#3754 CrossTalk (2017): BGG 6.9 · complejidad 1.2 · 4-8 jug. (ideal 4-8) · 25 min · Equipos · ref. US$5
+#3762 Amul (2019): BGG 6.9 · complejidad 2.2 · 3-8 jug. (ideal 5-7) · 38 min · Competitivo · Drafting, Set Collection, Hand Management
+#3764 Blank Slate (2018): BGG 6.6 · complejidad 1.0 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Paper & Pencil · ref. US$18
+#3780 Blockbuster (2019): BGG 6.5 · complejidad 1.1 · 4-10 jug. (ideal 6-8) · 45 min · Equipos · ref. US$5
+#3824 Formula Motor Racing (1995): BGG 6.4 · complejidad 1.2 · 3-6 jug. (ideal 6) · 20 min · Competitivo · Hand Management, Dice Rolling
+#3826 Rush & Bash (2015): BGG 6.7 · complejidad 1.5 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Hand Management, Race, Player Powers
+#3838 Blue Max (1983): BGG 7.2 · complejidad 2.3 · 2-6 jug. (ideal 4-6) · 60 min · Competitivo · Dice Rolling, Role Playing, Campaign
+#3841 Detroit-Cleveland Grand Prix (1996): BGG 6.8 · complejidad 1.7 · 2-6 jug. (ideal 6) · 60 min · Competitivo · Auction
+#3845 The Castle of the Devil (2010): BGG 6.4 · complejidad 2.0 · 5-8 jug. (ideal 6-8) · 30 min · Competitivo · Hand Management, Role Playing, Player Powers
+#3877 Mega Empires: The West (2019): BGG 8.2 · complejidad 3.2 · 5-9 jug. (ideal 7-9) · 480 min · Competitivo · Area Control, Set Collection, Hand Management · ref. US$125
+#3898 Dungeons & Dragons: Rock Paper Wizard (2016): BGG 6.5 · complejidad 1.3 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Take That, Simultaneous Actions · ref. US$25
+#3909 Pairs (2014): BGG 6.3 · complejidad 1.1 · 3-8 jug. (ideal 5-6) · 15 min · Competitivo · Push Your Luck · ref. US$9
+#3939 Throw Throw Burrito (2019): BGG 6.2 · complejidad 1.1 · 3-6 jug. (ideal 4-6) · 15 min · Competitivo · Set Collection, Take That, Real-Time · $78.300 ARS
+#3942 Medieval Merchant (1998): BGG 6.7 · complejidad 3.1 · 3-6 jug. (ideal 6) · 75 min · Competitivo · Area Control
+#3961 Senji (2008): BGG 6.5 · complejidad 3.0 · 4-6 jug. (ideal 6) · 90 min · Competitivo · Drafting, Auction, Set Collection
+#3986 Bacon (2024): BGG 6.8 · complejidad 1.8 · 4-6 jug. (ideal 4-6) · 60 min · Equipos · Hand Management · ref. US$20
+#3990 Catch Phrase! (1994): BGG 6.3 · complejidad 1.1 · 4-16 jug. (ideal 6-12) · 30 min · Competitivo
+#4000 A Brief History of the World (2009): BGG 6.9 · complejidad 2.9 · 4-6 jug. (ideal 6) · 135 min · Competitivo · Area Control, Set Collection, Hand Management
+#4014 Mutabo (2017): BGG 7.4 · complejidad 1.0 · 4-6 jug. (ideal 5-6) · 35 min · Cooperativo · Storytelling, Real-Time, Paper & Pencil
+#4015 Risky Mixes (2019): BGG 6.9 · complejidad 1.0 · 5-9 jug. (ideal 6-7) · 18 min · Competitivo · Push Your Luck, Voting, Take That · $31.620 ARS
+#4031 WildLife (2002): BGG 6.6 · complejidad 3.1 · 4-6 jug. (ideal 6) · 90 min · Competitivo · Area Control, Tile Placement, Auction · ref. US$15
+#4055 Ladies & Gentlemen (2013): BGG 6.4 · complejidad 2.1 · 5-10 jug. (ideal 6-8) · 30 min · Equipos · Drafting, Set Collection, Simultaneous Actions
+#4112 Time's Up! Academy (2009): BGG 7.4 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 30 min · Equipos · Memory
+#4116 Pizarro & Co. (2002): BGG 6.5 · complejidad 2.4 · 4-6 jug. (ideal 6) · 45 min · Competitivo · Auction
+#4150 Articulate! (1992): BGG 6.5 · complejidad 1.2 · 4-8 jug. (ideal 6-8) · 60 min · Equipos
+#4195 The World Cup Game (2006): BGG 7.1 · complejidad 2.0 · 3-16 jug. (ideal 6-8) · 180 min · Competitivo · Tile Placement
+#4203 Cheese Thief (2020): BGG 7.0 · complejidad 1.2 · 5-8 jug. (ideal 6-8) · 12 min · Competitivo · Dice Rolling, Voting
+#4235 Hive Mind (2016): BGG 7.1 · complejidad 1.1 · 4-9 jug. (ideal 6) · 60 min · Cooperativo · Paper & Pencil · ref. US$26
+#4279 Compatibility (1995): BGG 6.6 · complejidad 1.1 · 4-6 jug. (ideal 6) · 30 min · Equipos · Simultaneous Actions
+#4304 Tiefe Taschen (2016): BGG 7.2 · complejidad 1.5 · 5-8 jug. (ideal 7) · 35 min · Competitivo · Voting, Simultaneous Actions
+#4347 In Vino Morte (2016): BGG 6.6 · complejidad 1.2 · 4-9 jug. (ideal 6-9) · 10 min · Competitivo · Deduction, Bluffing
+#4355 Richard the Lionheart (2017): BGG 7.0 · complejidad 2.3 · 3-6 jug. (ideal 6) · 90 min · Equipos · Worker Placement, Drafting, Hand Management · ref. US$50
+#4388 30 Seconds (2002): BGG 6.6 · complejidad 1.2 · 4-12 jug. (ideal 6-8) · 30 min · Equipos · Roll & Move, Real-Time
+#4393 The Werewolves of Miller's Hollow: The Village (2009): BGG 6.8 · complejidad 1.7 · 8-18 jug. (ideal 12-18) · 30 min · Equipos · Voting, Role Playing, Player Powers
+#4396 Hail Hydra (2018): BGG 6.4 · complejidad 1.9 · 5-8 jug. (ideal 6) · 58 min · Competitivo · Hand Management, Player Powers, Simultaneous Actions · ref. US$6
+#4407 Among Cultists: A Social Deduction Thriller (2023): BGG 7.0 · complejidad 2.4 · 4-8 jug. (ideal 5-8) · 68 min · Equipos · Deduction, Voting · ref. US$49
+#4421 Nuclear War (1965): BGG 6.2 · complejidad 1.4 · 3-6 jug. (ideal 6) · 60 min · Competitivo · Hand Management, Take That, Action Queue
+#4450 Overseers (2015): BGG 6.6 · complejidad 2.0 · 4-6 jug. (ideal 5-6) · 38 min · Competitivo · Drafting, Set Collection, Voting · ref. US$10
+#4458 The Bucket King (2002): BGG 6.3 · complejidad 1.2 · 3-6 jug. (ideal 6) · 45 min · Competitivo · Hand Management, Take That
+#4507 Bring Your Own Book (2015): BGG 6.8 · complejidad 1.1 · 3-8 jug. (ideal 5-6) · 20 min · Competitivo · Hand Management, Simultaneous Actions
+#4510 Dead Last (2016): BGG 6.2 · complejidad 1.2 · 6-12 jug. (ideal 8-10) · 52 min · Competitivo · Voting, Take That, Simultaneous Actions
+#4526 Family Business (1982): BGG 6.1 · complejidad 1.3 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Hand Management, Take That
+#4535 Top Ten 18+ (2021): BGG 7.2 · complejidad 1.1 · 4-9 jug. (ideal 6-7) · 30 min · Cooperativo
+#4562 Ransom Notes (2021): BGG 6.5 · complejidad 1.0 · 4-6 jug. (ideal 5-6) · 60 min · Competitivo · ref. US$22
+#4565 Last Friday (2016): BGG 6.4 · complejidad 2.3 · 2-6 jug. (ideal 6) · 75 min · Equipos · Memory, Card Driven, Player Powers
+#4569 Dust (2007): BGG 6.4 · complejidad 2.6 · 2-6 jug. (ideal 4-6) · 120 min · Competitivo · Area Control, Dice Rolling, Player Powers
+#4581 Limit (2025): BGG 7.1 · complejidad 3.3 · 1-6 jug. (ideal 4-6) · 105 min · Competitivo · $156.510 ARS
+#4583 Wise and Otherwise (1997): BGG 6.6 · complejidad 1.5 · 4-6 jug. (ideal 6) · 45 min · Competitivo · Voting, Simultaneous Actions, Paper & Pencil
+#4585 Spheres of Influence: Struggle for Global Supremacy (2016): BGG 7.9 · complejidad 2.4 · 2-8 jug. (ideal 3-6) · 90 min · Competitivo · Area Control, Dice Rolling, Action Points
+#4590 Don't Get Got!: Shut Up & Sit Down Special Edition (2021): BGG 7.2 · complejidad 1.2 · 4-10 jug. (ideal 8) · 735 min · Competitivo
+#4591 Dream Crush (2021): BGG 7.0 · complejidad 1.1 · 4-6 jug. (ideal 5-6) · 30 min · Competitivo · Role Playing, Paper & Pencil
+#4614 Mental Blocks (2019): BGG 6.8 · complejidad 1.5 · 2-7 jug. (ideal 4-6) · 15 min · Equipos · Pattern Building, Real-Time · ref. US$20
+#4642 The Dragon & Flagon (2016): BGG 6.4 · complejidad 2.4 · 4-8 jug. (ideal 6) · 60 min · Competitivo · Action Queue, Player Powers, Simultaneous Actions
+#4656 Bluff Jubiläumsausgabe (2017): BGG 6.8 · complejidad 1.1 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Dice Rolling
+#4674 Biss 20 (2020): BGG 6.9 · complejidad 1.2 · 2-8 jug. (ideal 6) · 20 min · Cooperativo · Memory
