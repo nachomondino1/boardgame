@@ -59,7 +59,7 @@ MECANICA_SEMI_COOP = "Semi-Cooperative Game"
 MECANICA_EQUIPOS = "Team-Based Game"
 MECANICA_COOP = "Cooperative Game"
 
-# Marketplace: precio de referencia = mediana de listados recientes en USD,
+# Marketplace: precio de referencia = mediana de listados recientes (USD, EUR y GBP pasados a USD),
 # solo de juegos NUEVOS (ya filtrados por fecha en bgg_common.py): los "como nuevo"
 # son usados y bajan el precio, y el precio de Cazagangas también es solo de nuevos
 # (comparar peras con peras). Con "new" y "likenew" eran 5.311 juegos con precio; solo "new", 3.618.
@@ -158,18 +158,45 @@ def precio_cazagangas(row):
     return {"precio_ars": precio, "precio_ars_visto": visto}
 
 
+# Otras monedas del marketplace, llevadas a "USD equivalente de EE.UU." con un factor fijo. No es el tipo de cambio
+# (EUR ~1,1 y GBP ~1,3): los avisos europeos son más caros que los de EE.UU. y con el cambio puro el multiplicador
+# a pesos (PRECIO_MULT) bajaba de 2,1 a 1,5. Los factores 0,8 y 0,95 lo dejan en ~2 (medido el 2026-11-25 sobre los
+# juegos con precio real de Cazagangas). Sumarlas duplica los juegos con referencia y evita que, con 1 o 2 avisos en
+# USD, un solo disparate ($9 en Dune: Imperium – Uprising, que vale ~$60) fije el precio.
+MARKETPLACE_A_USD = {"USD": 1.0, "EUR": 0.8, "GBP": 0.95}
+
+
+PRECIO_MIN_USD = 5          # un juego nuevo por menos de esto es un error o un accesorio
+PRECIO_RANGO_MAX = 2.0      # un aviso se descarta si es más de 2 veces mayor o menor que la mediana de los demás
+PRECIO_AMBIGUO_MAX = 2.0    # con 2 avisos que difieren más de esto no hay forma de saber cuál es el disparate
+
+
 def marketplace_mediana_usd(listings):
+    """Precio de referencia en USD (equivalente EE.UU.) o None si no hay uno confiable.
+    1) pasa los avisos a USD y descarta los absurdamente baratos;
+    2) con 3 o más, descarta los outliers (fuera de mediana/2..mediana×2) y toma la mediana de los que quedan;
+    3) con 2 avisos parecidos, su promedio; con 2 muy distintos no se sabe cuál es el disparate: None (sin dato
+       es mejor que un precio equivocado: $9 de un aviso basura en Dune: Imperium – Uprising, 55 y 500 en
+       Wondrous Creatures);
+    4) con 1 aviso, ese."""
     precios = []
     for l in listings or []:
-        if l.get("currency") == "USD" and l.get("condition") in MARKETPLACE_CONDICIONES:
+        tasa = MARKETPLACE_A_USD.get(l.get("currency"))
+        if tasa and l.get("condition") in MARKETPLACE_CONDICIONES:
             p = num(l.get("price"))
-            if p is not None:
-                precios.append(p)
+            if p is not None and p * tasa >= PRECIO_MIN_USD:
+                precios.append(p * tasa)
     if not precios:
         return None
-    # Con menos de 3 avisos la mediana es el promedio y un solo disparate la arrastra (Wondrous Creatures:
-    # 55 y 500 USD daban 277,5): ahí se toma el más bajo.
-    return round(min(precios) if len(precios) < 3 else statistics.median(precios), 2)
+    if len(precios) == 2:
+        if max(precios) / min(precios) > PRECIO_AMBIGUO_MAX:
+            return None
+        return round(statistics.mean(precios), 2)
+    if len(precios) >= 3:
+        m = statistics.median(precios)
+        precios = [p for p in precios if m / PRECIO_RANGO_MAX <= p <= m * PRECIO_RANGO_MAX]
+        # (la mediana siempre sobrevive: queda al menos un aviso)
+    return round(statistics.median(precios), 2)
 
 
 def infer_modo(mecanicas, categorias):
