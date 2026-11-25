@@ -462,6 +462,7 @@ fetch("data/meta.json").then((r) => (r.ok ? r.json() : null)).then((m) => { if (
 loadGames()
   .then((data) => {
     GAMES = data;
+    mountPreguntarIA(document.getElementById("ia-btn"), () => GAMES, () => GAMES.filter(matchesFilters));
     setupControls();
     render();
     setupCompareControls();

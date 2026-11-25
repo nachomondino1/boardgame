@@ -170,12 +170,38 @@ Dos ramas, un solo código:
 
 - **Para cerrar el problema de la sección 0 (hecho el 2026-11-11):** ¿Qué jugamos hoy? muestra primero los juegos con la cantidad ideal para N ("Mejor con N") y después los que también funcionan, tiene el filtro de tiempo (hasta 30 min, 1 hora o 2 horas), el botón "Elegime uno" (sortea entre los 8 mejores de la primera tanda) y el panel para cargar los juegos ahí mismo; la landing cuenta ese flujo en tres pasos. **Falta** el modo "qué llevo a lo de un amigo" con las tres mejores, y confirmar con gente real (M5) que alcanza.
 
-- Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
-- Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); si se quiere mostrar, hay que definir qué estado tiene.
 
-- El comparador de ¿Cuál comprar? usa un `<datalist>` con ~27.000 nombres; funciona pero es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
 
 - Si el catálogo publicado debe incluir todos los juegos o solo los que pasen un corte de calidad (hoy: todos).
 - Cuántos juegos por tramo de ficha (hoy 500).
 - Si "¿Cuál comprar?" pagina del lado del cliente sobre el índice (previsto) o hace falta algo más.
 - Qué hacer con los juegos de la colección que no están en el catálogo (hoy: solo avisar).
+
+## 13. Plan por página
+
+Lo que falta o está pensado, ordenado por página del sitio. Al terminar algo se pasa a "Hecho" con la fecha.
+
+### Landing (`index.html` y panel "Cargá tus juegos")
+- Refresco automático de la colección de BGG pasadas unas horas (hoy se vuelve a traer a mano con el botón).
+- Un juego con solo "want to play" o "wishlist" en BGG no entra a la colección (como en `estado_de()`); definir qué estado tiene si se quiere mostrarlo.
+
+### Mi ludoteca
+- Hecho (2026-11-25): el gráfico "Calidad según cantidad de jugadores" usa el rango que la comunidad recomienda (`jug_min`–`jug_max`), no solo la cantidad ideal; así un Just One cuenta para 5.
+- Pendiente: revisar si el gráfico "Jugadores" (ideal vs. se puede jugar) sigue claro al lado del anterior.
+
+### ¿Qué jugamos hoy?
+- Falta el modo "qué llevo a lo de un amigo" con las tres mejores.
+- Falta confirmar con gente real (M5) que alcanza.
+
+### ¿Cuál comprar?
+- Hecho (2026-11-25): "Preguntale a una IA" vive acá y arma el texto con tu ludoteca, tus candidatos y los 30 mejores (por ranking de BGG) que pasan los filtros puestos; sin filtros usa el top de BGG. Sin API ni servidor: texto para copiar y pegar en un chat.
+- El comparador usa un `<datalist>` con ~27.000 nombres; es pesado en mobile. Cambiarlo por un buscador que consulte `names.json` por tramos de texto.
+
+### Todo el sitio
+- Menús de filtros: altura máxima con scroll interno (hecho 2026-11-25).
+
+## 14. Ideas nuevas (funcionalidades todavía sin página asignada)
+
+Cosas que no existen y habría que decidir dónde van. Criterio: simples, sin servidor, aprovechando los datos de BGG que ya están en el navegador.
+
+- (vacío por ahora)

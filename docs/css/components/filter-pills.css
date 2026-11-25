@@ -80,6 +80,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
+  /* que entre en pantalla: scroll interno si la lista es larga */
+  max-height: calc(100vh - 200px);
+  max-height: calc(100dvh - 200px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .pill-pop[hidden] {

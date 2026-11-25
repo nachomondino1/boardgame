@@ -307,6 +307,7 @@ details.bar-more[open] summary::before { content: none; }
 .ia-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 .ia-dialog h3 { margin: 0 0 6px; }
 .ia-help { margin: 0 0 10px; color: var(--muted); font-size: 0.85rem; }
+.ia-tip { margin: 0 0 10px; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--text); font-size: 0.85rem; line-height: 1.4; }
 .ia-close { position: absolute; top: 10px; right: 12px; border: 0; background: none; font-size: 1rem; color: var(--muted); cursor: pointer; }
 .ia-text { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle); color: var(--text); font: 0.78rem/1.4 ui-monospace, monospace; resize: vertical; }
 .ia-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }

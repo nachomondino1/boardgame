@@ -29,7 +29,7 @@ function lineaJuegoIA(g, conMiPuntaje) {
 function perfilIA(own) {
   const lineas = [];
   const cal = calidadPorJugadores(own).map((d) => `${d.label} jug.: ${d.juegos.length ? `${d.juegos.length} juego${d.juegos.length === 1 ? "" : "s"}${d.promedio != null ? `, puntaje BGG promedio ${d.promedio.toFixed(1)}` : ""}` : "ninguno"}`);
-  lineas.push(`Juegos ideales por cantidad de jugadores (un juego cuenta en cada cantidad en que es ideal):\n  ${cal.join("\n  ")}`);
+  lineas.push(`Juegos recomendados por la comunidad de BGG según cantidad de jugadores (un juego cuenta en cada cantidad en que se recomienda):\n  ${cal.join("\n  ")}`);
   const bucket = (titulo, buckets, get) => {
     const b = bucketCounts(own, buckets, get);
     lineas.push(`${titulo}: ${b.filas.map((f) => `${f.label} ${f.valor}`).join(" · ")}`);
@@ -79,7 +79,21 @@ function masOpcionesIA() {
     "Si no podés abrir links, decímelo y pedime las opciones a mí.";
 }
 
-function armarPromptIA(games, top) {
+// Juegos que pasan los filtros actuales de ¿Cuál comprar? (sin los que ya tengo), mejores primero, uno por grupo de ediciones.
+// Sin filtros devuelve null; si dejan más de la mitad del catálogo, lista vacía (`muchos`): el top de BGG alcanza.
+const IA_MAX_FILTRADOS = 30;
+function filtradosIA(games, filtrados) {
+  if (!filtrados || !filtrados.length || filtrados.length > games.length * 0.9) return null; // sin filtros (casi todo el catálogo)
+  if (filtrados.length > games.length * 0.5) return { total: filtrados.length, lista: [], muchos: true };
+  const vistos = new Set();
+  const lista = filtrados
+    .filter((g) => g.estado !== "Own" && g.estado !== "Descartado")
+    .sort((a, b) => (a.ranking_bgg ?? 1e9) - (b.ranking_bgg ?? 1e9))
+    .filter((g) => { const k = g.grupo || g.bgg_id; if (vistos.has(k)) return false; vistos.add(k); return true; });
+  return { total: lista.length, lista: lista.slice(0, IA_MAX_FILTRADOS) };
+}
+
+function armarPromptIA(games, top, filtr) {
   const tengo = games.filter((g) => g.estado === "Own");
   const quiero = games.filter((g) => g.estado === "Want to buy" || g.estado === "Want to play");
   return [
@@ -89,20 +103,22 @@ function armarPromptIA(games, top) {
     `ANÁLISIS DE MI LUDOTECA (${tengo.length} juegos):\n${perfilIA(tengo)}`,
     `JUEGOS QUE TENGO:\n${tengo.map(lineaTengoIA).join("\n") || "(ninguno)"}`,
     `CANDIDATOS A COMPRAR O PROBAR (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
-    top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
+    filtr && filtr.lista.length ? `JUEGOS QUE CUMPLEN LOS FILTROS QUE PUSE (${filtr.total}${filtr.total > filtr.lista.length ? `; te paso los ${filtr.lista.length} mejores por ranking de BGG` : ""}). Recomendame principalmente de acá:\n${filtr.lista.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}${g.estado ? ` [${g.estado}]` : ""}`).join("\n")}` : null,
+    !(filtr && filtr.lista.length) && top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
     "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español. " +
       "Priorizá mis candidatos; sugerí de los otros solo si aportan algo que me falta.",
     masOpcionesIA(),
   ].filter(Boolean).join("\n\n");
 }
 
-function mountPreguntarIA(btn, getGames) {
+function mountPreguntarIA(btn, getGames, getFiltrados) {
   const dlg = document.createElement("dialog");
   dlg.className = "ia-dialog";
   dlg.innerHTML = `
     <form method="dialog"><button class="ia-close" aria-label="Cerrar">✕</button></form>
     <h3>🤖 Preguntale a una IA</h3>
     <p class="ia-help">Copiá este texto con tu ludoteca y tus candidatos, y pegalo en el chat que prefieras para que te ayude a elegir.</p>
+    <p class="ia-tip"></p>
     <textarea class="ia-text" readonly rows="10"></textarea>
     <div class="ia-actions">
       <button type="button" class="ia-copy">📋 Copiar</button>
@@ -110,6 +126,7 @@ function mountPreguntarIA(btn, getGames) {
     </div>`;
   document.body.appendChild(dlg);
   const ta = dlg.querySelector(".ia-text");
+  const tip = dlg.querySelector(".ia-tip");
   const copy = dlg.querySelector(".ia-copy");
   copy.addEventListener("click", () => {
     ta.select();
@@ -121,10 +138,16 @@ function mountPreguntarIA(btn, getGames) {
   btn.addEventListener("click", async () => {
     const games = getGames();
     const top = topBggIA(games);
-    const rel = games.filter((g) => g.estado === "Own" || g.estado === "Want to buy" || g.estado === "Want to play").concat(top);
+    const filtr = filtradosIA(games, getFiltrados && getFiltrados());
+    const rel = games.filter((g) => g.estado === "Own" || g.estado === "Want to buy" || g.estado === "Want to play").concat(top, filtr ? filtr.lista : []);
+    tip.innerHTML = filtr && filtr.muchos
+      ? `💡 Tus filtros todavía dejan <strong>${filtr.total}</strong> juegos, demasiados para listarlos. Sumá más (jugadores, duración, complejidad…) para achicar el mundo de opciones y que la IA elija entre los mejores que cumplen.`
+      : filtr
+      ? `🎯 Tus filtros achican el mundo: incluí los <strong>${filtr.lista.length}</strong> mejores de los <strong>${filtr.total}</strong> juegos que los cumplen, y la IA va a elegir principalmente entre ellos.`
+      : `💡 Tip: antes de tocar este botón, poné filtros (jugadores, duración, complejidad…). Así la IA elige solo entre los juegos que te sirven, en vez de todo el catálogo.`;
     ta.value = "Cargando…";
     dlg.showModal();
     await hydrate(rel).catch(() => {});
-    ta.value = armarPromptIA(games, top);
+    ta.value = armarPromptIA(games, top, filtr);
   });
 }

@@ -76,13 +76,14 @@ function rangoPosible(g) {
   return g.jug_min != null && g.jug_max != null ? [g.jug_min, g.jug_max] : null;
 }
 
-// Para cada cantidad de jugadores (1 a ANALISIS_JUGADORES_MAX o más): los juegos para los que es ideal y el
+// Para cada cantidad de jugadores (1 a ANALISIS_JUGADORES_MAX o más): los juegos que la comunidad de BGG recomienda
+// para esa cantidad (rango jug_min–jug_max, no solo la ideal) y el
 // promedio de puntaje BGG de esos juegos (null si no hay ninguno con puntaje).
 function calidadPorJugadores(own) {
   return Array.from({ length: ANALISIS_JUGADORES_MAX }, (_, i) => {
     const n = i + 1;
     const ultimo = n === ANALISIS_JUGADORES_MAX;
-    const juegos = own.filter((g) => { const r = jugBestRange(g); return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]); });
+    const juegos = own.filter((g) => g.jug_min != null && g.jug_max != null && (ultimo ? g.jug_max >= n : n >= g.jug_min && n <= g.jug_max));
     const conPuntaje = juegos.filter((g) => g.puntaje_bgg != null);
     const promedio = conPuntaje.length ? conPuntaje.reduce((a, g) => a + g.puntaje_bgg, 0) / conPuntaje.length : null;
     return { n, label: ultimo ? `${n} o más` : `${n}`, juegos, promedio };
@@ -104,11 +105,11 @@ function calidadJugadoresCard(own) {
   const notas = [
     conDato.length >= 2 && mejor.promedio - peor.promedio >= 0.3
       ? `Tus mejores juegos son para <strong>${mejor.label}</strong> (${mejor.promedio.toFixed(1)}) y los más flojos para <strong>${peor.label}</strong> (${peor.promedio.toFixed(1)}).` : "",
-    sin.length ? `Sin ningún juego ideal para: ${sin.join(", ")}.` : "",
+    sin.length ? `Sin ningún juego recomendado para: ${sin.join(", ")}.` : "",
   ];
   return barChartHtml({
     titulo: "⭐ Calidad según cantidad de jugadores",
-    subtitulo: "Puntaje promedio en BGG de tus juegos que son ideales para esa cantidad de gente (entre paréntesis, cuántos son). Un juego cuenta en cada cantidad en la que es ideal.",
+    subtitulo: "Puntaje promedio en BGG de tus juegos que la comunidad recomienda para esa cantidad de gente (entre paréntesis, cuántos son). Un juego cuenta en cada cantidad en la que se recomienda, no solo en la ideal.",
     filas, escala: 10, nota: notas.filter(Boolean).join(" "),
   });
 }

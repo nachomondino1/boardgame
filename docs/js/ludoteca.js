@@ -41,8 +41,6 @@ function setupControls() {
 
 }
 
-mountPreguntarIA(document.getElementById("ia-btn"), () => GAMES);
-
 const detailsEl = document.getElementById("col-details");
 mountCollectionLoader(document.getElementById("collection-loader"), {
   onChange: () => {
