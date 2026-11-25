@@ -7,7 +7,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #13 Gaia Project (2017): BGG 8.3 · complejidad 4.4 · 1-4 jug. (ideal 3-4) · 105 min · Competitivo · Route Building, Player Powers · ref. US$60
 #14 SETI: Search for Extraterrestrial Intelligence (2024): BGG 8.4 · complejidad 3.8 · 1-4 jug. (ideal 3) · 100 min · Competitivo · Area Control · ref. US$56
 #19 Through the Ages: A New Story of Civilization (2015): BGG 8.2 · complejidad 4.4 · 2-4 jug. (ideal 3) · 120 min · Competitivo · Drafting, Auction, Take That · $137.990 ARS
-#20 Frosthaven (2022): BGG 8.7 · complejidad 4.4 · 1-4 jug. (ideal 3) · 135 min · Cooperativo · Hand Management, Campaign, Card Driven · $711.110 ARS
+#20 Frosthaven (2022): BGG 8.7 · complejidad 4.4 · 1-4 jug. (ideal 3) · 135 min · Cooperativo · Hand Management, Campaign, Legacy · $711.110 ARS
 #21 Great Western Trail (2016): BGG 8.1 · complejidad 3.7 · 2-4 jug. (ideal 3) · 112 min · Competitivo · Deck Building, Set Collection, Hand Management · ref. US$30
 #26 A Feast for Odin (2016): BGG 8.2 · complejidad 3.9 · 1-4 jug. (ideal 3) · 75 min · Competitivo · Worker Placement, Tile Placement, Push Your Luck · ref. US$75
 #29 Lost Ruins of Arnak (2020): BGG 8.1 · complejidad 2.9 · 1-4 jug. (ideal 3) · 75 min · Competitivo · Worker Placement, Deck Building, Drafting · $142.990 ARS
@@ -183,7 +183,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #554 Trekking Through History (2022): BGG 7.5 · complejidad 1.8 · 1-4 jug. (ideal 3) · 45 min · Competitivo · Drafting, Set Collection · $133.025 ARS
 #558 Barcelona (2023): BGG 7.7 · complejidad 3.4 · 1-4 jug. (ideal 3) · 75 min · Competitivo · Worker Placement, Tile Placement · ref. US$42
 #571 Macao (2009): BGG 7.4 · complejidad 3.1 · 2-4 jug. (ideal 3) · 75 min · Competitivo · Route Building, Drafting, Set Collection
-#580 Zombie Kidz Evolution (2018): BGG 7.6 · complejidad 1.4 · 2-4 jug. (ideal 3-4) · 15 min · Cooperativo · Dice Rolling, Campaign, Area Movement · ref. US$22
+#580 Zombie Kidz Evolution (2018): BGG 7.6 · complejidad 1.4 · 2-4 jug. (ideal 3-4) · 15 min · Cooperativo · Dice Rolling, Campaign, Legacy · ref. US$22
 #582 Fantastic Factories (2019): BGG 7.4 · complejidad 2.2 · 1-5 jug. (ideal 3) · 52 min · Competitivo · Drafting, Set Collection, Push Your Luck · ref. US$32
 #584 Aquatica (2019): BGG 7.3 · complejidad 2.3 · 2-4 jug. (ideal 3) · 45 min · Competitivo · Deck Building, Drafting, Set Collection · ref. US$45
 #585 Next Station: London (2022): BGG 7.4 · complejidad 1.5 · 1-4 jug. (ideal 2-4) · 28 min · Competitivo · Route Building, Paper & Pencil · $31.400 ARS

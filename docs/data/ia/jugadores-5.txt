@@ -35,7 +35,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #392 Chinatown (1999): BGG 7.4 · complejidad 2.2 · 4-5 jug. (ideal 5) · 60 min · Competitivo · Tile Placement, Set Collection, Trading · ref. US$150
 #395 Space Alert (2008): BGG 7.4 · complejidad 3.0 · 3-5 jug. (ideal 4-5) · 30 min · Cooperativo · Hand Management, Real-Time, Action Queue · ref. US$38
 #402 Age of Empires III: The Age of Discovery (2007): BGG 7.5 · complejidad 3.1 · 3-5 jug. (ideal 4-5) · 105 min · Competitivo · Worker Placement, Area Control, Set Collection · ref. US$36
-#406 The King's Dilemma (2019): BGG 7.7 · complejidad 2.3 · 4-5 jug. (ideal 5) · 52 min · Competitivo · Voting, Storytelling · ref. US$60
+#406 The King's Dilemma (2019): BGG 7.7 · complejidad 2.3 · 4-5 jug. (ideal 5) · 52 min · Competitivo · Voting, Storytelling, Legacy · ref. US$60
 #414 Fury of Dracula (Third/Fourth Edition) (2015): BGG 7.4 · complejidad 3.3 · 2-5 jug. (ideal 3-5) · 150 min · Equipos · Hand Management, Player Powers · ref. US$47
 #469 Mysterium (2015): BGG 7.2 · complejidad 1.9 · 3-7 jug. (ideal 5-6) · 42 min · Cooperativo · Hand Management, Deduction, Voting · $113.310 ARS
 #470 Smartphone Inc. (2018): BGG 7.5 · complejidad 2.8 · 3-5 jug. (ideal 5) · 75 min · Competitivo · Area Control, Route Building, Action Queue · $160.000 ARS
@@ -64,7 +64,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #627 Junk Art (2016): BGG 7.3 · complejidad 1.2 · 2-6 jug. (ideal 4-5) · 30 min · Competitivo · Hand Management · ref. US$44
 #631 QE (2019): BGG 7.3 · complejidad 1.6 · 3-5 jug. (ideal 5) · 45 min · Competitivo · Auction, Set Collection, Memory · ref. US$30
 #636 Betrayal Legacy (2018): BGG 7.6 · complejidad 2.9 · 3-5 jug. (ideal 5) · 68 min · Equipos · Tile Placement, Dice Rolling, Storytelling · ref. US$130
-#640 Risk Legacy (2011): BGG 7.3 · complejidad 2.6 · 4-5 jug. (ideal 5) · 60 min · Competitivo · Drafting, Dice Rolling, Area Movement · ref. US$45
+#640 Risk Legacy (2011): BGG 7.3 · complejidad 2.6 · 4-5 jug. (ideal 5) · 60 min · Competitivo · Drafting, Dice Rolling, Legacy · ref. US$45
 #660 Jamaica (2007): BGG 7.1 · complejidad 1.7 · 3-6 jug. (ideal 5-6) · 45 min · Competitivo · Hand Management, Dice Rolling, Take That · ref. US$29
 #662 RoboRally (1994): BGG 7.0 · complejidad 2.4 · 3-8 jug. (ideal 5-6) · 82 min · Competitivo · Campaign, Race, Action Queue · ref. US$50
 #675 Take 5 (1994): BGG 7.0 · complejidad 1.2 · 3-10 jug. (ideal 5-6) · 45 min · Competitivo · Push Your Luck, Hand Management, Simultaneous Actions · $22.481 ARS

@@ -63,6 +63,7 @@ MECANICAS_CLAVE = [
     ("Storytelling", "Storytelling"),
     ("Role Playing", "Role Playing"),
     ("Scenario / Mission / Campaign Game", "Campaign"),
+    ("Legacy Game", "Legacy"),
     ("Campaign / Battle Card Driven", "Card Driven"),
     ("Roll / Spin and Move", "Roll & Move"),
     ("Race", "Race"),
@@ -87,7 +88,7 @@ GRUPOS_MECANICAS = [
     ("Competir e interactuar", ["Area Control", "Take That", "Auction", "Trading", "Voting", "Race", "Stock Holding"]),
     ("Azar y riesgo", ["Dice Rolling", "Push Your Luck", "Roll & Move"]),
     ("Deducción y engaño", ["Deduction", "Bluffing", "Memory", "Pattern Recognition"]),
-    ("Campaña y ritmo", ["Campaign", "Storytelling", "Role Playing", "Real-Time", "Simultaneous Actions", "Paper & Pencil"]),
+    ("Campaña y ritmo", ["Campaign", "Legacy", "Storytelling", "Role Playing", "Real-Time", "Simultaneous Actions", "Paper & Pencil"]),
 ]
 _GRUPO_DE = {m: g for g, ms in GRUPOS_MECANICAS for m in ms}
 assert set(_GRUPO_DE) == {corto for _, corto in MECANICAS_CLAVE}, "toda mecánica clave necesita un grupo"

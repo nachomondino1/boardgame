@@ -192,7 +192,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #573 Fire in the Lake (2014): BGG 8.1 · complejidad 4.2 · 1-4 jug. (ideal 4) · 180 min · Competitivo · Area Control, Dice Rolling, Player Powers · $139.000 ARS
 #574 Reign of Cthulhu (2016): BGG 7.4 · complejidad 2.2 · 1-4 jug. (ideal 4) · 40 min · Cooperativo · Set Collection, Hand Management, Trading · ref. US$44
 #577 Mice and Mystics (2012): BGG 7.2 · complejidad 2.7 · 1-4 jug. (ideal 4) · 75 min · Cooperativo · Dice Rolling, Storytelling, Role Playing · $320.000 ARS
-#580 Zombie Kidz Evolution (2018): BGG 7.6 · complejidad 1.4 · 2-4 jug. (ideal 3-4) · 15 min · Cooperativo · Dice Rolling, Campaign, Area Movement · ref. US$22
+#580 Zombie Kidz Evolution (2018): BGG 7.6 · complejidad 1.4 · 2-4 jug. (ideal 3-4) · 15 min · Cooperativo · Dice Rolling, Campaign, Legacy · ref. US$22
 #585 Next Station: London (2022): BGG 7.4 · complejidad 1.5 · 1-4 jug. (ideal 2-4) · 28 min · Competitivo · Route Building, Paper & Pencil · $31.400 ARS
 #589 Hadara (2019): BGG 7.4 · complejidad 2.2 · 2-5 jug. (ideal 4-5) · 52 min · Competitivo · Drafting, Set Collection, Memory · $117.150 ARS
 #591 The Manhattan Project (2012): BGG 7.3 · complejidad 3.0 · 2-5 jug. (ideal 4) · 120 min · Competitivo · Worker Placement, Drafting, Take That · ref. US$42

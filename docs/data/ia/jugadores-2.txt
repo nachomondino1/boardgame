@@ -136,7 +136,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #471 Star Trek: Captain's Chair (2025): BGG 8.7 · complejidad 4.1 · 1-2 jug. (ideal 1-2) · 90 min · Competitivo · Deck Building, Area Control, Hand Management · ref. US$56
 #472 Harry Potter: Hogwarts Battle (2016): BGG 7.3 · complejidad 2.1 · 2-4 jug. (ideal 2-4) · 45 min · Cooperativo · Deck Building, Campaign, Player Powers · $265.000 ARS
 #475 Agricola: All Creatures Big and Small (2012): BGG 7.3 · complejidad 2.4 · 2 jug. (ideal 2) · 30 min · Competitivo · Worker Placement, Tile Placement · ref. US$31
-#476 Cozy Stickerville (2026): BGG 8.2 · complejidad 1.2 · 1-3 jug. (ideal 2) · 30 min · Cooperativo · Campaign · $115.500 ARS
+#476 Cozy Stickerville (2026): BGG 8.2 · complejidad 1.2 · 1-3 jug. (ideal 2) · 30 min · Cooperativo · Campaign, Legacy · $115.500 ARS
 #478 BattleLore: Second Edition (2013): BGG 7.7 · complejidad 2.7 · 2 jug. (ideal 2) · 68 min · Competitivo · Dice Rolling, Card Driven, Player Powers · ref. US$64
 #483 Unsettled (2021): BGG 8.0 · complejidad 3.3 · 1-4 jug. (ideal 2) · 75 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Trading · ref. US$76
 #487 Imperial Struggle (2020): BGG 8.2 · complejidad 4.1 · 2 jug. (ideal 2) · 180 min · Competitivo · Area Control, Drafting, Card Driven · $112.000 ARS
