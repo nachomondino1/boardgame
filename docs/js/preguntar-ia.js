@@ -25,8 +25,32 @@ function lineaJuegoIA(g, conMiPuntaje) {
   return `- ${g.nombre}${g.anio ? ` (${g.anio})` : ""}: ${partes.join(" · ")}`;
 }
 
+// Resumen del análisis de Mi ludoteca (mismos cálculos que los gráficos), para que la IA vea fortalezas y huecos.
+function perfilIA(own) {
+  const lineas = [];
+  const cal = calidadPorJugadores(own).map((d) => `${d.label} jug.: ${d.juegos.length ? `${d.juegos.length} juego${d.juegos.length === 1 ? "" : "s"}${d.promedio != null ? `, puntaje BGG promedio ${d.promedio.toFixed(1)}` : ""}` : "ninguno"}`);
+  lineas.push(`Juegos ideales por cantidad de jugadores (un juego cuenta en cada cantidad en que es ideal):\n  ${cal.join("\n  ")}`);
+  const bucket = (titulo, buckets, get) => {
+    const b = bucketCounts(own, buckets, get);
+    lineas.push(`${titulo}: ${b.filas.map((f) => `${f.label} ${f.valor}`).join(" · ")}`);
+  };
+  bucket("Complejidad", ANALISIS_COMPLEJIDAD, (g) => g.complejidad);
+  bucket("Duración", ANALISIS_DURACION, (g) => g.duracion);
+  const modos = new Map();
+  own.forEach((g) => { if (g.modo) modos.set(g.modo, (modos.get(g.modo) || 0) + 1); });
+  if (modos.size) lineas.push(`Tipo de juego: ${[...modos].sort((a, b) => b[1] - a[1]).map(([m, n]) => `${modoLabel(m)} ${n}`).join(" · ")}`);
+  const mecs = new Map();
+  own.forEach((g) => new Set(g.mecanicas || []).forEach((m) => mecs.set(m, (mecs.get(m) || 0) + 1)));
+  if (mecs.size) {
+    lineas.push(`Mecánicas más frecuentes: ${[...mecs].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([m, n]) => `${m} ${n}`).join(", ")}`);
+    const faltan = MECANICAS_POPULARES.filter((m) => !own.some((g) => tieneMecanica(g, m)));
+    if (faltan.length) lineas.push(`Mecánicas populares que no tengo: ${faltan.join(", ")}`);
+  }
+  return lineas.join("\n");
+}
+
 // Los mejores del ranking de BGG que no tenés ni tuviste ni descartaste (uno por grupo de ediciones).
-const IA_TOP_BGG = 40;
+const IA_TOP_BGG = 15;
 function topBggIA(games) {
   const excluidos = new Set(["Own", "Prev. owned", "Descartado", "Want to buy", "Want to play"]);
   const vistos = new Set();
@@ -37,14 +61,25 @@ function topBggIA(games) {
     .slice(0, IA_TOP_BGG);
 }
 
+function lineaTengoIA(g) {
+  const best = jugBestRange(g);
+  const partes = [
+    g.mi_puntaje != null ? `mi puntaje ${g.mi_puntaje}` : null,
+    g.puntaje_bgg != null ? `BGG ${g.puntaje_bgg.toFixed(1)}` : null,
+    best ? `ideal ${best[0] === best[1] ? best[0] : best[0] + "-" + best[1]} jug.` : null,
+  ].filter(Boolean);
+  return `- ${g.nombre}${partes.length ? `: ${partes.join(" · ")}` : ""}`;
+}
+
 function armarPromptIA(games, top) {
   const tengo = games.filter((g) => g.estado === "Own");
   const quiero = games.filter((g) => g.estado === "Want to buy" || g.estado === "Want to play");
   return [
     "Sos un asesor de juegos de mesa. Tengo esta ludoteca y esta lista de candidatos. Ayudame a decidir qué comprar: " +
       "recomendá solo juegos de las listas que te paso (no inventes juegos ni precios), explicá por qué, " +
-      "y decime qué me aporta cada uno que no tenga ya. Si te falta algo (cuántos jugadores somos, tiempo, presupuesto), preguntame.",
-    `MI LUDOTECA (${tengo.length}):\n${tengo.map((g) => lineaJuegoIA(g, true)).join("\n") || "(vacía)"}`,
+      "y decime qué me aporta cada uno que no tenga ya, mirando el análisis para ver qué huecos o puntos flacos tiene mi ludoteca. Si te falta algo (cuántos jugadores somos, tiempo, presupuesto), preguntame.",
+    `ANÁLISIS DE MI LUDOTECA (${tengo.length} juegos):\n${perfilIA(tengo)}`,
+    `JUEGOS QUE TENGO:\n${tengo.map(lineaTengoIA).join("\n") || "(ninguno)"}`,
     `CANDIDATOS A COMPRAR O PROBAR (${quiero.length}):\n${quiero.map((g) => `${lineaJuegoIA(g, false)} [${g.estado}]`).join("\n") || "(ninguno)"}`,
     top && top.length ? `OTROS JUEGOS MUY BIEN VALORADOS EN BGG QUE NO TENGO (${top.length}, por ranking):\n${top.map((g) => `${lineaJuegoIA(g, false)}${g.ranking_bgg ? ` [ranking #${g.ranking_bgg}]` : ""}`).join("\n")}` : null,
     "Precios en pesos argentinos; los marcados como estimados son una referencia gruesa. Respondé en español. " +

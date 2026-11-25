@@ -15,8 +15,8 @@ function pluralJuegos(n) {
 
 // Una barra por fila: etiqueta, barra proporcional al máximo y el valor al final.
 // Una sola serie, así que no lleva leyenda: el título dice qué se está contando.
-function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles }) {
-  const max = Math.max(1, ...filas.map((f) => f.valor));
+function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles, escala }) {
+  const max = escala || Math.max(1, ...filas.map((f) => f.valor));
   const rowHtml = (filas) => filas
     .map((f) => {
       const title = escapeHtml(f.hint ? `${f.label}: ${f.hint}` : `${f.label}: ${pluralJuegos(f.valor)}`);
@@ -24,7 +24,7 @@ function barChartHtml({ titulo, subtitulo, filas, nota, ayuda, leyenda, visibles
       const fila = `
         <span class="bar-label">${escapeHtml(f.label)}</span>
         <span class="bar-track${f.ideal != null ? " bar-track--doble" : ""}"><span class="bar-fill" style="width:${(f.valor / max) * 100}%"></span>${f.ideal != null ? `<span class="bar-fill bar-fill--ideal" style="width:${(f.ideal / max) * 100}%"></span>` : ""}</span>
-        <span class="bar-value">${f.ideal != null ? `<strong>${f.ideal}</strong> / ${f.valor}` : f.valor}</span>`;
+        <span class="bar-value">${f.valorTxt != null ? f.valorTxt : f.ideal != null ? `<strong>${f.ideal}</strong> / ${f.valor}` : f.valor}</span>`;
       // Con juegos, la fila se despliega para ver cuáles son; sin juegos queda fija.
       if (f.juegos && f.juegos.length) {
         const ordenar = (arr) => [...arr].sort((a, b) => a.localeCompare(b, "es"));
@@ -72,6 +72,43 @@ function notaSinDato(n) {
 // Rango "posible": mínimo y máximo de la caja. El "ideal" (mejor con, según BGG) es jugBestRange.
 function rangoPosible(g) {
   return g.jug_min != null && g.jug_max != null ? [g.jug_min, g.jug_max] : null;
+}
+
+// Para cada cantidad de jugadores (1 a ANALISIS_JUGADORES_MAX o más): los juegos para los que es ideal y el
+// promedio de puntaje BGG de esos juegos (null si no hay ninguno con puntaje).
+function calidadPorJugadores(own) {
+  return Array.from({ length: ANALISIS_JUGADORES_MAX }, (_, i) => {
+    const n = i + 1;
+    const ultimo = n === ANALISIS_JUGADORES_MAX;
+    const juegos = own.filter((g) => { const r = jugBestRange(g); return r && (ultimo ? r[1] >= n : n >= r[0] && n <= r[1]); });
+    const conPuntaje = juegos.filter((g) => g.puntaje_bgg != null);
+    const promedio = conPuntaje.length ? conPuntaje.reduce((a, g) => a + g.puntaje_bgg, 0) / conPuntaje.length : null;
+    return { n, label: ultimo ? `${n} o más` : `${n}`, juegos, promedio };
+  });
+}
+
+function calidadJugadoresCard(own) {
+  const datos = calidadPorJugadores(own);
+  if (!datos.some((d) => d.promedio != null)) return "";
+  const filas = datos.map((d) => ({
+    label: d.label, valor: d.promedio != null ? d.promedio : 0,
+    valorTxt: d.promedio != null ? `${d.promedio.toFixed(1)} <small>(${d.juegos.length})</small>` : "–",
+    juegos: d.juegos.map((g) => g.nombre),
+  }));
+  const conDato = datos.filter((d) => d.promedio != null);
+  const mejor = conDato.reduce((a, b) => (b.promedio > a.promedio ? b : a));
+  const peor = conDato.reduce((a, b) => (b.promedio < a.promedio ? b : a));
+  const sin = datos.filter((d) => !d.juegos.length).map((d) => d.label);
+  const notas = [
+    conDato.length >= 2 && mejor.promedio - peor.promedio >= 0.3
+      ? `Tus mejores juegos son para <strong>${mejor.label}</strong> (${mejor.promedio.toFixed(1)}) y los más flojos para <strong>${peor.label}</strong> (${peor.promedio.toFixed(1)}).` : "",
+    sin.length ? `Sin ningún juego ideal para: ${sin.join(", ")}.` : "",
+  ];
+  return barChartHtml({
+    titulo: "⭐ Calidad según cantidad de jugadores",
+    subtitulo: "Puntaje promedio en BGG de tus juegos que son ideales para esa cantidad de gente (entre paréntesis, cuántos son). Un juego cuenta en cada cantidad en la que es ideal.",
+    filas, escala: 10, nota: notas.filter(Boolean).join(" "),
+  });
 }
 
 function jugadoresCard(own) {
@@ -208,6 +245,7 @@ function renderAnalisis(container, games) {
     </div>
     <div class="analisis-grid">
       ${own.length ? jugadoresCard(own) : ""}
+      ${own.length ? calidadJugadoresCard(own) : ""}
       ${own.length ? barChartHtml({ titulo: "⚙️ Complejidad", subtitulo: "Peso del juego según BGG, de 1 a 5", filas: complejidad.filas, nota: notaSinDato(complejidad.sinDato) }) : ""}
       ${own.length ? barChartHtml({ titulo: "⏱ Duración", filas: duracion.filas, nota: notaSinDato(duracion.sinDato) }) : ""}
       ${own.length ? modoCard(own) : ""}
