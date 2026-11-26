@@ -438,6 +438,16 @@ details.variantes ul {
   cursor: pointer;
 }
 
+.variante-original {
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
 .variante-btn:hover {
   text-decoration: underline;
 }

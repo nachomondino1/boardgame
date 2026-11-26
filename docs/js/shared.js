@@ -463,14 +463,15 @@ function cardTemplate(g, opts) {
     ? `<span class="complexity-pill" style="background:${complexityColor(g.complejidad)}">${g.complejidad.toFixed(1)}</span>`
     : `<span class="tag">complejidad ?</span>`;
 
-  const variantes = opts.variantes || [];
+  // Variantes de la más vieja a la más nueva (las sin año, al final): arriba queda el original.
+  const variantes = [...(opts.variantes || [])].sort((a, b) => (a.anio == null) - (b.anio == null) || a.anio - b.anio);
   const variantesHtml = variantes.length
     ? `<details class="variantes">
         <summary>${variantes.length} variante${variantes.length === 1 ? "" : "s"} más de ${escapeHtml(opts.grupoNombre)}</summary>
         <ul>${variantes
           .map((v) => {
             VARIANTES_ABIERTAS.set(String(v.bgg_id), { game: v, opts: { ...opts, variantes: null, showComparar: false } });
-            return `<li><button type="button" class="variante-btn" data-variante="${escapeHtml(String(v.bgg_id))}" title="Ver la card">${escapeHtml(v.nombre)}${v.anio ? ` (${v.anio})` : ""}</button></li>`;
+            return `<li><button type="button" class="variante-btn" data-variante="${escapeHtml(String(v.bgg_id))}" title="Ver la card">${escapeHtml(v.nombre)}${v.anio ? ` (${v.anio})` : ""}</button>${v.nombre === opts.grupoNombre ? ` <span class="variante-original">original</span>` : ""}</li>`;
           })
           .join("")}</ul>
       </details>`
