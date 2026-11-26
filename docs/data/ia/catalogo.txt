@@ -314,7 +314,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #349 Shackleton Base: A Journey to the Moon (2024): BGG 8.0 · complejidad 3.9 · 2-4 jug. (ideal 3) · 90 min · Competitivo · Area Control, Player Powers · $149.980 ARS
 #350 Rococo (2013): BGG 7.6 · complejidad 3.1 · 2-5 jug. (ideal 3) · 90 min · Competitivo · Deck Building, Area Control, Drafting
 #351 The Gang (2024): BGG 7.5 · complejidad 1.6 · 4-6 jug. (ideal 5) · 20 min · Cooperativo · Deduction · $32.950 ARS
-#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · $13.200 ARS
+#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · ref. US$16
 #353 Endless Winter: Paleoamericans (2022): BGG 7.6 · complejidad 3.3 · 1-4 jug. (ideal 3) · 90 min · Competitivo · Worker Placement, Deck Building, Area Control · ref. US$61
 #354 Steam (2009): BGG 7.5 · complejidad 3.5 · 3-5 jug. (ideal 4) · 90 min · Competitivo · Tile Placement, Route Building, Auction
 #355 Detective: A Modern Crime Board Game (2018): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2) · 150 min · Cooperativo · Storytelling, Campaign, Player Powers · ref. US$36

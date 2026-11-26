@@ -102,7 +102,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #346 1960: The Making of the President (2007): BGG 7.6 · complejidad 3.2 · 2 jug. (ideal 2) · 105 min · Competitivo · Area Control, Hand Management, Card Driven · ref. US$56
 #347 Keep the Heroes Out! (2022): BGG 7.9 · complejidad 2.5 · 1-3 jug. (ideal 2) · 40 min · Cooperativo · Deck Building, Campaign, Area Movement · ref. US$54
 #348 Wayfarers of the South Tigris (2022): BGG 7.8 · complejidad 3.8 · 1-3 jug. (ideal 2) · 75 min · Competitivo · Area Control, Tile Placement, Drafting · ref. US$48
-#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · $13.200 ARS
+#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · ref. US$16
 #355 Detective: A Modern Crime Board Game (2018): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2) · 150 min · Cooperativo · Storytelling, Campaign, Player Powers · ref. US$36
 #360 The Guild of Merchant Explorers (2022): BGG 7.6 · complejidad 2.1 · 1-4 jug. (ideal 2) · 45 min · Competitivo · Route Building · $149.900 ARS
 #363 Summoner Wars (Second Edition) (2021): BGG 8.0 · complejidad 2.6 · 2 jug. (ideal 2) · 50 min · Competitivo · Hand Management, Dice Rolling, Take That · ref. US$44
