@@ -17,6 +17,7 @@ const state = {
   complejidades: new Set(), // ids de BUCKETS_COMPLEJIDAD; vacío = todas
   precios: new Set(), // ids de BUCKETS_PRECIO (sobre el precio estimado en pesos); vacío = todos. Con alguno elegido, solo entran juegos con precio de referencia
   decadas: new Set(), // ids de BUCKETS_DECADA; vacío = todas
+  reviews: new Set(), // ids de BUCKETS_REVIEWS; vacío = todas
   mecanicas: new Set(), // posiciones en MECANICAS_VOCAB; el juego tiene que tener todas las elegidas
   mecanicasNo: new Set(), // mecánicas que NO quiero: se descartan los juegos que tengan alguna
   jugadores: null,
@@ -59,6 +60,9 @@ function matchesFilters(g) {
   if (state.mecanicas.size > 0) {
     const tiene = g.mecs || [];
     for (const id of state.mecanicas) if (!tiene.includes(Number(id))) return false;
+  }
+  if (state.reviews.size > 0) {
+    if (g.reviews_bgg == null || !BUCKETS_REVIEWS.some((b) => state.reviews.has(b.id) && b.match(g.reviews_bgg))) return false;
   }
   if (state.decadas.size > 0) {
     if (g.anio == null || !BUCKETS_DECADA.some((b) => state.decadas.has(b.id) && b.match(g.anio))) return false;
@@ -179,11 +183,17 @@ const FILTROS = [
   { id: "precios", titulo: "Precio", icono: "💵", multiple: true,
     nota: "Con precio de Cazagangas es el real (el más barato). Sin él es una estimación (con ~: precio de BGG × dólar × 2,1, no de tienda). Algunos juegos no tienen ni una cosa ni la otra: al elegir un rango, esos desaparecen.",
     opciones: BUCKETS_PRECIO.map((b) => ({ ...b, hint: "Precio en pesos (real o estimado)" })) },
+  { id: "reviews", titulo: "Reviews", icono: "💬", multiple: true, opciones: BUCKETS_REVIEWS },
   { id: "decadas", titulo: "Década", icono: "📅", multiple: true, opciones: BUCKETS_DECADA },
   { id: "tipos", titulo: "Tipo", icono: "🎲", multiple: true, opciones: TIPOS.map((t) => ({ id: t, label: modoLabel(t) })) },
 ];
 
 function setupControls() {
+  const mediana = medianaReviews(GAMES);
+  if (mediana != null) {
+    FILTROS.find((f) => f.id === "reviews").nota =
+      `Cuánta gente puntuó el juego en BGG: con pocas reviews el puntaje es menos confiable. La mediana de toda la base es de ${Math.round(mediana).toLocaleString("es-AR")} reviews (la mitad de los ${GAMES.length.toLocaleString("es-AR")} juegos tiene menos).`;
+  }
   FILTROS.push({
     id: "mecanicas", titulo: "Mecánicas", icono: "🧩", multiple: true,
     excluir: "mecanicasNo",

@@ -48,6 +48,24 @@ const BUCKETS_DURACION = [
   { id: "mas", label: "Más de 2 horas", match: (d) => d > 120 },
 ];
 
+// Cantidad de reviews en BGG (cuánta gente puntuó el juego). Los cortes salen de la distribución de todo el catálogo
+// (mediana ~145, el 75% tiene menos de ~500, el 90% menos de ~1.800); la mediana real se calcula en el navegador.
+const BUCKETS_REVIEWS = [
+  { id: "poco", label: "Menos de 150", match: (n) => n < 150 },
+  { id: "medio", label: "150 a 500", match: (n) => n >= 150 && n < 500 },
+  { id: "bastante", label: "500 a 2.000", match: (n) => n >= 500 && n < 2000 },
+  { id: "mucho", label: "2.000 a 10.000", match: (n) => n >= 2000 && n < 10000 },
+  { id: "muchisimo", label: "Más de 10.000", match: (n) => n >= 10000 },
+];
+
+// Mediana de reviews de todos los juegos con dato (referencia para el filtro de reviews). null si no hay.
+function medianaReviews(games) {
+  const r = games.map((g) => g.reviews_bgg).filter((n) => n != null).sort((a, b) => a - b);
+  if (!r.length) return null;
+  const m = r.length >> 1;
+  return r.length % 2 ? r[m] : (r[m - 1] + r[m]) / 2;
+}
+
 // Precio estimado en pesos: mediana de publicaciones del marketplace de BGG (USD, solo ~1 de cada 5 juegos)
 // × dólar oficial del día × PRECIO_MULT. El multiplicador sale de comparar 612 juegos con su precio más barato en
 // Cazagangas (nov 2026, dólar oficial $1.580): mediana 2,14; la mitad central va de 1,4 a 3,0. Es una estimación
