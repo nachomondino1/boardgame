@@ -448,6 +448,9 @@ function collapseGrupos(list) {
 }
 
 
+// Variantes que se pueden abrir (bgg_id -> { game, opts }): se llena al dibujar las cards de sus grupos.
+const VARIANTES_ABIERTAS = new Map();
+
 function cardTemplate(g, opts) {
   opts = opts || {};
   const esBest = opts.jugadores != null && matchesJugBest(g, opts.jugadores);
@@ -465,9 +468,10 @@ function cardTemplate(g, opts) {
     ? `<details class="variantes">
         <summary>${variantes.length} variante${variantes.length === 1 ? "" : "s"} más de ${escapeHtml(opts.grupoNombre)}</summary>
         <ul>${variantes
-          .map((v) => `<li>${v.bgg_url
-            ? `<a href="${escapeHtml(v.bgg_url)}" target="_blank" rel="noopener">${escapeHtml(v.nombre)}</a>`
-            : escapeHtml(v.nombre)}</li>`)
+          .map((v) => {
+            VARIANTES_ABIERTAS.set(String(v.bgg_id), { game: v, opts: { ...opts, variantes: null, showComparar: false } });
+            return `<li><button type="button" class="variante-btn" data-variante="${escapeHtml(String(v.bgg_id))}" title="Ver la card">${escapeHtml(v.nombre)}${v.anio ? ` (${v.anio})` : ""}</button></li>`;
+          })
           .join("")}</ul>
       </details>`
     : "";
@@ -663,3 +667,26 @@ document.addEventListener("toggle", (e) => {
   pop.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - pop.offsetWidth - 8))}px`;
 }, true);
 window.addEventListener("scroll", () => document.querySelectorAll(".stat-popover:popover-open").forEach((p) => p.hidePopover()), { passive: true });
+
+
+// Tocar una variante dentro de una card abre la card de esa variante en una ventana.
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest && e.target.closest(".variante-btn");
+  if (!btn) return;
+  const item = VARIANTES_ABIERTAS.get(btn.dataset.variante);
+  if (!item) return;
+  let dlg = document.getElementById("variante-dialog");
+  if (!dlg) {
+    dlg = document.createElement("dialog");
+    dlg.id = "variante-dialog";
+    dlg.className = "variante-dialog";
+    dlg.addEventListener("click", (ev) => { if (ev.target === dlg) dlg.close(); });
+    document.body.appendChild(dlg);
+  }
+  const dibujar = () => {
+    dlg.innerHTML = `<form method="dialog"><button class="variante-close" aria-label="Cerrar">✕</button></form>${cardTemplate(item.game, item.opts)}`;
+  };
+  dibujar();
+  dlg.showModal();
+  hydrate([item.game]).then((n) => { if (n && dlg.open) dibujar(); }).catch(() => {});
+});

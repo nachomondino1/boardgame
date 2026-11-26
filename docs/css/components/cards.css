@@ -428,8 +428,52 @@ details.variantes ul {
   padding-left: 18px;
 }
 
-details.variantes li a {
-  color: inherit;
+.variante-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.variante-btn:hover {
+  text-decoration: underline;
+}
+
+/* La card de una variante, en una ventana encima de la lista. */
+.variante-dialog {
+  width: min(560px, calc(100vw - 24px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: auto;
+}
+
+.variante-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.variante-dialog .card {
+  margin: 0;
+}
+
+.variante-dialog form {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.variante-close {
+  border: 0;
+  background: var(--surface);
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  color: var(--muted);
+  cursor: pointer;
 }
 
 /* --- Estados de la card y de la lista --- */
