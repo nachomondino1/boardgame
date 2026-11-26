@@ -93,7 +93,7 @@ function render() {
         return pa.valor - pb.valor;
       })
     : sortGames(matched, state.sort);
-  const grouped = collapseGrupos(filtered);
+  const grouped = collapseGrupos(filtered, GAMES);
   const grid = document.getElementById("grid");
   const count = document.getElementById("result-count");
   const loadMoreRow = document.getElementById("load-more-row");

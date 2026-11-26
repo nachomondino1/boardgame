@@ -427,22 +427,71 @@ function hydrate(list) {
 // como representante de la tarjeta; el resto de sus variantes se cuelgan
 // adentro en vez de ocupar su propia fila en la grilla. `g.grupo` ya viene
 // calculado en data.json (ver construct_data.py / data/grupos.json).
-function collapseGrupos(list) {
-  const representantes = new Map(); // nombre del grupo -> entry
+// Una variante sale como card propia ("vida propia") si tiene tantas reviews como un juego importante y no es una
+// simple reimpresión (Second Edition, Revised, (2019)...), que queda adentro del grupo.
+const REVIEWS_VIDA_PROPIA = 10000;
+const ES_REIMPRESION = /\b(edition|revised|reprint|anniversary)\b|\(\d{4}\)\s*$/i;
+
+// El original de cada grupo: el que se llama igual que el grupo o, si no hay, el más antiguo.
+// Se calcula con todo el catálogo (`todos`), no con la lista filtrada.
+let originalesCache = { fuente: null, mapa: null };
+function originalesDeGrupos(todos) {
+  if (originalesCache.fuente === todos) return originalesCache.mapa;
+  const mapa = new Map();
+  todos.forEach((g) => {
+    if (!g.grupo) return;
+    const actual = mapa.get(g.grupo);
+    const mejor = (x, y) => {
+      if ((x.nombre === g.grupo) !== (y.nombre === g.grupo)) return x.nombre === g.grupo;
+      return (x.anio == null ? 9999 : x.anio) <= (y.anio == null ? 9999 : y.anio);
+    };
+    if (!actual || !mejor(actual, g)) mapa.set(g.grupo, g);
+  });
+  originalesCache = { fuente: todos, mapa };
+  return mapa;
+}
+
+// Reimpresión: lo dice el nombre, o se llama igual que el original y es igual de complejo (Love Letter 2012 y 2019).
+const esReimpresion = (g, original) =>
+  ES_REIMPRESION.test(g.nombre)
+  || (g.nombre === original.nombre && g.complejidad != null && original.complejidad != null && Math.abs(g.complejidad - original.complejidad) < 0.4);
+
+const tieneVidaPropia = (g, original) =>
+  g !== original && (g.reviews_bgg || 0) >= REVIEWS_VIDA_PROPIA && !esReimpresion(g, original);
+
+// Colapsa una lista ya filtrada/ordenada: la cara de cada grupo es su original (si pasa los filtros; si no, el
+// primero que quede); las variantes con vida propia van como card aparte y el resto se cuelga de la cara.
+function collapseGrupos(list, todos) {
+  const originales = originalesDeGrupos(todos || list);
+  const caras = new Map(); // nombre del grupo -> juego que es la cara
+  list.forEach((g) => {
+    if (!g.grupo || caras.has(g.grupo)) return;
+    const original = originales.get(g.grupo);
+    if (g === original) caras.set(g.grupo, g);
+  });
+  list.forEach((g) => {
+    if (!g.grupo || caras.has(g.grupo)) return;
+    // El original no está en la lista: la cara es el primero (por orden) que no tenga vida propia.
+    const candidato = list.find((x) => x.grupo === g.grupo && !tieneVidaPropia(x, originales.get(g.grupo)));
+    if (candidato) caras.set(g.grupo, candidato);
+  });
+  const entries = new Map();
   const result = [];
   list.forEach((g) => {
-    const grupoNombre = g.grupo;
-    if (!grupoNombre) {
-      result.push({ game: g, variantes: [], grupoNombre: null });
-      return;
-    }
-    if (representantes.has(grupoNombre)) {
-      representantes.get(grupoNombre).variantes.push(g);
-    } else {
-      const entry = { game: g, variantes: [], grupoNombre };
-      representantes.set(grupoNombre, entry);
+    if (!g.grupo) { result.push({ game: g, variantes: [], grupoNombre: null }); return; }
+    const cara = caras.get(g.grupo);
+    if (g === cara) {
+      const entry = { game: g, variantes: [], grupoNombre: g.grupo };
+      entries.set(g.grupo, entry);
       result.push(entry);
+    } else if (tieneVidaPropia(g, originales.get(g.grupo))) {
+      result.push({ game: g, variantes: [], grupoNombre: null });
     }
+  });
+  list.forEach((g) => {
+    if (!g.grupo || g === caras.get(g.grupo) || tieneVidaPropia(g, originales.get(g.grupo))) return;
+    const entry = entries.get(g.grupo);
+    if (entry) entry.variantes.push(g);
   });
   return result;
 }
