@@ -29,7 +29,7 @@ fi
 
 echo "== Actualizando los datos de BGG =="
 if [ "$#" -eq 0 ]; then
-  set -- --top 5000 --discover
+  set -- --top 5000 --discover --scan-ids
 fi
 python3 01_data_understanding/collect_initial_data/bgg/refresh_bgg_data.py "$@"
 

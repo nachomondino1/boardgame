@@ -16,7 +16,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #43 Crokinole (1876): BGG 8.1 · complejidad 1.2 · 2-4 jug. (ideal 2-4) · 30 min · Equipos
 #44 Clank!: Catacombs (2022): BGG 8.2 · complejidad 2.5 · 2-4 jug. (ideal 3) · 68 min · Competitivo · Deck Building, Tile Placement, Drafting · $239.900 ARS
 #45 Viticulture Essential Edition (2015): BGG 8.0 · complejidad 2.9 · 1-5 jug. (ideal 3-4) · 68 min · Competitivo · Worker Placement, Hand Management, Race · ref. US$49
-#48 Everdell (2018): BGG 8.0 · complejidad 2.8 · 1-4 jug. (ideal 3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · $108.970 ARS
+#49 Everdell (2018): BGG 8.0 · complejidad 2.8 · 1-4 jug. (ideal 3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · $108.970 ARS
 #50 The Lord of the Rings: Fate of the Fellowship (2025): BGG 8.3 · complejidad 3.1 · 1-4 jug. (ideal 3) · 105 min · Cooperativo · Set Collection, Hand Management, Dice Rolling · $194.900 ARS
 #52 Harmonies (2024): BGG 8.0 · complejidad 2.0 · 1-4 jug. (ideal 2-3) · 38 min · Competitivo · Tile Placement, Drafting, Set Collection · $95.190 ARS
 #53 Food Chain Magnate (2015): BGG 8.0 · complejidad 4.2 · 2-5 jug. (ideal 3-4) · 180 min · Competitivo · Drafting, Simultaneous Actions · ref. US$72
@@ -58,8 +58,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #161 Andromeda's Edge (2024): BGG 8.2 · complejidad 3.7 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Area Control, Hand Management · ref. US$52
 #164 Iberia (2016): BGG 7.9 · complejidad 2.6 · 1-5 jug. (ideal 3-4) · 45 min · Cooperativo · Route Building, Set Collection, Hand Management · ref. US$57
 #165 Clank! In! Space!: A Deck-Building Adventure (2017): BGG 7.8 · complejidad 2.6 · 2-4 jug. (ideal 3) · 68 min · Competitivo · Deck Building, Drafting, Push Your Luck · $120.700 ARS
+#175 Wondrous Creatures (2024): BGG 8.0 · complejidad 3.0 · 1-3 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$53
 #178 Roll for the Galaxy (2014): BGG 7.6 · complejidad 2.8 · 2-5 jug. (ideal 3-4) · 45 min · Competitivo · Deck Building, Tile Placement, Hand Management · ref. US$40
-#179 Wondrous Creatures (2024): BGG 8.0 · complejidad 3.0 · 1-3 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$55
 #184 Parks (2019): BGG 7.6 · complejidad 2.1 · 1-4 jug. (ideal 3) · 45 min · Competitivo · Worker Placement · ref. US$40
 #185 Cartographers (2019): BGG 7.5 · complejidad 1.9 · 1-8 jug. (ideal 3-4) · 38 min · Competitivo · Pattern Building, Take That, Paper & Pencil · ref. US$19
 #190 Speakeasy (2025): BGG 8.4 · complejidad 4.4 · 1-4 jug. (ideal 3) · 115 min · Competitivo · Worker Placement, Area Control, Pick-up & Deliver · ref. US$128
@@ -79,7 +79,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #233 Clash of Cultures: Monumental Edition (2021): BGG 8.3 · complejidad 3.8 · 2-4 jug. (ideal 3-4) · 210 min · Competitivo · Hand Management, Dice Rolling, Trading · ref. US$120
 #238 Paleo (2020): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2-3) · 52 min · Cooperativo · Deck Building, Memory, Campaign · ref. US$40
 #244 Splendor (2014): BGG 7.4 · complejidad 1.8 · 2-4 jug. (ideal 3) · 30 min · Competitivo · Drafting, Set Collection, Race · $74.250 ARS
-#246 Horrified (2019): BGG 7.6 · complejidad 2.0 · 1-5 jug. (ideal 3) · 60 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Action Points · $192.500 ARS
+#247 Horrified (2019): BGG 7.6 · complejidad 2.0 · 1-5 jug. (ideal 3) · 60 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Action Points · $192.500 ARS
 #249 Ora et Labora (2011): BGG 7.7 · complejidad 3.9 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Route Building · ref. US$46
 #251 The Taverns of Tiefenthal (2019): BGG 7.6 · complejidad 2.7 · 2-4 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Deck Building, Drafting · ref. US$40
 #254 Faraway (2023): BGG 7.5 · complejidad 2.0 · 2-5 jug. (ideal 3) · 25 min · Competitivo · Drafting, Set Collection, Hand Management · $44.500 ARS
@@ -111,7 +111,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #332 The Witcher: Old World (2023): BGG 7.9 · complejidad 2.9 · 1-3 jug. (ideal 2-3) · 120 min · Competitivo · Deck Building, Drafting, Pick-up & Deliver · ref. US$75
 #334 Marrakesh (2022): BGG 8.1 · complejidad 3.5 · 2-4 jug. (ideal 3) · 120 min · Competitivo · Drafting, Simultaneous Actions · $119.890 ARS
 #336 Kingdomino (2016): BGG 7.3 · complejidad 1.2 · 2-4 jug. (ideal 2-4) · 20 min · Competitivo · Tile Placement, Drafting · $34.990 ARS
-#337 The Vale of Eternity (2023): BGG 7.6 · complejidad 2.1 · 2-4 jug. (ideal 3) · 38 min · Competitivo · Drafting, Set Collection, Hand Management · $122.600 ARS
+#336 The Vale of Eternity (2023): BGG 7.6 · complejidad 2.1 · 2-4 jug. (ideal 3) · 38 min · Competitivo · Drafting, Set Collection, Hand Management · $122.600 ARS
 #343 Lewis & Clark: The Expedition (2013): BGG 7.4 · complejidad 3.3 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Deck Building, Drafting · $103.360 ARS
 #345 Marvel United (2020): BGG 7.5 · complejidad 1.9 · 1-4 jug. (ideal 3) · 40 min · Cooperativo · Hand Management, Player Powers · $176.550 ARS
 #349 Shackleton Base: A Journey to the Moon (2024): BGG 8.0 · complejidad 3.9 · 2-4 jug. (ideal 3) · 90 min · Competitivo · Area Control, Player Powers · $149.980 ARS

@@ -22,6 +22,13 @@ y los que no están en bgg_data.jsonl se agregan (con todos sus campos) si
 entran en el ranking --top N (sin --top, se agregan todos los hot). Es lo
 único que la API permite para encontrar juegos nuevos.
 
+Con --scan-ids se barren los ids de BGG hacia arriba (los juegos nuevos tienen ids altos) y se agregan los
+que son juegos y ya entran en el ranking --top N. Es la forma de encontrar juegos nuevos que nunca estuvieron en el
+"hot" (Moon Colony Bloodbath, puesto 401, no estaba). Recuerda hasta qué id llegó en bgg_scan_ids.json, así que cada
+corrida solo mira los ids nuevos; la primera arranca en --desde (default 430000, donde se corta el snapshot de
+Hugging Face) y puede tardar horas (5 s por cada 20 ids). Los juegos recientes que todavía no tienen ranking pero ya
+tienen votos quedan en "seguimiento" y se vuelven a mirar en cada corrida, porque BGG los rankea después.
+
 --fields acepta nombres de campo separados por coma, o un atajo:
   volatile (default)  los que cambian seguido
   all                 todos los campos que trae la API (menos description)
@@ -37,6 +44,7 @@ Uso:
 """
 import argparse
 import datetime
+import json
 import statistics
 import sys
 import time
@@ -190,12 +198,101 @@ def discover_hot(top, dry_run):
     return to_add
 
 
+SCAN_PATH = BGG_DATA_PATH.parent / "bgg_scan_ids.json"
+SCAN_DESDE_DEFECTO = 430000   # por debajo de este id el snapshot inicial ya cubre (ver docstring)
+SCAN_TANDA = 200              # ids por tanda: se guarda el avance al terminar cada una
+SCAN_VACIAS_PARA_PARAR = 5    # tandas seguidas sin ningún item = se llegó al final de los ids existentes
+SCAN_VOTOS_SEGUIMIENTO = 10   # un juego sin ranking con al menos tantos votos se vuelve a mirar (BGG rankea con 30)
+
+
+def _cargar_scan():
+    try:
+        return json.loads(SCAN_PATH.read_text())
+    except (OSError, ValueError):
+        return {"ultimo_id": None, "seguimiento": {}}
+
+
+def _guardar_scan(estado, dry_run):
+    if not dry_run:
+        SCAN_PATH.write_text(json.dumps(estado, ensure_ascii=False, indent=1))
+
+
+def descubrir_por_ids(top, desde, max_ids, dry_run):
+    """Barre ids de BGG por encima del último mirado y agrega al catálogo los juegos (no expansiones) que ya están
+    dentro del top N del ranking. Devuelve {bgg_id: attrs} de los agregados."""
+    estado = _cargar_scan()
+    known = {r["bgg_id"] for r in load_bgg_cache()}
+    hoy = datetime.date.today()
+    agregados = {}
+
+    def ranking_ok(attrs):
+        rank = attrs.get("Board Game Rank") or ""
+        return attrs.get("type") == "boardgame" and rank.isdigit() and int(rank) <= top
+
+    def agregar(candidatos, origen):
+        # Con marketplace (el barrido no lo pide, para no pesar) y recién ahí se guarda.
+        fetched = fetch_things(list(candidatos), marketplace=True)
+        nuevos = {i: {**a, "fecha_actualizacion": hoy.isoformat()} for i, a in fetched.items() if i not in known}
+        for i, a in nuevos.items():
+            print(f"  + {a['name']} (bgg_id={i}, ranking {a.get('Board Game Rank')}, {origen})", flush=True)
+        if nuevos and not dry_run:
+            upsert_bgg_cache(nuevos)
+        known.update(nuevos)
+        agregados.update(nuevos)
+
+    # 1) Seguimiento: juegos recientes que no tenían ranking la última vez.
+    seg = estado.get("seguimiento", {})
+    if seg:
+        print(f"Seguimiento: {len(seg)} juego(s) recientes sin ranking, se vuelven a mirar", flush=True)
+        fetched = fetch_things(list(seg))
+        listos = [i for i, a in fetched.items() if i not in known and ranking_ok(a)]
+        if listos:
+            agregar(listos, "ya rankeado")
+        for i in list(seg):
+            a = fetched.get(i)
+            if a is None or i in known or int(a.get("yearpublished") or 0) < hoy.year - 1 or a.get("Board Game Rank", "").isdigit():
+                seg.pop(i, None)
+
+    # 2) Ids nuevos.
+    ultimo = estado.get("ultimo_id")
+    inicio = (ultimo + 1) if ultimo else desde
+    print(f"Barrido de ids desde {inicio} (top {top})", flush=True)
+    vacias, revisados, actual = 0, 0, inicio
+    while vacias < SCAN_VACIAS_PARA_PARAR and (not max_ids or revisados < max_ids):
+        ids = [str(i) for i in range(actual, actual + SCAN_TANDA)]
+        time.sleep(5)
+        fetched = fetch_things(ids)
+        vacias = 0 if fetched else vacias + 1
+        candidatos = [i for i, a in fetched.items() if i not in known and ranking_ok(a)]
+        for i, a in fetched.items():
+            if i in known or i in candidatos or a.get("type") != "boardgame" or (a.get("Board Game Rank") or "").isdigit():
+                continue
+            if int(a.get("usersrated") or 0) >= SCAN_VOTOS_SEGUIMIENTO and int(a.get("yearpublished") or 0) >= hoy.year - 1:
+                seg[i] = a.get("name", "")
+        if candidatos:
+            time.sleep(5)
+            agregar(candidatos, "barrido")
+        actual += SCAN_TANDA
+        revisados += SCAN_TANDA
+        estado["ultimo_id"] = actual - 1
+        estado["seguimiento"] = seg
+        _guardar_scan(estado, dry_run)
+        if revisados % 2000 == 0:
+            print(f"  ... hasta el id {actual - 1}, {len(agregados)} agregado(s), {len(seg)} en seguimiento", flush=True)
+    print(f"Barrido listo hasta el id {estado['ultimo_id']}: {len(agregados)} agregado(s), {len(seg)} en seguimiento"
+          + (" (dry-run: el avance no se guardó)" if dry_run else ""), flush=True)
+    return agregados
+
+
 def main():
     parser = argparse.ArgumentParser(description="Refresca tu colección y los datos de BGG de tus juegos")
     parser.add_argument("--scope", choices=["coleccion", "all"], default="coleccion")
     parser.add_argument("--add", metavar="ID_O_NOMBRE", help="agrega un juego puntual al catálogo (busca el nombre en la API de BGG)")
     parser.add_argument("--top", type=int, help="suma los N mejor rankeados (Board Game Rank) a los juegos a refrescar")
     parser.add_argument("--discover", action="store_true", help="antes de refrescar, agrega juegos nuevos del hot de BGG (ver --top)")
+    parser.add_argument("--scan-ids", action="store_true", help="barre los ids nuevos de BGG y agrega los que entran en --top (ver docstring)")
+    parser.add_argument("--desde", type=int, default=SCAN_DESDE_DEFECTO, help="primer id del barrido si todavía no hay avance guardado")
+    parser.add_argument("--max-ids", type=int, help="tope de ids a barrer en esta corrida (para probar)")
     parser.add_argument("--fields", default="volatile", help="coma-separados, o volatile | all")
     parser.add_argument("--dry-run", action="store_true", help="muestra el diff sin escribir")
     parser.add_argument("--skip-fresh", action="store_true", help="saltea los juegos ya actualizados hoy (para retomar una corrida cortada)")
@@ -211,7 +308,8 @@ def main():
     collection = refresh_collection(args.dry_run)
     descubiertos = discover_hot(args.top, args.dry_run) if args.discover else {}
     agregados = add_game(args.add, args.dry_run) if args.add else {}
-    resolve_cazagangas({**descubiertos, **agregados}, args.dry_run)
+    barridos = descubrir_por_ids(args.top or 5000, args.desde, args.max_ids, args.dry_run) if args.scan_ids else {}
+    resolve_cazagangas({**descubiertos, **agregados, **barridos}, args.dry_run)
 
     # Los que están en vigilancia se vuelven a preguntar: si BGG los devuelve otra vez, vuelven al catálogo.
     en_vigilancia = [r["bgg_id"] for r in load_watch()]

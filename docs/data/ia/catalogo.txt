@@ -3,7 +3,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 
 #1 Brass: Birmingham (2018): BGG 8.6 · complejidad 3.9 · 2-4 jug. (ideal 3-4) · 90 min · Competitivo · Tile Placement, Route Building, Hand Management · ref. US$64
 #2 Ark Nova (2021): BGG 8.5 · complejidad 3.8 · 1-3 jug. (ideal 2) · 120 min · Competitivo · Tile Placement, Drafting, Set Collection · $158.940 ARS
-#3 Pandemic Legacy: Season 1 (2015): BGG 8.5 · complejidad 2.8 · 2-4 jug. (ideal 4) · 60 min · Cooperativo · Set Collection, Hand Management, Trading · ref. US$60
+#3 Pandemic Legacy: Season 1 (2015): BGG 8.5 · complejidad 2.8 · 2-4 jug. (ideal 4) · 60 min · Cooperativo · Set Collection, Hand Management, Trading · ref. US$65
 #4 Gloomhaven (2017): BGG 8.5 · complejidad 3.9 · 1-4 jug. (ideal 3) · 90 min · Cooperativo · Hand Management, Storytelling, Role Playing · ref. US$120
 #5 Dune: Imperium – Uprising (2023): BGG 8.7 · complejidad 3.5 · 1-6 jug. (ideal 4) · 90 min · Equipos · Worker Placement, Deck Building, Drafting · ref. US$48
 #7 Twilight Imperium: Fourth Edition (2017): BGG 8.6 · complejidad 4.4 · 3-6 jug. (ideal 6) · 360 min · Competitivo · Dice Rolling, Trading, Voting · $509.150 ARS
@@ -44,8 +44,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #45 Viticulture Essential Edition (2015): BGG 8.0 · complejidad 2.9 · 1-5 jug. (ideal 3-4) · 68 min · Competitivo · Worker Placement, Hand Management, Race · ref. US$49
 #46 Ticket to Ride Legacy: Legends of the West (2023): BGG 8.6 · complejidad 2.6 · 2-5 jug. (ideal 4) · 55 min · Competitivo · Route Building, Drafting, Set Collection · $339.150 ARS
 #47 The Crew: Mission Deep Sea (2021): BGG 8.0 · complejidad 2.1 · 3-5 jug. (ideal 4) · 20 min · Cooperativo · Trick-taking, Deduction, Campaign · $34.900 ARS
-#48 Everdell (2018): BGG 8.0 · complejidad 2.8 · 1-4 jug. (ideal 3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · $108.970 ARS
-#49 Heat: Pedal to the Metal (2022): BGG 8.0 · complejidad 2.2 · 1-6 jug. (ideal 5-6) · 45 min · Competitivo · Deck Building, Push Your Luck, Hand Management · $215.000 ARS
+#49 Everdell (2018): BGG 8.0 · complejidad 2.8 · 1-4 jug. (ideal 3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · $108.970 ARS
+#50 Heat: Pedal to the Metal (2022): BGG 8.0 · complejidad 2.2 · 1-6 jug. (ideal 5-6) · 45 min · Competitivo · Deck Building, Push Your Luck, Hand Management · $215.000 ARS
 #50 The Lord of the Rings: Fate of the Fellowship (2025): BGG 8.3 · complejidad 3.1 · 1-4 jug. (ideal 3) · 105 min · Cooperativo · Set Collection, Hand Management, Dice Rolling · $194.900 ARS
 #51 Marvel Champions: The Card Game (2019): BGG 8.1 · complejidad 3.0 · 1-3 jug. (ideal 1-2) · 68 min · Cooperativo · Hand Management, Campaign, Player Powers · ref. US$52
 #52 Harmonies (2024): BGG 8.0 · complejidad 2.0 · 1-4 jug. (ideal 2-3) · 38 min · Competitivo · Tile Placement, Drafting, Set Collection · $95.190 ARS
@@ -92,7 +92,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #96 Kingdom Death: Monster (2015): BGG 8.5 · complejidad 4.3 · 1-4 jug. (ideal 4) · 120 min · Cooperativo · Dice Rolling, Pattern Building, Storytelling · ref. US$220
 #98 Five Tribes: The Djinns of Naqala (2014): BGG 7.8 · complejidad 2.8 · 2-4 jug. (ideal 2) · 60 min · Competitivo · Worker Placement, Auction, Set Collection · ref. US$50
 #99 Galactic Cruise (2025): BGG 8.3 · complejidad 4.0 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$103
-#100 Azul (2017): BGG 7.7 · complejidad 1.8 · 2-4 jug. (ideal 2) · 38 min · Competitivo · Tile Placement, Drafting, Set Collection · $117.600 ARS
+#101 Azul (2017): BGG 7.7 · complejidad 1.8 · 2-4 jug. (ideal 2) · 38 min · Competitivo · Tile Placement, Drafting, Set Collection · $117.600 ARS
 #102 El Grande (1995): BGG 7.8 · complejidad 2.9 · 3-5 jug. (ideal 5) · 90 min · Competitivo · Area Control, Drafting, Auction · ref. US$34
 #104 Arcs (2024): BGG 8.0 · complejidad 3.5 · 2-4 jug. (ideal 3-4) · 90 min · Competitivo · Area Control, Trick-taking, Hand Management · $300.000 ARS
 #105 Fields of Arle (2014): BGG 8.0 · complejidad 3.8 · 1-2 jug. (ideal 2) · 90 min · Competitivo · Worker Placement, Set Collection · ref. US$51
@@ -142,7 +142,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #155 Civolution (2024): BGG 8.2 · complejidad 4.3 · 1-3 jug. (ideal 2-3) · 135 min · Competitivo · Drafting, Dice Rolling, Pattern Building · ref. US$80
 #156 Rising Sun (2018): BGG 7.7 · complejidad 3.3 · 3-5 jug. (ideal 4-5) · 105 min · Competitivo · Area Control, Set Collection, Bluffing · ref. US$76
 #157 Vinhos: Deluxe Edition (2016): BGG 8.0 · complejidad 4.0 · 1-4 jug. (ideal 4) · 135 min · Competitivo · Worker Placement, Area Control · ref. US$120
-#158 Just One (2018): BGG 7.6 · complejidad 1.0 · 4-7 jug. (ideal 6-7) · 40 min · Cooperativo · Deduction, Paper & Pencil · $69.520 ARS
+#159 Just One (2018): BGG 7.6 · complejidad 1.0 · 4-7 jug. (ideal 6-7) · 40 min · Cooperativo · Deduction, Paper & Pencil · $69.520 ARS
 #159 Yokohama (2016): BGG 7.8 · complejidad 3.3 · 2-4 jug. (ideal 3) · 90 min · Competitivo · Worker Placement, Route Building, Set Collection · $100.000 ARS
 #160 Forbidden Stars (2015): BGG 8.0 · complejidad 3.8 · 2-4 jug. (ideal 3) · 150 min · Competitivo · Deck Building, Area Control, Hand Management · ref. US$304
 #161 Andromeda's Edge (2024): BGG 8.2 · complejidad 3.7 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Area Control, Hand Management · ref. US$52
@@ -155,12 +155,12 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #168 Magic: The Gathering (1993): BGG 7.6 · complejidad 3.3 · 2-4 jug. (ideal 2) · 20 min · Competitivo · Hand Management, Bluffing, Take That · ref. US$62
 #171 Rajas of the Ganges (2017): BGG 7.7 · complejidad 2.9 · 2-4 jug. (ideal 4) · 60 min · Competitivo · Worker Placement, Tile Placement, Dice Rolling · ref. US$47
 #172 Champions of Midgard (2015): BGG 7.7 · complejidad 2.6 · 2-4 jug. (ideal 4) · 75 min · Competitivo · Worker Placement, Set Collection, Dice Rolling · ref. US$36
-#173 Hadrian's Wall (2021): BGG 7.9 · complejidad 3.2 · 1-3 jug. (ideal 1) · 45 min · Competitivo · Hand Management, Paper & Pencil · ref. US$52
+#173 Hadrian's Wall (2021): BGG 7.9 · complejidad 3.2 · 1-3 jug. (ideal 1) · 45 min · Competitivo · Hand Management, Paper & Pencil · ref. US$51
 #175 The 7th Continent (2017): BGG 7.7 · complejidad 2.9 · 1-2 jug. (ideal 1-2) · 502 min · Cooperativo · Hand Management, Storytelling, Campaign · ref. US$90
-#176 Pandemic (2008): BGG 7.5 · complejidad 2.4 · 1-4 jug. (ideal 4) · 45 min · Cooperativo · Set Collection, Hand Management, Trading · $127.900 ARS
+#175 Wondrous Creatures (2024): BGG 8.0 · complejidad 3.0 · 1-3 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$53
+#177 Pandemic (2008): BGG 7.5 · complejidad 2.4 · 1-4 jug. (ideal 4) · 45 min · Cooperativo · Set Collection, Hand Management, Trading · $127.900 ARS
 #177 Targi (2012): BGG 7.6 · complejidad 2.3 · 2 jug. (ideal 2) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · $49.600 ARS
 #178 Roll for the Galaxy (2014): BGG 7.6 · complejidad 2.8 · 2-5 jug. (ideal 3-4) · 45 min · Competitivo · Deck Building, Tile Placement, Hand Management · ref. US$40
-#179 Wondrous Creatures (2024): BGG 8.0 · complejidad 3.0 · 1-3 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$55
 #180 Star Realms (2014): BGG 7.5 · complejidad 1.9 · 2 jug. (ideal 2) · 20 min · Competitivo · Deck Building, Drafting, Set Collection · ref. US$14
 #181 Alchemists (2014): BGG 7.6 · complejidad 3.9 · 2-4 jug. (ideal 4) · 120 min · Competitivo · Worker Placement, Drafting, Hand Management · ref. US$37
 #183 War Chest (2018): BGG 7.8 · complejidad 2.3 · 2-4 jug. (ideal 2) · 30 min · Equipos · Deck Building, Area Control, Hand Management · ref. US$47
@@ -221,8 +221,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #242 A Game of Thrones: The Board Game (Second Edition) (2011): BGG 7.5 · complejidad 3.7 · 4-6 jug. (ideal 6) · 180 min · Competitivo · Area Control, Auction, Hand Management · ref. US$38
 #244 Splendor (2014): BGG 7.4 · complejidad 1.8 · 2-4 jug. (ideal 3) · 30 min · Competitivo · Drafting, Set Collection, Race · $74.250 ARS
 #245 Railways of the World (2005): BGG 7.7 · complejidad 3.0 · 3-6 jug. (ideal 5) · 120 min · Competitivo · Tile Placement, Route Building, Drafting · ref. US$60
-#246 Horrified (2019): BGG 7.6 · complejidad 2.0 · 1-5 jug. (ideal 3) · 60 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Action Points · $192.500 ARS
-#248 Toy Battle (2025): BGG 7.8 · complejidad 1.5 · 2 jug. (ideal 2) · 15 min · Competitivo · Area Control · $71.900 ARS
+#245 Toy Battle (2025): BGG 7.8 · complejidad 1.5 · 2 jug. (ideal 2) · 15 min · Competitivo · Area Control · $71.900 ARS
+#247 Horrified (2019): BGG 7.6 · complejidad 2.0 · 1-5 jug. (ideal 3) · 60 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Action Points · $192.500 ARS
 #249 Ora et Labora (2011): BGG 7.7 · complejidad 3.9 · 1-4 jug. (ideal 3) · 120 min · Competitivo · Worker Placement, Route Building · ref. US$46
 #250 Captain Sonar (2016): BGG 7.5 · complejidad 2.2 · 6-8 jug. (ideal 8) · 52 min · Equipos · Deduction, Role Playing, Real-Time · ref. US$36
 #251 The Taverns of Tiefenthal (2019): BGG 7.6 · complejidad 2.7 · 2-4 jug. (ideal 2-3) · 60 min · Competitivo · Worker Placement, Deck Building, Drafting · ref. US$40
@@ -240,8 +240,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #265 Magical Athlete (2025): BGG 7.7 · complejidad 1.2 · 3-6 jug. (ideal 5-6) · 30 min · Competitivo · Drafting, Dice Rolling, Roll & Move · $76.490 ARS
 #266 So Clover! (2021): BGG 7.6 · complejidad 1.1 · 2-6 jug. (ideal 3-4) · 30 min · Cooperativo · ref. US$20
 #267 Paths of Glory (1999): BGG 8.1 · complejidad 3.9 · 2 jug. (ideal 2) · 480 min · Competitivo · Dice Rolling, Card Driven · $108.960 ARS
+#268 Secret Hitler (2016): BGG 7.5 · complejidad 1.7 · 6-10 jug. (ideal 8-10) · 45 min · Equipos · Voting · $89.990 ARS
 #268 Camel Up (Second Edition) (2018): BGG 7.5 · complejidad 1.5 · 3-8 jug. (ideal 5-6) · 38 min · Competitivo · Dice Rolling, Bluffing, Roll & Move · $160.000 ARS
-#269 Secret Hitler (2016): BGG 7.5 · complejidad 1.7 · 6-10 jug. (ideal 8-10) · 45 min · Equipos · Voting · $89.990 ARS
 #270 Coimbra (2018): BGG 7.6 · complejidad 3.2 · 2-4 jug. (ideal 3) · 75 min · Competitivo · Drafting, Auction, Set Collection · ref. US$37
 #272 Under Falling Skies (2020): BGG 7.6 · complejidad 2.4 · 1 jug. (ideal 1) · 30 min · Competitivo · Worker Placement, Dice Rolling, Campaign · ref. US$24
 #273 Fantasy Realms (2017): BGG 7.5 · complejidad 1.8 · 2-5 jug. (ideal 2-3) · 20 min · Competitivo · Drafting, Set Collection, Hand Management · ref. US$19
@@ -256,8 +256,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #282 Rebirth (2024): BGG 7.8 · complejidad 2.0 · 2-4 jug. (ideal 3) · 52 min · Competitivo · Area Control, Tile Placement · ref. US$38
 #283 Hot Streak (2025): BGG 7.8 · complejidad 1.2 · 3-8 jug. (ideal 5-6) · 20 min · Competitivo · Drafting, Bluffing · $125.910 ARS
 #284 La Granja (2014): BGG 7.6 · complejidad 3.6 · 1-4 jug. (ideal 3) · 105 min · Competitivo · Area Control, Drafting, Hand Management · ref. US$24
-#285 Skull King (2013): BGG 7.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Trick-taking, Hand Management · $41.810 ARS
 #286 Samurai (1998): BGG 7.5 · complejidad 2.4 · 2-4 jug. (ideal 3) · 45 min · Competitivo · Area Control, Tile Placement, Set Collection · ref. US$81
+#286 Skull King (2013): BGG 7.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Trick-taking, Hand Management · $41.810 ARS
 #288 Combat Commander: Europe (2006): BGG 8.0 · complejidad 3.3 · 2 jug. (ideal 2) · 120 min · Competitivo · Card Driven · $125.000 ARS
 #289 Unconscious Mind (2024): BGG 7.9 · complejidad 4.0 · 1-3 jug. (ideal 2-3) · 90 min · Competitivo · Worker Placement, Drafting, Set Collection · ref. US$56
 #291 Near and Far (2017): BGG 7.6 · complejidad 2.9 · 2-4 jug. (ideal 3) · 105 min · Competitivo · Worker Placement, Route Building, Drafting · $166.005 ARS
@@ -274,7 +274,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #302 Deception: Murder in Hong Kong (2014): BGG 7.4 · complejidad 1.6 · 5-12 jug. (ideal 6-8) · 20 min · Equipos · Deduction, Storytelling · ref. US$32
 #304 Anno 1800: The Board Game (2020): BGG 7.7 · complejidad 3.1 · 2-4 jug. (ideal 3) · 120 min · Competitivo · Tile Placement, Drafting, Hand Management · ref. US$38
 #306 Monikers (2015): BGG 7.8 · complejidad 1.1 · 4-16 jug. (ideal 6-10) · 45 min · Equipos · Drafting, Role Playing · ref. US$31
-#307 MicroMacro: Crime City (2020): BGG 7.4 · complejidad 1.1 · 1-3 jug. (ideal 2) · 30 min · Cooperativo · Deduction, Campaign · $112.000 ARS
+#308 MicroMacro: Crime City (2020): BGG 7.4 · complejidad 1.1 · 1-3 jug. (ideal 2) · 30 min · Cooperativo · Deduction, Campaign · $112.000 ARS
 #309 Tapestry (2019): BGG 7.4 · complejidad 3.0 · 1-4 jug. (ideal 3) · 105 min · Competitivo · Area Control, Tile Placement, Drafting · ref. US$69
 #310 Roll Player (2016): BGG 7.4 · complejidad 2.4 · 1-4 jug. (ideal 3) · 75 min · Competitivo · Drafting, Set Collection, Dice Rolling · ref. US$45
 #311 Hallertau (2020): BGG 7.8 · complejidad 3.3 · 1-4 jug. (ideal 2) · 95 min · Competitivo · Worker Placement, Hand Management, Action Points · ref. US$57
@@ -299,7 +299,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #334 Marrakesh (2022): BGG 8.1 · complejidad 3.5 · 2-4 jug. (ideal 3) · 120 min · Competitivo · Drafting, Simultaneous Actions · $119.890 ARS
 #335 Imperium: Classics (2021): BGG 7.7 · complejidad 3.6 · 1-2 jug. (ideal 1-2) · 100 min · Competitivo · Deck Building, Drafting, Hand Management · $85.400 ARS
 #336 Kingdomino (2016): BGG 7.3 · complejidad 1.2 · 2-4 jug. (ideal 2-4) · 20 min · Competitivo · Tile Placement, Drafting · $34.990 ARS
-#337 The Vale of Eternity (2023): BGG 7.6 · complejidad 2.1 · 2-4 jug. (ideal 3) · 38 min · Competitivo · Drafting, Set Collection, Hand Management · $122.600 ARS
+#336 The Vale of Eternity (2023): BGG 7.6 · complejidad 2.1 · 2-4 jug. (ideal 3) · 38 min · Competitivo · Drafting, Set Collection, Hand Management · $122.600 ARS
 #338 Battle Line (2000): BGG 7.4 · complejidad 1.9 · 2 jug. (ideal 2) · 30 min · Competitivo · Hand Management · ref. US$20
 #339 Hive (2001): BGG 7.3 · complejidad 2.3 · 2 jug. (ideal 2) · 20 min · Competitivo · Tile Placement · ref. US$32
 #340 Oath (2021): BGG 7.7 · complejidad 4.1 · 3-5 jug. (ideal 4) · 98 min · Competitivo · Area Control, Dice Rolling, Take That · ref. US$82
@@ -314,7 +314,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #349 Shackleton Base: A Journey to the Moon (2024): BGG 8.0 · complejidad 3.9 · 2-4 jug. (ideal 3) · 90 min · Competitivo · Area Control, Player Powers · $149.980 ARS
 #350 Rococo (2013): BGG 7.6 · complejidad 3.1 · 2-5 jug. (ideal 3) · 90 min · Competitivo · Deck Building, Area Control, Drafting
 #351 The Gang (2024): BGG 7.5 · complejidad 1.6 · 4-6 jug. (ideal 5) · 20 min · Cooperativo · Deduction · $32.950 ARS
-#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · ref. US$16
+#352 Lost Cities (1999): BGG 7.3 · complejidad 1.5 · 2 jug. (ideal 2) · 30 min · Competitivo · Set Collection, Push Your Luck, Hand Management · ref. US$15
 #353 Endless Winter: Paleoamericans (2022): BGG 7.6 · complejidad 3.3 · 1-4 jug. (ideal 3) · 90 min · Competitivo · Worker Placement, Deck Building, Area Control · ref. US$61
 #354 Steam (2009): BGG 7.5 · complejidad 3.5 · 3-5 jug. (ideal 4) · 90 min · Competitivo · Tile Placement, Route Building, Auction
 #355 Detective: A Modern Crime Board Game (2018): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2) · 150 min · Cooperativo · Storytelling, Campaign, Player Powers · ref. US$36
@@ -334,7 +334,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #369 Pax Renaissance: 2nd Edition (2021): BGG 8.4 · complejidad 4.7 · 2-4 jug. (ideal 2-3) · 90 min · Competitivo · Drafting, Take That, Action Points · ref. US$82
 #370 Acquire (1963): BGG 7.4 · complejidad 2.5 · 3-6 jug. (ideal 4) · 90 min · Competitivo · Tile Placement, Hand Management, Pattern Building · ref. US$59
 #371 T.I.M.E Stories (2015): BGG 7.3 · complejidad 2.6 · 2-4 jug. (ideal 4) · 90 min · Cooperativo · Dice Rolling, Storytelling, Player Powers · ref. US$35
-#372 Legacy of Yu (2023): BGG 8.1 · complejidad 2.9 · 1 jug. (ideal 1) · 60 min · Competitivo · Worker Placement, Hand Management, Campaign · ref. US$48
+#371 Legacy of Yu (2023): BGG 8.1 · complejidad 2.9 · 1 jug. (ideal 1) · 60 min · Competitivo · Worker Placement, Hand Management, Campaign · ref. US$48
 #373 Frostpunk: The Board Game (2022): BGG 8.1 · complejidad 4.4 · 1-2 jug. (ideal 1) · 135 min · Cooperativo · Campaign, Player Powers · ref. US$86
 #374 Pirates of Maracaibo (2023): BGG 7.9 · complejidad 2.9 · 1-4 jug. (ideal 3) · 70 min · Competitivo · Dice Rolling, Race, Stock Holding · ref. US$44
 #376 Expeditions (2023): BGG 7.6 · complejidad 3.1 · 1-3 jug. (ideal 3) · 75 min · Competitivo · Deck Building, Hand Management, Player Powers · ref. US$75
@@ -362,6 +362,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #399 Sidereal Confluence (2017): BGG 7.8 · complejidad 3.6 · 4-9 jug. (ideal 6) · 150 min · Competitivo · Trading, Real-Time, Player Powers · ref. US$62
 #400 Bruges (2013): BGG 7.4 · complejidad 2.8 · 2-4 jug. (ideal 3) · 60 min · Competitivo · Hand Management, Dice Rolling · ref. US$56
 #401 Glass Road (2013): BGG 7.4 · complejidad 3.0 · 1-4 jug. (ideal 2) · 50 min · Competitivo · Tile Placement, Drafting, Set Collection · ref. US$45
+#401 Moon Colony Bloodbath (2025): BGG 7.6 · complejidad 2.2 · 1-5 jug. (ideal 4) · 68 min · Competitivo · Deck Building, Simultaneous Actions · ref. US$40
 #402 Age of Empires III: The Age of Discovery (2007): BGG 7.5 · complejidad 3.1 · 3-5 jug. (ideal 4-5) · 105 min · Competitivo · Worker Placement, Area Control, Set Collection · ref. US$36
 #404 Heaven & Ale (2017): BGG 7.5 · complejidad 3.2 · 2-4 jug. (ideal 4) · 75 min · Competitivo · Tile Placement · ref. US$40
 #405 Raiders of Scythia (2020): BGG 7.7 · complejidad 2.8 · 1-4 jug. (ideal 3) · 70 min · Competitivo · Worker Placement, Drafting, Hand Management · ref. US$48
@@ -425,14 +426,14 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #471 Star Trek: Captain's Chair (2025): BGG 8.7 · complejidad 4.1 · 1-2 jug. (ideal 1-2) · 90 min · Competitivo · Deck Building, Area Control, Hand Management · ref. US$56
 #472 Harry Potter: Hogwarts Battle (2016): BGG 7.3 · complejidad 2.1 · 2-4 jug. (ideal 2-4) · 45 min · Cooperativo · Deck Building, Campaign, Player Powers · $265.000 ARS
 #473 Hitster (2022): BGG 7.5 · complejidad 1.0 · 2-10 jug. (ideal 4-6) · 30 min · Competitivo · $62.390 ARS
-#474 The Godfather: Corleone's Empire (2017): BGG 7.5 · complejidad 2.7 · 2-5 jug. (ideal 4) · 75 min · Competitivo · Worker Placement, Area Control, Drafting · ref. US$68
 #475 Agricola: All Creatures Big and Small (2012): BGG 7.3 · complejidad 2.4 · 2 jug. (ideal 2) · 30 min · Competitivo · Worker Placement, Tile Placement · ref. US$31
+#475 The Godfather: Corleone's Empire (2017): BGG 7.5 · complejidad 2.7 · 2-5 jug. (ideal 4) · 75 min · Competitivo · Worker Placement, Area Control, Drafting · ref. US$68
 #476 Cozy Stickerville (2026): BGG 8.2 · complejidad 1.2 · 1-3 jug. (ideal 2) · 30 min · Cooperativo · Campaign, Legacy · $115.500 ARS
 #477 World Wonders (2023): BGG 7.6 · complejidad 2.3 · 1-4 jug. (ideal 3) · 60 min · Competitivo · Tile Placement, Drafting, Action Points · $77.000 ARS
 #478 BattleLore: Second Edition (2013): BGG 7.7 · complejidad 2.7 · 2 jug. (ideal 2) · 68 min · Competitivo · Dice Rolling, Card Driven, Player Powers · ref. US$64
 #480 Ghost Stories (2008): BGG 7.2 · complejidad 2.9 · 1-4 jug. (ideal 4) · 60 min · Cooperativo · Dice Rolling, Player Powers · ref. US$50
-#481 The Resistance (2009): BGG 7.2 · complejidad 1.6 · 5-10 jug. (ideal 7) · 30 min · Equipos · Memory, Voting, Simultaneous Actions · $47.940 ARS
 #482 Scholars of the South Tigris (2023): BGG 8.0 · complejidad 4.1 · 1-4 jug. (ideal 3) · 75 min · Competitivo · Deck Building, Area Control, Hand Management · ref. US$47
+#483 The Resistance (2009): BGG 7.2 · complejidad 1.6 · 5-10 jug. (ideal 7) · 30 min · Equipos · Memory, Voting, Simultaneous Actions · $47.940 ARS
 #483 Unsettled (2021): BGG 8.0 · complejidad 3.3 · 1-4 jug. (ideal 2) · 75 min · Cooperativo · Pick-up & Deliver, Dice Rolling, Trading · ref. US$76
 #484 Knarr (2023): BGG 7.5 · complejidad 1.9 · 2-4 jug. (ideal 3) · 30 min · Competitivo · Drafting, Set Collection, Hand Management · $58.000 ARS
 #485 Kutná Hora: The City of Silver (2023): BGG 7.7 · complejidad 3.3 · 2-4 jug. (ideal 3-4) · 90 min · Competitivo · Tile Placement, Hand Management, Action Queue · $134.990 ARS
@@ -443,7 +444,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #490 Honey Buzz (2020): BGG 7.5 · complejidad 2.7 · 1-4 jug. (ideal 3) · 68 min · Competitivo · Worker Placement, Tile Placement, Drafting · $98.000 ARS
 #491 Notre Dame (2007): BGG 7.3 · complejidad 2.7 · 2-5 jug. (ideal 3-4) · 60 min · Competitivo · Area Control · ref. US$23
 #492 The Pillars of the Earth (2006): BGG 7.3 · complejidad 2.8 · 2-4 jug. (ideal 4) · 105 min · Competitivo · Worker Placement · ref. US$31
-#493 Agent Avenue (2024): BGG 7.5 · complejidad 1.2 · 2-4 jug. (ideal 2) · 15 min · Competitivo · Set Collection, Hand Management, Race · ref. US$16
+#492 Agent Avenue (2024): BGG 7.5 · complejidad 1.2 · 2-4 jug. (ideal 2) · 15 min · Competitivo · Set Collection, Hand Management, Race · ref. US$16
 #494 IKI (2015): BGG 7.6 · complejidad 3.1 · 2-4 jug. (ideal 4) · 75 min · Competitivo · Drafting, Set Collection · $203.300 ARS
 #495 Newton (2018): BGG 7.5 · complejidad 3.4 · 1-4 jug. (ideal 3) · 90 min · Competitivo · Deck Building, Tile Placement, Drafting · $155.200 ARS
 #496 Fall of Rome (2018): BGG 7.6 · complejidad 2.5 · 1-5 jug. (ideal 3) · 52 min · Cooperativo · Set Collection, Hand Management, Dice Rolling · ref. US$72
@@ -484,10 +485,10 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #539 Die Macher (1986): BGG 7.6 · complejidad 4.3 · 4-5 jug. (ideal 5) · 240 min · Competitivo · Area Control, Auction, Hand Management · ref. US$49
 #540 Tiny Towns (2019): BGG 7.2 · complejidad 2.1 · 1-5 jug. (ideal 3) · 52 min · Competitivo · Pattern Building, Player Powers · ref. US$32
 #541 Millennium Blades (2016): BGG 7.6 · complejidad 3.6 · 2-5 jug. (ideal 3-4) · 100 min · Competitivo · Deck Building, Drafting, Set Collection · ref. US$70
+#543 Regicide (2020): BGG 7.4 · complejidad 2.0 · 1-4 jug. (ideal 2) · 20 min · Cooperativo · Hand Management · $21.930 ARS
 #543 Bruxelles 1893 (2013): BGG 7.6 · complejidad 3.6 · 2-5 jug. (ideal 4) · 88 min · Competitivo · Worker Placement, Area Control, Drafting · $129.900 ARS
-#544 Regicide (2020): BGG 7.4 · complejidad 2.0 · 1-4 jug. (ideal 2) · 20 min · Cooperativo · Hand Management · $21.930 ARS
-#546 Wavelength (2019): BGG 7.2 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 38 min · Equipos · Race · $89.991 ARS
 #547 Woodcraft (2022): BGG 7.6 · complejidad 3.8 · 1-4 jug. (ideal 3) · 90 min · Competitivo · Dice Rolling · ref. US$31
+#548 Wavelength (2019): BGG 7.2 · complejidad 1.1 · 4-12 jug. (ideal 6-8) · 38 min · Equipos · Race · $89.991 ARS
 #549 Terrorscape (2023): BGG 8.1 · complejidad 2.3 · 2-4 jug. (ideal 2-4) · 38 min · Equipos · Hand Management, Dice Rolling, Deduction · ref. US$68
 #550 Bohnanza (1997): BGG 7.1 · complejidad 1.7 · 3-7 jug. (ideal 4-5) · 45 min · Competitivo · Set Collection, Hand Management, Trading · ref. US$12
 #551 Civilization (1980): BGG 7.5 · complejidad 3.6 · 4-7 jug. (ideal 6-7) · 360 min · Competitivo · Area Control, Set Collection, Hand Management · ref. US$44
@@ -532,8 +533,8 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #596 Black Rose Wars (2019): BGG 7.9 · complejidad 3.4 · 3-4 jug. (ideal 4) · 90 min · Competitivo · Deck Building, Area Control, Hand Management · ref. US$97
 #597 Quadropolis (2016): BGG 7.2 · complejidad 2.2 · 2-4 jug. (ideal 4) · 45 min · Competitivo · Worker Placement, Tile Placement, Drafting · $128.000 ARS
 #598 Thunderstone Quest (2018): BGG 7.7 · complejidad 2.9 · 2-3 jug. (ideal 2) · 75 min · Competitivo · Deck Building, Campaign · ref. US$80
+#600 Friday (2011): BGG 7.1 · complejidad 2.2 · 1 jug. (ideal 1) · 25 min · Competitivo · Deck Building, Push Your Luck, Hand Management · ref. US$16
 #600 Advanced Squad Leader (1985): BGG 8.0 · complejidad 4.7 · 1-2 jug. (ideal 2) · 300 min · Competitivo · Dice Rolling, Campaign, Player Powers · ref. US$28
-#601 Friday (2011): BGG 7.1 · complejidad 2.2 · 1 jug. (ideal 1) · 25 min · Competitivo · Deck Building, Push Your Luck, Hand Management · ref. US$16
 #602 Potion Explosion (2015): BGG 7.1 · complejidad 1.8 · 2-4 jug. (ideal 3) · 38 min · Competitivo · Drafting, Set Collection, Take That · $146.720 ARS
 #603 Shadows over Camelot (2005): BGG 7.1 · complejidad 2.6 · 4-7 jug. (ideal 5-7) · 75 min · Cooperativo y competitivo · Set Collection, Hand Management, Dice Rolling · ref. US$200
 #604 A Few Acres of Snow (2011): BGG 7.4 · complejidad 3.0 · 2 jug. (ideal 2) · 75 min · Competitivo · Deck Building, Area Control, Drafting · ref. US$100
@@ -554,7 +555,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #620 Lacrimosa (2022): BGG 7.6 · complejidad 3.2 · 1-4 jug. (ideal 3) · 90 min · Competitivo · Deck Building, Area Control, Drafting · $86.000 ARS
 #621 Star Wars: Unlimited (2024): BGG 8.0 · complejidad 2.3 · 2-4 jug. (ideal 2) · 20 min · Competitivo · Hand Management, Take That · ref. US$59
 #623 Sheriff of Nottingham (2014): BGG 7.0 · complejidad 1.7 · 3-5 jug. (ideal 5) · 60 min · Competitivo · Drafting, Set Collection, Hand Management
-#624 Catan (1995): BGG 7.1 · complejidad 2.3 · 3-4 jug. (ideal 4) · 90 min · Competitivo · Route Building, Hand Management, Dice Rolling · $98.940 ARS
+#625 Catan (1995): BGG 7.1 · complejidad 2.3 · 3-4 jug. (ideal 4) · 90 min · Competitivo · Route Building, Hand Management, Dice Rolling · $98.940 ARS
 #625 Amerigo (2013): BGG 7.4 · complejidad 3.0 · 2-4 jug. (ideal 4) · 90 min · Competitivo · Area Control, Tile Placement, Drafting · ref. US$150
 #626 Stuffed Fables (2018): BGG 7.4 · complejidad 2.5 · 1-4 jug. (ideal 4) · 75 min · Cooperativo · Dice Rolling, Storytelling, Role Playing · $195.520 ARS
 #627 Junk Art (2016): BGG 7.3 · complejidad 1.2 · 2-6 jug. (ideal 4-5) · 30 min · Competitivo · Hand Management · ref. US$44
@@ -565,11 +566,11 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #634 Imhotep (2016): BGG 7.1 · complejidad 2.0 · 2-4 jug. (ideal 4) · 40 min · Competitivo · Area Control, Set Collection · ref. US$25
 #636 Betrayal Legacy (2018): BGG 7.6 · complejidad 2.9 · 3-5 jug. (ideal 5) · 68 min · Equipos · Tile Placement, Dice Rolling, Storytelling · ref. US$130
 #637 Space Empires 4X (2011): BGG 7.7 · complejidad 3.4 · 1-4 jug. (ideal 2) · 150 min · Competitivo · Auction, Dice Rolling, Paper & Pencil · ref. US$60
+#638 Unstoppable (2025): BGG 8.3 · complejidad 3.0 · 1-2 jug. (ideal 1) · 60 min · Cooperativo · Deck Building, Hand Management · $125.900 ARS
 #639 Nova Luna (2019): BGG 7.3 · complejidad 1.9 · 1-4 jug. (ideal 2) · 45 min · Competitivo · Tile Placement, Pattern Building, Race · ref. US$15
 #640 Risk Legacy (2011): BGG 7.3 · complejidad 2.6 · 4-5 jug. (ideal 5) · 60 min · Competitivo · Drafting, Dice Rolling, Legacy · ref. US$45
 #641 Escape Plan (2019): BGG 7.5 · complejidad 3.7 · 1-5 jug. (ideal 4) · 90 min · Competitivo · Tile Placement, Drafting, Race · ref. US$103
 #642 Port Royal (2014): BGG 7.1 · complejidad 1.6 · 2-5 jug. (ideal 3-4) · 35 min · Competitivo · Drafting, Set Collection, Push Your Luck · ref. US$12
-#643 Unstoppable (2025): BGG 8.3 · complejidad 3.0 · 1-2 jug. (ideal 1) · 60 min · Cooperativo · Deck Building, Hand Management · $125.900 ARS
 #644 Railroad Ink: Deep Blue Edition (2018): BGG 7.1 · complejidad 1.5 · 1-6 jug. (ideal 2) · 25 min · Competitivo · Route Building, Dice Rolling, Simultaneous Actions · ref. US$17
 #645 Blood Bowl (Third Edition) (1994): BGG 7.6 · complejidad 3.0 · 2 jug. (ideal 2) · 180 min · Competitivo · Dice Rolling, Player Powers
 #646 Bullet♥︎ (2021): BGG 7.6 · complejidad 2.2 · 1-4 jug. (ideal 1) · 15 min · Cooperativo · Push Your Luck, Pattern Building, Real-Time · ref. US$39
@@ -809,12 +810,12 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #920 Coal Baron (2013): BGG 7.3 · complejidad 2.5 · 2-4 jug. (ideal 3-4) · 68 min · Competitivo · Worker Placement, Area Control, Tile Placement · ref. US$55
 #921 Finca (2009): BGG 7.1 · complejidad 2.1 · 2-4 jug. (ideal 2) · 45 min · Competitivo · Set Collection · $75.000 ARS
 #922 Dragon Castle (2017): BGG 7.1 · complejidad 2.0 · 2-4 jug. (ideal 2) · 38 min · Competitivo · Tile Placement, Drafting, Pattern Building · ref. US$40
+#923 Mistborn: The Deckbuilding Game (2024): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2) · 45 min · Cooperativo · Deck Building, Race · $86.000 ARS
 #923 Kinfire Delve: Vainglory's Grotto (2023): BGG 7.8 · complejidad 2.2 · 1-2 jug. (ideal 1-2) · 60 min · Cooperativo · Dice Rolling · ref. US$21
 #924 Empire of the Sun: The Pacific War 1941-1945 (2005): BGG 8.3 · complejidad 4.4 · 1-2 jug. (ideal 2) · 360 min · Competitivo · Dice Rolling, Card Driven, Action Points · ref. US$61
 #925 Between Two Cities (2015): BGG 7.0 · complejidad 1.8 · 3-7 jug. (ideal 5-6) · 25 min · Competitivo · Tile Placement, Set Collection, Simultaneous Actions · ref. US$32
 #926 K2 (2010): BGG 7.0 · complejidad 2.2 · 1-5 jug. (ideal 3-4) · 60 min · Competitivo · Push Your Luck, Hand Management, Simultaneous Actions · ref. US$32
 #927 The Networks: Primetime (2016): BGG 7.1 · complejidad 2.6 · 1-5 jug. (ideal 4) · 75 min · Competitivo · Drafting, Set Collection · ref. US$26
-#928 Mistborn: The Deckbuilding Game (2024): BGG 7.6 · complejidad 2.7 · 1-4 jug. (ideal 2) · 45 min · Cooperativo · Deck Building, Race · $86.000 ARS
 #929 Santiago (2003): BGG 7.2 · complejidad 2.5 · 4-5 jug. (ideal 5) · 75 min · Competitivo · Area Control, Tile Placement, Auction · ref. US$29
 #930 Smash Up: Awesome Level 9000 (2013): BGG 7.2 · complejidad 2.1 · 2 jug. (ideal 3) · 45 min · Competitivo · Area Control, Hand Management, Take That · ref. US$15
 #931 Century: Eastern Wonders (2018): BGG 7.1 · complejidad 2.1 · 2-4 jug. (ideal 4) · 38 min · Competitivo · Set Collection, Pick-up & Deliver · $79.990 ARS
@@ -967,7 +968,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #1101 Ca$h 'n Guns: Second Edition (2014): BGG 6.8 · complejidad 1.2 · 4-8 jug. (ideal 6-8) · 30 min · Competitivo · Drafting, Take That, Player Powers · ref. US$27
 #1102 Roll Through the Ages: The Bronze Age (2009): BGG 6.8 · complejidad 1.8 · 1-4 jug. (ideal 2) · 38 min · Competitivo · Set Collection, Push Your Luck, Dice Rolling · ref. US$35
 #1103 Outfoxed! (2014): BGG 7.1 · complejidad 1.1 · 2-4 jug. (ideal 3-4) · 20 min · Cooperativo · Dice Rolling, Deduction, Memory · ref. US$19
-#1104 Cross Clues (2020): BGG 7.2 · complejidad 1.1 · 2-6 jug. (ideal 4) · 8 min · Cooperativo · Real-Time · $29.925 ARS
+#1105 Cross Clues (2020): BGG 7.2 · complejidad 1.1 · 2-6 jug. (ideal 4) · 8 min · Cooperativo · Real-Time · $29.925 ARS
 #1105 Tak (2017): BGG 7.6 · complejidad 2.4 · 2 jug. (ideal 2) · 40 min · Competitivo · Route Building
 #1106 Sabika (2022): BGG 7.7 · complejidad 3.9 · 1-4 jug. (ideal 3) · 90 min · Competitivo · $152.150 ARS
 #1107 Grove: 9 card solitaire game (2021): BGG 7.5 · complejidad 1.3 · 1 jug. (ideal 1) · 8 min · Competitivo · Tile Placement, Pattern Building · ref. US$10
@@ -1011,7 +1012,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #1150 Ostia (2022): BGG 8.0 · complejidad 2.9 · 1-4 jug. (ideal 3) · 110 min · Competitivo · Set Collection · ref. US$80
 #1152 Rolling Realms (2021): BGG 7.1 · complejidad 2.0 · 1-6 jug. (ideal 1-2) · 30 min · Competitivo · Dice Rolling, Simultaneous Actions, Paper & Pencil · ref. US$19
 #1154 The Palaces of Carrara (2012): BGG 7.1 · complejidad 2.6 · 2-4 jug. (ideal 4) · 60 min · Competitivo · Tile Placement, Set Collection · ref. US$32
-#1155 The Mind (2018): BGG 6.7 · complejidad 1.1 · 2-4 jug. (ideal 4) · 20 min · Cooperativo · Hand Management · $40.500 ARS
+#1156 The Mind (2018): BGG 6.7 · complejidad 1.1 · 2-4 jug. (ideal 4) · 20 min · Cooperativo · Hand Management · $40.500 ARS
 #1156 Kingdomino Origins (2021): BGG 7.4 · complejidad 1.9 · 2-4 jug. (ideal 2-4) · 25 min · Competitivo · Tile Placement, Drafting · ref. US$22
 #1157 Catacombs (Third Edition) (2015): BGG 7.4 · complejidad 2.4 · 2-5 jug. (ideal 2-5) · 75 min · Equipos · Role Playing, Player Powers · ref. US$77
 #1158 Zooloretto (2007): BGG 6.8 · complejidad 1.9 · 2-5 jug. (ideal 4) · 45 min · Competitivo · Tile Placement, Drafting, Set Collection · ref. US$26
@@ -1383,7 +1384,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #1581 The Werewolves of Miller's Hollow (2001): BGG 6.7 · complejidad 1.3 · 8-18 jug. (ideal 10-14) · 30 min · Equipos · Voting, Role Playing, Player Powers · $33.905 ARS
 #1582 Copenhagen (2019): BGG 6.9 · complejidad 1.7 · 2-4 jug. (ideal 4) · 30 min · Competitivo · Tile Placement, Drafting, Set Collection · $98.624 ARS
 #1583 Medina (2001): BGG 7.0 · complejidad 2.8 · 3-4 jug. (ideal 4) · 60 min · Competitivo · Tile Placement · ref. US$56
-#1584 Saboteur (2004): BGG 6.5 · complejidad 1.3 · 5-10 jug. (ideal 7-8) · 30 min · Competitivo · Route Building, Hand Management, Take That · $22.491 ARS
+#1586 Saboteur (2004): BGG 6.5 · complejidad 1.3 · 5-10 jug. (ideal 7-8) · 30 min · Competitivo · Route Building, Hand Management, Take That · $22.491 ARS
 #1586 DroPolter (2023): BGG 7.1 · complejidad 1.0 · 2-5 jug. (ideal 4) · 20 min · Competitivo · Real-Time, Pattern Recognition · ref. US$16
 #1587 TransAmerica (2001): BGG 6.7 · complejidad 1.3 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Race
 #1588 The Hunger (2021): BGG 7.0 · complejidad 2.4 · 2-5 jug. (ideal 3-4) · 60 min · Competitivo · Deck Building, Drafting, Set Collection · $115.000 ARS
@@ -2000,4 +2001,3 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #2301 Core Space (2019): BGG 8.5 · complejidad 2.9 · 1-4 jug. (ideal 2) · 112 min · Cooperativo y competitivo · Dice Rolling, Role Playing, Campaign · ref. US$77
 #2302 Xiangqi (762): BGG 7.1 · complejidad 3.5 · 2 jug. (ideal 2) · 60 min · Competitivo
 #2303 Pax Transhumanity (2019): BGG 7.4 · complejidad 4.4 · 1-4 jug. (ideal 3) · 105 min · Competitivo · Worker Placement, Pattern Recognition
-#2304 Odin's Ravens (2002): BGG 6.6 · complejidad 1.7 · 2 jug. (ideal 2) · 30 min · Competitivo · Hand Management, Race · ref. US$18

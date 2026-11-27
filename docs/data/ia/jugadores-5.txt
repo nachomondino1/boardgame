@@ -3,7 +3,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 
 #23 Eclipse: Second Dawn for the Galaxy (2020): BGG 8.4 · complejidad 3.7 · 2-6 jug. (ideal 4-6) · 130 min · Competitivo · Area Control, Dice Rolling, Player Powers · ref. US$110
 #25 Nemesis (2018): BGG 8.2 · complejidad 3.5 · 1-5 jug. (ideal 4-5) · 135 min · Cooperativo y competitivo · Hand Management, Dice Rolling, Campaign · ref. US$111
-#49 Heat: Pedal to the Metal (2022): BGG 8.0 · complejidad 2.2 · 1-6 jug. (ideal 5-6) · 45 min · Competitivo · Deck Building, Push Your Luck, Hand Management · $215.000 ARS
+#50 Heat: Pedal to the Metal (2022): BGG 8.0 · complejidad 2.2 · 1-6 jug. (ideal 5-6) · 45 min · Competitivo · Deck Building, Push Your Luck, Hand Management · $215.000 ARS
 #76 Power Grid (2004): BGG 7.8 · complejidad 3.2 · 3-6 jug. (ideal 4-5) · 120 min · Competitivo · Route Building, Auction · $142.600 ARS
 #88 Star Wars: Imperial Assault (2014): BGG 8.0 · complejidad 3.3 · 2-5 jug. (ideal 2-5) · 90 min · Equipos · Dice Rolling, Role Playing, Campaign · ref. US$89
 #102 El Grande (1995): BGG 7.8 · complejidad 2.9 · 3-5 jug. (ideal 5) · 90 min · Competitivo · Area Control, Drafting, Auction · ref. US$34
@@ -23,7 +23,7 @@ Catálogo de juegos de mesa (datos de BoardGameGeek) para recomendar compras. Un
 #268 Camel Up (Second Edition) (2018): BGG 7.5 · complejidad 1.5 · 3-8 jug. (ideal 5-6) · 38 min · Competitivo · Dice Rolling, Bluffing, Roll & Move · $160.000 ARS
 #274 Cyclades (2009): BGG 7.5 · complejidad 2.8 · 3-5 jug. (ideal 4-5) · 75 min · Competitivo · Area Control, Drafting, Auction · ref. US$48
 #283 Hot Streak (2025): BGG 7.8 · complejidad 1.2 · 3-8 jug. (ideal 5-6) · 20 min · Competitivo · Drafting, Bluffing · $125.910 ARS
-#285 Skull King (2013): BGG 7.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Trick-taking, Hand Management · $41.810 ARS
+#286 Skull King (2013): BGG 7.5 · complejidad 1.7 · 3-6 jug. (ideal 4-6) · 30 min · Competitivo · Trick-taking, Hand Management · $41.810 ARS
 #296 Sushi Go Party! (2016): BGG 7.4 · complejidad 1.3 · 3-8 jug. (ideal 4-5) · 20 min · Competitivo · Set Collection, Push Your Luck, Hand Management · $55.000 ARS
 #314 The Princes of Florence (2000): BGG 7.5 · complejidad 3.2 · 3-5 jug. (ideal 5) · 88 min · Competitivo · Tile Placement, Auction · ref. US$39
 #320 1830: Railways & Robber Barons (1986): BGG 7.9 · complejidad 4.2 · 3-6 jug. (ideal 4-5) · 270 min · Competitivo · Tile Placement, Route Building, Auction · ref. US$60
