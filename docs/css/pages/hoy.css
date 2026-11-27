@@ -95,7 +95,7 @@ header .subtitle {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 0 0 28px;
+  margin: 32px 0 8px;
 }
 
 .hoy-pick__btn {

@@ -22,7 +22,8 @@ const state = {
   mecanicasNo: new Set(), // mecánicas que NO quiero: se descartan los juegos que tengan alguna
   jugadores: null,
   soloMejor: false,
-  estados: new Set(), // "comprar" / "probar" / "tengo"; vacío = todos menos los que ya tenés (en seguimiento, quiero comprar y quiero probar)
+  estados: new Set(), // "buy" / "play" / "own"; vacío = todos (también los que ya tenés y los que solo están en seguimiento)
+  estadosNo: new Set(), // estados que NO quiero ver (doble clic en la ficha)
   sort: "ranking_bgg_asc",
   visibleCount: PAGE_SIZE,
 };
@@ -30,14 +31,10 @@ const state = {
 const ESTADOS_COMPRA = new Set(["Watchlist", "Want to buy", "Want to play"]);
 
 function matchesFilters(g) {
-  // Los que ya tenés (Own) solo entran si se elige "Lo tengo": sirve para compararlos con uno que querés comprar.
-  if (!ESTADOS_COMPRA.has(g.estado) && !(g.estado === "Own" && state.estados.has("tengo"))) return false;
-  if (state.estados.size > 0) {
-    const coincide = (state.estados.has("comprar") && g.estado === "Want to buy")
-      || (state.estados.has("probar") && g.quiere_probar)
-      || (state.estados.has("tengo") && g.estado === "Own");
-    if (!coincide) return false;
-  }
+  const es = (e) => (e === "buy" ? g.estado === "Want to buy" : e === "play" ? g.quiere_probar : g.estado === "Own");
+  if (g.estado !== "Own" && !ESTADOS_COMPRA.has(g.estado)) return false;
+  for (const e of state.estadosNo) if (es(e)) return false;
+  if (state.estados.size > 0 && ![...state.estados].some(es)) return false;
   if (state.query) {
     if (!matchesNombre(g, state.query)) return false;
   }
@@ -171,8 +168,9 @@ const MAX_JUGADORES_FILTRO = 8;
 
 const FILTROS = [
   { id: "estados", titulo: "Estado", icono: "📌", multiple: true,
-    nota: "Sin elegir ninguno se ven todos, también los que solo tenés en seguimiento, pero no los que ya tenés. Sumá \"Lo tengo\" para compararlos con otros.",
-    opciones: [{ id: "comprar", label: "Quiero comprar" }, { id: "probar", label: "Quiero probar" }, { id: "tengo", label: "Lo tengo" }] },
+    excluir: "estadosNo",
+    nota: "Tocá una vez para ver solo ese estado y dos veces para sacarlo. Sin elegir ninguno se ven todos.",
+    opciones: [{ id: "buy", label: "Want to buy" }, { id: "play", label: "Want to play" }, { id: "own", label: "Own" }] },
   { id: "jugadores", titulo: "Jugadores", icono: "👥", multiple: false, numero: true,
     unidad: (n) => `${n} jugador${n === 1 ? "" : "es"}`,
     opciones: Array.from({ length: MAX_JUGADORES_FILTRO }, (_, i) => ({ id: String(i + 1), label: String(i + 1) })),

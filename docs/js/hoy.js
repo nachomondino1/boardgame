@@ -107,7 +107,7 @@ function render() {
       <div class="grid">${posibles.map((g) => cardTemplate(g, { jugadores: n })).join("")}</div>
     </section>`;
 
-  grid.innerHTML = pickHtml + seccion;
+  grid.innerHTML = seccion + pickHtml;
   grid.dataset.pool = pool.map((g) => g.bgg_id).join(",");
   hydrate(elegido ? [elegido, ...posibles] : posibles).then((cargados) => { if (cargados) render(); });
   ideales.forEach((g) => {
