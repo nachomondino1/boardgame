@@ -488,6 +488,13 @@ details.variantes ul {
 
 /* --- Estados de la card y de la lista --- */
 
+/* Juegos con "mejor con N" para la cantidad elegida en ¿Qué jugamos hoy?. */
+.card.card-best {
+  border: 2px solid #e0a800;
+  background: color-mix(in srgb, #f5c518 12%, var(--card-bg, var(--bg, #fff)));
+  box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.25);
+}
+
 /* La card que sorteó "Elegime uno" en ¿Qué jugamos hoy?. */
 .card.card-elegida {
   border: 2px solid var(--accent);

@@ -98,19 +98,22 @@ function render() {
            <span class="hoy-pick__hint">entre los mejores para ${n}</span>`}
     </div>`;
 
-  const tandas = [];
-  if (ideales.length) tandas.push(tandaHtml(`⭐ Mejor con ${n}`, "La comunidad de BGG los recomienda justo para esta cantidad.", ideales));
-  if (funcionan.length) {
-    tandas.push(tandaHtml(
-      `Funcionan con ${n}`,
-      ideales.length ? `Se pueden jugar con ${n}, aunque no es la cantidad ideal.` : `Ninguno tiene a ${n} como cantidad ideal, pero estos se pueden jugar.`,
-      funcionan
-    ));
-  }
+  const sub = ideales.length
+    ? `Los marcados con ⭐ son los que la comunidad de BGG recomienda justo para ${n}.`
+    : `Ninguno tiene a ${n} como cantidad ideal, pero todos se pueden jugar.`;
+  const seccion = `
+    <section class="hoy-tanda">
+      <p class="hoy-tanda__sub">${sub}</p>
+      <div class="grid">${posibles.map((g) => cardTemplate(g, { jugadores: n })).join("")}</div>
+    </section>`;
 
-  grid.innerHTML = pickHtml + tandas.join("");
+  grid.innerHTML = pickHtml + seccion;
   grid.dataset.pool = pool.map((g) => g.bgg_id).join(",");
   hydrate(elegido ? [elegido, ...posibles] : posibles).then((cargados) => { if (cargados) render(); });
+  ideales.forEach((g) => {
+    const c = grid.querySelector(`.card[data-id="${g.bgg_id}"]`);
+    if (c) c.classList.add("card-best");
+  });
   if (elegido) {
     const card = grid.querySelector(`.card[data-id="${elegido.bgg_id}"]`);
     if (card) {
